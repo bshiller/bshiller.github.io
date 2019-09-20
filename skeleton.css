@@ -131,18 +131,18 @@ body {
 
 /* Typography
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
-h1, h2, h3, {
+h1, h2, h3 {
   margin-top: 0;
   margin-bottom: 1rem;
   font-weight: 300; }
 
 
-h4{
+h4 {
   margin-top: 5rem;
   margin-bottom: 0;
   font-weight: 300; }
 
-h5, h6, {
+h5, h6 {
   margin-top: 1rem;
   margin-bottom: 0;
   font-weight: 100; }
