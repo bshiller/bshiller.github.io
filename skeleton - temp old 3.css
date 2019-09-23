@@ -142,17 +142,10 @@ h4 {
   margin-bottom: 0;
   font-weight: 500; }
 
-h5 {
-  margin-top: 0;
-  margin-bottom: 2rem;;
-  font-weight: 100; }
-
-h6 {
+h5, h6 {
   margin-top: 2rem;
   margin-bottom: 0;
   font-weight: 100; }
-
-
 
 
 h1 { font-size: 4.0rem; line-height: 1.2;  letter-spacing: -.1rem;}
@@ -169,7 +162,7 @@ h6 { font-size: 1.5rem; line-height: 1.6;  letter-spacing: 0; }
   h3 { font-size: 2.8rem; }
   h4 { font-size: 2.8rem; }
   h5 { font-size: 2.0rem; }
-  h6 { font-size: 1.8rem; }
+  h6 { font-size: 1.5rem; }
 }
 
 p {
