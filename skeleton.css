@@ -126,8 +126,11 @@ body {
   line-height: 1.6;
   font-weight: 400;
 /* font-family: "Raleway", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+   font-family: "Bangers", "Roboto Slab", "Times New Roman"; 
+   font-family: "Roboto Slab", "Arvo", "Times New Roman", serif; 
   */
-font-family: "Times New Roman"; 
+  font-family: 'Crimson Text', 'Times New Roman', 'Arvo', 'Roboto Slab',  serif; 
+ 
   color: #222; }
 
 
