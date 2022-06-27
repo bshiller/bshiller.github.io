@@ -12,43 +12,136 @@
 
 /* Ben added
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
-
-
-
-.sidenav {
-  height: 100%;
-  width: 160px;
-  position: fixed;
-  z-index: 1;
-  top: 200px;
-  left: 0;
-  background-color: #111;
-  overflow-x: hidden;
-  padding-top: 20px;
+.dropdown {
+  display: inline-block;
+  position: relative;
 }
-
-.sidenav a {
-  padding: 6px 8px 6px 16px;
-  text-decoration: none;
-  font-size: 25px;
-  color: #818181;
+.dropdownButton {
+  color: white;
+  cursor: pointer;
+  text-align: left;
+  outline: none;
+  padding: 0 5px;
+  display: inline-block;
+  text-align: center;
+  background-color: blue;
+  border-color: black;
+  border-style: solid;
+  border-width: thin;
+}
+.dropdown-content {
+  display: none;
+  position: absolute;
+  width: 100%;
+  overflow: auto;
+  box-shadow: 0px 10px 10px 0px rgba(0,0,0,0.4);
+  background-color: #FFFFFF;
+  z-index: 1;
+}
+.dropdown:hover .dropdown-content {
   display: block;
 }
-
-.sidenav a:hover {
-  color: #f1f1f1;
+.dropdown-content a {
+  display: block;
+  color: #000000;
+  padding: 5px;
+  text-decoration: none;
+}
+.dropdown-content a:hover {
+  color: #FFFFFF;
+  background-color: #00A4BD;
 }
 
-.main {
-  margin-left: 160px; /* Same as the width of the sidenav */
-  font-size: 28px; /* Increased text to enable scrolling */
-  padding: 0px 10px;
+
+
+.dropdownButton:hover {
+  color: white;
+  background-color: #0047AB;
 }
 
-@media screen and (max-height: 450px) {
-  .sidenav {padding-top: 15px;}
-  .sidenav a {font-size: 18px;}
+
+
+
+.video-container {
+	position:relative;
+	padding-bottom:56.25%;
+	padding-top:30px;
+	height:0;
+	overflow:hidden;
+        justify-content: center;
 }
+
+.video-container iframe, .video-container object, .video-container embed {
+	position:absolute;
+	top:0;
+	left:0;
+	width:100%;
+	height:100%;
+}
+
+.smaller { font-size:75%; }
+
+
+ .collapsible {
+  color: blue;
+  cursor: pointer;
+  border: none;
+  text-align: left;
+  outline: none;
+  padding: 0 20px;
+  display: inline-block;
+  text-align: center;
+  padding-left: 2em;
+  border-color: black;
+  border-style: solid;
+  border-width: thin;
+}
+
+
+
+
+
+
+
+
+.content {
+  padding: 0 18px;
+  display: none;
+  overflow: hidden;
+  background-color: #E8E8E8;
+}
+
+
+
+
+.collapsible::after {
+	content: '\25be';
+	float: right;
+	transform: scale(1.5);
+}
+
+
+
+
+.active  {
+  background-color: #1974D2;
+}
+.active::after { content: '\25b4'; }
+
+
+.collapsible:hover {
+  background-color: #4CBB17;
+  border-color: black;
+  border-style: solid;
+  border-width: thin;
+}
+
+
+
+
+
+
+
 
 
 /* Add a black background color to the top navigation */
@@ -314,13 +407,13 @@ input[type="submit"],
 input[type="reset"],
 input[type="button"] {
   display: inline-block;
-  height: 38px;
+  height: 20px;
   padding: 0 30px;
   color: #555;
   text-align: center;
   font-size: 11px;
   font-weight: 600;
-  line-height: 38px;
+  line-height: 20px;
   letter-spacing: .1rem;
   text-transform: uppercase;
   text-decoration: none;
