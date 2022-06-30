@@ -12,6 +12,28 @@
 
 /* Ben added
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
+.page-container {
+  position: relative;
+  min-height: 100vh;
+  box-sizing: border-box; 
+  margin: auto;
+  max-width: 900px;
+}
+
+.content-wrap-all {
+  padding-bottom: 2.5rem;    /* Footer height */
+  margin: auto;
+} 
+
+.footerBen {
+  position: absolute;
+  bottom: 4rem;
+  height: 4rem;            /* Footer height */
+  z-index: 1;
+}
+
+
+
 .dropdown {
   display: inline-block;
   position: relative;
