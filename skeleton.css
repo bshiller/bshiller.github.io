@@ -16,14 +16,24 @@
   position: relative;
   min-height: 100vh;
   box-sizing: border-box; 
-  margin: auto;
-  max-width: 900px;
+ 
 }
 
 .content-wrap-all {
   padding-bottom: 4rem;    /* Footer height */
+  width: 80%;
   margin: auto;
+  max-width: 900px;
 } 
+
+
+/* @media (min-width: 1200px) { */
+  @media only screen and (hover: none) and (pointer: coarse){
+    .content-wrap-all {
+      width: 95%;
+      }
+  }
+  
 
 .footerBen {
   position: absolute;
