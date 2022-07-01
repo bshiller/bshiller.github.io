@@ -39,6 +39,7 @@
   position: relative;
   font-size: 2.0rem;
 }
+
 .dropdownButton {
   font-size: 2.0rem;
   height: 30px;
@@ -53,6 +54,7 @@
   border-style: solid;
   border-width: thin;
 }
+
 .dropdown-content {
   display: none;
   position: absolute;
@@ -75,6 +77,30 @@
   color: #FFFFFF;
   background-color: #00A4BD;
 }
+
+
+@media (max-width: 500px) {
+   .dropdown {
+      font-size: 4rem;
+   }
+   .dropdownButton {
+     height: 60px;
+      font-size: 4rem;
+   }
+}
+
+/*@media only screen and (hover: none) and (pointer: coarse){ */
+@media (max-width: 1000px) {
+   .dropdown {
+      font-size: 2.5rem;
+   }
+   .dropdownButton {
+     height: 60px;
+      font-size: 2.5rem;
+   }
+}
+
+
 
 
 
