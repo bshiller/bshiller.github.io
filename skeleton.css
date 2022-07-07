@@ -12,6 +12,38 @@
 
 /* Ben added
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
+.hoverable:before {
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  left:100%;
+  margin-left:-150px;
+  margin-top:-25px;
+  width: 300px;
+  padding:5px;
+  border-radius:10px;
+  background:#444;
+  color: #fff;
+  text-align:center;
+  display:none;
+ }
+ .hoverable {
+  position:relative;
+  cursor: default;
+ }
+ .hoverable:hover:before{
+  display:block;
+  background-color: #E8E8E8;
+  color: #707070;
+  box-shadow: 0px 20px 20px 10px rgba(0,0,0,0.4);
+ }
+ .hover1:before{
+  content:"Link below directs to searchable ratings.";
+ }
+ 
+
+
+
 .page-container {
   position: relative;
   min-height: 100vh;
