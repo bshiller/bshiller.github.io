@@ -218,7 +218,7 @@
 .active  {
   background-color: #1974D2;
 }
-.active::after { content: '\25b4'; }
+.active::after { content: '\00a0 \25b4'; }
 
 
 .collapsible:hover {
