@@ -207,9 +207,9 @@
 
 
 .collapsible::after {
-	content: '\25be';
+	content: '\00a0 \25be';
 	float: right;
-	transform: scale(1.5);
+	transform: scale(2);
 }
 
 
