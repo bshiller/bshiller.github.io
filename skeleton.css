@@ -12,6 +12,13 @@
 
 /* Ben added
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
+}
+
 .hoverable:before {
   position:absolute;
   top:50%;
