@@ -1,0 +1,96 @@
+.bs-navbar {
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  background-color: #fff;
+  border-bottom: 1px solid #ccc;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  font-family: 'Crimson Text', Georgia, serif;
+}
+
+.bs-navbar-inner {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0.75rem 1rem;
+  text-align: center;
+}
+
+.bs-navbar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+
+
+.bs-menu-toggle {
+  display: none;
+}
+
+.bs-menu-icon {
+  display: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+/* Nav links */
+.bs-nav-links {
+  list-style: none;
+  margin-top: 1rem;
+  padding-left: 0;
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.bs-nav-links li a {
+  text-decoration: none;
+  color: #0000EE;
+  font-size: 1rem;
+}
+
+.bs-nav-links li a:hover {
+  color: #0044cc;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .bs-menu-icon {
+    display: block;
+  }
+
+  .bs-nav-links {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    background-color: #fff;
+    border-top: 1px solid #ccc;
+    padding: 1rem 0;
+    margin-top: 0.5rem;
+  }
+
+  .bs-menu-toggle:checked + .bs-menu-icon + .bs-nav-links {
+    display: flex;
+  }
+
+  .bs-navbar-header {
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+}
+
+/* === BenjaminShiller.com navbar fixes === */
+.bs-menu-toggle{ display:none !important; }
+
+/* Desktop layout */
+@media (min-width:769px){
+  .bs-navbar-inner{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:2rem;
+  }
+  .bs-nav-links{ margin-top:0; }
+  .bs-navbar-title{ display:none; }       /* optional – remove duplicate name */
+}

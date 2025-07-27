@@ -2,6 +2,26 @@
 
 <head>
 
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Benjamin Shiller's Homepage</title>
+
+
+  <!-- make the layout responsive on phones/tablets -->
+  <meta name="description"
+    content="Economist with research interests in the economics of digitization, industrial organization, and applied microeconomics. Especially interested in personalized pricing, car safety, self-driving vehicles, ad-blocking, and other technology-related topics.">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="faviconFinal.bmp" type="image/x-icon">
+
+  <!-- ONE clean stylesheet for everything -->
+  <link rel="stylesheet" href="site.css">
+
+  <!-- keep your Google Fonts line if you still want the Arvo / Crimson Text / Roboto Slab stack -->
+  <link href="https://fonts.googleapis.com/css2?family=Arvo&family=Crimson+Text&family=Roboto+Slab&display=swap" rel="stylesheet">
+
+
   <!-- Global site tag (gtag.js) - Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-19873828-1"></script>
   <script>
@@ -11,51 +31,42 @@
 
     gtag('config', 'UA-19873828-1');
   </script>
-
-
-  <link rel="stylesheet" type="text/css" href="skeleton.css">
-
-  <title>Safety Ratings</title>
-
-  <link rel="shortcut icon" href="faviconFinal.bmp" type="image/x-icon">
-
-
-  <link href="https://fonts.googleapis.com/css2?family=Arvo&family=Crimson+Text&family=Roboto+Slab&display=swap"
-    rel="stylesheet">
 </head>
 
 
+
+
+
 <body>
+    <!-- ───────────────── NAVBAR ────────────────── -->
+    <header class="hero">
+      <div class="hero-inner">
+        <h1>Benjamin Shiller</h1>
+        <h2>Associate Professor &#8212; Department of Economics &#8212; Brandeis University</h2>
+    
+        <!-- ─────────── NAVIGATION ─────────── -->
+        <nav class="bs-navbar hero-nav">
+          <!-- hamburger toggle (mobile) -->
+          <input type="checkbox" id="bs-menu-toggle" class="bs-menu-toggle">
+          <label for="bs-menu-toggle" class="bs-menu-icon">&#9776;</label>
+    
+          <ul class="bs-nav-links">
+            <li><a href="index">Home</a></li>
+            <li><a href="CVBio">About</a></li>
+            <li><a href="Research">Research</a></li>
+            <li><a href="Teaching">Teaching</a></li>
+            <li><a href="CarSafety" class="current">Car Safety Ratings</a></li>
+            <li><a href="mailto:ShillerMediaInquiries@gmail.com">Media Contact</a></li>
+          </ul>
+        </nav>
+        <!-- ────────────────────────────────── -->
+      </div>
+    </header>
+    <!-- ──────────────────────────────────────────── -->
+
   <div class="page-container">
 
 
-    <div>
-      <header>
-
-
-
-        <!-- Standard Headings -->
-        <center>
-          <h1>Benjamin Shiller</h1>
-        </center>
-        <center>
-          <h2>Associate Professor &#8212 Department of Economics &#8212 Brandeis University</h2>
-        </center>
-
-      </header>
-
-    </div>
-
-    <div class="dropdown">
-      <button type="button" class="dropdownButton ">&#9776; Menu</button>
-      <div class="dropdown-content">
-        <a href="index">Home</a>
-        <a href="Research">Research</a>
-        <a href="CVBio">CV / Bio</a>
-        <a href="Teaching">Teaching</a>
-        <a href="CarSafety">Car Safety</a>
-      </div>
-    </div>
 
 
 
