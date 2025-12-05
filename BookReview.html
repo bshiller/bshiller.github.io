@@ -23,7 +23,7 @@
     <!-- Main Container -->
     <main class="w-full max-w-md bg-white min-h-screen shadow-xl overflow-hidden flex flex-col">
         
-        <!-- Header Image Area (Optional: Add your book cover here) -->
+        <!-- Header Image Area -->
         <div class="bg-indigo-900 h-32 w-full flex items-center justify-center relative overflow-hidden">
             <div class="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
             <h1 class="text-white text-2xl font-bold z-10 text-center px-4">AI Economics</h1>
@@ -40,22 +40,31 @@
                 </p>
             </div>
 
-            <!-- Primary Action: Amazon Review -->
+            <!-- Primary Action: Reviews -->
             <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-5 text-center">
                 <p class="text-sm font-semibold text-yellow-800 mb-3 uppercase tracking-wide">Step 1</p>
                 <h3 class="text-lg font-bold text-gray-900 mb-2">Leave a Rating</h3>
                 <p class="text-sm text-gray-600 mb-4">It takes less than 15 seconds.</p>
                 
-                <!-- 
-                   REPLACE 'YOUR_BOOK_ASIN' WITH YOUR ACTUAL AMAZON ASIN (e.g. B08XXYYZZ) 
-                   REPLACE 'YOUR_BOOK_URL' WITH YOUR ACTUAL BOOK URL
-                -->
-                <a href="https://www.amazon.com/review/create-review/?ie=UTF8&channel=glance-detail&asin=B0G45MKBZT" 
-                   target="_blank"
-                   class="btn-press flex items-center justify-center gap-2 w-full bg-[#FF9900] hover:bg-[#ffad33] text-white font-bold py-3 px-4 rounded-lg shadow-sm transition-colors">
-                    <i class="ph ph-star-fill text-xl"></i>
-                    <span>Review on Amazon</span>
-                </a>
+                <div class="flex flex-col gap-3">
+                    <!-- 
+                       REPLACE 'YOUR_BOOK_ASIN' WITH YOUR ACTUAL AMAZON ASIN 
+                    -->
+                    <a href="https://www.amazon.com/review/create-review/?ie=UTF8&channel=glance-detail&asin=B0G45MKBZT" 
+                       target="_blank"
+                       class="btn-press flex items-center justify-center gap-2 w-full bg-[#FF9900] hover:bg-[#ffad33] text-white font-bold py-3 px-4 rounded-lg shadow-sm transition-colors">
+                        <i class="ph ph-star-fill text-xl"></i>
+                        <span>Review on Amazon</span>
+                    </a>
+
+                    <!-- Goodreads Button -->
+                    <a id="btn-goodreads" href="#" 
+                       target="_blank"
+                       class="btn-press flex items-center justify-center gap-2 w-full bg-stone-100 hover:bg-stone-200 text-stone-800 font-bold py-3 px-4 rounded-lg shadow-sm transition-colors border border-stone-200">
+                        <i class="ph ph-books text-xl"></i>
+                        <span>Review on Goodreads</span>
+                    </a>
+                </div>
             </div>
 
             <!-- Divider -->
@@ -69,16 +78,16 @@
             <div>
                 <p class="text-sm font-semibold text-indigo-800 mb-3 uppercase tracking-wide text-center">Step 2: Pick a Quote</p>
                 
-                <!-- Quote Selector (Carousel-ish) -->
+                <!-- Quote Selector -->
                 <div class="relative bg-white border border-gray-200 rounded-xl shadow-sm p-4 mb-4">
                     <div class="absolute -top-3 left-4 bg-indigo-100 text-indigo-700 text-xs font-bold px-2 py-1 rounded">
                         PREVIEW
                     </div>
                     <p id="quote-display" class="text-lg font-serif italic text-gray-700 leading-relaxed pt-2">
-                        "If your field is too obscure or specialized to churn out mountains of data... your job might just be robot-proof."
+                        <!-- Quote inserted by JS -->
                     </p>
                     <p id="quote-hashtag" class="text-sm text-indigo-600 font-semibold mt-3">
-                        Benjamin Shiller #AIEconomics
+                        <!-- Attribution inserted by JS -->
                     </p>
                 </div>
 
@@ -95,15 +104,16 @@
 
                 <!-- Share Buttons Grid -->
                 <div class="grid grid-cols-1 gap-3">
-                    <!-- X / Twitter -->
-                    <a id="btn-x" href="#" target="_blank" 
+                    
+                    <!-- X / Twitter (Target _blank REMOVED for mobile deep link reliability) -->
+                    <a id="btn-x" href="#" 
                        class="btn-press flex items-center justify-center gap-3 w-full bg-black text-white font-semibold py-3 px-4 rounded-lg shadow-sm">
                         <i class="ph ph-x-logo text-xl"></i>
                         Post to X
                     </a>
 
-                    <!-- Bluesky -->
-                    <a id="btn-bsky" href="#" target="_blank" 
+                    <!-- Bluesky (Target _blank REMOVED for mobile deep link reliability) -->
+                    <a id="btn-bsky" href="#" 
                        class="btn-press flex items-center justify-center gap-3 w-full bg-blue-500 text-white font-semibold py-3 px-4 rounded-lg shadow-sm">
                         <i class="ph ph-butterfly text-xl"></i>
                         Post to Bluesky
@@ -127,7 +137,7 @@
                 
                 <!-- LinkedIn Note -->
                 <p class="text-xs text-center text-gray-400 mt-3">
-                    *Use "Copy Full" for LinkedIn/Facebook/Threads/Reddit/Etc.!
+                    *Use "Copy Full" for LinkedIn/Facebook/Threads/Reddit/etc.!
                 </p>
 
             </div>
@@ -135,7 +145,7 @@
         
         <!-- Footer -->
         <div class="bg-gray-100 py-4 text-center">
-            <a href="https://benjaminshiller.com" class="text-sm text-gray-500 hover:text-indigo-600 font-medium">Visit Website</a>
+            <a href="https://ben-shiller.com" class="text-sm text-gray-500 hover:text-indigo-600 font-medium">Visit Website</a>
         </div>
 
     </main>
@@ -146,17 +156,19 @@
     </div>
 
     <script>
-        // CONFIGURATION: Replace this URL with your actual book link
+        // CONFIGURATION: Replace these with your actual book details
         const BOOK_URL = "https://amazon.com/dp/B0G45MKBZT";
+        const GOODREADS_ID = "244478258"; // e.g., 12345678 (Found in the Goodreads URL)
         
         // Handles configuration
         const AUTHOR_NAME = "Benjamin Shiller";
         const HANDLE_X = "@BenjaminShiller";
         const HANDLE_BSKY = "@BenjaminShiller.bsky.social";
 
+        // Initialize Goodreads Link
+        document.getElementById('btn-goodreads').href = `https://www.goodreads.com/book/show/${GOODREADS_ID}`;
+
         // Data from your spreadsheet
-        // 'text' is the full quote (used for display, Clipboard Full)
-        // 'xText' is the shorter version for X/Twitter/Bluesky/Clipboard Short. If empty, it falls back to 'text'.
         const quotes = [
             {
                 text: "If your field is too obscure or specialized to churn out mountains of data, or too quirky...to bother automating, your job might just be robot-proof. The algorithm can't steal your job if it can't learn your job. Call it the weirdness premium: The stranger your job, the harder it is to automate.",
@@ -215,15 +227,20 @@
             counterEl.textContent = currentIndex + 1;
 
             // Short content logic (used for both X and Bluesky now)
-            const xContent = q.xText || q.text; 
+            // Ensure no empty strings if xText is missing
+            const xContent = (q.xText && q.xText.length > 0) ? q.xText : q.text; 
+
+            // Clean Quote helper (handles trim)
+            const cleanQuote = xContent.trim();
 
             // X (Twitter) Logic
-            const xText = `"${xContent}" ${HANDLE_X}`;
+            const xText = `"${cleanQuote}" ${HANDLE_X}`;
             const xUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(xText)}&url=${encodeURIComponent(BOOK_URL)}`;
             btnX.href = xUrl;
 
-            // Bluesky Logic (Now uses xContent aka short text)
-            const bskyText = `"${xContent}" ${HANDLE_BSKY}`;
+            // Bluesky Logic 
+            // NOTE: Bluesky doesn't have a separate &url parameter, everything goes in text.
+            const bskyText = `"${cleanQuote}" ${HANDLE_BSKY}`;
             const bskyUrl = `https://bsky.app/intent/compose?text=${encodeURIComponent(bskyText + " " + BOOK_URL)}`;
             btnBsky.href = bskyUrl;
         }
@@ -233,11 +250,11 @@
             const btnId = mode === 'short' ? 'copy-short-text' : 'copy-long-text';
             const originalLabel = mode === 'short' ? 'Copy Short' : 'Copy Full';
             
-            // Determine content based on mode
-            // If mode is short, use xText (or fallback to text). If mode is long, always use text.
-            const content = mode === 'short' ? (q.xText || q.text) : q.text;
+            // Determine content
+            const xContent = (q.xText && q.xText.length > 0) ? q.xText : q.text; 
+            const content = mode === 'short' ? xContent : q.text;
             
-            const textToCopy = `"${content}" - ${AUTHOR_NAME} ${BOOK_URL}`;
+            const textToCopy = `"${content.trim()}" - ${AUTHOR_NAME} ${BOOK_URL}`;
             
             navigator.clipboard.writeText(textToCopy).then(() => {
                 showToast();
