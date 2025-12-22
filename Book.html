@@ -4,24 +4,209 @@
 
   <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>Benjamin Shiller's Homepage</title>
-
-
-  <!-- make the layout responsive on phones/tablets -->
-  <meta name="description"
-    content="Economist with research interests in the economics of digitization, industrial organization, and applied microeconomics. Especially interested in personalized pricing, car safety, self-driving vehicles, ad-blocking, and other technology-related topics.">
+  <head>
+    <meta charset="utf-8">
+    <title>AI Economics – Benjamin Shiller</title>
+  
+    <meta name="description"
+      content="AI Economics: How Technology Transforms Jobs, Markets, Life, and Our Future – A new book by Benjamin Shiller exploring the hidden forces of AI and the digital economy.">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="shortcut icon" href="faviconFinal.bmp" type="image/x-icon">
-
-  <!-- ONE clean stylesheet for everything -->
-  <link rel="stylesheet" href="site.css">
-
-  <!-- keep your Google Fonts line if you still want the Arvo / Crimson Text / Roboto Slab stack -->
-  <link href="https://fonts.googleapis.com/css2?family=Arvo&family=Crimson+Text&family=Roboto+Slab&display=swap" rel="stylesheet">
-
-
+  
+    <!-- Existing site styles -->
+    <link rel="stylesheet" href="site.css">
+  
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Arvo&family=Crimson+Text&family=Roboto+Slab&display=swap" rel="stylesheet">
+  
+    <!-- Book page specific styles -->
+    <style>
+      .book-hero {
+        background: linear-gradient(135deg, #1a2a3a 0%, #2d4a5e 100%);
+        padding: 3rem 1.5rem;
+        color: #fff;
+      }
+  
+      
+      
+      .book-hero-inner {
+        max-width: 1000px;
+        margin: 0 auto;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 3rem;
+      }
+  
+      .book-cover-container {
+        flex: 0 0 280px;
+        max-width: 100%;
+      }
+  
+      .book-cover-container img {
+        width: 100%;
+        height: auto;
+        border-radius: 4px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.1);
+      }
+  
+      .book-info {
+        flex: 1;
+        min-width: 280px;
+      }
+  
+      .book-info h1 {
+        font-family: 'Arvo', serif;
+        font-size: 2.2rem;
+        margin: 0 0 0.5rem 0;
+        line-height: 1.2;
+        color: #fff;
+      }
+  
+      .book-subtitle {
+        font-size: 1.8rem;
+        color: #b8d4e8;
+        margin-bottom: 1.5rem;
+        font-style: italic;
+      }
+  
+      .book-tagline {
+        font-size: 1.6rem;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+        color: #e0e8ef;
+      }
+  
+      .buy-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        margin-top: 1.5rem;
+      }
+  
+      .buy-btn {
+        display: inline-block;
+        padding: 0.75rem 1.5rem;
+        border-radius: 4px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1.4rem;
+        transition: transform 0.2s, box-shadow 0.2s;
+      }
+  
+      .buy-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      }
+  
+      .buy-btn-primary {
+        background: #ff9900;
+        color: #111;
+      }
+  
+      .buy-btn-secondary {
+        background: rgba(255,255,255,0.15);
+        color: #fff;
+        border: 1px solid rgba(255,255,255,0.3);
+      }
+  
+      .book-section {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 3rem 1.5rem;
+      }
+  
+      .book-section h2 {
+        font-family: 'Arvo', serif;
+        font-size: 1.6rem;
+        margin-bottom: 1.6rem;
+        color: #1a2a3a;
+        border-bottom: 3px solid #ff9900;
+        padding-bottom: 0.5rem;
+        display: inline-block;
+      }
+  
+      .book-description {
+        font-size: 1.6rem;
+        line-height: 1.8;
+        color: #333;
+      }
+  
+      .book-description p {
+        margin-bottom: 1.25rem;
+      }
+  
+      .topics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+      }
+  
+      .topic-card {
+        background: #f8f9fa;
+        padding: 1.4rem;
+        border-radius: 6px;
+        border-left: 4px solid #2d4a5e;
+      }
+  
+      .topic-card h3 {
+        font-family: 'Arvo', serif;
+        font-size: 1.81rem;
+        margin: 0 0 0.5rem 0;
+        color: #1a2a3a;
+      }
+  
+      .topic-card p {
+        margin: 0;
+        font-size: 1.5rem;
+        color: #555;
+        line-height: 1.5;
+      }
+  
+      .author-section {
+        background: #f0f4f7;
+        padding: 3rem 1.5rem;
+      }
+  
+      .author-inner {
+        max-width: 900px;
+        margin: 0 auto;
+      }
+  
+      .author-inner h2 {
+        font-family: 'Arvo', serif;
+        font-size: 1.6rem;
+        margin-bottom: 1rem;
+        color: #1a2a3a;
+      }
+  
+      .author-bio {
+        font-size: 1.5rem;
+        line-height: 1.8;
+        color: #333;
+      }
+  
+      @media (max-width: 700px) {
+        .book-hero-inner {
+          flex-direction: column;
+          text-align: center;
+        }
+  
+        .book-cover-container {
+          flex: 0 0 auto;
+          max-width: 220px;
+        }
+  
+        .buy-buttons {
+          justify-content: center;
+        }
+  
+        .book-info h1 {
+          font-size: 1.8rem;
+        }
+      }
+    </style>
   <!-- Global site tag (gtag.js) - Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-19873828-1"></script>
   <script>
@@ -65,59 +250,86 @@
     </header>
     <!-- ──────────────────────────────────────────── -->
 
-  <div class="page-container">
 
-
-    <div class="content-wrap-all">
-
-
-
-    <br>
-
-~
-
-    <br>
-
-
-    <div class="container">
-      <!-- Standard Headings -->
-
-        <div class="row">
-          <div class="eight columns">
-            <h3> Coming Soon: A New Book on AI, Economics, and the Hidden Forces Shaping Your Life</h3>
-            <p> From personalized prices to disappearing jobs, this upcoming book explores how artificial intelligence is quietly rewriting the rules of markets, work, and daily life. Written to be accessible and entertaining—yet packed with insights—it's for anyone curious about how the digital world really works (and what's coming next).</p>
-            <p>  <em>Sign up below to get notified when the book is released. Your email will only be used for this purpose and will never be shared or reused.</em></p>
-          </div>
-          <div class="four columns"> 
-            <img src="CoverFinal.jpg" alt="Book cover for AI Economics" style="width: 100%; height: auto; border-radius: 8px;">
-          </div>
+  <!-- ───────────────── BOOK HERO ────────────────── -->
+  <section class="book-hero">
+    <div class="book-hero-inner">
+      <div class="book-cover-container">
+        <img src="BookMockup2.jpg" alt="AI Economics book cover">
+      </div>
+      <div class="book-info">
+        <h1>AI Economics</h1>
+        <p class="book-subtitle">How Technology Transforms Jobs, Markets, Life, and Our Future</p>
+        <p class="book-tagline">
+          Discover the hidden economic forces reshaping our world. Written to be engaging and easy to follow, AI economics offers sharp insights into the incentives shaping AI and the digital economy—and the outcomes those incentives create.
+        </p>
+        <div class="buy-buttons">
+          <a href="https://www.amazon.com/dp/B0G45MKBZT" class="buy-btn buy-btn-primary">Kindle Edition</a>
+          <a href="#" class="buy-btn buy-btn-secondary">Paperback</a>
+          <a href="#" class="buy-btn buy-btn-secondary">Hardcover</a>
         </div>
-
-
-        <div class="row">
-          <div class="twelve columns">
-
-            <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSdV98V6ol21BBaDwSQyOjxJvnYCGB8LmqQBgHgcq1_PTFauRQ/viewform?embedded=true" 
-            style="width: 100%; min-height: 800px; border: none;" 
-            frameborder="0" 
-            marginheight="0" 
-            marginwidth="0">
-            
-          </div>
-        </div>
-
-
-
-
-      <br>
-
-
+      </div>
     </div>
+  </section>
+  <!-- ──────────────────────────────────────────── -->
 
+  <!-- ───────────────── ABOUT THE BOOK ────────────────── -->
+  <section class="book-section">
+    <h2>About the Book</h2>
+    <div class="book-description">
+      <p>
+        Artificial intelligence isn't just changing technology—it's rewriting the rules of the economy. In <em>AI Economics</em>, economist Benjamin Shiller pulls back the curtain on the hidden ways algorithms, data, and automation are transforming everything from how we work and shop to how companies compete and governments regulate.
+      </p>
+      <p>
+        Drawing on over two decades of research and real-world examples, this book makes cutting-edge economic concepts accessible through engaging stories, counterintuitive insights, revealing what's really going on beneath the surface.
+      </p>
+      <!-- Add your Amazon description content here -->
+    </div>
+  </section>
+  <!-- ──────────────────────────────────────────── -->
 
+  <!-- ───────────────── WHAT'S INSIDE ────────────────── -->
+  <section class="book-section" style="padding-top: 0;">
+    <h2>What's Inside</h2>
+    <div class="topics-grid">
+      <div class="topic-card">
+        <h3>Personalized Pricing</h3>
+        <p>How companies use your data to charge you a different price than the person next to you—and what it means for fairness.</p>
+      </div>
+      <div class="topic-card">
+        <h3>The Future of Work</h3>
+        <p>Which jobs will AI replace, which will it transform, and how can you prepare for either outcome?</p>
+      </div>
+      <div class="topic-card">
+        <h3>Digital Ownership</h3>
+        <p>You bought it, but do you really own it? The economics of disappearing content.</p>
+      </div>
+      <div class="topic-card">
+        <h3>Education</h3>
+        <p>How AI might solve a 2000 year old education problem.</p>
+      </div>
+      <div class="topic-card">
+        <h3>Algorithmic Decisions</h3>
+        <p>When AI is woven into everyday monitoring—on platforms, at work, and in public—it can shape what you pay for insurance, how you’re evaluated on the job, and which opportunities you’re offered.</p>
+      </div>
+      <div class="topic-card">
+        <h3>What Comes Next</h3>
+        <p>Predictions grounded in economic theory about where AI and automation are really headed.</p>
+      </div>
+    </div>
+  </section>
+  <!-- ──────────────────────────────────────────── -->
 
-
-  </div>
+  <!-- ───────────────── ABOUT THE AUTHOR ────────────────── -->
+  <section class="author-section">
+    <div class="author-inner">
+      <h2>About the Author</h2>
+      <p class="author-bio">
+        <strong>Benjamin Shiller</strong> is an Associate Professor of Economics at Brandeis University, where he teaches courses on big tech, digital markets, and microeconomics. His research on personalized pricing, ad-blocking, and the economics of technological change has been published in leading academic journals and covered in major media outlets. He has studied AI and technological disruption for two decades, and brings both rigorous economic analysis and accessible storytelling to help readers understand the forces reshaping their world.
+      </p>
+    </div>
+  </section>
+  <!-- ──────────────────────────────────────────── -->
 
 
 
