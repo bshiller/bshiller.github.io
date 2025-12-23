@@ -55,7 +55,7 @@
                     </a>
 
                     <!-- Goodreads Button -->
-                    <a id="btn-goodreads" href="#" 
+                    <a href="https://www.goodreads.com/book/show/244478258" 
                        target="_blank"
                        class="btn-press flex items-center justify-center gap-2 w-full bg-stone-100 hover:bg-stone-200 text-stone-800 font-bold py-3 px-4 rounded-lg shadow-sm transition-colors border border-stone-200">
                         <i class="ph ph-books text-xl"></i>
@@ -121,10 +121,8 @@
                         <i class="ph ph-butterfly text-xl"></i>
                         Post to Bluesky
                     </a>
-
- 
                     
-                    <!-- Copy Buttons (Split) - Renamed for clarity -->
+                    <!-- Copy Buttons (Split) -->
                     <div class="grid grid-cols-2 gap-3">
                         <button onclick="copyToClipboard('short')" 
                                 class="btn-press flex items-center justify-center gap-2 w-full bg-white border border-gray-300 text-gray-700 font-semibold py-3 px-2 rounded-lg hover:bg-gray-50 text-sm">
@@ -135,7 +133,7 @@
                         <button onclick="copyToClipboard('long')" 
                                 class="btn-press flex items-center justify-center gap-2 w-full bg-white border border-gray-300 text-gray-700 font-semibold py-3 px-2 rounded-lg hover:bg-gray-50 text-sm">
                             <i class="ph ph-linkedin-logo text-lg"></i>
-                            <span id="copy-long-text">Copy for LinkedIn/Reddit/etc.</span>
+                            <span id="copy-long-text">Copy for LinkedIn</span>
                         </button>
                     </div>
                 </div>
@@ -149,7 +147,6 @@
                         <span><strong>LinkedIn:</strong> Benjamin Shiller</span>
                     </div>
                 </div>
-
             </div>
 
             <!-- Divider -->
@@ -160,7 +157,7 @@
             </div>
 
             <!-- Newsletter Section -->
-            <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-5 text-center">
+            <div class="text-center">
                 <p class="text-sm font-semibold text-emerald-800 mb-3 uppercase tracking-wide">Step 3</p>
                 <h3 class="text-lg font-bold text-gray-900 mb-2">Stay Updated</h3>
                 <p class="text-sm text-gray-600 mb-4">Get notified about new research, articles, and my next book.</p>
@@ -173,9 +170,8 @@
                             data-test-id="beehiiv-embed" 
                             frameborder="0" 
                             scrolling="no" 
-                            style="width: 100%; max-width: 400px; height: 160px; margin: 0; border-radius: 8px; background-color: transparent;"></iframe>
+                            style="width: 100%; max-width: 400px; height: 297px; margin: 0; border-radius: 8px; background-color: transparent;"></iframe>
                 </div>
-                <p class="text-xs text-gray-500 mt-3">No spam, ever. Unsubscribe anytime.</p>
             </div>
 
             <!-- Follow Section -->
@@ -212,20 +208,14 @@
     </div>
 
     <script>
-        // CONFIGURATION: Replace these with your actual book details
+        // CONFIGURATION
         const BOOK_URL = "https://amazon.com/dp/B0G45MKBZT";
-        const GOODREADS_ID = "244478258";
-        
-        // Handles configuration
         const AUTHOR_NAME = "Benjamin Shiller";
         const HANDLE_X = "@BenjaminShiller";
-        const HANDLE_BSKY = "@BenShiller.bsky.social";
+        const HANDLE_BSKY = "@benshiller.bsky.social";
         const HASHTAGS = "#AIEconomics #FutureOfWork";
 
-        // Initialize Goodreads Link
-        document.getElementById('btn-goodreads').href = `https://www.goodreads.com/book/show/${GOODREADS_ID}`;
-
-        // Data from your spreadsheet
+        // Quote data
         const quotes = [
             {
                 text: "If your field is too obscure or specialized to churn out mountains of data, or too quirky...to bother automating, your job might just be robot-proof. The algorithm can't steal your job if it can't learn your job. Call it the weirdness premium: The stranger your job, the harder it is to automate.",
@@ -278,23 +268,19 @@
         function updateUI() {
             const q = quotes[currentIndex];
             
-            // Update Text (Display generic attribution)
             displayEl.textContent = `"${q.text}"`;
             hashtagEl.textContent = `${AUTHOR_NAME} ${HASHTAGS}`;
             counterEl.textContent = currentIndex + 1;
 
-            // Short content logic
             const xContent = (q.xText && q.xText.length > 0) ? q.xText : q.text; 
-
-            // Clean Quote helper
             const cleanQuote = xContent.trim();
 
-            // X (Twitter) Logic - includes handle and hashtags
+            // X (Twitter) share link
             const xText = `"${cleanQuote}" ${HANDLE_X} ${HASHTAGS}`;
             const xUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(xText)}&url=${encodeURIComponent(BOOK_URL)}`;
             btnX.href = xUrl;
 
-            // Bluesky Logic 
+            // Bluesky share link
             const bskyText = `"${cleanQuote}" ${HANDLE_BSKY} ${HASHTAGS}`;
             const bskyUrl = `https://bsky.app/intent/compose?text=${encodeURIComponent(bskyText + " " + BOOK_URL)}`;
             btnBsky.href = bskyUrl;
@@ -303,13 +289,11 @@
         function copyToClipboard(mode) {
             const q = quotes[currentIndex];
             const btnId = mode === 'short' ? 'copy-short-text' : 'copy-long-text';
-            const originalLabel = mode === 'short' ? 'Copy for X' : 'Copy for LinkedIn';
+            const originalLabel = mode === 'short' ? 'Copy for Threads' : 'Copy for LinkedIn';
             
-            // Determine content
             const xContent = (q.xText && q.xText.length > 0) ? q.xText : q.text; 
             const content = mode === 'short' ? xContent : q.text;
             
-            // Include handle and hashtags in copied text
             const textToCopy = mode === 'short' 
                 ? `"${content.trim()}" ${HANDLE_X} ${HASHTAGS} ${BOOK_URL}`
                 : `"${content.trim()}" - ${AUTHOR_NAME} ${HASHTAGS}\n\n${BOOK_URL}`;
@@ -330,38 +314,7 @@
                 toast.classList.add('opacity-0');
             }, 2000);
         }
-
-        // Newsletter Form Handler
-        document.getElementById('newsletter-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const email = document.getElementById('email-input').value;
-            const subscribeBtn = document.getElementById('subscribe-text');
-            
-            // TODO: Replace this with your actual newsletter service integration
-            // Examples: Mailchimp, ConvertKit, Buttondown, etc.
-            // For now, this shows a success message and logs the email
-            
-            console.log('Newsletter signup:', email);
-            
-            // Show success state
-            subscribeBtn.textContent = "You're subscribed!";
-            document.getElementById('email-input').value = '';
-            document.getElementById('email-input').disabled = true;
-            
-            // Optional: Reset after delay
-            setTimeout(() => {
-                subscribeBtn.textContent = "Join the Newsletter";
-                document.getElementById('email-input').disabled = false;
-            }, 3000);
-            
-            // INTEGRATION POINT: Add your newsletter API call here
-            // Example for Buttondown:
-            // fetch('https://api.buttondown.email/v1/subscribers', {
-            //     method: 'POST',
-            //     headers: { 'Authorization': 'Token YOUR_API_KEY', 'Content-Type': 'application/json' },
-            //     body: JSON.stringify({ email: email })
-            // });
-        });
     </script>
+
 </body>
 </html>
