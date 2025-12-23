@@ -145,7 +145,7 @@
                     <p class="text-sm font-semibold text-indigo-800 mb-2">Writing your own post? Tag me!</p>
                     <div class="flex flex-wrap justify-center gap-x-4 gap-y-1 text-sm text-gray-600">
                         <span><strong>X:</strong> @BenjaminShiller</span>
-                        <span><strong>Bluesky:</strong> @BenjaminShiller</span>
+                        <span><strong>Bluesky:</strong> benshiller.bsky.social</span>
                         <span><strong>LinkedIn:</strong> Benjamin Shiller</span>
                     </div>
                 </div>
@@ -165,17 +165,16 @@
                 <h3 class="text-lg font-bold text-gray-900 mb-2">Stay Updated</h3>
                 <p class="text-sm text-gray-600 mb-4">Get notified about new research, articles, and my next book.</p>
                 
-                <form id="newsletter-form" class="flex flex-col gap-3">
-                    <input type="email" 
-                           id="email-input"
-                           placeholder="EconomicsofAI@email.com" 
-                           required
-                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-center">
-                    <button type="submit" 
-                            class="btn-press w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-lg shadow-sm transition-colors">
-                        <span id="subscribe-text">Join the Newsletter</span>
-                    </button>
-                </form>
+                <!-- Beehiiv Embed -->
+                <div class="flex justify-center">
+                    <script async src="https://subscribe-forms.beehiiv.com/embed.js"></script>
+                    <iframe src="https://subscribe-forms.beehiiv.com/1ebae1c5-3636-4fcc-8223-d2e8b13699e8" 
+                            class="beehiiv-embed" 
+                            data-test-id="beehiiv-embed" 
+                            frameborder="0" 
+                            scrolling="no" 
+                            style="width: 100%; max-width: 400px; height: 160px; margin: 0; border-radius: 8px; background-color: transparent;"></iframe>
+                </div>
                 <p class="text-xs text-gray-500 mt-3">No spam, ever. Unsubscribe anytime.</p>
             </div>
 
@@ -187,7 +186,7 @@
                        class="p-3 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 transition" title="Follow on X">
                         <i class="ph ph-x-logo text-xl"></i>
                     </a>
-                    <a href="https://bsky.app/profile/benjaminshiller.bsky.social" target="_blank" 
+                    <a href="https://bsky.app/profile/benshiller.bsky.social" target="_blank" 
                        class="p-3 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 transition" title="Follow on Bluesky">
                         <i class="ph ph-butterfly text-xl"></i>
                     </a>
@@ -220,7 +219,7 @@
         // Handles configuration
         const AUTHOR_NAME = "Benjamin Shiller";
         const HANDLE_X = "@BenjaminShiller";
-        const HANDLE_BSKY = "@BenjaminShiller.bsky.social";
+        const HANDLE_BSKY = "@BenShiller.bsky.social";
         const HASHTAGS = "#AIEconomics #FutureOfWork";
 
         // Initialize Goodreads Link
