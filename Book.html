@@ -1,8 +1,4 @@
-<html>
-
-<head>
-
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
@@ -27,8 +23,6 @@
         color: #fff;
       }
   
-      
-      
       .book-hero-inner {
         max-width: 1000px;
         margin: 0 auto;
@@ -135,6 +129,74 @@
       .book-description p {
         margin-bottom: 1.25rem;
       }
+
+      /* Blurbs/Praise section */
+      .blurb {
+        margin-bottom: 2rem;
+        padding-left: 1.5rem;
+        border-left: 3px solid #2d4a5e;
+      }
+
+      .blurb-text {
+        font-size: 1.5rem;
+        line-height: 1.7;
+        color: #333;
+        font-style: italic;
+        margin-bottom: 0.5rem;
+      }
+
+      .blurb-attribution {
+        font-size: 1.4rem;
+        color: #555;
+        margin: 0;
+      }
+
+      /* Media coverage section */
+      .media-item {
+        display: flex;
+        gap: 1.5rem;
+        align-items: flex-start;
+        padding: 1.25rem;
+        background: #f8f9fa;
+        border-radius: 6px;
+        margin-bottom: 1rem;
+        text-decoration: none;
+        color: inherit;
+        transition: box-shadow 0.2s, transform 0.2s;
+      }
+
+      .media-item:hover {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        transform: translateY(-2px);
+      }
+
+      .media-logo {
+        flex: 0 0 80px;
+        font-family: 'Arvo', serif;
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #1a2a3a;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .media-content {
+        flex: 1;
+      }
+
+      .media-headline {
+        font-family: 'Arvo', serif;
+        font-size: 1.4rem;
+        color: #1a2a3a;
+        margin: 0 0 0.25rem 0;
+        line-height: 1.4;
+      }
+
+      .media-date {
+        font-size: 1.2rem;
+        color: #777;
+        margin: 0;
+      }
   
       .topics-grid {
         display: grid;
@@ -205,6 +267,15 @@
         .book-info h1 {
           font-size: 1.8rem;
         }
+
+        .media-item {
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+
+        .media-logo {
+          flex: none;
+        }
       }
     </style>
   <!-- Global site tag (gtag.js) - Google Analytics -->
@@ -218,16 +289,12 @@
   </script>
 </head>
 
-
-
-
-
 <body>
     <!-- ───────────────── NAVBAR ────────────────── -->
     <header class="hero">
       <div class="hero-inner">
-        <h1>Benjamin Shiller</h1>
-        <h2>Associate Professor &#8212; Department of Economics &#8212; Brandeis University</h2>
+        <h1>Benjamin Shiller</h1>
+        <h2>Associate Professor &#8212; Department of Economics &#8212; Brandeis University</h2>
     
         <!-- ─────────── NAVIGATION ─────────── -->
         <nav class="bs-navbar hero-nav">
@@ -261,12 +328,13 @@
         <h1>AI Economics</h1>
         <p class="book-subtitle">How Technology Transforms Jobs, Markets, Life, and Our Future</p>
         <p class="book-tagline">
-          Discover the hidden economic forces reshaping our world. Written to be engaging and easy to follow, AI economics offers sharp insights into the incentives shaping AI and the digital economy—and the outcomes those incentives create.
+          Discover the hidden economic forces reshaping our world. Written to be engaging and easy to follow, AI Economics offers sharp insights into the incentives shaping AI and the digital economy—and the outcomes those incentives create.
         </p>
         <div class="buy-buttons">
           <a href="https://www.amazon.com/dp/B0G45MKBZT" class="buy-btn buy-btn-primary">Kindle Edition</a>
           <a href="https://www.barnesandnoble.com/w/ai-economics-benjamin-shiller/1149152226?ean=9798993931210" class="buy-btn buy-btn-primary">Paperback</a>
-          <a href="#" class="buy-btn buy-btn-secondary">Hardcover</a>
+          <a href="#" class="buy-btn buy-btn-secondary">Hardcover (coming soon)</a>
+          <a href="#" class="buy-btn buy-btn-secondary">Audiobook (coming soon)</a>
         </div>
       </div>
     </div>
@@ -278,44 +346,83 @@
     <h2>About the Book</h2>
     <div class="book-description">
       <p>
-        Artificial intelligence isn’t just a shiny new tool. It’s a quiet rewrite of the economic rulebook—who gets paid, what things cost, which firms win, and how power shifts when decisions are made by code instead of people.
+        Artificial intelligence isn't just a shiny new tool. It's a quiet rewrite of the economic rulebook—who gets paid, what things cost, which firms win, and how power shifts when decisions are made by code instead of people.
       </p>
       <p>
-  In <em>AI Economics</em>, economist Benjamin Shiller takes you behind the curtain to see what’s actually driving the changes: algorithms that nudge choices, data that acts like a new kind of capital, and automation that doesn’t “replace jobs” so much as rearrange the incentives underneath them. Drawing on more than two decades of research and real-world cases, Shiller translates the frontier economics into sharp stories and surprising takeaways—so you can spot what’s happening before it shows up in your paycheck, your shopping cart, or your government.
+        In <em>AI Economics</em>, economist Benjamin Shiller takes you behind the curtain to see what's actually driving the changes: algorithms that nudge choices, data that acts like a new kind of capital, and automation that doesn't "replace jobs" so much as rearrange the incentives underneath them. Drawing on more than two decades of research and real-world cases, Shiller translates the frontier economics into sharp stories and surprising takeaways—so you can spot what's happening before it shows up in your paycheck, your shopping cart, or your government.
       </p>
     </div>
+  </section>
+  <!-- ──────────────────────────────────────────── -->
+
+  <!-- ───────────────── PRAISE ────────────────── -->
+  <section class="book-section" style="padding-top: 0;">
+    <h2>Praise for AI Economics</h2>
+    
+    <div class="blurb">
+      <p class="blurb-text">
+        "Concise, chatty, companionable, ever-so-savvy. There may be a more useful guide to AI out there, but why incur the opportunity cost of searching for it? The first three pages should sell you on this one. I decline most blurb requests but, having covered AI from the jump, this is as good as it gets."
+      </p>
+      <p class="blurb-attribution">
+        —Paul Solman, (very) longtime Business &amp; Economics Correspondent, PBS NewsHour
+      </p>
+    </div>
+
+    <div class="blurb">
+      <p class="blurb-text">
+        "This book represents the best in bringing real research to understand what is happening in our current AI-moment. ... An easy and informative read."
+      </p>
+      <p class="blurb-attribution">
+        —Joshua Gans, University of Toronto, author of <em>Prediction Machines</em>, <em>Power and Prediction</em>, and <em>The Microeconomics of Artificial Intelligence</em>
+      </p>
+    </div>
+  </section>
+  <!-- ──────────────────────────────────────────── -->
+
+  <!-- ───────────────── MEDIA COVERAGE ────────────────── -->
+  <section class="book-section" style="padding-top: 0;">
+    <h2>Media Coverage</h2>
+    
+    <a href="https://fortune.com/2026/01/16/weirdness-premium-ai-economy-benjamin-shiller-brandeis-interview/" class="media-item" target="_blank" rel="noopener">
+      <div class="media-logo">Fortune</div>
+      <div class="media-content">
+        <p class="media-headline">In the AI economy, the 'weirdness premium' will set you apart. Lean into it, says expert on tech change economics</p>
+        <p class="media-date">January 16, 2026</p>
+      </div>
+    </a>
   </section>
   <!-- ──────────────────────────────────────────── -->
 
   <!-- ───────────────── WHAT'S INSIDE ────────────────── -->
   <section class="book-section" style="padding-top: 0;">
     <h2>What's Inside</h2>
-<div class="topics-grid">
-  <div class="topic-card">
-    <h3>The Price Tag is a Lie</h3>
-    <p>Why did the person sitting next to you pay half what you did? Discover how algorithms calculate your exact "pain point" to extract the maximum you can afford—and why the "market price" no longer exists.</p>
-  </div>
-  <div class="topic-card">
-    <h3>The Job Paradox</h3>
-    <p>Why "creative" careers might be doomed while unexpected trades become goldmines. We move past the doom-mongering to reveal the counter-intuitive skills that will actually keep you employed.</p>
-  </div>
-  <div class="topic-card">
-    <h3>The End of Ownership</h3>
-    <p>You clicked "Buy," so why are you still renting? We explore the strange economics of disappearing content and why your digital library might not actually belong to you.</p>
-  </div>
-  <div class="topic-card">
-    <h3>The Aristotle Algorithm</h3>
-    <p>For 2,000 years, the "2-Sigma" problem has plagued education: personal tutoring is superior, but too expensive. See how AI is finally solving an ancient math problem to democratize genius.</p>
-  </div>
-  <div class="topic-card">
-    <h3>The Invisible Judge</h3>
-    <p>Your car insurance knows you're distracted. Your boss knows you're slowing down. We expose the silent scoring systems that are determining your opportunities before you even apply for them.</p>
-  </div>
-  <div class="topic-card">
-    <h3>Beyond the Hype</h3>
-    <p>Forget the sci-fi fantasies. This is a cold, hard look at the economic data to predict where the money, the power, and the automation are <em>actually</em> going next.</p>
-  </div>
-</div>  </section>
+    <div class="topics-grid">
+      <div class="topic-card">
+        <h3>The Price Tag is a Lie</h3>
+        <p>Why did the person sitting next to you pay half what you did? Discover how algorithms calculate your exact "pain point" to extract the maximum you can afford—and why the "market price" no longer exists.</p>
+      </div>
+      <div class="topic-card">
+        <h3>The Job Paradox</h3>
+        <p>Why "creative" careers might be doomed while unexpected trades become goldmines. We move past the doom-mongering to reveal the counter-intuitive skills that will actually keep you employed.</p>
+      </div>
+      <div class="topic-card">
+        <h3>The End of Ownership</h3>
+        <p>You clicked "Buy," so why are you still renting? We explore the strange economics of disappearing content and why your digital library might not actually belong to you.</p>
+      </div>
+      <div class="topic-card">
+        <h3>The Aristotle Algorithm</h3>
+        <p>For 2,000 years, the "2-Sigma" problem has plagued education: personal tutoring is superior, but too expensive. See how AI is finally solving an ancient math problem to democratize genius.</p>
+      </div>
+      <div class="topic-card">
+        <h3>The Invisible Judge</h3>
+        <p>Your car insurance knows you're distracted. Your boss knows you're slowing down. We expose the silent scoring systems that are determining your opportunities before you even apply for them.</p>
+      </div>
+      <div class="topic-card">
+        <h3>Beyond the Hype</h3>
+        <p>Forget the sci-fi fantasies. This is a cold, hard look at the economic data to predict where the money, the power, and the automation are <em>actually</em> going next.</p>
+      </div>
+    </div>
+  </section>
   <!-- ──────────────────────────────────────────── -->
 
   <!-- ───────────────── ABOUT THE AUTHOR ────────────────── -->
@@ -329,19 +436,13 @@
   </section>
   <!-- ──────────────────────────────────────────── -->
 
-
-
   <footer class="footerBen">
     <hr>
     <small>
-      <a href="https://@twitter.com/BenjaminShiller">@BenjaminShiller</a> / <a href="mailto:EconomicsofAI@gmail.com">EconomicsofAI@gmail.com</a>
+      <a href="https://twitter.com/BenjaminShiller">@BenjaminShiller</a> / <a href="mailto:EconomicsofAI@gmail.com">EconomicsofAI@gmail.com</a>
       <p> Copyright &copy; 2025 Benjamin Shiller.</p>
     </small>
   </footer>
 </body>
 
-
-
-
-
-<html>
+</html>
