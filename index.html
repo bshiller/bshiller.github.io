@@ -1,130 +1,881 @@
-<html>
-
-<head>
-
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Benjamin Shiller's Homepage</title>
-
-
-  <!-- make the layout responsive on phones/tablets -->
-  <meta name="description"
-    content="Economist with research interests in the economics of digitization, industrial organization, and applied microeconomics. Especially interested in personalized pricing, car safety, self-driving vehicles, ad-blocking, and other technology-related topics.">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="shortcut icon" href="faviconFinal.bmp" type="image/x-icon">
-
-  <!-- ONE clean stylesheet for everything -->
-  <link rel="stylesheet" href="site.css">
-
-  <!-- keep your Google Fonts line if you still want the Arvo / Crimson Text / Roboto Slab stack -->
-  <link href="https://fonts.googleapis.com/css2?family=Arvo&family=Crimson+Text&family=Roboto+Slab&display=swap" rel="stylesheet">
-
-
-  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <title>Benjamin Shiller | Economist & Author of AI Economics</title>
+  <meta name="description" content="Benjamin Shiller is an economist and author of AI Economics: How Technology Transforms Jobs, Markets, Life, and Our Future. Associate Professor at Brandeis University.">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="shortcut icon" href="icons/faviconFinal.bmp" type="image/x-icon">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    
+    :root {
+      --navy: #1a365d;
+      --navy-dark: #0f2440;
+      --blue: #2c5282;
+      --blue-light: #ebf4ff;
+      --blue-muted: #f7fafc;
+      --accent: #c6a052;
+      --accent-light: #d4af61;
+      --text: #1a202c;
+      --text-muted: #4a5568;
+      --white: #ffffff;
+    }
+    
+    html { font-size: 62.5%; scroll-behavior: smooth; }
+    
+    body {
+      margin: 0;
+      font-family: 'Open Sans', -apple-system, sans-serif;
+      font-size: 1.7rem;
+      line-height: 1.75;
+      color: var(--text);
+      background: var(--white);
+    }
+    
+    img { max-width: 100%; height: auto; display: block; }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { color: var(--navy); }
+    
+    h1, h2, h3 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-weight: 700;
+      line-height: 1.2;
+      margin: 0 0 1rem;
+      color: var(--navy);
+    }
+    
+    p { margin: 0 0 1.5rem; }
+    
+    /* HEADER - Name Centered */
+    .site-header {
+      background: var(--white);
+      text-align: center;
+      padding: 2rem 2rem 0;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .site-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 3.6rem;
+      font-weight: 700;
+      color: var(--navy);
+      margin: 0 0 0.5rem;
+      letter-spacing: 0.02em;
+    }
+    
+    .site-tagline {
+      font-size: 1.4rem;
+      color: var(--text-muted);
+      margin: 0 0 1.5rem;
+      letter-spacing: 0.05em;
+    }
+    
+    /* NAV - Below Name */
+    .site-nav {
+      background: var(--white);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 56px;
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 3rem;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    
+    .nav-links a {
+      font-size: 1.35rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 0.5rem 0;
+      position: relative;
+    }
+    
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--accent);
+      transition: width 0.3s ease;
+    }
+    
+    .nav-links a:hover { color: var(--navy); }
+    .nav-links a:hover::after { width: 100%; }
+    
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 2.4rem;
+      cursor: pointer;
+      color: var(--navy);
+    }
+    
+    @media (max-width: 850px) {
+      .site-name { font-size: 2.8rem; }
+      .menu-toggle { display: block; }
+      .nav-inner { justify-content: center; }
+      .nav-links {
+        display: none;
+        position: absolute;
+        top: 56px;
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        background: white;
+        padding: 2rem;
+        gap: 1.8rem;
+        border-bottom: 1px solid #e2e8f0;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+        text-align: center;
+      }
+      .nav-links.active { display: flex; }
+    }
+    
+    /* ANIMATIONS */
+    @keyframes slideInLeft {
+      from { opacity: 0; transform: translateX(-60px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    
+    @keyframes slideInRight {
+      from { opacity: 0; transform: translateX(60px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    .slide-in-left {
+      opacity: 0;
+      animation: slideInLeft 0.8s ease forwards;
+    }
+    
+    .slide-in-right {
+      opacity: 0;
+      animation: slideInRight 0.8s ease forwards;
+    }
+    
+    .fade-in {
+      opacity: 0;
+      animation: fadeIn 1s ease forwards;
+    }
+    
+    /* HERO */
+    .hero {
+      background: linear-gradient(rgba(15,36,64,0.7), rgba(15,36,64,0.8)), url('BackgroundImages/GlobePic.jpg') center/cover no-repeat;
+      padding: 6rem 2rem 7rem;
+      min-height: 520px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .hero-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      gap: 5rem;
+      align-items: center;
+    }
+    
+    .hero-book img {
+      width: 100%;
+      border-radius: 4px;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.1);
+    }
+    
+    .hero-content { color: var(--white); }
+    
+    .hero-label {
+      display: inline-block;
+      font-size: 1.2rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+    }
+    
+    .hero-content h1 {
+      font-size: 5rem;
+      color: var(--white);
+      margin-bottom: 0.8rem;
+      letter-spacing: -0.02em;
+    }
+    
+    .hero-subtitle {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.2rem;
+      font-style: italic;
+      color: rgba(255,255,255,0.85);
+      font-weight: 400;
+      margin-bottom: 2rem;
+    }
+    
+    .hero-desc {
+      font-size: 1.8rem;
+      color: rgba(255,255,255,0.9);
+      line-height: 1.8;
+      margin-bottom: 1.5rem;
+      max-width: 500px;
+    }
+    
+    .hero-byline {
+      font-size: 1.5rem;
+      color: rgba(255,255,255,0.65);
+      margin-bottom: 2.5rem;
+    }
+    
+    .hero-byline strong { color: var(--white); }
+    
+    .buy-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    
+    .buy-btn {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1.2rem 2.2rem 1rem;
+      font-size: 1.3rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border-radius: 4px;
+      transition: all 0.25s;
+      line-height: 1.3;
+    }
+    
+    .buy-btn span {
+      font-size: 1rem;
+      font-weight: 500;
+      letter-spacing: 0.03em;
+      opacity: 0.85;
+      margin-top: 0.2rem;
+    }
+    
+    .buy-btn-primary {
+      background: var(--accent);
+      color: var(--navy-dark);
+    }
+    
+    .buy-btn-primary:hover {
+      background: var(--accent-light);
+      color: var(--navy-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+    }
+    
+    .buy-btn-outline {
+      background: transparent;
+      color: var(--white);
+      border: 2px solid rgba(255,255,255,0.35);
+    }
+    
+    .buy-btn-outline:hover {
+      border-color: var(--white);
+      color: var(--white);
+      background: rgba(255,255,255,0.1);
+    }
+    
+    @media (max-width: 900px) {
+      .hero { padding: 4rem 2rem 5rem; min-height: auto; }
+      .hero-inner {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+        text-align: center;
+      }
+      .hero-book { max-width: 280px; margin: 0 auto; }
+      .hero-content h1 { font-size: 3.8rem; }
+      .hero-desc { margin-left: auto; margin-right: auto; }
+      .buy-buttons { justify-content: center; }
+    }
+    
+    /* PANELS */
+    .panel { padding: 5.5rem 2rem; }
+    .panel-white { background: var(--white); }
+    .panel-light { background: var(--blue-muted); }
+    .panel-blue { background: var(--blue-light); }
+    
+    .container { max-width: 1000px; margin: 0 auto; }
+    
+    .panel-title {
+      font-size: 3.2rem;
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    
+    /* QUOTE CAROUSEL */
+    .carousel-container {
+      max-width: 800px;
+      margin: 0 auto;
+      position: relative;
+      padding: 0 5rem;
+    }
+    
+    .carousel-track { overflow: hidden; }
+    
+    .carousel-slides {
+      display: flex;
+      transition: transform 0.5s ease;
+    }
+    
+    .carousel-slide {
+      min-width: 100%;
+      padding: 0 1rem;
+    }
+    
+    .blurb-card {
+      background: var(--white);
+      border-radius: 8px;
+      padding: 3rem 2.5rem 2.5rem;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+      border: 1px solid #e2e8f0;
+    }
+    
+    .blurb-card::before {
+      content: '"';
+      display: block;
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 5rem;
+      line-height: 1;
+      color: var(--accent);
+      margin-bottom: 1rem;
+    }
+    
+    .blurb-card blockquote {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.9rem;
+      font-style: italic;
+      line-height: 1.7;
+      margin: 0 0 1.8rem;
+      color: var(--text);
+    }
+    
+    .blurb-card cite {
+      display: block;
+      font-size: 1.4rem;
+      font-style: normal;
+      color: var(--text-muted);
+      padding-top: 1.5rem;
+      border-top: 1px solid #e2e8f0;
+    }
+    
+    .blurb-card cite strong {
+      display: block;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 0.3rem;
+    }
+    
+    /* Carousel Arrows */
+    .carousel-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--white);
+      border: 2px solid var(--navy);
+      color: var(--navy);
+      font-size: 2rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.25s;
+      z-index: 10;
+    }
+    
+    .carousel-btn:hover {
+      background: var(--navy);
+      color: var(--white);
+    }
+    
+    .carousel-btn-prev { left: 0; }
+    .carousel-btn-next { right: 0; }
+    
+    /* Carousel Dots */
+    .carousel-dots {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    
+    .carousel-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #ccc;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    
+    .carousel-dot.active { background: var(--navy); }
+    
+    @media (max-width: 650px) {
+      .carousel-container { padding: 0 1rem; }
+      .carousel-btn { display: none; }
+    }
+    
+    /* ABOUT AUTHOR */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 260px;
+      gap: 4rem;
+      align-items: start;
+    }
+    
+    .about-text h2 { font-size: 3rem; margin-bottom: 1.5rem; }
+    .about-text p { font-size: 1.7rem; line-height: 1.85; }
+    
+    .text-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 1.5rem;
+      font-size: 1.4rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--navy);
+    }
+    
+    .text-link:hover { color: var(--blue); }
+    
+    .about-photo img {
+      width: 100%;
+      border-radius: 6px;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+    }
+    
+    @media (max-width: 700px) {
+      .about-grid { grid-template-columns: 1fr; text-align: center; }
+      .about-photo { order: -1; max-width: 200px; margin: 0 auto 2rem; }
+    }
+    
+    /* ABOUT BOOK */
+    .book-grid {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 3.5rem;
+      align-items: start;
+    }
+    
+    .book-cover img {
+      width: 100%;
+      box-shadow: 0 12px 35px rgba(0,0,0,0.12);
+      border-radius: 4px;
+    }
+    
+    .book-text h2 { font-size: 3rem; margin-bottom: 1.5rem; }
+    .book-text h2 em { font-style: italic; }
+    .book-text p { font-size: 1.7rem; line-height: 1.85; }
+    .book-text p:last-child { margin-bottom: 0; }
+    
+    @media (max-width: 650px) {
+      .book-grid { grid-template-columns: 1fr; text-align: center; }
+      .book-cover { max-width: 170px; margin: 0 auto 1rem; }
+    }
+    
+    /* BOOK INSIDE - Full Bleed */
+    .book-inside-panel {
+      width: 100%;
+      height: 350px;
+      overflow: hidden;
+    }
+    
+    .book-inside-panel img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+    
+    @media (max-width: 768px) {
+      .book-inside-panel { height: 250px; }
+    }
+    
+    @media (max-width: 480px) {
+      .book-inside-panel { height: 180px; }
+    }
+    
+    /* MEDIA */
+    .media-card {
+      max-width: 750px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 2.5rem;
+      padding: 2.5rem;
+      background: var(--white);
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+      text-decoration: none;
+      transition: all 0.25s;
+    }
+    
+    .media-card:hover {
+      box-shadow: 0 10px 35px rgba(0,0,0,0.1);
+      transform: translateY(-3px);
+    }
+    
+    .media-outlet {
+      flex: 0 0 100px;
+      font-family: 'Playfair Display', serif;
+      font-size: 2.6rem;
+      font-style: italic;
+      color: var(--navy);
+    }
+    
+    .media-content h3 {
+      font-family: 'Open Sans', sans-serif;
+      font-size: 1.65rem;
+      font-weight: 600;
+      line-height: 1.5;
+      margin-bottom: 0.5rem;
+      color: var(--text);
+    }
+    
+    .media-content .date { font-size: 1.3rem; color: var(--text-muted); }
+    
+    @media (max-width: 600px) {
+      .media-card { flex-direction: column; text-align: center; gap: 1.5rem; }
+    }
+    
+    /* FOOTER */
+    footer {
+      background: var(--navy-dark);
+      padding: 4rem 2rem;
+      text-align: center;
+    }
+    
+    .footer-links { margin-bottom: 2rem; }
+    
+    .footer-links a {
+      display: inline-block;
+      margin: 0 1.5rem;
+      font-size: 1.4rem;
+      color: rgba(255,255,255,0.7);
+    }
+    
+    .footer-links a:hover { color: var(--white); }
+    
+    footer p {
+      font-size: 1.3rem;
+      color: rgba(255,255,255,0.5);
+      margin: 0;
+    }
+  </style>
+  
+  <!-- Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-19873828-1"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag() { dataLayer.push(arguments); }
     gtag('js', new Date());
-
     gtag('config', 'UA-19873828-1');
   </script>
 </head>
 
-
-
-
-
 <body>
-    <!-- ───────────────── NAVBAR ────────────────── -->
-    <header class="hero">
-      <div class="hero-inner">
-        <h1>Benjamin Shiller</h1>
-        <h2>Associate Professor &#8212; Department of Economics &#8212; Brandeis University</h2>
-    
-        <!-- ─────────── NAVIGATION ─────────── -->
-        <nav class="bs-navbar hero-nav">
-          <!-- hamburger toggle (mobile) -->
-          <input type="checkbox" id="bs-menu-toggle" class="bs-menu-toggle">
-          <label for="bs-menu-toggle" class="bs-menu-icon">&#9776;</label>
-    
-          <ul class="bs-nav-links">
-            <li><a href="index" class="current">Home</a></li>
-            <li><a href="CVBio">About</a></li>
-            <li><a href="Research">Research</a></li>
-            <li><a href="Book">Book</a></li>
-            <li><a href="Teaching">Teaching</a></li>
-            <li><a href="CarSafety">Car Safety Ratings</a></li>
-            <li><a href="mailto:ShillerMediaInquiries@gmail.com">Media Contact</a></li>
-          </ul>
-        </nav>
-        <!-- ────────────────────────────────── -->
-      </div>
-    </header>
-    <!-- ──────────────────────────────────────────── -->
+  <!-- HEADER - Name Centered -->
+  <header class="site-header">
+    <h1 class="site-name">Benjamin Shiller</h1>
+    <p class="site-tagline">Economist & Author</p>
+  </header>
 
-  <div class="page-container">
-
-
-    <div class="content-wrap-all">
-
-
-
-    <br>
-
-
-
-    <br>
-
-
-    <div class="container">
-      <!-- Standard Headings -->
-
-        <div class="row">
-          <div class="eight columns">
-            <h3> About me </h3>
-            <p> My research focuses on industrial organization and technological change. More specifically, my research
-              investigates the impacts of consumer data collection (pricing strategies, market concentration), consumer
-              countermeasures (ad blocking), distribution formats (digital distribution, pricing, and resale
-              restrictions), and information disclosure / mechanism design (vehicle crashworthiness ratings).</p>
-              <p style="margin-top: 2em;">
-                For media inquiries about personalized pricing, car safety, self-driving vehicles, ad-blocking or other technology-related topics, email: <a href="mailto:ShillerMediaInquiries@gmail.com">ShillerMediaInquiries 'at' gmail.com</a>.
-              </p>
-          </div>
-          <div class="four columns"> 
-           		<img  style="width: 100%; height: auto;" src="headshot4cropped.jpeg";>
-	   </div>
-        </div>
-
-
-
-
-
-
-
-
-      <br>
-
-
+  <!-- NAV -->
+  <nav class="site-nav">
+    <div class="nav-inner">
+      <button class="menu-toggle" id="menuToggle">&#9776;</button>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index">Home</a></li>
+        <li><a href="CVBio">About</a></li>
+        <li><a href="Research">Research</a></li>
+        <li><a href="Teaching">Teaching</a></li>
+        <li><a href="CarSafety">Car Safety</a></li>
+        <li><a href="mailto:ShillerMediaInquiries@gmail.com">Contact</a></li>
+      </ul>
     </div>
+  </nav>
 
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-book slide-in-left">
+        <img src="BookImages/BookMockup2.jpg" alt="AI Economics book cover">
+      </div>
+      <div class="hero-content slide-in-right">
+        <span class="hero-label">Available Now</span>
+        <h1>AI Economics</h1>
+        <p class="hero-subtitle">How Technology Transforms Jobs, Markets, Life, & Our Future</p>
+        <p class="hero-desc">
+          Discover the hidden economic forces reshaping our world—from algorithmic pricing to the future of work.
+        </p>
+        <p class="hero-byline">by <strong>Benjamin Reed Shiller</strong></p>
+        <div class="buy-buttons">
+          <a href="https://www.amazon.com/dp/B0G45MKBZT" class="buy-btn buy-btn-primary" target="_blank">Amazon<span>print / e-book</span></a>
+          <a href="https://bookshop.org/p/books/ai-economics-how-technology-transforms-jobs-markets-life-our-future-benjamin-shiller/ed6d28a99d4b8128?ean=9798993931210" class="buy-btn buy-btn-primary" target="_blank">Bookshop<span>print</span></a>
+          <a href="#" class="buy-btn buy-btn-outline" target="_blank">Spotify<span>audiobook</span></a>
+        </div>
+      </div>
+    </div>
+  </section>
 
+  <!-- BLURBS CAROUSEL -->
+  <section class="panel panel-light">
+    <div class="container">
+      <div class="carousel-container">
+        <button class="carousel-btn carousel-btn-prev" id="carouselPrev">&#8249;</button>
+        <div class="carousel-track">
+          <div class="carousel-slides" id="carouselSlides">
+            <div class="carousel-slide">
+              <div class="blurb-card">
+                <blockquote>
+                  "Concise, chatty, companionable, ever-so-savvy. There may be a more useful guide to AI out there, but why incur the opportunity cost of searching for it [econ humor]? The first three pages should sell you on this one. I decline most blurb requests but, <b>having covered AI from the jump, this is as good as it gets.</b>"
+                </blockquote>
+                <cite>
+                  <strong>Paul Solman</strong>
+                  (Very) longtime Business and Economics Correspondent, PBS NewsHour
+                </cite>
+              </div>
+            </div>
+            <div class="carousel-slide">
+              <div class="blurb-card">
+                <blockquote>
+                  "<b>This book represents the best in bringing real research to understand what is happening in our current AI-moment.</b> Shiller has accomplished in record time an overview of many of the key issues emerging in the AI economy and has laid out the evidence foundations that drive what is happening. An easy and informative read."
+                </blockquote>
+                <cite>
+                  <strong>Joshua Gans</strong>
+                  University of Toronto
+                </cite>
+              </div>
+            </div>
+            <div class="carousel-slide">
+              <div class="blurb-card">
+                <blockquote>
+                  "AI Economics: How Technology Transforms Jobs, Markets, Life, & Our Future brings a lively economic perspective to analyzing how AI will transform our lives. The book is informative and fun to read."
+                </blockquote>
+                <cite>
+                  <strong>Joel Waldfogel</strong>
+                  University of Minnesota, author of <em>Scroogenomics</em> and <em>Digital Renaissance</em>
+                </cite>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="carousel-btn carousel-btn-next" id="carouselNext">&#8250;</button>
+        <div class="carousel-dots" id="carouselDots"></div>
+      </div>
+    </div>
+  </section>
 
+  <!-- ABOUT AUTHOR -->
+  <section class="panel panel-white">
+    <div class="container">
+      <div class="about-grid">
+        <div class="about-text slide-in-left">
+          <h2>About Benjamin</h2>
+          <p>
+            Benjamin Shiller is an Associate Professor of Economics at Brandeis University. His research on personalized pricing, ad-blocking, and technological change has been published in leading journals and covered in <em>The Atlantic</em>, <em>The Economist</em>, <em>Forbes</em>, <em>Fortune</em>, <em>The Guardian</em>, and <em>The Washington Post</em>.
+          </p>
+          <p>
+            With two decades studying AI and disruption, he brings rigorous analysis and accessible storytelling to help readers understand the forces reshaping their world.
+          </p>
+          <a href="CVBio" class="text-link">Full Bio &rarr;</a>
+        </div>
+        <div class="about-photo slide-in-right">
+          <img src="headshots/WebsitePhoto.jpg" alt="Benjamin Shiller">
+        </div>
+      </div>
+    </div>
+  </section>
 
-  </div>
-  <footer class="footerBen">
-    <hr>
-    <small>
-      <a href="https://@twitter.com/BenjaminShiller">@BenjaminShiller</a> / Shiller 'at' Brandeis 'dot' edu
-      <p> Copyright &copy; 2025 Benjamin Shiller.</p>
-    </small>
+  <!-- ABOUT BOOK -->
+  <section class="panel panel-blue">
+    <div class="container">
+      <div class="book-grid">
+        <div class="book-cover slide-in-left">
+          <img src="BookImages/Ebook.jpg" alt="AI Economics cover">
+        </div>
+        <div class="book-text slide-in-right">
+          <h2>About <em>AI Economics</em></h2>
+          <p>
+            AI isn't just about what the technology <em>can do</em>; it’s about what people <em>actually do</em> with it. That’s why the best way to predict the future isn't to ask a futurist—it's to ask an economist.
+          </p>
+          <p>
+            By applying the <em>Incentive Filter</em>, this book strips away the hype to reveal the new "plumbing" of our economy. It translates decades of research into sharp stories about who gets paid and how power shifts when algorithms meet human nature. It’s your guide to spotting the change before it hits your paycheck or your shopping cart.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BOOK INSIDE - Full Bleed -->
+  <section class="book-inside-panel fade-in">
+    <img src="BookImages/BookInsideWide.jpg" alt="Inside AI Economics">
+  </section>
+
+  <!-- MEDIA -->
+  <section class="panel panel-light">
+    <div class="container">
+      <h2 class="panel-title">In the Press</h2>
+      <a href="https://fortune.com/2026/01/16/weirdness-premium-ai-economy-benjamin-shiller-brandeis-interview/" class="media-card" target="_blank">
+        <span class="media-outlet">Fortune</span>
+        <div class="media-content">
+          <h3>In the AI economy, the 'weirdness premium' will set you apart. Lean into it, says expert on tech change economics</h3>
+          <p class="date">January 16, 2026</p>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-links">
+      <a href="https://www.linkedin.com/in/benjamin-shiller/">LinkedIn</a>
+      <a href="https://scholar.google.com/citations?user=3zuDRd0AAAAJ">Google Scholar</a>
+      <a href="https://twitter.com/BenjaminShiller">Twitter</a>
+      <a href="mailto:ShillerMediaInquiries@gmail.com">Media Inquiries</a>
+    </div>
+    <p>&copy; 2026 Benjamin Shiller. All rights reserved.</p>
   </footer>
+
+  <!-- JavaScript -->
+  <script>
+    (function() {
+      // Mobile menu toggle
+      var menuToggle = document.getElementById('menuToggle');
+      var navLinks = document.getElementById('navLinks');
+      menuToggle.addEventListener('click', function() {
+        navLinks.classList.toggle('active');
+      });
+
+      // Carousel
+      var currentSlide = 0;
+      var totalSlides = 3;
+      var autoplayInterval;
+      var slides = document.getElementById('carouselSlides');
+      var dotsContainer = document.getElementById('carouselDots');
+      
+      // Create dots
+      for (var i = 0; i < totalSlides; i++) {
+        var dot = document.createElement('button');
+        dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+        dot.setAttribute('data-index', i);
+        dotsContainer.appendChild(dot);
+      }
+      
+      var dots = document.querySelectorAll('.carousel-dot');
+      
+      function updateCarousel() {
+        slides.style.transform = 'translateX(-' + (currentSlide * 100) + '%)';
+        for (var i = 0; i < dots.length; i++) {
+          dots[i].classList.toggle('active', i === currentSlide);
+        }
+      }
+      
+      function moveCarousel(direction) {
+        currentSlide = (currentSlide + direction + totalSlides) % totalSlides;
+        updateCarousel();
+        resetAutoplay();
+      }
+      
+      function goToSlide(index) {
+        currentSlide = index;
+        updateCarousel();
+        resetAutoplay();
+      }
+      
+      function startAutoplay() {
+        autoplayInterval = setInterval(function() {
+          currentSlide = (currentSlide + 1) % totalSlides;
+          updateCarousel();
+        }, 5000);
+      }
+      
+      function resetAutoplay() {
+        clearInterval(autoplayInterval);
+        startAutoplay();
+      }
+      
+      // Event listeners for carousel
+      document.getElementById('carouselPrev').addEventListener('click', function() {
+        moveCarousel(-1);
+      });
+      
+      document.getElementById('carouselNext').addEventListener('click', function() {
+        moveCarousel(1);
+      });
+      
+      dotsContainer.addEventListener('click', function(e) {
+        if (e.target.classList.contains('carousel-dot')) {
+          goToSlide(parseInt(e.target.getAttribute('data-index')));
+        }
+      });
+      
+      // Start autoplay
+      startAutoplay();
+      
+      // Intersection Observer for scroll animations
+      var observerOptions = {
+        threshold: 0.15,
+        rootMargin: '0px 0px -50px 0px'
+      };
+      
+      var observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) {
+            entry.target.style.animationPlayState = 'running';
+            observer.unobserve(entry.target);
+          }
+        });
+      }, observerOptions);
+      
+      // Pause animations until in view
+      var animatedElements = document.querySelectorAll('.slide-in-left, .slide-in-right, .fade-in');
+      for (var j = 0; j < animatedElements.length; j++) {
+        animatedElements[j].style.animationPlayState = 'paused';
+        observer.observe(animatedElements[j]);
+      }
+    })();
+  </script>
 </body>
-
-
-
-
-
-<html>
+</html>

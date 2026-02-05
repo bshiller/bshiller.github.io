@@ -1,132 +1,546 @@
-<html>
-
-<head>
-
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Benjamin Shiller's Homepage</title>
-
-
-  <!-- make the layout responsive on phones/tablets -->
-  <meta name="description"
-    content="Economist with research interests in the economics of digitization, industrial organization, and applied microeconomics. Especially interested in personalized pricing, car safety, self-driving vehicles, ad-blocking, and other technology-related topics.">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="shortcut icon" href="faviconFinal.bmp" type="image/x-icon">
-
-  <!-- ONE clean stylesheet for everything -->
-  <link rel="stylesheet" href="site.css">
-
-  <!-- keep your Google Fonts line if you still want the Arvo / Crimson Text / Roboto Slab stack -->
-  <link href="https://fonts.googleapis.com/css2?family=Arvo&family=Crimson+Text&family=Roboto+Slab&display=swap" rel="stylesheet">
-
-
-  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <title>About | Benjamin Shiller</title>
+  <meta name="description" content="Benjamin Shiller is an Associate Professor of Economics at Brandeis University, specializing in the economics of digitization, personalized pricing, and technological change.">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="shortcut icon" href="icons/faviconFinal.bmp" type="image/x-icon">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    
+    :root {
+      --navy: #1a365d;
+      --navy-dark: #0f2440;
+      --blue: #2c5282;
+      --blue-light: #ebf4ff;
+      --blue-muted: #f7fafc;
+      --accent: #c6a052;
+      --accent-light: #d4af61;
+      --text: #1a202c;
+      --text-muted: #4a5568;
+      --white: #ffffff;
+    }
+    
+    html { font-size: 62.5%; scroll-behavior: smooth; }
+    
+    body {
+      margin: 0;
+      font-family: 'Open Sans', -apple-system, sans-serif;
+      font-size: 1.7rem;
+      line-height: 1.75;
+      color: var(--text);
+      background: var(--white);
+    }
+    
+    img { max-width: 100%; height: auto; display: block; }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { color: var(--navy); }
+    
+    h1, h2, h3 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-weight: 700;
+      line-height: 1.2;
+      margin: 0 0 1rem;
+      color: var(--navy);
+    }
+    
+    p { margin: 0 0 1.5rem; }
+    
+    /* HEADER - Name Centered */
+    .site-header {
+      background: var(--white);
+      text-align: center;
+      padding: 2rem 2rem 0;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .site-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 3.6rem;
+      font-weight: 700;
+      color: var(--navy);
+      margin: 0 0 0.5rem;
+      letter-spacing: 0.02em;
+    }
+    
+    .site-name a {
+      color: var(--navy);
+      text-decoration: none;
+    }
+    
+    .site-name a:hover {
+      color: var(--blue);
+    }
+    
+    .site-tagline {
+      font-size: 1.4rem;
+      color: var(--text-muted);
+      margin: 0 0 1.5rem;
+      letter-spacing: 0.05em;
+    }
+    
+    /* NAV - Below Name */
+    .site-nav {
+      background: var(--white);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 56px;
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 3rem;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    
+    .nav-links a {
+      font-size: 1.35rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 0.5rem 0;
+      position: relative;
+    }
+    
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--accent);
+      transition: width 0.3s ease;
+    }
+    
+    .nav-links a:hover { color: var(--navy); }
+    .nav-links a:hover::after { width: 100%; }
+    
+    .nav-links a.active {
+      color: var(--navy);
+    }
+    
+    .nav-links a.active::after {
+      width: 100%;
+    }
+    
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 2.4rem;
+      cursor: pointer;
+      color: var(--navy);
+    }
+    
+    @media (max-width: 850px) {
+      .site-name { font-size: 2.8rem; }
+      .menu-toggle { display: block; }
+      .nav-inner { justify-content: center; }
+      .nav-links {
+        display: none;
+        position: absolute;
+        top: 56px;
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        background: white;
+        padding: 2rem;
+        gap: 1.8rem;
+        border-bottom: 1px solid #e2e8f0;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+        text-align: center;
+      }
+      .nav-links.active { display: flex; }
+    }
+    
+    /* PAGE CONTENT */
+    .page-title {
+      text-align: center;
+      padding: 4rem 2rem 3rem;
+      background: var(--blue-light);
+    }
+    
+    .page-title h1 {
+      font-size: 3.6rem;
+      margin: 0;
+    }
+    
+    /* BIO SECTION */
+    .bio-section {
+      padding: 5rem 2rem;
+      background: var(--white);
+    }
+    
+    .bio-grid {
+      max-width: 1000px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      gap: 4rem;
+      align-items: start;
+    }
+    
+    .bio-text h2 {
+      font-size: 2.8rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .bio-text p {
+      font-size: 1.7rem;
+      line-height: 1.9;
+    }
+    
+    .bio-photo img {
+      width: 100%;
+      border-radius: 6px;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+    }
+    
+    .media-contact {
+      margin-top: 2rem;
+      padding: 2rem;
+      background: var(--blue-muted);
+      border-radius: 8px;
+      border-left: 4px solid var(--accent);
+    }
+    
+    .media-contact p {
+      margin: 0;
+      font-size: 1.5rem;
+    }
+    
+    .media-contact a {
+      font-weight: 600;
+    }
+    
+    @media (max-width: 768px) {
+      .bio-grid {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+      .bio-photo {
+        order: -1;
+        max-width: 220px;
+        margin: 0 auto 2rem;
+      }
+      .media-contact {
+        text-align: left;
+      }
+    }
+    
+    /* PROFILES SECTION */
+    .profiles-section {
+      padding: 5rem 2rem;
+      background: var(--blue-muted);
+    }
+    
+    .profiles-section .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    
+    .profiles-section h2 {
+      font-size: 2.8rem;
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    
+    .profiles-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+    
+    .profile-card {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      padding: 1.8rem 2rem;
+      background: var(--white);
+      border-radius: 8px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+      transition: all 0.25s;
+      text-decoration: none;
+    }
+    
+    .profile-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    }
+    
+    .profile-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--blue-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      color: var(--navy);
+      flex-shrink: 0;
+    }
+    
+    .profile-info {
+      flex: 1;
+    }
+    
+    .profile-name {
+      font-weight: 700;
+      font-size: 1.6rem;
+      color: var(--navy);
+      margin-bottom: 0.2rem;
+    }
+    
+    .profile-desc {
+      font-size: 1.3rem;
+      color: var(--text-muted);
+    }
+    
+    .profile-card .arrow {
+      color: var(--accent);
+      font-size: 1.8rem;
+      transition: transform 0.25s;
+    }
+    
+    .profile-card:hover .arrow {
+      transform: translateX(4px);
+    }
+    
+    /* CV DOWNLOAD */
+    .cv-download {
+      text-align: center;
+      padding: 4rem 2rem;
+      background: var(--white);
+    }
+    
+    .cv-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1.5rem 3rem;
+      background: var(--navy);
+      color: var(--white);
+      font-size: 1.5rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border-radius: 4px;
+      transition: all 0.25s;
+    }
+    
+    .cv-btn:hover {
+      background: var(--blue);
+      color: var(--white);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+    
+    .cv-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+    
+    /* FOOTER */
+    footer {
+      background: var(--navy-dark);
+      padding: 4rem 2rem;
+      text-align: center;
+    }
+    
+    .footer-links { margin-bottom: 2rem; }
+    
+    .footer-links a {
+      display: inline-block;
+      margin: 0 1.5rem;
+      font-size: 1.4rem;
+      color: rgba(255,255,255,0.7);
+    }
+    
+    .footer-links a:hover { color: var(--white); }
+    
+    footer p {
+      font-size: 1.3rem;
+      color: rgba(255,255,255,0.5);
+      margin: 0;
+    }
+  </style>
+  
+  <!-- Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-19873828-1"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag() { dataLayer.push(arguments); }
     gtag('js', new Date());
-
     gtag('config', 'UA-19873828-1');
   </script>
 </head>
 
-
-
-
-
 <body>
-    <!-- ───────────────── NAVBAR ────────────────── -->
-    <header class="hero">
-      <div class="hero-inner">
-        <h1>Benjamin Shiller</h1>
-        <h2>Associate Professor &#8212; Department of Economics &#8212; Brandeis University</h2>
-    
-        <!-- ─────────── NAVIGATION ─────────── -->
-        <nav class="bs-navbar hero-nav">
-          <!-- hamburger toggle (mobile) -->
-          <input type="checkbox" id="bs-menu-toggle" class="bs-menu-toggle">
-          <label for="bs-menu-toggle" class="bs-menu-icon">&#9776;</label>
-    
-          <ul class="bs-nav-links">
-            <li><a href="index">Home</a></li>
-            <li><a href="CVBio" class="current">About</a></li>
-            <li><a href="Research">Research</a></li>
-            <li><a href="Book">Book</a></li>
-            <li><a href="Teaching">Teaching</a></li>
-            <li><a href="CarSafety">Car Safety Ratings</a></li>
-            <li><a href="mailto:ShillerMediaInquiries@gmail.com">Media Contact</a></li>
-          </ul>
-        </nav>
-        <!-- ────────────────────────────────── -->
-      </div>
-    </header>
-    <!-- ──────────────────────────────────────────── -->
+  <!-- HEADER - Name Centered -->
+  <header class="site-header">
+    <h1 class="site-name"><a href="index">Benjamin Shiller</a></h1>
+    <p class="site-tagline">Economist & Author</p>
+  </header>
 
-  <div class="page-container">
-
-
-
-    <br>
-    <br>
-    <br>
-    <br>
-
-    <div class="container">
-      <!-- Standard Headings -->
-
-
-      <div class="row">
-        <div class="five columns">
-
-          <h5><a href="./pdfs/CV.pdf">CV &nbsp <img src="PDFicon.jpg" style="width:30px;height:30px;"></a></h5>
-
-          <h5><a href="https://scholar.google.com/citations?user=3zuDRd0AAAAJ&hl=en">Profile on Google Scholar</a></h5>
-
-          <h5><a href="https://theconversation.com/profiles/benjamin-shiller-121875">Profile on The Conversation</a>
-          </h5>
-
-          <!-- .How to comment out -->
-          <h5><a href="https://cepr.org/about/people/ben-shiller">Profile on CEPR/VOX EU</a></h5>
-
-          <h5><a href="https://www.cesifo.org/en/network-member/shiller-benjamin-r">Profile on CESifo</a></h5>
-
-          <h5><a href="https://www.researchgate.net/profile/Benjamin-Shiller">ResearchGate</a></h5>
-
-        </div>
-        <div class="five columns">
-          <h3> Bio </h3>
-          <p> Benjamin Shiller is an associate professor in the Department of Economics at Brandeis University. His
-            research primarily focuses on the economic impacts of digitization and new technologies. Within this domain,
-            he has analyzed questions relating to personalized pricing, resale, and supplier coordination. His research
-            has been covered in the press by notable publications such as: The Atlantic, The Conversation, The
-            Economist, Forbes Magazine, The Guardian, VOX EU, and The Washington Post.</p>
-
-            <p style="margin-top: 2em;">
-              For media inquiries about personalized pricing, car safety, self-driving vehicles, ad-blocking or other technology-related topics, email: <a href="mailto:ShillerMediaInquiries@gmail.com">ShillerMediaInquiries 'at' gmail.com</a>.
-            </p>
-        </div>
-        <div class="two columns"> <br> <br> <img src="More Formal HeadShot.jpg"></div>
-      </div>
-
-      <br>
+  <!-- NAV -->
+  <nav class="site-nav">
+    <div class="nav-inner">
+      <button class="menu-toggle" id="menuToggle">&#9776;</button>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index">Home</a></li>
+        <li><a href="CVBio" class="active">About</a></li>
+        <li><a href="Research">Research</a></li>
+        <li><a href="Teaching">Teaching</a></li>
+        <li><a href="CarSafety">Car Safety</a></li>
+        <li><a href="mailto:ShillerMediaInquiries@gmail.com">Contact</a></li>
+      </ul>
     </div>
+  </nav>
 
-    <footer class="footerBen">
-      <small>
-        <hr>
-        <a href="https://@twitter.com/BenjaminShiller">@BenjaminShiller</a> / Shiller 'at' Brandeis 'dot' edu
-        <p> Copyright &copy; 2022 Benjamin Shiller.</p>
-      </small>
-    </footer>
+  <!-- PAGE TITLE -->
+  <section class="page-title">
+    <h1>About</h1>
+  </section>
 
+  <!-- BIO SECTION -->
+  <section class="bio-section">
+    <div class="bio-grid">
+      <div class="bio-text">
+        <h2>Biography</h2>
+        <p>
+          Benjamin Shiller is an Associate Professor in the Department of Economics at Brandeis University and the author of <em>AI Economics: How Technology Transforms Jobs, Markets, Life, & Our Future</em>.
+        </p>
+        <p>
+          His research primarily focuses on the economic impacts of digitization and new technologies. Within this domain, he has analyzed questions relating to personalized pricing, resale, and supplier coordination. His research has been covered in notable publications including <em>The Atlantic</em>, <em>The Conversation</em>, <em>The Economist</em>, <em>Forbes</em>, <em>Fortune</em>, <em>The Guardian</em>, <em>VOX EU</em>, and <em>The Washington Post</em>.
+        </p>
+        
+        <div class="media-contact">
+          <p>
+            <strong>Media inquiries:</strong> For questions about personalized pricing, car safety, self-driving vehicles, ad-blocking, or other technology-related topics, email <a href="mailto:ShillerMediaInquiries@gmail.com">ShillerMediaInquiries@gmail.com</a>
+          </p>
+        </div>
+      </div>
+      <div class="bio-photo">
+        <img src="headshots/WebsitePhoto.jpg" alt="Benjamin Shiller">
+      </div>
+    </div>
+  </section>
 
+  <!-- CV DOWNLOAD -->
+  <section class="cv-download">
+    <a href="./pdfs/CV.pdf" class="cv-btn" target="_blank">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+      </svg>
+      Download CV (PDF)
+    </a>
+  </section>
 
-  </div>
+  <!-- PROFILES SECTION -->
+  <section class="profiles-section">
+    <div class="container">
+      <h2>Academic Profiles</h2>
+      <div class="profiles-grid">
+        <a href="https://scholar.google.com/citations?user=3zuDRd0AAAAJ&hl=en" class="profile-card" target="_blank">
+          <div class="profile-icon">📚</div>
+          <div class="profile-info">
+            <div class="profile-name">Google Scholar</div>
+            <div class="profile-desc">Publications & citations</div>
+          </div>
+          <span class="arrow">&rarr;</span>
+        </a>
+        
+        <a href="https://theconversation.com/profiles/benjamin-shiller-121875" class="profile-card" target="_blank">
+          <div class="profile-icon">💬</div>
+          <div class="profile-info">
+            <div class="profile-name">The Conversation</div>
+            <div class="profile-desc">Public scholarship</div>
+          </div>
+          <span class="arrow">&rarr;</span>
+        </a>
+        
+        <a href="https://cepr.org/about/people/ben-shiller" class="profile-card" target="_blank">
+          <div class="profile-icon">🌍</div>
+          <div class="profile-info">
+            <div class="profile-name">CEPR / VOX EU</div>
+            <div class="profile-desc">Policy research network</div>
+          </div>
+          <span class="arrow">&rarr;</span>
+        </a>
+        
+        <a href="https://www.cesifo.org/en/network-member/shiller-benjamin-r" class="profile-card" target="_blank">
+          <div class="profile-icon">🏛</div>
+          <div class="profile-info">
+            <div class="profile-name">CESifo</div>
+            <div class="profile-desc">Research network</div>
+          </div>
+          <span class="arrow">&rarr;</span>
+        </a>
+        
+        <a href="https://www.researchgate.net/profile/Benjamin-Shiller" class="profile-card" target="_blank">
+          <div class="profile-icon">🔬</div>
+          <div class="profile-info">
+            <div class="profile-name">ResearchGate</div>
+            <div class="profile-desc">Research collaboration</div>
+          </div>
+          <span class="arrow">&rarr;</span>
+        </a>
+        
+        <a href="https://www.linkedin.com/in/benjamin-shiller/" class="profile-card" target="_blank">
+          <div class="profile-icon">💼</div>
+          <div class="profile-info">
+            <div class="profile-name">LinkedIn</div>
+            <div class="profile-desc">Professional network</div>
+          </div>
+          <span class="arrow">&rarr;</span>
+        </a>
+      </div>
+    </div>
+  </section>
 
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-links">
+      <a href="https://www.linkedin.com/in/benjamin-shiller/">LinkedIn</a>
+      <a href="https://scholar.google.com/citations?user=3zuDRd0AAAAJ">Google Scholar</a>
+      <a href="https://twitter.com/BenjaminShiller">Twitter</a>
+      <a href="mailto:ShillerMediaInquiries@gmail.com">Media Inquiries</a>
+    </div>
+    <p>&copy; 2026 Benjamin Shiller. All rights reserved.</p>
+  </footer>
+
+  <!-- JavaScript -->
+  <script>
+    (function() {
+      var menuToggle = document.getElementById('menuToggle');
+      var navLinks = document.getElementById('navLinks');
+      menuToggle.addEventListener('click', function() {
+        navLinks.classList.toggle('active');
+      });
+    })();
+  </script>
 </body>
-
-
 </html>

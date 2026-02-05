@@ -1,160 +1,404 @@
-<html>
-
-<head>
-
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Benjamin Shiller's Homepage</title>
-
-
-  <!-- make the layout responsive on phones/tablets -->
-  <meta name="description"
-    content="Economist with research interests in the economics of digitization, industrial organization, and applied microeconomics. Especially interested in personalized pricing, car safety, self-driving vehicles, ad-blocking, and other technology-related topics.">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="shortcut icon" href="faviconFinal.bmp" type="image/x-icon">
-
-  <!-- ONE clean stylesheet for everything -->
-  <link rel="stylesheet" href="site.css">
-
-  <!-- keep your Google Fonts line if you still want the Arvo / Crimson Text / Roboto Slab stack -->
-  <link href="https://fonts.googleapis.com/css2?family=Arvo&family=Crimson+Text&family=Roboto+Slab&display=swap" rel="stylesheet">
-
-
-  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <title>Teaching | Benjamin Shiller</title>
+  <meta name="description" content="Courses taught by Benjamin Shiller at Brandeis University, including Intermediate Microeconomics, Industrial Organization, and Economics of Digitization.">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="shortcut icon" href="icons/faviconFinal.bmp" type="image/x-icon">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    
+    :root {
+      --navy: #1a365d;
+      --navy-dark: #0f2440;
+      --blue: #2c5282;
+      --blue-light: #ebf4ff;
+      --blue-muted: #f7fafc;
+      --accent: #c6a052;
+      --accent-light: #d4af61;
+      --text: #1a202c;
+      --text-muted: #4a5568;
+      --white: #ffffff;
+    }
+    
+    html { font-size: 62.5%; scroll-behavior: smooth; }
+    
+    body {
+      margin: 0;
+      font-family: 'Open Sans', -apple-system, sans-serif;
+      font-size: 1.7rem;
+      line-height: 1.75;
+      color: var(--text);
+      background: var(--white);
+    }
+    
+    img { max-width: 100%; height: auto; display: block; }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { color: var(--navy); }
+    
+    h1, h2, h3 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-weight: 700;
+      line-height: 1.2;
+      margin: 0 0 1rem;
+      color: var(--navy);
+    }
+    
+    p { margin: 0 0 1.5rem; }
+    
+    /* HEADER - Name Centered */
+    .site-header {
+      background: var(--white);
+      text-align: center;
+      padding: 2rem 2rem 0;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .site-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 3.6rem;
+      font-weight: 700;
+      color: var(--navy);
+      margin: 0 0 0.5rem;
+      letter-spacing: 0.02em;
+    }
+    
+    .site-name a {
+      color: var(--navy);
+      text-decoration: none;
+    }
+    
+    .site-name a:hover {
+      color: var(--blue);
+    }
+    
+    .site-tagline {
+      font-size: 1.4rem;
+      color: var(--text-muted);
+      margin: 0 0 1.5rem;
+      letter-spacing: 0.05em;
+    }
+    
+    /* NAV - Below Name */
+    .site-nav {
+      background: var(--white);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 56px;
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 3rem;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    
+    .nav-links a {
+      font-size: 1.35rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 0.5rem 0;
+      position: relative;
+    }
+    
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--accent);
+      transition: width 0.3s ease;
+    }
+    
+    .nav-links a:hover { color: var(--navy); }
+    .nav-links a:hover::after { width: 100%; }
+    
+    .nav-links a.active {
+      color: var(--navy);
+    }
+    
+    .nav-links a.active::after {
+      width: 100%;
+    }
+    
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 2.4rem;
+      cursor: pointer;
+      color: var(--navy);
+    }
+    
+    @media (max-width: 850px) {
+      .site-name { font-size: 2.8rem; }
+      .menu-toggle { display: block; }
+      .nav-inner { justify-content: center; }
+      .nav-links {
+        display: none;
+        position: absolute;
+        top: 56px;
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        background: white;
+        padding: 2rem;
+        gap: 1.8rem;
+        border-bottom: 1px solid #e2e8f0;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+        text-align: center;
+      }
+      .nav-links.active { display: flex; }
+    }
+    
+    /* PAGE CONTENT */
+    .page-title {
+      text-align: center;
+      padding: 4rem 2rem 3rem;
+      background: var(--blue-light);
+    }
+    
+    .page-title h1 {
+      font-size: 3.6rem;
+      margin: 0;
+    }
+    
+    /* COURSES SECTION */
+    .courses-section {
+      padding: 5rem 2rem;
+      background: var(--white);
+    }
+    
+    .courses-section .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    
+    .course-category {
+      margin-bottom: 4rem;
+    }
+    
+    .course-category:last-child {
+      margin-bottom: 0;
+    }
+    
+    .category-title {
+      font-size: 2.4rem;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid var(--blue-light);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .category-icon {
+      font-size: 2.2rem;
+    }
+    
+    .course-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+    
+    .course-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.8rem 2rem;
+      background: var(--blue-muted);
+      border-radius: 8px;
+      border-left: 4px solid var(--accent);
+      transition: all 0.25s;
+    }
+    
+    .course-card:hover {
+      transform: translateX(5px);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+    }
+    
+    .course-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.9rem;
+      font-weight: 600;
+      color: var(--navy);
+    }
+    
+    .course-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--blue);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    
+    .course-link:hover {
+      color: var(--navy);
+    }
+    
+    .course-link .arrow {
+      transition: transform 0.25s;
+    }
+    
+    .course-link:hover .arrow {
+      transform: translateX(3px);
+    }
+    
+    /* FOOTER */
+    footer {
+      background: var(--navy-dark);
+      padding: 4rem 2rem;
+      text-align: center;
+    }
+    
+    .footer-links { margin-bottom: 2rem; }
+    
+    .footer-links a {
+      display: inline-block;
+      margin: 0 1.5rem;
+      font-size: 1.4rem;
+      color: rgba(255,255,255,0.7);
+    }
+    
+    .footer-links a:hover { color: var(--white); }
+    
+    footer p {
+      font-size: 1.3rem;
+      color: rgba(255,255,255,0.5);
+      margin: 0;
+    }
+  </style>
+  
+  <!-- Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-19873828-1"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag() { dataLayer.push(arguments); }
     gtag('js', new Date());
-
     gtag('config', 'UA-19873828-1');
   </script>
 </head>
 
-
-
-
-
 <body>
-    <!-- ───────────────── NAVBAR ────────────────── -->
-    <header class="hero">
-      <div class="hero-inner">
-        <h1>Benjamin Shiller</h1>
-        <h2>Associate Professor &#8212; Department of Economics &#8212; Brandeis University</h2>
-    
-        <!-- ─────────── NAVIGATION ─────────── -->
-        <nav class="bs-navbar hero-nav">
-          <!-- hamburger toggle (mobile) -->
-          <input type="checkbox" id="bs-menu-toggle" class="bs-menu-toggle">
-          <label for="bs-menu-toggle" class="bs-menu-icon">&#9776;</label>
-    
-          <ul class="bs-nav-links">
-            <li><a href="index">Home</a></li>
-            <li><a href="CVBio">About</a></li>
-            <li><a href="Research">Research</a></li>
-            <li><a href="Book">Book</a></li>
-            <li><a href="Teaching" class="current">Teaching</a></li>
-            <li><a href="CarSafety">Car Safety Ratings</a></li>
-            <li><a href="mailto:ShillerMediaInquiries@gmail.com">Media Contact</a></li>
-          </ul>
-        </nav>
-        <!-- ────────────────────────────────── -->
-      </div>
-    </header>
-    <!-- ──────────────────────────────────────────── -->
+  <!-- HEADER - Name Centered -->
+  <header class="site-header">
+    <h1 class="site-name"><a href="index">Benjamin Shiller</a></h1>
+    <p class="site-tagline">Economist & Author</p>
+  </header>
 
-  <div class="page-container">
-
-
-
-   
-
-
-
-
-    <div class="content-wrap-all">
-      <!-- Standard Headings -->
-
-      <br>
-
-      <h3><u>Undergraduate</u></h3>
-      <h5>Intermediate Microeconomics (<a href="https://micro-econ.com">website link</a>)</h5>
-      <h5>Industrial Organization</h5>
-      <h5>Economics of Digitization</h5>
-
-      <br>
-      <h3><u>Doctoral</u></h3>
-      <h5>Applied Methods II</h5>
-      <h5>Industrial Organization</h5>
-
-
+  <!-- NAV -->
+  <nav class="site-nav">
+    <div class="nav-inner">
+      <button class="menu-toggle" id="menuToggle">&#9776;</button>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index">Home</a></li>
+        <li><a href="CVBio">About</a></li>
+        <li><a href="Research">Research</a></li>
+        <li><a href="Teaching" class="active">Teaching</a></li>
+        <li><a href="CarSafety">Car Safety</a></li>
+        <li><a href="mailto:ShillerMediaInquiries@gmail.com">Contact</a></li>
+      </ul>
     </div>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
+  </nav>
 
+  <!-- PAGE TITLE -->
+  <section class="page-title">
+    <h1>Teaching</h1>
+  </section>
 
+  <!-- COURSES SECTION -->
+  <section class="courses-section">
+    <div class="container">
+      
+      <!-- Undergraduate -->
+      <div class="course-category">
+        <h2 class="category-title">
+          <span class="category-icon">📚</span>
+          Undergraduate
+        </h2>
+        <div class="course-list">
+          <div class="course-card">
+            <span class="course-name">Intermediate Microeconomics</span>
+            <a href="https://micro-econ.com" class="course-link" target="_blank">
+              Course Website <span class="arrow">&rarr;</span>
+            </a>
+          </div>
+          <div class="course-card">
+            <span class="course-name">Industrial Organization</span>
+          </div>
+          <div class="course-card">
+            <span class="course-name">Economics of Digitization</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Doctoral -->
+      <div class="course-category">
+        <h2 class="category-title">
+          <span class="category-icon">🎓</span>
+          Doctoral
+        </h2>
+        <div class="course-list">
+          <div class="course-card">
+            <span class="course-name">Applied Methods II</span>
+          </div>
+          <div class="course-card">
+            <span class="course-name">Industrial Organization</span>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </section>
 
-
-
-  </div>
-
-
-  <footer class="footerBen">
-    <hr>
-    <small>
-      <a href="https://@twitter.com/BenjaminShiller">@BenjaminShiller</a> / Shiller 'at' Brandeis 'dot' edu
-      <p> Copyright &copy; 2022 Benjamin Shiller.</p>
-    </small>
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-links">
+      <a href="https://www.linkedin.com/in/benjamin-shiller/">LinkedIn</a>
+      <a href="https://scholar.google.com/citations?user=3zuDRd0AAAAJ">Google Scholar</a>
+      <a href="https://twitter.com/BenjaminShiller">Twitter</a>
+      <a href="mailto:ShillerMediaInquiries@gmail.com">Media Inquiries</a>
+    </div>
+    <p>&copy; 2026 Benjamin Shiller. All rights reserved.</p>
   </footer>
 
-
+  <!-- JavaScript -->
   <script>
-    var coll = document.getElementsByClassName("collapsible");
-    var dolls = document.getElementsByClassName("collapsible");
-
-    function closeAll() {
-      for (var dol of dolls) {
-        dol.classList.remove("active");
-        dol.nextElementSibling.style.display = "none";
-      }
-    }
-
-
-    var i;
-    for (i = 0; i < coll.length; i++) {
-
-      coll[i].addEventListener("click", function () {
-
-
-        this.classList.toggle("active");
-
-
-        var content = this.nextElementSibling;
-        if (content.style.display === "block") {
-          content.style.display = "none";
-        } else {
-          closeAll();
-          /* */
-          this.classList.toggle("active");
-          content.style.display = "block";
-        }
-
-
+    (function() {
+      var menuToggle = document.getElementById('menuToggle');
+      var navLinks = document.getElementById('navLinks');
+      menuToggle.addEventListener('click', function() {
+        navLinks.classList.toggle('active');
       });
-    }
+    })();
   </script>
-
-
 </body>
-
-
-
-
-
-
-<html>
+</html>
