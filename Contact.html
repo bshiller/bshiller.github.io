@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Car Safety Ratings | Benjamin Shiller</title>
-  <meta name="description" content="Vehicle safety ratings based on research by Benjamin Shiller, relating crash test measurements to actual fatality rates.">
+  <title>Contact | Benjamin Shiller</title>
+  <meta name="description" content="Contact information for Benjamin Shiller, Associate Professor of Economics at Brandeis University.">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="shortcut icon" href="icons/faviconFinal.bmp" type="image/x-icon">
   
@@ -187,109 +187,138 @@
       margin: 0;
     }
     
-    /* CONTENT SECTION */
-    .content-section {
+    /* CONTACT SECTION */
+    .contact-section {
       padding: 5rem 2rem;
       background: var(--white);
     }
     
-    .content-section .container {
-      max-width: 900px;
+    .contact-section .container {
+      max-width: 800px;
       margin: 0 auto;
     }
     
-    .content-section p {
-      font-size: 1.7rem;
-      line-height: 1.9;
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
     }
     
-    .content-section a {
-      font-weight: 600;
+    @media (max-width: 700px) {
+      .contact-grid {
+        grid-template-columns: 1fr;
+      }
     }
     
-    /* WEBSITE LINK CARD */
-    .website-card {
-      display: flex;
-      align-items: center;
-      gap: 2rem;
+    .contact-card {
       padding: 2.5rem;
       background: var(--blue-muted);
       border-radius: 8px;
       border-left: 4px solid var(--accent);
-      margin: 3rem 0;
-      text-decoration: none;
-      transition: all 0.25s;
     }
     
-    .website-card:hover {
-      transform: translateX(5px);
-      box-shadow: 0 8px 25px rgba(0,0,0,0.08);
-    }
-    
-    .website-card-icon {
-      width: 60px;
-      height: 60px;
-      background: var(--white);
-      border-radius: 50%;
+    .contact-card h2 {
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
       display: flex;
       align-items: center;
-      justify-content: center;
-      font-size: 2.8rem;
-      flex-shrink: 0;
+      gap: 0.8rem;
     }
     
-    .website-card-content {
-      flex: 1;
+    .contact-card-icon {
+      font-size: 2rem;
     }
     
-    .website-card-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 2.2rem;
-      font-weight: 700;
-      color: var(--navy);
+    .contact-item {
+      margin-bottom: 1.2rem;
+    }
+    
+    .contact-item:last-child {
+      margin-bottom: 0;
+    }
+    
+    .contact-label {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
       margin-bottom: 0.3rem;
     }
     
-    .website-card-desc {
+    .contact-value {
+      font-size: 1.6rem;
+      color: var(--text);
+    }
+    
+    .contact-value a {
+      font-weight: 600;
+    }
+    
+    .email-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-top: 1.5rem;
+      padding: 1rem 1.8rem;
+      background: var(--navy);
+      color: var(--white);
       font-size: 1.4rem;
-      color: var(--text-muted);
-      margin: 0;
+      font-weight: 600;
+      border-radius: 4px;
+      transition: all 0.25s;
     }
     
-    .website-card .arrow {
-      font-size: 2.4rem;
-      color: var(--accent);
-      transition: transform 0.25s;
+    .email-btn:hover {
+      background: var(--blue);
+      color: var(--white);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.12);
     }
     
-    .website-card:hover .arrow {
-      transform: translateX(5px);
-    }
-    
-    /* SCREENSHOT */
-    .screenshot-section {
-      padding: 3rem 2rem 5rem;
+    /* SOCIAL LINKS */
+    .social-section {
+      padding: 4rem 2rem 5rem;
       background: var(--blue-muted);
       text-align: center;
     }
     
-    .screenshot-section img {
-      max-width: 900px;
-      width: 100%;
-      margin: 0 auto;
-      border-radius: 8px;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+    .social-section h2 {
+      font-size: 2.4rem;
+      margin-bottom: 2rem;
     }
     
-    /* ACKNOWLEDGMENT */
-    .acknowledgment {
-      max-width: 900px;
+    .social-grid {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      max-width: 700px;
       margin: 0 auto;
-      padding: 2rem;
-      font-size: 1.4rem;
-      color: var(--text-muted);
-      font-style: italic;
-      text-align: center;
+    }
+    
+    .social-link {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      padding: 1.2rem 2rem;
+      background: var(--white);
+      border-radius: 8px;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--navy);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      transition: all 0.25s;
+    }
+    
+    .social-link:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      color: var(--blue);
+    }
+    
+    .social-link .icon {
+      font-size: 1.8rem;
     }
     
     /* FOOTER */
@@ -343,44 +372,84 @@
         <li><a href="CVBio">About</a></li>
         <li><a href="Research">Research</a></li>
         <li><a href="Teaching">Teaching</a></li>
-        <li><a href="CarSafety" class="active">Car Safety</a></li>
-        <li><a href="Contact">Contact</a></li>
+        <li><a href="CarSafety">Car Safety</a></li>
+        <li><a href="Contact" class="active">Contact</a></li>
       </ul>
     </div>
   </nav>
 
   <!-- PAGE TITLE -->
   <section class="page-title">
-    <h1>Car Safety Ratings</h1>
+    <h1>Contact</h1>
   </section>
 
-  <!-- CONTENT SECTION -->
-  <section class="content-section">
+  <!-- CONTACT SECTION -->
+  <section class="contact-section">
     <div class="container">
-      <p>
-        Our vehicle safety ratings are based on knowledge gleaned from my research with Bhoomija Ranjan and Siqi Liu. The crashworthiness ratings explicitly convey the inherent risk of death attributable to the vehicle, by relating crash test measurements to vehicle fatality rates.
-      </p>
-      <p>
-        Crucially, we account for selection of unsafe drivers by including in the model both continuous crash test measurements (not observed by consumers) and discrete ratings (observed by consumers and may induce selection of safe/unsafe drivers), but base our ratings only on the former. Additional details are provided in the paper and on the website.
-      </p>
-      
-      <a href="https://realsafecars.com" class="website-card" target="_blank">
-        <div class="website-card-icon">🚗</div>
-        <div class="website-card-content">
-          <div class="website-card-title">RealSafeCars.com</div>
-          <p class="website-card-desc">Explore the full vehicle safety ratings database</p>
+      <div class="contact-grid">
+        
+        <!-- Media Inquiries -->
+        <div class="contact-card">
+          <h2><span class="contact-card-icon">📰</span> Media Inquiries</h2>
+          <p>For press inquiries about personalized pricing, car safety, self-driving vehicles, ad blocking, AI economics, or other technology-related topics:</p>
+          <div class="contact-item">
+            <div class="contact-label">Email</div>
+            <div class="contact-value">ShillerMediaInquiries@gmail.com</div>
+          </div>
+          <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+            <a href="mailto:ShillerMediaInquiries@gmail.com" class="email-btn">
+              Open in Email &rarr;
+            </a>
+            <a href="https://mail.google.com/mail/?view=cm&fs=1&to=ShillerMediaInquiries@gmail.com" class="email-btn" target="_blank" style="background: var(--blue);">
+              Open in Gmail &rarr;
+            </a>
+          </div>
         </div>
-        <span class="arrow">&rarr;</span>
-      </a>
+        
+        <!-- Academic Contact -->
+        <div class="contact-card">
+          <h2><span class="contact-card-icon">🎓</span> Academic Contact</h2>
+          <p>For academic inquiries, speaking requests, or general correspondence:</p>
+          <div class="contact-item">
+            <div class="contact-label">Email</div>
+            <div class="contact-value">Shiller@Brandeis.edu</div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-label">Office</div>
+            <div class="contact-value">
+              Department of Economics<br>
+              Brandeis University<br>
+              Waltham, MA 02453
+            </div>
+          </div>
+          <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1.5rem;">
+            <a href="mailto:Shiller@Brandeis.edu" class="email-btn">
+              Open in Email &rarr;
+            </a>
+            <a href="https://mail.google.com/mail/?view=cm&fs=1&to=Shiller@Brandeis.edu" class="email-btn" target="_blank" style="background: var(--blue);">
+              Open in Gmail &rarr;
+            </a>
+          </div>
+        </div>
+        
+      </div>
     </div>
   </section>
 
-  <!-- SCREENSHOT -->
-  <section class="screenshot-section">
-    <img src="bespokeImages/RealSafeCarsDepiction.png" alt="RealSafeCars.com website screenshot">
-    <p class="acknowledgment">
-      I would like to thank my brother—philosophy PhD / expert web designer—for making this a reality.
-    </p>
+  <!-- SOCIAL LINKS -->
+  <section class="social-section">
+    <h2>Connect Online</h2>
+    <div class="social-grid">
+      <a href="https://twitter.com/BenjaminShiller" class="social-link" target="_blank">
+        <span class="icon">𝕏</span> Twitter / X
+      </a>
+      <a href="https://www.linkedin.com/in/benjamin-shiller/" class="social-link" target="_blank">
+        <span class="icon">💼</span> LinkedIn
+      </a>
+      <a href="https://bsky.app/profile/benjaminshiller.bsky.social" class="social-link" target="_blank">
+        <span class="icon">🦋</span> Bluesky
+      </a>
+    </div>
   </section>
 
   <!-- FOOTER -->
@@ -389,7 +458,6 @@
       <a href="https://www.linkedin.com/in/benjamin-shiller/">LinkedIn</a>
       <a href="https://scholar.google.com/citations?user=3zuDRd0AAAAJ">Google Scholar</a>
       <a href="https://twitter.com/BenjaminShiller">Twitter</a>
-      <a href="Contact">Media Inquiries</a>
     </div>
     <p>&copy; 2026 Benjamin Shiller. All rights reserved.</p>
   </footer>
