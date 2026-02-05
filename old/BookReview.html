@@ -220,23 +220,23 @@
         const quotes = [
             {
                 text: "If your field is too obscure or specialized to churn out mountains of data, or too quirky...to bother automating, your job might just be robot-proof. The algorithm can't steal your job if it can't learn your job. Call it the weirdness premium: The stranger your job, the harder it is to automate.",
-                xText: "If your field is too obscure to churn out mountains of data, your job might be robot-proof. Call it the weirdness premium: The stranger your job, the harder it is to automate."
+                xText: "If your field is too obscure to churn out mountains of data, your job might be robot-proof. The algorithm can't steal your job if it can't learn it. Call it the weirdness premium: The stranger your job, the harder it is to automate."
             },
             {
                 text: "By 2030, admitting you wrote a book without AI will be like bragging you walked an hour to work in the rain without an umbrella, coat, or boots. Impressive, but why? I'm reading and enjoying one of the first books (AI Economics) that lives up to that line.",
-                xText: "By 2030, admitting you wrote a book without AI will be like bragging you walked an hour to work in the rain without an umbrella. Impressive, but why? Enjoying 1st book exemplifying it."
+                xText: "By 2030, admitting you wrote a book without AI will be like bragging you walked an hour to work in the rain without an umbrella. Impressive, but why? Enjoying one of the first books (AI Economics) that lives up to that line."
             },
             {
                 text: "Ask anyone under 25 if they've ever resold a video game, and they'll look at you like you asked if they've ever sent a telegram. \"We haven't just lost our rights—we've lost the memory that we ever had them.\" AI Economics kept surprising me with insights into an AI-driven economy.",
-                xText: "Ask anyone under 25 if they've ever resold a video game. They'll look at you like you asked if they've ever sent a telegram. \"We haven't just lost our rights—we've lost the memory."
+                xText: "Ask anyone under 25 if they've ever resold a video game. They'll look at you like you asked if they've ever sent a telegram. \"We haven't just lost our rights—we've lost the memory that we ever had them.\" AI Economics is full of insights."
             },
             {
                 text: "Technology determines what's possible, but human incentives determine what actually happens. AI may make extinction scenarios feasible, but whether they become likely depends entirely on how people behave. From an engaging new book.",
-                xText: "Technology determines what's possible, but human incentives determine what actually happens. AI makes extinction scenarios feasible, but what happens depends on how people behave."
+                xText: "Technology determines what's possible, but human incentives determine what actually happens. AI may make extinction scenarios feasible, but whether they become likely depends entirely on how people behave."
             },
             {
                 text: "The rich should be writing thank-you notes to Bernie Sanders and Andrew Yang for promoting income redistribution... [because] a CEO shot dead on the sidewalk enjoys exactly zero yachts. From a new book I am reading, AI Economics, full of interesting ideas.",
-                xText: "The rich should be writing thank-you notes to Bernie Sanders and Andrew Yang... [because] a CEO shot dead on the sidewalk enjoys exactly zero yachts. From a new book I am reading."
+                xText: "The rich should be writing thank-you notes to Bernie Sanders and Andrew Yang... [because] a CEO shot dead on the sidewalk enjoys exactly zero yachts. From a new book I am reading, AI Economics."
             },
             {
                 text: "Almost done with a book that's both insightful and surprisingly fun to read. It's economics, sure—but the arguments land. The book: AI Economics",
@@ -297,7 +297,7 @@
             
             const textToCopy = mode === 'short' 
                 ? `"${content.trim()}" ${HANDLE_X} ${HASHTAGS} ${BOOK_URL}`
-                : `"${content.trim()}" - ${AUTHOR_NAME} ${HANDLE_LinkedIn} ${HASHTAGS}\n\n${BOOK_URL}`;
+                : `"${content.trim()}" - ${AUTHOR_NAME} ${HASHTAGS}\n\n${BOOK_URL}`;
             
             navigator.clipboard.writeText(textToCopy).then(() => {
                 showToast();
