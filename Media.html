@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Media | Benjamin Shiller</title>
+  <meta name="description" content="Media coverage and press features of Benjamin Shiller's research on personalized pricing, AI economics, ad blocking, and technology.">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="shortcut icon" href="icons/faviconFinal.bmp" type="image/x-icon">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    
+    :root {
+      --navy: #1a365d;
+      --navy-dark: #0f2440;
+      --blue: #2c5282;
+      --blue-light: #ebf4ff;
+      --blue-muted: #f7fafc;
+      --accent: #c6a052;
+      --accent-light: #d4af61;
+      --text: #1a202c;
+      --text-muted: #4a5568;
+      --white: #ffffff;
+    }
+    
+    html { font-size: 62.5%; scroll-behavior: smooth; }
+    
+    body {
+      margin: 0;
+      font-family: 'Open Sans', -apple-system, sans-serif;
+      font-size: 1.7rem;
+      line-height: 1.75;
+      color: var(--text);
+      background: var(--white);
+    }
+    
+    img { max-width: 100%; height: auto; display: block; }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { color: var(--navy); }
+    
+    h1, h2, h3 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-weight: 700;
+      line-height: 1.2;
+      margin: 0 0 1rem;
+      color: var(--navy);
+    }
+    
+    p { margin: 0 0 1.5rem; }
+    
+    /* HEADER - Name Centered */
+    .site-header {
+      background: var(--white);
+      text-align: center;
+      padding: 2rem 2rem 0;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .site-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 3.6rem;
+      font-weight: 700;
+      color: var(--navy);
+      margin: 0 0 0.5rem;
+      letter-spacing: 0.02em;
+    }
+    
+    .site-name a {
+      color: var(--navy);
+      text-decoration: none;
+    }
+    
+    .site-name a:hover {
+      color: var(--blue);
+    }
+    
+    .site-tagline {
+      font-size: 1.4rem;
+      color: var(--text-muted);
+      margin: 0 0 1.5rem;
+      letter-spacing: 0.05em;
+    }
+    
+    /* NAV - Below Name */
+    .site-nav {
+      background: var(--navy);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    
+    .nav-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+    
+    .nav-links {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      gap: 0;
+    }
+    
+    .nav-links li a {
+      display: block;
+      padding: 1.4rem 2rem;
+      color: rgba(255,255,255,0.85);
+      font-size: 1.4rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      transition: all 0.2s;
+    }
+    
+    .nav-links li a:hover {
+      background: rgba(255,255,255,0.1);
+      color: var(--white);
+    }
+    
+    .nav-links li a.active {
+      background: rgba(255,255,255,0.15);
+      color: var(--white);
+      border-bottom: 3px solid var(--accent);
+    }
+    
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--white);
+      font-size: 2.4rem;
+      cursor: pointer;
+      padding: 1rem 1.5rem;
+    }
+    
+    /* PAGE TITLE */
+    .page-title {
+      background: var(--blue-light);
+      padding: 4rem 2rem;
+      text-align: center;
+    }
+    
+    .page-title h1 {
+      font-size: 4rem;
+      margin: 0;
+      color: var(--navy);
+    }
+    
+    .page-title p {
+      font-size: 1.8rem;
+      color: var(--text-muted);
+      margin: 1rem auto 0;
+      max-width: 600px;
+    }
+    
+    /* MEDIA CONTENT */
+    .media-section {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 4rem 2rem 5rem;
+    }
+    
+    .media-category {
+      margin-bottom: 4rem;
+    }
+    
+    .media-category:last-child {
+      margin-bottom: 0;
+    }
+    
+    .category-heading {
+      font-size: 2.4rem;
+      color: var(--navy);
+      margin: 0 0 2.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid var(--accent);
+      display: inline-block;
+    }
+    
+    /* Individual media item card */
+    .media-item {
+      display: flex;
+      gap: 2rem;
+      padding: 2.2rem 0;
+      border-bottom: 1px solid #e2e8f0;
+      transition: background 0.2s;
+    }
+    
+    .media-item:first-of-type {
+      padding-top: 0;
+    }
+    
+    .media-item:last-of-type {
+      border-bottom: none;
+    }
+    
+    .media-item:hover {
+      background: var(--blue-muted);
+      margin-left: -1.5rem;
+      margin-right: -1.5rem;
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+      border-radius: 6px;
+    }
+    
+    /* Publication badge */
+    .pub-badge {
+      flex-shrink: 0;
+      width: 7rem;
+      height: 7rem;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      font-size: 1.2rem;
+      text-align: center;
+      line-height: 1.2;
+      color: var(--white);
+      padding: 0.5rem;
+    }
+    
+    .pub-badge.economist    { background: #e3120b; }
+    .pub-badge.fortune      { background: #1a1a2e; }
+    .pub-badge.wapo         { background: #2a2a2a; }
+    .pub-badge.forbes        { background: #333f48; }
+    .pub-badge.bi           { background: #0070c0; }
+    .pub-badge.atlantic     { background: #c4170c; }
+    .pub-badge.voxeu        { background: #00467f; }
+    .pub-badge.guardian      { background: #052962; }
+    .pub-badge.podcast       { background: var(--accent); color: var(--navy-dark); }
+    
+    .media-body {
+      flex: 1;
+      min-width: 0;
+    }
+    
+    .media-body h3 {
+      font-family: 'Open Sans', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--navy);
+      margin: 0 0 0.4rem;
+      line-height: 1.35;
+    }
+    
+    .media-body h3 a {
+      color: var(--navy);
+      transition: color 0.2s;
+    }
+    
+    .media-body h3 a:hover {
+      color: var(--blue);
+    }
+    
+    .media-pub {
+      font-size: 1.35rem;
+      font-weight: 600;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 0.5rem;
+    }
+    
+    .media-desc {
+      font-size: 1.55rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin: 0;
+    }
+    
+    .media-meta {
+      font-size: 1.3rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+    }
+    
+    .read-link {
+      display: inline-block;
+      margin-top: 0.8rem;
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--blue);
+      transition: color 0.2s;
+    }
+    
+    .read-link:hover {
+      color: var(--navy);
+    }
+    
+    .read-link::after {
+      content: ' →';
+    }
+    
+    /* FOOTER */
+    footer {
+      background: var(--navy-dark);
+      padding: 4rem 2rem;
+      text-align: center;
+    }
+    
+    .footer-links { margin-bottom: 2rem; }
+    
+    .footer-links a {
+      display: inline-block;
+      margin: 0 1.5rem;
+      font-size: 1.4rem;
+      color: rgba(255,255,255,0.7);
+    }
+    
+    .footer-links a:hover { color: var(--white); }
+    
+    footer p {
+      font-size: 1.3rem;
+      color: rgba(255,255,255,0.5);
+      margin: 0;
+    }
+    
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      .site-name { font-size: 2.8rem; }
+      
+      .menu-toggle { display: block; }
+      
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        background: var(--navy);
+      }
+      
+      .nav-links.active {
+        display: flex;
+      }
+      
+      .nav-inner {
+        flex-wrap: wrap;
+      }
+      
+      .nav-links li a {
+        padding: 1.2rem 2rem;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+      }
+      
+      .nav-links li a.active {
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        border-left: 3px solid var(--accent);
+      }
+      
+      .page-title h1 { font-size: 3rem; }
+      
+      .media-item {
+        flex-direction: column;
+        gap: 1.2rem;
+      }
+      
+      .pub-badge {
+        width: 6rem;
+        height: 6rem;
+      }
+      
+      .media-item:hover {
+        margin-left: -1rem;
+        margin-right: -1rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
+      }
+    }
+  </style>
+  
+  <!-- Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-19873828-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'UA-19873828-1');
+  </script>
+</head>
+
+<body>
+  <!-- HEADER -->
+  <header class="site-header">
+    <h1 class="site-name"><a href="index">Benjamin Shiller</a></h1>
+    <p class="site-tagline">Economist & Author</p>
+  </header>
+
+  <!-- NAV -->
+  <nav class="site-nav">
+    <div class="nav-inner">
+      <button class="menu-toggle" id="menuToggle">&#9776;</button>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index">Home</a></li>
+        <li><a href="CVBio">About</a></li>
+        <li><a href="Research">Research</a></li>
+        <li><a href="Teaching">Teaching</a></li>
+        <li><a href="CarSafety">Car Safety</a></li>
+        <li><a href="Media" class="active">Media</a></li>
+        <li><a href="Contact">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- PAGE TITLE -->
+  <section class="page-title">
+    <h1>Media</h1>
+    <p>Selected press coverage and interviews on AI economics, personalized pricing, ad blocking, and technology.</p>
+  </section>
+
+  <!-- MEDIA LISTINGS -->
+  <section class="media-section">
+
+    <!-- ARTICLES -->
+    <div class="media-category">
+      <h2 class="category-heading">Featured Coverage</h2>
+
+      <!-- The Atlantic -->
+      <div class="media-item">
+        <div class="pub-badge atlantic">The<br>Atlantic</div>
+        <div class="media-body">
+          <div class="media-pub">The Atlantic</div>
+          <h3>How Online Shopping Makes Suckers of Us All</h3>
+          <p class="media-desc">Will you pay more for those shoes before 7 p.m.? Would the price tag be different if you lived in the suburbs? Standard prices and simple discounts are giving way to far more exotic strategies, designed to extract every last dollar from the consumer.</p>
+          <a href="#" class="read-link">Read Article</a>
+        </div>
+      </div>
+
+      <!-- Fortune — Weirdness Premium -->
+      <div class="media-item">
+        <div class="pub-badge fortune">Fortune</div>
+        <div class="media-body">
+          <div class="media-pub">Fortune</div>
+          <h3>In the AI Economy, the 'Weirdness Premium' Will Set You Apart</h3>
+          <p class="media-desc">Brandeis economics professor Benjamin Shiller says the stranger you are, the more employable you'll be. Just look at self-driving cars and kangaroos.</p>
+          <a href="#" class="read-link">Read Article</a>
+        </div>
+      </div>
+
+      <!-- The Economist -->
+      <div class="media-item">
+        <div class="pub-badge economist">The<br>Economist</div>
+        <div class="media-body">
+          <div class="media-pub">The Economist</div>
+          <h3>E Pluribus Tunum</h3>
+          <p class="media-desc">Uniform prices for online music are no way to maximise profit.</p>
+          <a href="#" class="read-link">Read Article</a>
+        </div>
+      </div>
+
+      <!-- Washington Post -->
+      <div class="media-item">
+        <div class="pub-badge wapo">Washington<br>Post</div>
+        <div class="media-body">
+          <div class="media-pub">The Washington Post</div>
+          <h3>How Netflix Could Use Big Data to Make Twice as Much Money Off You</h3>
+          <p class="media-desc">Big Data number-crunching makes it tempting — and a lot easier — for companies to engage in price discrimination.</p>
+          <a href="#" class="read-link">Read Article</a>
+        </div>
+      </div>
+
+      <!-- Fortune — Hidden Economy -->
+      <div class="media-item">
+        <div class="pub-badge fortune">Fortune</div>
+        <div class="media-body">
+          <div class="media-pub">Fortune</div>
+          <h3>The Hidden Economy Deciding Who Gets Into Your Favorite Concert, Restaurant, and Theme Park</h3>
+          <a href="#" class="read-link">Read Article</a>
+        </div>
+      </div>
+
+      <!-- Fortune — Zero Employees -->
+      <div class="media-item">
+        <div class="pub-badge fortune">Fortune</div>
+        <div class="media-body">
+          <div class="media-pub">Fortune</div>
+          <h3>'The Ideal Number of Human Employees Inside of Any Company Is Zero': Why AI Gives Company Owners What They Think They Want</h3>
+          <a href="#" class="read-link">Read Article</a>
+        </div>
+      </div>
+
+      <!-- The Guardian -->
+      <div class="media-item">
+        <div class="pub-badge guardian">The<br>Guardian</div>
+        <div class="media-body">
+          <div class="media-pub">The Guardian</div>
+          <h3>Big Data Is Coming for Your Purchase History — To Charge You More Money</h3>
+          <p class="media-desc">Unprotected consumer data will allow price personalization by companies who know how much you need something and how much you can manage to pay.</p>
+          <a href="#" class="read-link">Read Article</a>
+        </div>
+      </div>
+
+      <!-- Forbes -->
+      <div class="media-item">
+        <div class="pub-badge forbes">Forbes</div>
+        <div class="media-body">
+          <div class="media-pub">Forbes</div>
+          <h3>Different Customers, Different Prices, Thanks to Big Data</h3>
+          <a href="#" class="read-link">Read Article</a>
+        </div>
+      </div>
+
+      <!-- Business Insider -->
+      <div class="media-item">
+        <div class="pub-badge bi">Business<br>Insider</div>
+        <div class="media-body">
+          <div class="media-pub">Business Insider</div>
+          <h3>Ad Blocking Is Leading to 'the Slow Death of Niches' on the Web</h3>
+          <p class="media-desc">Ad blockers hurt smaller publishers by giving them an initial traffic spike which then falls away.</p>
+          <a href="#" class="read-link">Read Article</a>
+        </div>
+      </div>
+
+      <!-- VOX EU -->
+      <div class="media-item">
+        <div class="pub-badge voxeu">VOX<br>EU</div>
+        <div class="media-body">
+          <div class="media-pub">VOX EU</div>
+          <h3>The Impact of Ad Blockers on the Internet</h3>
+          <a href="#" class="read-link">Read Article</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- PODCASTS -->
+    <div class="media-category">
+      <h2 class="category-heading">Podcasts & Interviews</h2>
+
+      <div class="media-item">
+        <div class="pub-badge podcast">🎙</div>
+        <div class="media-body">
+          <div class="media-pub">Economics Explored</div>
+          <h3>AI, Jobs, and the Value of Ideas</h3>
+          <p class="media-desc">A conversation about how artificial intelligence is reshaping labor markets, the economics of ideas, and what it all means for the future of work.</p>
+          <p class="media-meta">March 14 · 56 min</p>
+          <a href="#" class="read-link">Listen to Episode</a>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-links">
+      <a href="https://www.linkedin.com/in/benjamin-shiller/">LinkedIn</a>
+      <a href="https://scholar.google.com/citations?user=3zuDRd0AAAAJ">Google Scholar</a>
+      <a href="https://twitter.com/BenjaminShiller">Twitter</a>
+    </div>
+    <p>&copy; 2026 Benjamin Shiller. All rights reserved.</p>
+  </footer>
+
+  <!-- JavaScript -->
+  <script>
+    (function() {
+      var menuToggle = document.getElementById('menuToggle');
+      var navLinks = document.getElementById('navLinks');
+      menuToggle.addEventListener('click', function() {
+        navLinks.classList.toggle('active');
+      });
+    })();
+  </script>
+</body>
+</html>
