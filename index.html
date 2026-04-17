@@ -587,6 +587,476 @@
       .media-card { flex-direction: column; text-align: center; gap: 1.5rem; }
     }
     
+    /* ── SPOTLIGHT + BEAM CANVAS ─────────────────────────── */
+    #spotlightCanvas {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 9998;
+    }
+
+    /* ── HERO CANVAS (neural net - brighter) ─────────────── */
+    .hero { position: relative; overflow: hidden; }
+    #neuralNet {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.92;
+    }
+    .hero-inner { position: relative; z-index: 1; }
+
+    /* ── BUY BUTTONS: magnetic + proximity glow ──────────── */
+    .buy-btn {
+      will-change: transform, background, box-shadow;
+      position: relative;
+    }
+
+    /* ── ORBITING BLURBS AROUND GLOBE ─────────────────────── */
+    .orbit-section {
+      background: linear-gradient(180deg, #0a1628 0%, #142c4e 100%);
+      padding: 5rem 2rem 5.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .orbit-eyebrow {
+      display: block;
+      text-align: center;
+      font-size: 1.2rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--accent);
+      margin-bottom: 0.8rem;
+    }
+    .orbit-heading {
+      text-align: center;
+      color: var(--white);
+      font-size: 2.6rem;
+      margin-bottom: 2rem;
+    }
+    .orbit-stage {
+      position: relative;
+      width: 100%;
+      max-width: 1000px;
+      height: 460px;
+      margin: 0 auto;
+      perspective: 1400px;
+    }
+    .orbit-globe {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 340px; height: 340px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #3d6fa8 0%, #1a365d 45%, #0a1830 100%);
+      box-shadow:
+        inset -20px -20px 60px rgba(0,0,0,0.6),
+        inset 15px 15px 50px rgba(120,170,230,0.25),
+        0 0 80px rgba(44,82,130,0.6),
+        0 0 140px rgba(198,160,82,0.15);
+      z-index: 5;
+    }
+    .orbit-globe::before,
+    .orbit-globe::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .orbit-globe::before {
+      background:
+        radial-gradient(ellipse 45% 12% at 30% 35%, rgba(100,180,140,0.35), transparent 70%),
+        radial-gradient(ellipse 30% 20% at 70% 55%, rgba(100,180,140,0.3), transparent 70%),
+        radial-gradient(ellipse 35% 10% at 50% 75%, rgba(100,180,140,0.25), transparent 70%);
+      mix-blend-mode: screen;
+    }
+    .orbit-globe::after {
+      background:
+        radial-gradient(circle at 30% 30%, rgba(255,255,255,0.35), transparent 35%);
+      mix-blend-mode: screen;
+    }
+    .orbit-card {
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 280px;
+      background: rgba(255,255,255,0.97);
+      border: 1px solid rgba(198,160,82,0.4);
+      border-radius: 10px;
+      padding: 1.6rem 1.6rem 1.3rem;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+      transition: opacity 0.4s;
+      will-change: transform, opacity;
+    }
+    .orbit-card blockquote {
+      margin: 0 0 1rem;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      font-style: italic;
+      line-height: 1.55;
+      color: var(--text);
+    }
+    .orbit-card cite {
+      display: block;
+      font-style: normal;
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      padding-top: 0.8rem;
+      border-top: 1px solid #e2e8f0;
+    }
+    .orbit-card cite strong {
+      display: block;
+      font-size: 1.2rem;
+      color: var(--navy);
+      font-weight: 700;
+      margin-bottom: 0.15rem;
+    }
+    .orbit-caption {
+      text-align: center;
+      color: rgba(255,255,255,0.45);
+      font-size: 1.2rem;
+      margin-top: 1.5rem;
+      font-style: italic;
+    }
+
+    /* Orbit navigation arrows */
+    .orbit-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.06);
+      border: 1.5px solid rgba(198,160,82,0.4);
+      color: rgba(255,255,255,0.8);
+      font-size: 2.4rem;
+      line-height: 1;
+      font-family: 'Open Sans', sans-serif;
+      cursor: pointer;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.22s ease;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+    .orbit-arrow:hover {
+      background: rgba(198,160,82,0.22);
+      border-color: var(--accent);
+      color: #fff;
+      transform: translateY(-50%) scale(1.08);
+    }
+    .orbit-arrow-prev { left: max(10px, calc(50% - 460px)); }
+    .orbit-arrow-next { right: max(10px, calc(50% - 460px)); }
+    @media (max-width: 700px) {
+      .orbit-arrow { width: 40px; height: 40px; font-size: 2rem; }
+      .orbit-arrow-prev { left: 6px; }
+      .orbit-arrow-next { right: 6px; }
+    }
+
+    /* Orbit position dots */
+    .orbit-dots {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 1.8rem;
+    }
+    .orbit-dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(255,255,255,0.35);
+      background: transparent;
+      cursor: pointer;
+      padding: 0;
+      transition: all 0.25s;
+    }
+    .orbit-dot:hover { border-color: var(--accent); }
+    .orbit-dot.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      transform: scale(1.35);
+      box-shadow: 0 0 12px rgba(198,160,82,0.6);
+    }
+
+    .orbit-card { cursor: pointer; }
+    @media (max-width: 700px) {
+      .orbit-stage { height: 420px; }
+      .orbit-globe { width: 240px; height: 240px; }
+      .orbit-card { width: 240px; padding: 1.3rem; }
+      .orbit-card blockquote { font-size: 1.25rem; }
+    }
+
+    /* ── QUIZ SECTION ────────────────────────────────────── */
+    .quiz-section {
+      background: var(--navy-dark);
+      padding: 5.5rem 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .quiz-section::before {
+      content: '';
+      position: absolute;
+      top: -80px; right: -80px;
+      width: 320px; height: 320px;
+      border-radius: 50%;
+      background: rgba(198,160,82,0.07);
+      pointer-events: none;
+    }
+    .quiz-inner {
+      max-width: 680px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .quiz-eyebrow {
+      display: inline-block;
+      font-size: 1.15rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--accent);
+      margin-bottom: 1rem;
+    }
+    .quiz-inner h2 {
+      color: var(--white);
+      font-size: 3.2rem;
+      margin-bottom: 0.8rem;
+    }
+    .quiz-subhead {
+      font-size: 1.6rem;
+      color: rgba(255,255,255,0.65);
+      margin-bottom: 3.5rem;
+    }
+    .quiz-step { display: none; }
+    .quiz-step.active { display: block; }
+
+    .quiz-question {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.2rem;
+      font-style: italic;
+      color: var(--white);
+      margin-bottom: 2.2rem;
+      line-height: 1.45;
+    }
+    .quiz-progress {
+      display: flex;
+      justify-content: center;
+      gap: 0.6rem;
+      margin-bottom: 2rem;
+    }
+    .quiz-pip {
+      width: 28px; height: 4px;
+      border-radius: 2px;
+      background: rgba(255,255,255,0.2);
+      transition: background 0.3s;
+    }
+    .quiz-pip.done { background: var(--accent); }
+    .quiz-pip.current { background: rgba(198,160,82,0.5); }
+
+    .quiz-options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    @media (max-width: 540px) { .quiz-options { grid-template-columns: 1fr; } }
+
+    .quiz-opt {
+      background: rgba(255,255,255,0.07);
+      border: 1.5px solid rgba(255,255,255,0.15);
+      border-radius: 8px;
+      padding: 1.4rem 1.6rem;
+      color: rgba(255,255,255,0.88);
+      font-size: 1.5rem;
+      font-family: 'Open Sans', sans-serif;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.22s;
+      line-height: 1.4;
+    }
+    .quiz-opt:hover {
+      background: rgba(198,160,82,0.15);
+      border-color: var(--accent);
+      color: var(--white);
+      transform: translateY(-2px);
+    }
+    .quiz-opt .opt-label {
+      display: block;
+      font-weight: 700;
+      font-size: 1.35rem;
+      color: var(--accent);
+      margin-bottom: 0.3rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    /* Result */
+    .quiz-result { display: none; }
+    .quiz-result.active { display: block; }
+    .result-score-bar {
+      width: 100%;
+      height: 8px;
+      background: rgba(255,255,255,0.12);
+      border-radius: 4px;
+      margin: 0 auto 2.5rem;
+      max-width: 400px;
+      overflow: hidden;
+    }
+    .result-score-fill {
+      height: 100%;
+      border-radius: 4px;
+      background: linear-gradient(90deg, #2c5282, var(--accent));
+      width: 0;
+      transition: width 1s ease 0.3s;
+    }
+    .result-badge {
+      display: inline-block;
+      padding: 0.6rem 2rem;
+      border-radius: 30px;
+      font-size: 1.3rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-bottom: 1.5rem;
+    }
+    .badge-resilient { background: rgba(72,187,120,0.2); color: #68d391; border: 1.5px solid #68d391; }
+    .badge-adapting  { background: rgba(198,160,82,0.2); color: var(--accent); border: 1.5px solid var(--accent); }
+    .badge-exposed   { background: rgba(229,62,62,0.18); color: #fc8181; border: 1.5px solid #fc8181; }
+
+    .result-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.8rem;
+      color: var(--white);
+      margin-bottom: 1rem;
+    }
+    .result-body {
+      font-size: 1.65rem;
+      color: rgba(255,255,255,0.78);
+      line-height: 1.8;
+      margin-bottom: 2.5rem;
+    }
+    .result-cta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+    }
+    .quiz-restart {
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.4);
+      font-size: 1.3rem;
+      cursor: pointer;
+      font-family: 'Open Sans', sans-serif;
+      text-decoration: underline;
+    }
+    .quiz-restart:hover { color: rgba(255,255,255,0.7); }
+
+    /* ── CHAPTER INSIGHTS ──────────────────────────────── */
+    .insights-section {
+      background: var(--white);
+      padding: 5.5rem 2rem;
+    }
+    .insights-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.8rem;
+      margin-top: 3rem;
+    }
+    @media (max-width: 850px) { .insights-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 540px) { .insights-grid { grid-template-columns: 1fr; } }
+
+    .insight-card {
+      position: relative;
+      min-height: 220px;
+      border-radius: 10px;
+      overflow: hidden;
+      background: var(--navy);
+      cursor: pointer;
+      border: 1px solid rgba(198,160,82,0.2);
+    }
+    .insight-front {
+      padding: 2.4rem 2rem;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    .insight-chapter {
+      font-size: 1.1rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--accent);
+      margin-bottom: 0.8rem;
+    }
+    .insight-front h3 {
+      font-size: 2rem;
+      color: var(--white);
+      line-height: 1.3;
+      margin-bottom: auto;
+    }
+    .insight-hint {
+      font-size: 1.2rem;
+      color: rgba(255,255,255,0.35);
+      margin-top: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .insight-hint::after {
+      content: '→';
+      transition: transform 0.3s;
+    }
+    .insight-card:hover .insight-hint::after {
+      transform: translateX(4px);
+    }
+
+    .insight-reveal {
+      position: absolute;
+      inset: 0;
+      background: rgba(15,36,64,0.96);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 2.4rem 2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      transform: translateY(100%);
+      transition: transform 0.38s cubic-bezier(0.16, 1, 0.3, 1);
+      border-top: 3px solid var(--accent);
+    }
+    .insight-card:hover .insight-reveal,
+    .insight-card:focus-within .insight-reveal {
+      transform: translateY(0);
+    }
+    .insight-reveal p {
+      font-size: 1.55rem;
+      color: rgba(255,255,255,0.88);
+      line-height: 1.7;
+      margin-bottom: 1.8rem;
+    }
+    .insight-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1.25rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .insight-cta:hover { color: var(--accent-light); }
+
+    /* ── FOOTER ────────────────────────────────────────── */
     /* FOOTER */
     footer {
       background: var(--navy-dark);
@@ -647,6 +1117,7 @@
 
   <!-- HERO -->
   <section class="hero">
+    <canvas id="neuralNet"></canvas>
     <div class="hero-inner">
       <div class="hero-book slide-in-left">
         <img src="BookImages/BookMockup2.jpg" alt="AI Economics book cover">
@@ -668,71 +1139,175 @@
     </div>
   </section>
 
-  <!-- BLURBS CAROUSEL -->
-  <section class="panel panel-light">
-    <div class="container">
-      <div class="carousel-container">
-        <button class="carousel-btn carousel-btn-prev" id="carouselPrev">&#8249;</button>
-        <div class="carousel-track">
-          <div class="carousel-slides" id="carouselSlides">
-            <div class="carousel-slide">
-              <div class="blurb-card">
-                <blockquote>
-                  "Concise, chatty, companionable, ever-so-savvy. There may be a more useful guide to AI out there, but why incur the opportunity cost of searching for it [econ humor]? The first three pages should sell you on this one. I decline most blurb requests but, <b>having covered AI from the jump, this is as good as it gets.</b>"
-                </blockquote>
-                <cite>
-                  <strong>Paul Solman</strong>
-                  (Very) longtime Business and Economics Correspondent, PBS NewsHour
-                </cite>
-              </div>
-            </div>
-            <div class="carousel-slide">
-              <div class="blurb-card">
-                <blockquote>
-                  "<b>This book represents the best in bringing real research to understand what is happening in our current AI-moment.</b> Shiller has accomplished in record time an overview of many of the key issues emerging in the AI economy and has laid out the evidence foundations that drive what is happening. An easy and informative read."
-                </blockquote>
-                <cite>
-                  <strong>Joshua Gans</strong>
-                  University of Toronto
-                </cite>
-              </div>
-            </div>
-            <div class="carousel-slide">
-              <div class="blurb-card">
-                <blockquote>
-                  "AI Economics: How Technology Transforms Jobs, Markets, Life, & Our Future brings a lively economic perspective to analyzing how AI will transform our lives. The book is informative and fun to read."
-                </blockquote>
-                <cite>
-                  <strong>Joel Waldfogel</strong>
-                  University of Minnesota, author of <em>Scroogenomics</em> and <em>Digital Renaissance</em>
-                </cite>
-              </div>
-            </div>
-          </div>
-        </div>
-        <button class="carousel-btn carousel-btn-next" id="carouselNext">&#8250;</button>
-        <div class="carousel-dots" id="carouselDots"></div>
+  <!-- BLURBS ORBITING GLOBE -->
+  <section class="orbit-section">
+    <span class="orbit-eyebrow">Praise for AI Economics</span>
+    <h2 class="orbit-heading">What readers are saying</h2>
+    <div class="orbit-stage" id="orbitStage">
+      <button class="orbit-arrow orbit-arrow-prev" id="orbitPrev" aria-label="Previous quote">&#8249;</button>
+      <div class="orbit-globe"></div>
+
+      <div class="orbit-card" data-orbit="0">
+        <blockquote>
+          "Concise, chatty, companionable, ever-so-savvy. There may be a more useful guide to AI out there, but why incur the opportunity cost of searching for it? <b>Having covered AI from the jump, this is as good as it gets.</b>"
+        </blockquote>
+        <cite>
+          <strong>Paul Solman</strong>
+          Business &amp; Economics Correspondent, PBS NewsHour
+        </cite>
       </div>
+
+      <div class="orbit-card" data-orbit="1">
+        <blockquote>
+          "<b>This book represents the best in bringing real research to understand what is happening in our current AI-moment.</b> Shiller has accomplished in record time an overview of many of the key issues emerging in the AI economy. An easy and informative read."
+        </blockquote>
+        <cite>
+          <strong>Joshua Gans</strong>
+          University of Toronto; author of <em>Power and Prediction</em> and <em>Prediction Machines: The Simple Economics of Artificial Intelligence</em>
+        </cite>
+      </div>
+
+      <div class="orbit-card" data-orbit="2">
+        <blockquote>
+          "AI Economics brings a lively economic perspective to analyzing how AI will transform our lives. <b>The book is informative and fun to read.</b>"
+        </blockquote>
+        <cite>
+          <strong>Joel Waldfogel</strong>
+          University of Minnesota, author of <em>Scroogenomics</em>
+        </cite>
+      </div>
+
+      <button class="orbit-arrow orbit-arrow-next" id="orbitNext" aria-label="Next quote">&#8250;</button>
     </div>
+
+    <div class="orbit-dots" id="orbitDots">
+      <button class="orbit-dot active" data-idx="0" aria-label="Quote 1"></button>
+      <button class="orbit-dot" data-idx="1" aria-label="Quote 2"></button>
+      <button class="orbit-dot" data-idx="2" aria-label="Quote 3"></button>
+    </div>
+
+    <p class="orbit-caption">Click a quote, an arrow, or a dot to focus it.</p>
   </section>
 
-  <!-- ABOUT AUTHOR -->
-  <section class="panel panel-white">
-    <div class="container">
-      <div class="about-grid">
-        <div class="about-text slide-in-left">
-          <h2>About Benjamin</h2>
-          <p>
-            Benjamin Shiller is an Associate Professor of Economics at Brandeis University. His research on personalized pricing, ad-blocking, and technological change has been published in leading journals and covered in <em>The Atlantic</em>, <em>The Economist</em>, <em>Forbes</em>, <em>Fortune</em>, <em>The Guardian</em>, and <em>The Washington Post</em>.
-          </p>
-          <p>
-            With two decades studying AI and disruption, he brings rigorous analysis and accessible storytelling to help readers understand the forces reshaping their world.
-          </p>
-          <a href="CVBio" class="text-link">Full Bio &rarr;</a>
+  <!-- AI RISK QUIZ (new position: right after orbit) -->
+  <section class="quiz-section" id="quizSection">
+    <div class="quiz-inner">
+      <span class="quiz-eyebrow">4-Question Quiz</span>
+      <h2>How AI-Proof Is Your Job?</h2>
+      <p class="quiz-subhead">Economists don't ask "can AI do this?" — they ask "which humans does AI replace, and which ones does it make richer?" Four questions, using the logic from the book.</p>
+
+      <!-- Progress pips -->
+      <div class="quiz-progress" id="quizProgress">
+        <div class="quiz-pip current" id="pip0"></div>
+        <div class="quiz-pip" id="pip1"></div>
+        <div class="quiz-pip" id="pip2"></div>
+        <div class="quiz-pip" id="pip3"></div>
+      </div>
+
+      <!-- Q1 Weirdness -->
+      <div class="quiz-step active" id="step0">
+        <p class="quiz-question">"How weird is your job?"</p>
+        <div class="quiz-options">
+          <button class="quiz-opt" onclick="quizAnswer(0,0)">
+            <span class="opt-label">Textbook Standard</span>
+            You could describe it in one sentence, and so could ChatGPT
+          </button>
+          <button class="quiz-opt" onclick="quizAnswer(0,1)">
+            <span class="opt-label">Normal White-Collar</span>
+            Emails, spreadsheets, meetings, repeat
+          </button>
+          <button class="quiz-opt" onclick="quizAnswer(0,2)">
+            <span class="opt-label">Specialized &amp; Quirky</span>
+            Your niche has its own inside jokes
+          </button>
+          <button class="quiz-opt" onclick="quizAnswer(0,3)">
+            <span class="opt-label">Hard to Explain at Parties</span>
+            "Wait, you do WHAT for a living?"
+          </button>
         </div>
-        <div class="about-photo slide-in-right">
-          <img src="headshots/WebsitePhoto.jpg" alt="Benjamin Shiller">
+      </div>
+
+      <!-- Q2 Stakes -->
+      <div class="quiz-step" id="step1">
+        <p class="quiz-question">"How high are the stakes when you screw up?"</p>
+        <div class="quiz-options">
+          <button class="quiz-opt" onclick="quizAnswer(1,0)">
+            <span class="opt-label">Nobody Notices</span>
+            Mistakes get quietly absorbed by the org
+          </button>
+          <button class="quiz-opt" onclick="quizAnswer(1,1)">
+            <span class="opt-label">Embarrassing</span>
+            A manager might flag it
+          </button>
+          <button class="quiz-opt" onclick="quizAnswer(1,2)">
+            <span class="opt-label">Real Money on the Line</span>
+            Errors have financial or legal consequences
+          </button>
+          <button class="quiz-opt" onclick="quizAnswer(1,3)">
+            <span class="opt-label">Someone Could Get Hurt</span>
+            Lives, health, or safety depend on it
+          </button>
         </div>
+      </div>
+
+      <!-- Q3 Easy vs Hard -->
+      <div class="quiz-step" id="step2">
+        <p class="quiz-question">"Is AI coming for the easy parts of your job, or the hard parts?"</p>
+        <div class="quiz-options">
+          <button class="quiz-opt" onclick="quizAnswer(2,0)">
+            <span class="opt-label">The Hard Parts</span>
+            The stuff I trained years for is exactly what AI does now
+          </button>
+          <button class="quiz-opt" onclick="quizAnswer(2,1)">
+            <span class="opt-label">Both, Honestly</span>
+            It's chewing through everything
+          </button>
+          <button class="quiz-opt" onclick="quizAnswer(2,2)">
+            <span class="opt-label">Not Here Yet</span>
+            My field hasn't really been touched
+          </button>
+          <button class="quiz-opt" onclick="quizAnswer(2,3)">
+            <span class="opt-label">The Easy Parts</span>
+            AI does the busywork; I focus on judgment
+          </button>
+        </div>
+      </div>
+
+      <!-- Q4 Kangaroo question -->
+      <div class="quiz-step" id="step3">
+        <p class="quiz-question">"Would your job survive a kangaroo hopping into the room?"</p>
+        <p style="font-size:1.3rem; color:rgba(255,255,255,0.5); margin-top:-1.5rem; margin-bottom:2.2rem;">(a serious question about physical chaos tolerance)</p>
+        <div class="quiz-options">
+          <button class="quiz-opt" onclick="quizAnswer(3,0)">
+            <span class="opt-label">Pure Screen Time</span>
+            Kangaroo? IT would handle it. I work entirely on a laptop
+          </button>
+          <button class="quiz-opt" onclick="quizAnswer(3,1)">
+            <span class="opt-label">Mostly Digital</span>
+            I'd panic briefly, then file a report
+          </button>
+          <button class="quiz-opt" onclick="quizAnswer(3,2)">
+            <span class="opt-label">Physical Reality Involved</span>
+            Unpredictable stuff happens around me regularly
+          </button>
+          <button class="quiz-opt" onclick="quizAnswer(3,3)">
+            <span class="opt-label">Bring the Kangaroo</span>
+            Chaos IS my job. I'd have it sedated in ten minutes
+          </button>
+        </div>
+      </div>
+
+      <!-- Result -->
+      <div class="quiz-result" id="quizResult">
+        <div class="result-score-bar"><div class="result-score-fill" id="resultFill"></div></div>
+        <div id="resultBadge" class="result-badge"></div>
+        <h3 class="result-title" id="resultTitle"></h3>
+        <p class="result-body" id="resultBody"></p>
+        <div class="result-cta">
+          <a href="https://www.amazon.com/dp/B0G45MKBZT" class="buy-btn buy-btn-primary" target="_blank">Amazon<span>print / e-book</span></a>
+          <a href="https://bookshop.org/p/books/ai-economics-how-technology-transforms-jobs-markets-life-our-future-benjamin-shiller/ed6d28a99d4b8128?ean=9798993931210" class="buy-btn buy-btn-primary" target="_blank">Bookshop<span>print</span></a>
+        </div>
+        <button class="quiz-restart" onclick="quizRestart()">Take the quiz again</button>
       </div>
     </div>
   </section>
@@ -753,6 +1328,109 @@
             By applying the <em>Incentive Filter</em>, this book strips away the hype to reveal the new "plumbing" of our economy. It translates decades of research into sharp stories about who gets paid and how power shifts when algorithms meet human nature. It’s your guide to spotting the change before it hits your paycheck or your shopping cart.
           </p>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT AUTHOR (moved - now after About Book) -->
+  <section class="panel panel-white">
+    <div class="container">
+      <div class="about-grid">
+        <div class="about-text slide-in-left">
+          <h2>About Benjamin</h2>
+          <p>
+            Benjamin Shiller is an Associate Professor of Economics at Brandeis University. His research on personalized pricing, ad-blocking, and technological change has been published in leading journals and covered in <em>The Atlantic</em>, <em>The Economist</em>, <em>Forbes</em>, <em>Fortune</em>, <em>The Guardian</em>, and <em>The Washington Post</em>.
+          </p>
+          <p>
+            With two decades studying AI and disruption, he brings rigorous analysis and accessible storytelling to help readers understand the forces reshaping their world.
+          </p>
+          <a href="CVBio" class="text-link">Full Bio &rarr;</a>
+        </div>
+        <div class="about-photo slide-in-right">
+          <img src="headshots/WebsitePhoto.jpg" alt="Benjamin Shiller">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CHAPTER INSIGHTS (hover-to-reveal) -->
+  <section class="insights-section panel-white">
+    <div class="container">
+      <h2 class="panel-title">What's Inside</h2>
+      <div class="insights-grid">
+
+        <div class="insight-card">
+          <div class="insight-front">
+            <span class="insight-chapter">The Framework</span>
+            <h3>The Incentive Filter</h3>
+            <span class="insight-hint">Hover to peek inside</span>
+          </div>
+          <div class="insight-reveal">
+            <p>One lens to cut through all the AI hype. Before you can predict what AI will do, you need to understand who controls it—and what they want.</p>
+            <a href="https://www.amazon.com/dp/B0G45MKBZT" class="insight-cta" target="_blank">Read more →</a>
+          </div>
+        </div>
+
+        <div class="insight-card">
+          <div class="insight-front">
+            <span class="insight-chapter">Chapter 9</span>
+            <h3>Algorithmic Pricing</h3>
+            <span class="insight-hint">Hover to peek inside</span>
+          </div>
+          <div class="insight-reveal">
+            <p>Your browsing history, your zip code, your timing—all of it feeds models that quietly set the price you see. Find out who wins and who loses.</p>
+            <a href="https://www.amazon.com/dp/B0G45MKBZT" class="insight-cta" target="_blank">Read more →</a>
+          </div>
+        </div>
+
+        <div class="insight-card">
+          <div class="insight-front">
+            <span class="insight-chapter">Chapter 2</span>
+            <h3>The Future of Work</h3>
+            <span class="insight-hint">Hover to peek inside</span>
+          </div>
+          <div class="insight-reveal">
+            <p>Which jobs are truly safe? The answer isn't about whether AI can do them—it's about whether it's <em>profitable</em> to deploy AI to do them.</p>
+            <a href="https://www.amazon.com/dp/B0G45MKBZT" class="insight-cta" target="_blank">Read more →</a>
+          </div>
+        </div>
+
+        <div class="insight-card">
+          <div class="insight-front">
+            <span class="insight-chapter">Chapter 3</span>
+            <h3>The Weirdness Premium</h3>
+            <span class="insight-hint">Hover to peek inside</span>
+          </div>
+          <div class="insight-reveal">
+            <p>In an AI economy, the strangest skill is the safest one. Why unpredictability, empathy, and human weirdness may be your most valuable career assets.</p>
+            <a href="https://www.amazon.com/dp/B0G45MKBZT" class="insight-cta" target="_blank">Read more →</a>
+          </div>
+        </div>
+
+        <div class="insight-card">
+          <div class="insight-front">
+            <span class="insight-chapter">Chapter 13</span>
+            <h3>The Scam Economy</h3>
+            <span class="insight-hint">Hover to peek inside</span>
+          </div>
+          <div class="insight-reveal">
+            <p>AI is making fraud faster, cheaper, and more convincing. Understanding the economic incentives behind scams is your best defense.</p>
+            <a href="https://www.amazon.com/dp/B0G45MKBZT" class="insight-cta" target="_blank">Read more →</a>
+          </div>
+        </div>
+
+        <div class="insight-card">
+          <div class="insight-front">
+            <span class="insight-chapter">Chapter 5</span>
+            <h3>AI & Democracy</h3>
+            <span class="insight-hint">Hover to peek inside</span>
+          </div>
+          <div class="insight-reveal">
+            <p>From deepfakes to filter bubbles—what does economics predict about the future of truth? The answer is more nuanced than the headlines suggest.</p>
+            <a href="https://www.amazon.com/dp/B0G45MKBZT" class="insight-cta" target="_blank">Read more →</a>
+          </div>
+        </div>
+
       </div>
     </div>
   </section>
@@ -797,78 +1475,12 @@
         navLinks.classList.toggle('active');
       });
 
-      // Carousel
-      var currentSlide = 0;
-      var totalSlides = 3;
-      var autoplayInterval;
-      var slides = document.getElementById('carouselSlides');
-      var dotsContainer = document.getElementById('carouselDots');
-      
-      // Create dots
-      for (var i = 0; i < totalSlides; i++) {
-        var dot = document.createElement('button');
-        dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
-        dot.setAttribute('data-index', i);
-        dotsContainer.appendChild(dot);
-      }
-      
-      var dots = document.querySelectorAll('.carousel-dot');
-      
-      function updateCarousel() {
-        slides.style.transform = 'translateX(-' + (currentSlide * 100) + '%)';
-        for (var i = 0; i < dots.length; i++) {
-          dots[i].classList.toggle('active', i === currentSlide);
-        }
-      }
-      
-      function moveCarousel(direction) {
-        currentSlide = (currentSlide + direction + totalSlides) % totalSlides;
-        updateCarousel();
-        resetAutoplay();
-      }
-      
-      function goToSlide(index) {
-        currentSlide = index;
-        updateCarousel();
-        resetAutoplay();
-      }
-      
-      function startAutoplay() {
-        autoplayInterval = setInterval(function() {
-          currentSlide = (currentSlide + 1) % totalSlides;
-          updateCarousel();
-        }, 9000);
-      }
-      
-      function resetAutoplay() {
-        clearInterval(autoplayInterval);
-        startAutoplay();
-      }
-      
-      // Event listeners for carousel
-      document.getElementById('carouselPrev').addEventListener('click', function() {
-        moveCarousel(-1);
-      });
-      
-      document.getElementById('carouselNext').addEventListener('click', function() {
-        moveCarousel(1);
-      });
-      
-      dotsContainer.addEventListener('click', function(e) {
-        if (e.target.classList.contains('carousel-dot')) {
-          goToSlide(parseInt(e.target.getAttribute('data-index')));
-        }
-      });
-      
-      // Start autoplay
-      startAutoplay();
-      
       // Intersection Observer for scroll animations
       var observerOptions = {
         threshold: 0.15,
         rootMargin: '0px 0px -50px 0px'
       };
-      
+
       var observer = new IntersectionObserver(function(entries) {
         entries.forEach(function(entry) {
           if (entry.isIntersecting) {
@@ -877,8 +1489,7 @@
           }
         });
       }, observerOptions);
-      
-      // Pause animations until in view
+
       var animatedElements = document.querySelectorAll('.slide-in-left, .slide-in-right, .fade-in');
       for (var j = 0; j < animatedElements.length; j++) {
         animatedElements[j].style.animationPlayState = 'paused';
@@ -886,5 +1497,450 @@
       }
     })();
   </script>
+
+  <!-- INTERACTIVE EFFECTS -->
+  <script>
+  (function() {
+
+    /* ── STATE: cursor position ─────────────────────────── */
+    var mouseX = -9999, mouseY = -9999;
+    var lastMoveAt = 0;
+    document.addEventListener('mousemove', function(e) {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      lastMoveAt = performance.now();
+    });
+
+    /* ── 1. NEURAL NETWORK (brighter, more visible) ────── */
+    var canvas = document.getElementById('neuralNet');
+    var ctx = canvas.getContext('2d');
+    var nodes = [];
+    var NODE_COUNT = 80;
+    var MAX_DIST = 170;
+
+    function resizeCanvas() {
+      var hero = canvas.parentElement;
+      canvas.width = hero.offsetWidth;
+      canvas.height = hero.offsetHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    for (var i = 0; i < NODE_COUNT; i++) {
+      nodes.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        vx: (Math.random() - 0.5) * 0.5,
+        vy: (Math.random() - 0.5) * 0.5,
+        r: Math.random() * 2.4 + 1.4,
+        pulse: Math.random() * Math.PI * 2,
+        pulseSpeed: 0.02 + Math.random() * 0.025,
+        litTimer: 0
+      });
+    }
+
+    function drawNet() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (var i = 0; i < nodes.length; i++) {
+        var n = nodes[i];
+        n.pulse += n.pulseSpeed;
+        n.x += n.vx;
+        n.y += n.vy;
+        if (n.x < 0 || n.x > canvas.width)  n.vx *= -1;
+        if (n.y < 0 || n.y > canvas.height) n.vy *= -1;
+        if (n.litTimer > 0) n.litTimer--;
+
+        for (var j = i + 1; j < nodes.length; j++) {
+          var m = nodes[j];
+          var dx = m.x - n.x, dy = m.y - n.y;
+          var dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < MAX_DIST) {
+            var alpha = (1 - dist / MAX_DIST) * 0.75;
+            var isLit = n.litTimer > 0 || m.litTimer > 0;
+            ctx.beginPath();
+            ctx.moveTo(n.x, n.y);
+            ctx.lineTo(m.x, m.y);
+            if (isLit) {
+              ctx.strokeStyle = 'rgba(220,180,95,' + Math.min(1, alpha * 2.4) + ')';
+              ctx.lineWidth = 2.2;
+              ctx.shadowColor = 'rgba(220,180,95,0.9)';
+              ctx.shadowBlur = 10;
+            } else {
+              ctx.strokeStyle = 'rgba(160,200,240,' + alpha + ')';
+              ctx.lineWidth = 1.1;
+              ctx.shadowBlur = 0;
+            }
+            ctx.stroke();
+          }
+        }
+        ctx.shadowBlur = 0;
+
+        if (Math.random() < 0.0035) n.litTimer = 90;
+
+        var glow = 0.65 + 0.35 * Math.sin(n.pulse);
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, n.r * glow, 0, Math.PI * 2);
+        if (n.litTimer > 0) {
+          ctx.fillStyle = 'rgba(220,180,95,' + Math.min(1, 0.9 + 0.1 * glow) + ')';
+          ctx.shadowColor = 'rgba(220,180,95,0.9)';
+          ctx.shadowBlur = 14;
+        } else {
+          ctx.fillStyle = 'rgba(190,220,255,' + (0.85 * glow) + ')';
+          ctx.shadowColor = 'rgba(190,220,255,0.5)';
+          ctx.shadowBlur = 4;
+        }
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      }
+      requestAnimationFrame(drawNet);
+    }
+    drawNet();
+
+    /* ── 2. ORBITING BLURBS WITH NAVIGATION ────────────────── */
+    var orbitCards = document.querySelectorAll('.orbit-card');
+    var orbitDots  = document.querySelectorAll('.orbit-dot');
+    var orbitPrev  = document.getElementById('orbitPrev');
+    var orbitNext  = document.getElementById('orbitNext');
+    var orbitStage = document.getElementById('orbitStage');
+    var N = orbitCards.length;
+
+    var currentAngle = 0;              // current orbit rotation (radians)
+    var targetAngle  = 0;              // target in manual mode
+    var focusedIdx   = 0;              // which card is (or is heading to) front
+    var autoMode     = true;           // true = drifting, false = pausing on focus
+    var lastInteraction = 0;           // when user last clicked
+    var AUTO_RESUME_MS = 7000;         // resume drift after 7s of inactivity
+    var BASE_SPEED = 0.00022;          // radians/ms when drifting
+    var CARD_STEP  = (2 * Math.PI) / N;
+    var lastFrameTime = performance.now();
+
+    function setFocus(i) {
+      focusedIdx = ((i % N) + N) % N;
+      // Compute target so focused card sits at front (angle 0),
+      // choosing the shortest-path version of that angle.
+      var base = -focusedIdx * CARD_STEP;
+      while (base - currentAngle > Math.PI)  base -= 2 * Math.PI;
+      while (base - currentAngle < -Math.PI) base += 2 * Math.PI;
+      targetAngle = base;
+      autoMode = false;
+      lastInteraction = performance.now();
+      updateDots();
+    }
+
+    function updateDots() {
+      orbitDots.forEach(function(dot, i) {
+        dot.classList.toggle('active', i === focusedIdx);
+      });
+    }
+
+    // Click handlers
+    if (orbitPrev) orbitPrev.addEventListener('click', function(e) {
+      e.stopPropagation(); setFocus(focusedIdx - 1);
+    });
+    if (orbitNext) orbitNext.addEventListener('click', function(e) {
+      e.stopPropagation(); setFocus(focusedIdx + 1);
+    });
+    orbitDots.forEach(function(dot, i) {
+      dot.addEventListener('click', function(e) {
+        e.stopPropagation(); setFocus(i);
+      });
+    });
+    orbitCards.forEach(function(card, i) {
+      card.addEventListener('click', function() { setFocus(i); });
+    });
+
+    function animateOrbit() {
+      if (!N) return;
+      var now = performance.now();
+      var dt = Math.min(50, now - lastFrameTime);
+      lastFrameTime = now;
+
+      // Return to auto mode after inactivity
+      if (!autoMode && (now - lastInteraction) > AUTO_RESUME_MS) {
+        autoMode = true;
+      }
+
+      if (autoMode) {
+        currentAngle -= BASE_SPEED * dt;
+        // Track which card is nearest the front for dot highlighting
+        var idx = Math.round(-currentAngle / CARD_STEP);
+        idx = ((idx % N) + N) % N;
+        if (idx !== focusedIdx) { focusedIdx = idx; updateDots(); }
+      } else {
+        // Ease toward target
+        currentAngle += (targetAngle - currentAngle) * 0.09;
+      }
+
+      var isNarrow = window.innerWidth < 700;
+      var radiusX = isNarrow ? 170 : 320;
+      var globeRadius = isNarrow ? 120 : 170;
+
+      orbitCards.forEach(function(card, i) {
+        var angle = currentAngle + (i * CARD_STEP);
+        var x = Math.sin(angle) * radiusX;
+        var z = Math.cos(angle) * radiusX;
+
+        var scale = 0.55 + ((z + radiusX) / (2 * radiusX)) * 0.6;
+
+        var opacity;
+        if (z >= 0) {
+          opacity = 1;
+        } else {
+          var absX = Math.abs(x);
+          if (absX < globeRadius * 0.9) {
+            opacity = 0;
+          } else {
+            opacity = Math.min(1, (absX - globeRadius * 0.75) / (globeRadius * 0.4));
+          }
+        }
+
+        card.style.transform =
+          'translate(-50%, -50%) translate3d(' + x + 'px, 0, ' + z + 'px) scale(' + scale.toFixed(3) + ')';
+        card.style.opacity = opacity;
+        card.style.zIndex = z > 0 ? 10 : 1;
+        card.style.pointerEvents = opacity < 0.35 ? 'none' : 'auto';
+      });
+
+      requestAnimationFrame(animateOrbit);
+    }
+    animateOrbit();
+
+    /* ── 3. SPOTLIGHT + BEAM-TO-BUTTON CANVAS ─────────────── */
+    var spot = document.createElement('canvas');
+    spot.id = 'spotlightCanvas';
+    document.body.appendChild(spot);
+    var spotCtx = spot.getContext('2d');
+
+    function resizeSpot() {
+      spot.width = window.innerWidth;
+      spot.height = window.innerHeight;
+    }
+    resizeSpot();
+    window.addEventListener('resize', resizeSpot);
+
+    var buyBtns = document.querySelectorAll('.buy-btn');
+
+    function drawSpotlight() {
+      spotCtx.clearRect(0, 0, spot.width, spot.height);
+      if (mouseX < 0) { requestAnimationFrame(drawSpotlight); return; }
+
+      // Find nearest visible buy button
+      var nearest = null, minDist = Infinity;
+      buyBtns.forEach(function(btn) {
+        var r = btn.getBoundingClientRect();
+        // Skip hidden or off-screen buttons (e.g. quiz result buttons with display:none)
+        if (r.width === 0 || r.height === 0) return;
+        if (r.bottom < 0 || r.top > spot.height || r.right < 0 || r.left > spot.width) return;
+        var cx = r.left + r.width / 2;
+        var cy = r.top  + r.height / 2;
+        var d = Math.hypot(cx - mouseX, cy - mouseY);
+        if (d < minDist) { minDist = d; nearest = { x: cx, y: cy, d: d }; }
+      });
+
+      // Draw beam — only when a button is visible & cursor is not already ON it
+      if (nearest && nearest.d > 40 && nearest.d < 700) {
+        var strength = Math.max(0, Math.min(1, (700 - nearest.d) / 500)); // closer = stronger
+        var grad = spotCtx.createLinearGradient(mouseX, mouseY, nearest.x, nearest.y);
+        grad.addColorStop(0,   'rgba(198,160,82,' + (0.55 * strength) + ')');
+        grad.addColorStop(0.5, 'rgba(212,175,97,' + (0.32 * strength) + ')');
+        grad.addColorStop(1,   'rgba(255,210,130,' + (0.7 * strength) + ')');
+
+        // Glowing tapered beam
+        spotCtx.save();
+        spotCtx.strokeStyle = grad;
+        spotCtx.lineWidth = 3 + 4 * strength;
+        spotCtx.shadowColor = 'rgba(212,175,97,0.9)';
+        spotCtx.shadowBlur = 20;
+        spotCtx.lineCap = 'round';
+        spotCtx.beginPath();
+        spotCtx.moveTo(mouseX, mouseY);
+        spotCtx.lineTo(nearest.x, nearest.y);
+        spotCtx.stroke();
+        spotCtx.restore();
+
+        // Glow at the button end (target pulse)
+        var pulseR = 20 + 10 * Math.sin(performance.now() / 220);
+        var targetGrad = spotCtx.createRadialGradient(nearest.x, nearest.y, 0, nearest.x, nearest.y, pulseR);
+        targetGrad.addColorStop(0, 'rgba(255,220,140,' + (0.55 * strength) + ')');
+        targetGrad.addColorStop(1, 'rgba(255,220,140,0)');
+        spotCtx.fillStyle = targetGrad;
+        spotCtx.beginPath();
+        spotCtx.arc(nearest.x, nearest.y, pulseR, 0, Math.PI * 2);
+        spotCtx.fill();
+      }
+
+      // Small circular spotlight at cursor (smaller than before)
+      var spotR = 140;
+      var cursorGrad = spotCtx.createRadialGradient(mouseX, mouseY, 0, mouseX, mouseY, spotR);
+      cursorGrad.addColorStop(0,   'rgba(212,175,97,0.22)');
+      cursorGrad.addColorStop(0.5, 'rgba(44,82,130,0.08)');
+      cursorGrad.addColorStop(1,   'rgba(0,0,0,0)');
+      spotCtx.fillStyle = cursorGrad;
+      spotCtx.beginPath();
+      spotCtx.arc(mouseX, mouseY, spotR, 0, Math.PI * 2);
+      spotCtx.fill();
+
+      requestAnimationFrame(drawSpotlight);
+    }
+    drawSpotlight();
+
+    /* ── 4. MAGNETIC + PROXIMITY-REACTIVE BUY BUTTONS ────── */
+    var allBtns = document.querySelectorAll('.buy-btn');
+
+    document.addEventListener('mousemove', function(e) {
+      allBtns.forEach(function(btn) {
+        var rect = btn.getBoundingClientRect();
+        if (rect.width === 0 || rect.height === 0) return; // skip hidden buttons
+        var cx = rect.left + rect.width / 2;
+        var cy = rect.top  + rect.height / 2;
+        var dx = e.clientX - cx;
+        var dy = e.clientY - cy;
+        var dist = Math.sqrt(dx * dx + dy * dy);
+
+        var threshold = 260; // larger proximity zone for color/size
+        var pullThreshold = 110;
+
+        if (dist < threshold) {
+          var t = 1 - (dist / threshold); // 0..1 (close = 1)
+          // Magnetic pull (only when very close)
+          var pull = dist < pullThreshold ? (1 - dist / pullThreshold) * 0.28 : 0;
+          var tx = dx * pull;
+          var ty = dy * pull;
+          // Scale up with proximity (1.0 → 1.15)
+          var scale = 1 + 0.15 * t;
+
+          btn.style.transform = 'translate(' + tx + 'px,' + ty + 'px) scale(' + scale.toFixed(3) + ')';
+
+          // Color transition: gold → lighter/hotter gold as approaching
+          // Base #c6a052 (198,160,82) → Hot #ffd980 (255,217,128)
+          var r = Math.round(198 + (255 - 198) * t);
+          var g = Math.round(160 + (217 - 160) * t);
+          var b = Math.round( 82 + (128 -  82) * t);
+          btn.style.background = 'rgb(' + r + ',' + g + ',' + b + ')';
+
+          // Increasing glow box-shadow
+          var glowAlpha = (0.3 + 0.55 * t).toFixed(2);
+          var glowSize  = (12 + 28 * t).toFixed(0);
+          btn.style.boxShadow = '0 0 ' + glowSize + 'px rgba(255,210,130,' + glowAlpha + '), 0 8px 22px rgba(0,0,0,0.28)';
+        } else {
+          btn.style.transform = '';
+          btn.style.background = '';
+          btn.style.boxShadow = '';
+        }
+      });
+    });
+
+  })();
+
+  /* ── 5. QUIZ LOGIC (4 questions, 6 analogy outcomes) ─── */
+  var quizScores = [-1, -1, -1, -1];
+  var QUIZ_COUNT = 4;
+
+  function quizAnswer(questionIndex, score) {
+    quizScores[questionIndex] = score;
+    var current = document.getElementById('step' + questionIndex);
+    current.classList.remove('active');
+
+    document.getElementById('pip' + questionIndex).classList.remove('current');
+    document.getElementById('pip' + questionIndex).classList.add('done');
+
+    var next = questionIndex + 1;
+    if (next < QUIZ_COUNT) {
+      document.getElementById('step' + next).classList.add('active');
+      document.getElementById('pip' + next).classList.add('current');
+    } else {
+      document.getElementById('quizProgress').style.display = 'none';
+      showQuizResult();
+    }
+  }
+
+  function showQuizResult() {
+    var q1 = quizScores[0];           // weirdness
+    var q2 = quizScores[1];           // stakes
+    var q3 = quizScores[2];           // what AI targets (primary dimension)
+    var q4 = quizScores[3];           // physical chaos tolerance
+    var other = q1 + q2 + q4;         // 0..9 — weirdness/stakes/chaos combined
+
+    var result = document.getElementById('quizResult');
+    var badge  = document.getElementById('resultBadge');
+    var title  = document.getElementById('resultTitle');
+    var body   = document.getElementById('resultBody');
+    var fill   = document.getElementById('resultFill');
+
+    var pct, badgeClass, badgeText, titleText, bodyText;
+
+    // ──────────────────────────────────────────────────────────
+    // Primary routing on Q3 (AI's target), then on other score.
+    // Radiologist removed. Outcomes: Knocker-Upper, Elevator
+    // Operator, Photographer, Centaur, Comedian.
+    // ──────────────────────────────────────────────────────────
+
+    if (q3 === 3) {
+      // AI automates the EASY parts — pure augmentation
+      if (other >= 5) {
+        // Purely augmented AND high on weirdness/stakes/chaos → Centaur
+        pct = 82; badgeClass = 'badge-adapting'; badgeText = 'The Centaur (Advanced Chess)';
+        titleText = 'After Deep Blue beat Kasparov, the best chess player in the world wasn\'t a human or a machine. It was a team.';
+        bodyText  = 'Your answers line up almost perfectly: AI handles your drudgery and difficult computation, and what\'s left is exactly what you\'re good at — judgment under uncertainty and intentional unpredictability. You\'re the human half of a human+AI pair, which right now is the most powerful configuration there is. The catch: centaur eras end. <em>AI Economics</em> explains how to adapt.';
+      } else {
+        // AI takes the easy stuff, but your job isn't weird/high-stakes/physical
+        // → Comedian: what's left is human residue — lean in.
+        pct = 92; badgeClass = 'badge-resilient'; badgeText = 'The Comedian';
+        titleText = 'AI can handle logistics and travel isn\'t necessary. Now your only job task is the hard part, like writing jokes.';
+        bodyText  = 'Here\'s the thing: AI is only taking the boring parts of your job. Whatever is left — your judgment, your presence, the human residue — is getting <em>more</em> valuable, not less. <em>AI Economics</em> (Ch. 3) explains why this residue is worth investing in, and how to turn ordinary human judgment into a premium skill.';
+      }
+    }
+    else if (q3 === 0) {
+      // AI automates the HARD parts — your expertise is being commoditized
+      pct = 48; badgeClass = 'badge-adapting'; badgeText = 'The Photographer';
+      titleText = 'When digital cameras killed the darkroom, photographers didn\'t disappear. They pivoted from craft to vision, but opened the floodgates.';
+      bodyText  = 'The skills you spent years mastering are exactly what AI is now doing cheaply. Now photography entails different skills. The big question for you: do you excel that those skills? How many others do too?. <em>AI Economics</em> gives you the framework to find your field\'s equivalent of "vision": the part that AI makes more valuable, not less.';
+    }
+    else {
+      // Q3 = 1 ("both") or Q3 = 2 ("not here yet")
+      // Fall back to total-score-based outcomes, but without Centaur
+      // (which requires pure augmentation).
+      if (other <= 2) {
+        pct = 12; badgeClass = 'badge-exposed'; badgeText = 'The Knocker-Upper';
+        titleText = 'A 19th-century profession paid people to wake neighbors before dawn. Then alarm clocks arrived.';
+        bodyText  = 'Your job has the profile of a role whose core function can now be done by a machine at near-zero cost. Knocker-uppers weren\'t stupid — they were just slow to see the alarm clock coming. You still have time. <em>AI Economics</em> shows you what the "alarm clock" looks like in your field, and how to avoid someone hitting <em>snooze</em> on your profession.';
+      } else if (other <= 5) {
+        pct = 30; badgeClass = 'badge-exposed'; badgeText = 'The Elevator Operator';
+        titleText = 'Elevator operators didn\'t vanish overnight. They lingered for decades as a hotel status symbol — then were gone.';
+        bodyText  = 'Your role follows a predictable pattern: first AI makes your skills cheaper, then only premium contexts keep you employed, then those fade too. The timeline is longer than the panic suggests, but the direction is clear. The Incentive Filter in <em>AI Economics</em> explains exactly when employers decide automation is worth it, and how to be on the other side of that decision.';
+      } else {
+        // High weirdness/stakes/chaos protects you even if AI status is mixed
+        pct = 88; badgeClass = 'badge-resilient'; badgeText = 'The Comedian';
+        titleText = 'AI can write jokes. It can\'t do stand-up.';
+        bodyText  = 'Your work depends on the irreducibly human: presence, weirdness, timing, judgment calls that defy pattern. Whether AI is already in your field or still on the horizon, your moat is the weirdness premium itself — and in an AI-saturated economy, it\'s going <em>up</em>, not down. <em>AI Economics</em> (Ch. 3) explains why weirdness pays, and how to deploy yours strategically.';
+      }
+    }
+
+    badge.className = 'result-badge ' + badgeClass;
+    badge.textContent = badgeText;
+    title.textContent = titleText;
+    body.innerHTML = bodyText;
+
+    result.classList.add('active');
+    setTimeout(function() { fill.style.width = pct + '%'; }, 100);
+  }
+
+  function quizRestart() {
+    quizScores = [-1, -1, -1, -1];
+    document.getElementById('quizResult').classList.remove('active');
+    document.getElementById('quizProgress').style.display = 'flex';
+    for (var i = 0; i < QUIZ_COUNT; i++) {
+      var pip = document.getElementById('pip' + i);
+      pip.classList.remove('done','current');
+      if (i === 0) pip.classList.add('current');
+      var step = document.getElementById('step' + i);
+      step.classList.remove('active');
+      if (i === 0) step.classList.add('active');
+    }
+    document.getElementById('resultFill').style.width = '0';
+    document.getElementById('quizSection').scrollIntoView({ behavior: 'smooth' });
+  }
+  </script>
+
 </body>
 </html>
