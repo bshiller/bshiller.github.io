@@ -599,7 +599,6 @@
 
     /* ── HERO CANVAS (neural net - brighter) ─────────────── */
     .hero { position: relative; overflow: hidden; }
-<<<<<<< HEAD
     #fogMap {
       position: absolute;
       inset: 0;
@@ -619,15 +618,12 @@
       pointer-events: none;
       z-index: 1;
     }
-=======
->>>>>>> 0facd76c6b32460d573e24524973d960b3892870
     #neuralNet {
       position: absolute;
       inset: 0;
       width: 100%;
       height: 100%;
       pointer-events: none;
-<<<<<<< HEAD
       z-index: 2;
       opacity: 0.92;
     }
@@ -679,12 +675,6 @@
       0%, 100% { opacity: 0.35; }
       50%      { opacity: 0.75; }
     }
-=======
-      z-index: 0;
-      opacity: 0.92;
-    }
-    .hero-inner { position: relative; z-index: 1; }
->>>>>>> 0facd76c6b32460d573e24524973d960b3892870
 
     /* ── BUY BUTTONS: magnetic + proximity glow ──────────── */
     .buy-btn {
@@ -1193,7 +1183,6 @@
 
   <!-- HERO -->
   <section class="hero">
-<<<<<<< HEAD
 
     <!-- Wake mask definitions (updated by JS every frame) -->
     <svg class="mask-defs" aria-hidden="true" focusable="false">
@@ -1230,9 +1219,6 @@
     <!-- NEURAL NET (stays on top) -->
     <canvas id="neuralNet"></canvas>
 
-=======
-    <canvas id="neuralNet"></canvas>
->>>>>>> 0facd76c6b32460d573e24524973d960b3892870
     <div class="hero-inner">
       <div class="hero-book slide-in-left">
         <img src="BookImages/BookMockup2.jpg" alt="AI Economics book cover">
@@ -1628,7 +1614,6 @@
       lastMoveAt = performance.now();
     });
 
-<<<<<<< HEAD
     /* ── 1b. FOG-OF-WAR TRAIL (hero only) ────────────────── */
     var fogCanvas = document.getElementById('fogCanvas');
     var fogCtx = fogCanvas.getContext('2d');
@@ -1810,8 +1795,6 @@
     }
     drawFog();
 
-=======
->>>>>>> 0facd76c6b32460d573e24524973d960b3892870
     /* ── 1. NEURAL NETWORK (brighter, more visible) ────── */
     var canvas = document.getElementById('neuralNet');
     var ctx = canvas.getContext('2d');
