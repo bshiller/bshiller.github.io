@@ -199,7 +199,7 @@
     
     /* HERO */
     .hero {
-      background: linear-gradient(rgba(15,36,64,0.7), rgba(15,36,64,0.8)), url('BackgroundImages/GlobePic.jpg') center/cover no-repeat;
+      background: #0f2440;
       padding: 6rem 2rem 7rem;
       min-height: 520px;
       display: flex;
@@ -599,16 +599,92 @@
 
     /* ── HERO CANVAS (neural net - brighter) ─────────────── */
     .hero { position: relative; overflow: hidden; }
-    #neuralNet {
+<<<<<<< HEAD
+    #fogMap {
       position: absolute;
       inset: 0;
       width: 100%;
       height: 100%;
       pointer-events: none;
       z-index: 0;
+      user-select: none;
+      object-fit: cover;
+      object-position: center;
+    }
+    #fogCanvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+=======
+>>>>>>> 0facd76c6b32460d573e24524973d960b3892870
+    #neuralNet {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+<<<<<<< HEAD
+      z-index: 2;
+      opacity: 0.92;
+    }
+    .hero-inner { position: relative; z-index: 3; }
+    .fog-hint {
+      position: absolute;
+      bottom: 1.2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 3;
+      color: rgba(255,255,255,0.45);
+      font-size: 1.1rem;
+      font-style: italic;
+      pointer-events: none;
+      animation: fogHintPulse 2.8s ease-in-out infinite;
+      letter-spacing: 0.02em;
+      text-align: center;
+    }
+
+    /* ── WAKE MASKS: elements that vanish where the cursor trail passes ── */
+    .mask-defs {
+      position: absolute;
+      width: 0;
+      height: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .hero-book img {
+      mask: url(#wakeMask-book);
+      -webkit-mask: url(#wakeMask-book);
+    }
+    .hero-content h1 {
+      mask: url(#wakeMask-h1);
+      -webkit-mask: url(#wakeMask-h1);
+    }
+    .hero-subtitle {
+      mask: url(#wakeMask-subtitle);
+      -webkit-mask: url(#wakeMask-subtitle);
+    }
+    .hero-desc {
+      mask: url(#wakeMask-desc);
+      -webkit-mask: url(#wakeMask-desc);
+    }
+    .hero-byline {
+      mask: url(#wakeMask-byline);
+      -webkit-mask: url(#wakeMask-byline);
+    }
+    @keyframes fogHintPulse {
+      0%, 100% { opacity: 0.35; }
+      50%      { opacity: 0.75; }
+    }
+=======
+      z-index: 0;
       opacity: 0.92;
     }
     .hero-inner { position: relative; z-index: 1; }
+>>>>>>> 0facd76c6b32460d573e24524973d960b3892870
 
     /* ── BUY BUTTONS: magnetic + proximity glow ──────────── */
     .buy-btn {
@@ -1117,7 +1193,46 @@
 
   <!-- HERO -->
   <section class="hero">
+<<<<<<< HEAD
+
+    <!-- Wake mask definitions (updated by JS every frame) -->
+    <svg class="mask-defs" aria-hidden="true" focusable="false">
+      <defs>
+        <radialGradient id="maskSoft" cx="50%" cy="50%" r="50%">
+          <stop offset="0"   stop-color="black" stop-opacity="1"/>
+          <stop offset="0.55" stop-color="black" stop-opacity="0.92"/>
+          <stop offset="1"   stop-color="black" stop-opacity="0"/>
+        </radialGradient>
+        <mask id="wakeMask-book"     maskUnits="userSpaceOnUse" x="-2000" y="-2000" width="4000" height="4000">
+          <rect x="-2000" y="-2000" width="4000" height="4000" fill="white"/>
+        </mask>
+        <mask id="wakeMask-h1"       maskUnits="userSpaceOnUse" x="-2000" y="-2000" width="4000" height="4000">
+          <rect x="-2000" y="-2000" width="4000" height="4000" fill="white"/>
+        </mask>
+        <mask id="wakeMask-subtitle" maskUnits="userSpaceOnUse" x="-2000" y="-2000" width="4000" height="4000">
+          <rect x="-2000" y="-2000" width="4000" height="4000" fill="white"/>
+        </mask>
+        <mask id="wakeMask-desc"     maskUnits="userSpaceOnUse" x="-2000" y="-2000" width="4000" height="4000">
+          <rect x="-2000" y="-2000" width="4000" height="4000" fill="white"/>
+        </mask>
+        <mask id="wakeMask-byline"   maskUnits="userSpaceOnUse" x="-2000" y="-2000" width="4000" height="4000">
+          <rect x="-2000" y="-2000" width="4000" height="4000" fill="white"/>
+        </mask>
+      </defs>
+    </svg>
+
+    <!-- FOG-OF-WAR MAP (under the fog) -->
+    <img id="fogMap" src="BackgroundImages/AI_Economy_Map.png" alt="" aria-hidden="true">
+
+    <!-- FOG LAYER (gets punched through by cursor trail) -->
+    <canvas id="fogCanvas"></canvas>
+
+    <!-- NEURAL NET (stays on top) -->
     <canvas id="neuralNet"></canvas>
+
+=======
+    <canvas id="neuralNet"></canvas>
+>>>>>>> 0facd76c6b32460d573e24524973d960b3892870
     <div class="hero-inner">
       <div class="hero-book slide-in-left">
         <img src="BookImages/BookMockup2.jpg" alt="AI Economics book cover">
@@ -1137,6 +1252,8 @@
         </div>
       </div>
     </div>
+
+    <div class="fog-hint">move your cursor to reveal the map beneath the hype</div>
   </section>
 
   <!-- BLURBS ORBITING GLOBE -->
@@ -1511,6 +1628,190 @@
       lastMoveAt = performance.now();
     });
 
+<<<<<<< HEAD
+    /* ── 1b. FOG-OF-WAR TRAIL (hero only) ────────────────── */
+    var fogCanvas = document.getElementById('fogCanvas');
+    var fogCtx = fogCanvas.getContext('2d');
+    var hero = document.querySelector('.hero');
+    var fogHint = document.querySelector('.fog-hint');
+    var fogBlobs = [];                          // { x, y, r, life }
+    var lastFogPos = null;
+    var fogMouseActive = false;
+    var fogHintDismissed = false;
+
+    // Preload the GlobePic so the fog layer can render it
+    var globeImg = new Image();
+    var globeReady = false;
+    globeImg.onload = function() { globeReady = true; };
+    globeImg.src = 'BackgroundImages/GlobePic.jpg';
+
+    // Elements whose visibility gets "erased" by the cursor wake
+    var maskTargets = [
+      { sel: '.hero-book img',   maskId: 'wakeMask-book' },
+      { sel: '.hero-content h1', maskId: 'wakeMask-h1' },
+      { sel: '.hero-subtitle',   maskId: 'wakeMask-subtitle' },
+      { sel: '.hero-desc',       maskId: 'wakeMask-desc' },
+      { sel: '.hero-byline',     maskId: 'wakeMask-byline' }
+    ];
+    maskTargets.forEach(function(t) {
+      t.el = hero.querySelector(t.sel);
+      t.maskEl = document.getElementById(t.maskId);
+      // Cache the base rect so we don't wipe it
+      t.baseRect = t.maskEl ? t.maskEl.querySelector('rect') : null;
+    });
+    var SVG_NS = 'http://www.w3.org/2000/svg';
+
+    function updateWakeMasks() {
+      var heroRect = hero.getBoundingClientRect();
+      for (var i = 0; i < maskTargets.length; i++) {
+        var t = maskTargets[i];
+        if (!t.el || !t.maskEl) continue;
+        var elRect = t.el.getBoundingClientRect();
+        var offX = elRect.left - heroRect.left;
+        var offY = elRect.top  - heroRect.top;
+        var w = elRect.width;
+        var h = elRect.height;
+
+        // Clear dynamic children (keep base rect)
+        var child = t.maskEl.lastChild;
+        while (child && child !== t.baseRect) {
+          t.maskEl.removeChild(child);
+          child = t.maskEl.lastChild;
+        }
+
+        // Add a circle for each active blob that overlaps this element
+        for (var j = 0; j < fogBlobs.length; j++) {
+          var b = fogBlobs[j];
+          var r = b.r * b.life;
+          if (r <= 0) continue;
+          var lx = b.x - offX;
+          var ly = b.y - offY;
+          // Bounds check — skip if the circle doesn't touch the element's box
+          var cx = Math.max(0, Math.min(lx, w));
+          var cy = Math.max(0, Math.min(ly, h));
+          var dx = lx - cx, dy = ly - cy;
+          if (dx*dx + dy*dy > r*r) continue;
+
+          var circle = document.createElementNS(SVG_NS, 'circle');
+          circle.setAttribute('cx', lx.toFixed(1));
+          circle.setAttribute('cy', ly.toFixed(1));
+          circle.setAttribute('r',  r.toFixed(1));
+          circle.setAttribute('fill', 'url(#maskSoft)');
+          t.maskEl.appendChild(circle);
+        }
+      }
+    }
+
+    function resizeFog() {
+      fogCanvas.width  = hero.offsetWidth;
+      fogCanvas.height = hero.offsetHeight;
+    }
+    resizeFog();
+    window.addEventListener('resize', resizeFog);
+
+    // Track cursor within the hero only
+    hero.addEventListener('mousemove', function(e) {
+      var rect = hero.getBoundingClientRect();
+      var x = e.clientX - rect.left;
+      var y = e.clientY - rect.top;
+
+      // Blob size scales with movement distance (fast move = bigger blob)
+      var dist = lastFogPos
+        ? Math.hypot(x - lastFogPos.x, y - lastFogPos.y)
+        : 0;
+      // Base radius + distance bonus, capped
+      var r = Math.min(110, 55 + dist * 1.4);
+
+      fogBlobs.push({ x: x, y: y, r: r, life: 1.0 });
+      lastFogPos = { x: x, y: y };
+      fogMouseActive = true;
+
+      // Fade the hint after first real motion
+      if (!fogHintDismissed && dist > 4 && fogHint) {
+        fogHintDismissed = true;
+        fogHint.style.transition = 'opacity 1.2s ease';
+        fogHint.style.opacity = '0';
+        setTimeout(function() { fogHint.style.display = 'none'; }, 1400);
+      }
+
+      // Cap the array to avoid unbounded growth on wild motion
+      if (fogBlobs.length > 120) fogBlobs.splice(0, fogBlobs.length - 120);
+    });
+
+    hero.addEventListener('mouseleave', function() {
+      fogMouseActive = false;
+      lastFogPos = null;
+    });
+
+    function drawFog() {
+      var w = fogCanvas.width;
+      var h = fogCanvas.height;
+
+      // Decay each blob — life decreases, blobs shrink and vanish
+      for (var i = fogBlobs.length - 1; i >= 0; i--) {
+        var b = fogBlobs[i];
+        b.life -= 0.012;        // ~1.4 seconds to fully heal
+        if (b.life <= 0) fogBlobs.splice(i, 1);
+      }
+
+      // Clear
+      fogCtx.clearRect(0, 0, w, h);
+
+      // Paint the "surface" fog layer: GlobePic tinted navy.
+      // This replicates the old CSS hero background, now on a canvas so
+      // the cursor trail can erase it to reveal the AI map underneath.
+      if (globeReady) {
+        // Draw the globe image with object-fit: cover emulation
+        var imgW = globeImg.naturalWidth;
+        var imgH = globeImg.naturalHeight;
+        var scale = Math.max(w / imgW, h / imgH);
+        var drawW = imgW * scale;
+        var drawH = imgH * scale;
+        var drawX = (w - drawW) / 2;
+        var drawY = (h - drawH) / 2;
+        fogCtx.drawImage(globeImg, drawX, drawY, drawW, drawH);
+        // Navy tint overlay (matches the old CSS linear-gradient rgba(15,36,64, 0.7-0.8))
+        var tint = fogCtx.createLinearGradient(0, 0, 0, h);
+        tint.addColorStop(0, 'rgba(15,36,64,0.7)');
+        tint.addColorStop(1, 'rgba(15,36,64,0.8)');
+        fogCtx.fillStyle = tint;
+        fogCtx.fillRect(0, 0, w, h);
+      } else {
+        // Fallback while GlobePic is loading
+        var grad = fogCtx.createLinearGradient(0, 0, w, h);
+        grad.addColorStop(0,    '#0f2440');
+        grad.addColorStop(0.5,  '#1a365d');
+        grad.addColorStop(1,    '#2c5282');
+        fogCtx.fillStyle = grad;
+        fogCtx.fillRect(0, 0, w, h);
+      }
+
+      // Cut out the trail using destination-out
+      fogCtx.globalCompositeOperation = 'destination-out';
+      for (var i = 0; i < fogBlobs.length; i++) {
+        var b = fogBlobs[i];
+        var currentR = b.r * b.life;
+        if (currentR <= 0) continue;
+        var holeGrad = fogCtx.createRadialGradient(b.x, b.y, 0, b.x, b.y, currentR);
+        holeGrad.addColorStop(0,   'rgba(0,0,0,' + (0.95 * b.life) + ')');
+        holeGrad.addColorStop(0.55,'rgba(0,0,0,' + (0.55 * b.life) + ')');
+        holeGrad.addColorStop(1,   'rgba(0,0,0,0)');
+        fogCtx.fillStyle = holeGrad;
+        fogCtx.beginPath();
+        fogCtx.arc(b.x, b.y, currentR, 0, Math.PI * 2);
+        fogCtx.fill();
+      }
+      fogCtx.globalCompositeOperation = 'source-over';
+
+      // Update SVG masks so book image + text disappear in the wake
+      updateWakeMasks();
+
+      requestAnimationFrame(drawFog);
+    }
+    drawFog();
+
+=======
+>>>>>>> 0facd76c6b32460d573e24524973d960b3892870
     /* ── 1. NEURAL NETWORK (brighter, more visible) ────── */
     var canvas = document.getElementById('neuralNet');
     var ctx = canvas.getContext('2d');
