@@ -1,0 +1,2247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Benjamin Shiller | Economist & Author of AI Economics</title>
+  <meta name="description" content="Benjamin Shiller is an economist and author of AI Economics: How Technology Transforms Jobs, Markets, Life, and Our Future. Associate Professor at Brandeis University.">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="shortcut icon" href="icons/faviconFinal.bmp" type="image/x-icon">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    
+    :root {
+      --navy: #1a365d;
+      --navy-dark: #0f2440;
+      --blue: #2c5282;
+      --blue-light: #ebf4ff;
+      --blue-muted: #f7fafc;
+      --accent: #c6a052;
+      --accent-light: #d4af61;
+      --text: #1a202c;
+      --text-muted: #4a5568;
+      --white: #ffffff;
+    }
+    
+    html { font-size: 62.5%; scroll-behavior: smooth; }
+    
+    body {
+      margin: 0;
+      font-family: 'Open Sans', -apple-system, sans-serif;
+      font-size: 1.7rem;
+      line-height: 1.75;
+      color: var(--text);
+      background: var(--white);
+    }
+    
+    img { max-width: 100%; height: auto; display: block; }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { color: var(--navy); }
+    
+    h1, h2, h3 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-weight: 700;
+      line-height: 1.2;
+      margin: 0 0 1rem;
+      color: var(--navy);
+    }
+    
+    p { margin: 0 0 1.5rem; }
+    
+    /* HEADER - Name Centered */
+    .site-header {
+      background: var(--white);
+      text-align: center;
+      padding: 2rem 2rem 0;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .site-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 3.6rem;
+      font-weight: 700;
+      color: var(--navy);
+      margin: 0 0 0.5rem;
+      letter-spacing: 0.02em;
+    }
+    
+    .site-tagline {
+      font-size: 1.4rem;
+      color: var(--text-muted);
+      margin: 0 0 1.5rem;
+      letter-spacing: 0.05em;
+    }
+    
+    /* NAV - Below Name */
+    .site-nav {
+      background: var(--white);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 56px;
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 3rem;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    
+    .nav-links a {
+      font-size: 1.35rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 0.5rem 0;
+      position: relative;
+    }
+    
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--accent);
+      transition: width 0.3s ease;
+    }
+    
+    .nav-links a:hover { color: var(--navy); }
+    .nav-links a:hover::after { width: 100%; }
+    
+    .nav-links a.active {
+      color: var(--navy);
+    }
+    
+    .nav-links a.active::after {
+      width: 100%;
+    }
+    
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 2.4rem;
+      cursor: pointer;
+      color: var(--navy);
+    }
+    
+    @media (max-width: 850px) {
+      .site-name { font-size: 2.8rem; }
+      .menu-toggle { display: block; }
+      .nav-inner { justify-content: center; }
+      .nav-links {
+        display: none;
+        position: absolute;
+        top: 56px;
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        background: white;
+        padding: 2rem;
+        gap: 1.8rem;
+        border-bottom: 1px solid #e2e8f0;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+        text-align: center;
+      }
+      .nav-links.active { display: flex; }
+    }
+    
+    /* ANIMATIONS */
+    @keyframes slideInLeft {
+      from { opacity: 0; transform: translateX(-60px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    
+    @keyframes slideInRight {
+      from { opacity: 0; transform: translateX(60px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    .slide-in-left {
+      opacity: 0;
+      animation: slideInLeft 0.8s ease forwards;
+    }
+    
+    .slide-in-right {
+      opacity: 0;
+      animation: slideInRight 0.8s ease forwards;
+    }
+    
+    .fade-in {
+      opacity: 0;
+      animation: fadeIn 1s ease forwards;
+    }
+    
+    /* HERO */
+    .hero {
+      background: #0f2440;
+      padding: 6rem 2rem 7rem;
+      min-height: 520px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .hero-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      gap: 5rem;
+      align-items: center;
+    }
+    
+    .hero-book img {
+      width: 100%;
+      border-radius: 4px;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.1);
+    }
+    
+    .hero-content { color: var(--white); }
+    
+    .hero-label {
+      display: inline-block;
+      font-size: 1.2rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+    }
+    
+    .hero-content h1 {
+      font-size: 5rem;
+      color: var(--white);
+      margin-bottom: 0.8rem;
+      letter-spacing: -0.02em;
+    }
+    
+    .hero-subtitle {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.2rem;
+      font-style: italic;
+      color: rgba(255,255,255,0.85);
+      font-weight: 400;
+      margin-bottom: 2rem;
+    }
+    
+    .hero-desc {
+      font-size: 1.8rem;
+      color: rgba(255,255,255,0.9);
+      line-height: 1.8;
+      margin-bottom: 1.5rem;
+      max-width: 500px;
+    }
+    
+    .hero-byline {
+      font-size: 1.5rem;
+      color: rgba(255,255,255,0.65);
+      margin-bottom: 2.5rem;
+    }
+    
+    .hero-byline strong { color: var(--white); }
+    
+    .buy-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    
+    .buy-btn {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1.2rem 2.2rem 1rem;
+      font-size: 1.3rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border-radius: 4px;
+      transition: all 0.25s;
+      line-height: 1.3;
+    }
+    
+    .buy-btn span {
+      font-size: 1rem;
+      font-weight: 500;
+      letter-spacing: 0.03em;
+      opacity: 0.85;
+      margin-top: 0.2rem;
+    }
+    
+    .buy-btn-primary {
+      background: var(--accent);
+      color: var(--navy-dark);
+    }
+    
+    .buy-btn-primary:hover {
+      background: var(--accent-light);
+      color: var(--navy-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+    }
+    
+    .buy-btn-outline {
+      background: transparent;
+      color: var(--white);
+      border: 2px solid rgba(255,255,255,0.35);
+    }
+    
+    .buy-btn-outline:hover {
+      border-color: var(--white);
+      color: var(--white);
+      background: rgba(255,255,255,0.1);
+    }
+    
+    @media (max-width: 900px) {
+      .hero { padding: 4rem 2rem 5rem; min-height: auto; }
+      .hero-inner {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+        text-align: center;
+      }
+      .hero-book { max-width: 280px; margin: 0 auto; }
+      .hero-content h1 { font-size: 3.8rem; }
+      .hero-desc { margin-left: auto; margin-right: auto; }
+      .buy-buttons { justify-content: center; }
+    }
+    
+    /* PANELS */
+    .panel { padding: 5.5rem 2rem; }
+    .panel-white { background: var(--white); }
+    .panel-light { background: var(--blue-muted); }
+    .panel-blue { background: var(--blue-light); }
+    
+    .container { max-width: 1000px; margin: 0 auto; }
+    
+    .panel-title {
+      font-size: 3.2rem;
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    
+    /* QUOTE CAROUSEL */
+    .carousel-container {
+      max-width: 800px;
+      margin: 0 auto;
+      position: relative;
+      padding: 0 5rem;
+    }
+    
+    .carousel-track { overflow: hidden; }
+    
+    .carousel-slides {
+      display: flex;
+      transition: transform 0.5s ease;
+    }
+    
+    .carousel-slide {
+      min-width: 100%;
+      padding: 0 1rem;
+    }
+    
+    .blurb-card {
+      background: var(--white);
+      border-radius: 8px;
+      padding: 3rem 2.5rem 2.5rem;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+      border: 1px solid #e2e8f0;
+    }
+    
+    .blurb-card::before {
+      content: '"';
+      display: block;
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 5rem;
+      line-height: 1;
+      color: var(--accent);
+      margin-bottom: 1rem;
+    }
+    
+    .blurb-card blockquote {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.9rem;
+      font-style: italic;
+      line-height: 1.7;
+      margin: 0 0 1.8rem;
+      color: var(--text);
+    }
+    
+    .blurb-card cite {
+      display: block;
+      font-size: 1.4rem;
+      font-style: normal;
+      color: var(--text-muted);
+      padding-top: 1.5rem;
+      border-top: 1px solid #e2e8f0;
+    }
+    
+    .blurb-card cite strong {
+      display: block;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 0.3rem;
+    }
+    
+    /* Carousel Arrows */
+    .carousel-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--white);
+      border: 2px solid var(--navy);
+      color: var(--navy);
+      font-size: 2rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.25s;
+      z-index: 10;
+    }
+    
+    .carousel-btn:hover {
+      background: var(--navy);
+      color: var(--white);
+    }
+    
+    .carousel-btn-prev { left: 0; }
+    .carousel-btn-next { right: 0; }
+    
+    /* Carousel Dots */
+    .carousel-dots {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    
+    .carousel-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #ccc;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    
+    .carousel-dot.active { background: var(--navy); }
+    
+    @media (max-width: 650px) {
+      .carousel-container { padding: 0 1rem; }
+      .carousel-btn { display: none; }
+    }
+    
+    /* ABOUT AUTHOR */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 260px;
+      gap: 4rem;
+      align-items: start;
+    }
+    
+    .about-text h2 { font-size: 3rem; margin-bottom: 1.5rem; }
+    .about-text p { font-size: 1.7rem; line-height: 1.85; }
+    
+    .text-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 1.5rem;
+      font-size: 1.4rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--navy);
+    }
+    
+    .text-link:hover { color: var(--blue); }
+    
+    .about-photo img {
+      width: 100%;
+      border-radius: 6px;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+    }
+    
+    @media (max-width: 700px) {
+      .about-grid { grid-template-columns: 1fr; text-align: center; }
+      .about-photo { order: -1; max-width: 200px; margin: 0 auto 2rem; }
+    }
+    
+    /* ABOUT BOOK */
+    .book-grid {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 3.5rem;
+      align-items: start;
+    }
+    
+    .book-cover img {
+      width: 100%;
+      box-shadow: 0 12px 35px rgba(0,0,0,0.12);
+      border-radius: 4px;
+    }
+    
+    .book-text h2 { font-size: 3rem; margin-bottom: 1.5rem; }
+    .book-text h2 em { font-style: italic; }
+    .book-text p { font-size: 1.7rem; line-height: 1.85; }
+    .book-text p:last-child { margin-bottom: 0; }
+    
+    @media (max-width: 650px) {
+      .book-grid { grid-template-columns: 1fr; text-align: center; }
+      .book-cover { max-width: 170px; margin: 0 auto 1rem; }
+    }
+    
+    /* BOOK INSIDE - Full Bleed */
+    .book-inside-panel {
+      width: 100%;
+      height: 350px;
+      overflow: hidden;
+    }
+    
+    .book-inside-panel img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+    
+    @media (max-width: 768px) {
+      .book-inside-panel { height: 250px; }
+    }
+    
+    @media (max-width: 480px) {
+      .book-inside-panel { height: 180px; }
+    }
+    
+    /* MEDIA */
+    .media-card {
+      max-width: 750px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 2.5rem;
+      padding: 2.5rem;
+      background: var(--white);
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+      text-decoration: none;
+      transition: all 0.25s;
+    }
+    
+    .media-card:hover {
+      box-shadow: 0 10px 35px rgba(0,0,0,0.1);
+      transform: translateY(-3px);
+    }
+    
+    .media-outlet {
+      flex: 0 0 100px;
+      font-family: 'Playfair Display', serif;
+      font-size: 2.6rem;
+      font-style: italic;
+      color: var(--navy);
+    }
+    
+    .media-content h3 {
+      font-family: 'Open Sans', sans-serif;
+      font-size: 1.65rem;
+      font-weight: 600;
+      line-height: 1.5;
+      margin-bottom: 0.5rem;
+      color: var(--text);
+    }
+    
+    .media-content .date { font-size: 1.3rem; color: var(--text-muted); }
+    
+    @media (max-width: 600px) {
+      .media-card { flex-direction: column; text-align: center; gap: 1.5rem; }
+    }
+    
+    /* ── SPOTLIGHT + BEAM CANVAS ─────────────────────────── */
+    #spotlightCanvas {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 9998;
+    }
+
+    /* ── HERO CANVAS (neural net - brighter) ─────────────── */
+    .hero { position: relative; overflow: hidden; }
+<<<<<<< HEAD
+    #fogMap {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      user-select: none;
+      object-fit: cover;
+      object-position: center;
+    }
+    #fogCanvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+=======
+>>>>>>> 0facd76c6b32460d573e24524973d960b3892870
+    #neuralNet {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+<<<<<<< HEAD
+      z-index: 2;
+      opacity: 0.92;
+    }
+    .hero-inner { position: relative; z-index: 3; }
+    .fog-hint {
+      position: absolute;
+      bottom: 1.2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 3;
+      color: rgba(255,255,255,0.45);
+      font-size: 1.1rem;
+      font-style: italic;
+      pointer-events: none;
+      animation: fogHintPulse 2.8s ease-in-out infinite;
+      letter-spacing: 0.02em;
+      text-align: center;
+    }
+
+    /* ── WAKE MASKS: elements that vanish where the cursor trail passes ── */
+    .mask-defs {
+      position: absolute;
+      width: 0;
+      height: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .hero-book img {
+      mask: url(#wakeMask-book);
+      -webkit-mask: url(#wakeMask-book);
+    }
+    .hero-content h1 {
+      mask: url(#wakeMask-h1);
+      -webkit-mask: url(#wakeMask-h1);
+    }
+    .hero-subtitle {
+      mask: url(#wakeMask-subtitle);
+      -webkit-mask: url(#wakeMask-subtitle);
+    }
+    .hero-desc {
+      mask: url(#wakeMask-desc);
+      -webkit-mask: url(#wakeMask-desc);
+    }
+    .hero-byline {
+      mask: url(#wakeMask-byline);
+      -webkit-mask: url(#wakeMask-byline);
+    }
+    @keyframes fogHintPulse {
+      0%, 100% { opacity: 0.35; }
+      50%      { opacity: 0.75; }
+    }
+=======
+      z-index: 0;
+      opacity: 0.92;
+    }
+    .hero-inner { position: relative; z-index: 1; }
+>>>>>>> 0facd76c6b32460d573e24524973d960b3892870
+
+    /* ── BUY BUTTONS: magnetic + proximity glow ──────────── */
+    .buy-btn {
+      will-change: transform, background, box-shadow;
+      position: relative;
+    }
+
+    /* ── ORBITING BLURBS AROUND GLOBE ─────────────────────── */
+    .orbit-section {
+      background: linear-gradient(180deg, #0a1628 0%, #142c4e 100%);
+      padding: 5rem 2rem 5.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .orbit-eyebrow {
+      display: block;
+      text-align: center;
+      font-size: 1.2rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--accent);
+      margin-bottom: 0.8rem;
+    }
+    .orbit-heading {
+      text-align: center;
+      color: var(--white);
+      font-size: 2.6rem;
+      margin-bottom: 2rem;
+    }
+    .orbit-stage {
+      position: relative;
+      width: 100%;
+      max-width: 1000px;
+      height: 460px;
+      margin: 0 auto;
+      perspective: 1400px;
+    }
+    .orbit-globe {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 340px; height: 340px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #3d6fa8 0%, #1a365d 45%, #0a1830 100%);
+      box-shadow:
+        inset -20px -20px 60px rgba(0,0,0,0.6),
+        inset 15px 15px 50px rgba(120,170,230,0.25),
+        0 0 80px rgba(44,82,130,0.6),
+        0 0 140px rgba(198,160,82,0.15);
+      z-index: 5;
+    }
+    .orbit-globe::before,
+    .orbit-globe::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .orbit-globe::before {
+      background:
+        radial-gradient(ellipse 45% 12% at 30% 35%, rgba(100,180,140,0.35), transparent 70%),
+        radial-gradient(ellipse 30% 20% at 70% 55%, rgba(100,180,140,0.3), transparent 70%),
+        radial-gradient(ellipse 35% 10% at 50% 75%, rgba(100,180,140,0.25), transparent 70%);
+      mix-blend-mode: screen;
+    }
+    .orbit-globe::after {
+      background:
+        radial-gradient(circle at 30% 30%, rgba(255,255,255,0.35), transparent 35%);
+      mix-blend-mode: screen;
+    }
+    .orbit-card {
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 280px;
+      background: rgba(255,255,255,0.97);
+      border: 1px solid rgba(198,160,82,0.4);
+      border-radius: 10px;
+      padding: 1.6rem 1.6rem 1.3rem;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+      transition: opacity 0.4s;
+      will-change: transform, opacity;
+    }
+    .orbit-card blockquote {
+      margin: 0 0 1rem;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      font-style: italic;
+      line-height: 1.55;
+      color: var(--text);
+    }
+    .orbit-card cite {
+      display: block;
+      font-style: normal;
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      padding-top: 0.8rem;
+      border-top: 1px solid #e2e8f0;
+    }
+    .orbit-card cite strong {
+      display: block;
+      font-size: 1.2rem;
+      color: var(--navy);
+      font-weight: 700;
+      margin-bottom: 0.15rem;
+    }
+    .orbit-caption {
+      text-align: center;
+      color: rgba(255,255,255,0.45);
+      font-size: 1.2rem;
+      margin-top: 1.5rem;
+      font-style: italic;
+    }
+
+    /* Orbit navigation arrows */
+    .orbit-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.06);
+      border: 1.5px solid rgba(198,160,82,0.4);
+      color: rgba(255,255,255,0.8);
+      font-size: 2.4rem;
+      line-height: 1;
+      font-family: 'Open Sans', sans-serif;
+      cursor: pointer;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.22s ease;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+    .orbit-arrow:hover {
+      background: rgba(198,160,82,0.22);
+      border-color: var(--accent);
+      color: #fff;
+      transform: translateY(-50%) scale(1.08);
+    }
+    .orbit-arrow-prev { left: max(10px, calc(50% - 460px)); }
+    .orbit-arrow-next { right: max(10px, calc(50% - 460px)); }
+    @media (max-width: 700px) {
+      .orbit-arrow { width: 40px; height: 40px; font-size: 2rem; }
+      .orbit-arrow-prev { left: 6px; }
+      .orbit-arrow-next { right: 6px; }
+    }
+
+    /* Orbit position dots */
+    .orbit-dots {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 1.8rem;
+    }
+    .orbit-dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(255,255,255,0.35);
+      background: transparent;
+      cursor: pointer;
+      padding: 0;
+      transition: all 0.25s;
+    }
+    .orbit-dot:hover { border-color: var(--accent); }
+    .orbit-dot.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      transform: scale(1.35);
+      box-shadow: 0 0 12px rgba(198,160,82,0.6);
+    }
+
+    .orbit-card { cursor: pointer; }
+    @media (max-width: 700px) {
+      .orbit-stage { height: 420px; }
+      .orbit-globe { width: 240px; height: 240px; }
+      .orbit-card { width: 240px; padding: 1.3rem; }
+      .orbit-card blockquote { font-size: 1.25rem; }
+    }
+
+    /* ── QUIZ SECTION ────────────────────────────────────── */
+    .quiz-section {
+      background: var(--navy-dark);
+      padding: 5.5rem 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .quiz-section::before {
+      content: '';
+      position: absolute;
+      top: -80px; right: -80px;
+      width: 320px; height: 320px;
+      border-radius: 50%;
+      background: rgba(198,160,82,0.07);
+      pointer-events: none;
+    }
+    .quiz-inner {
+      max-width: 680px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .quiz-eyebrow {
+      display: inline-block;
+      font-size: 1.15rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--accent);
+      margin-bottom: 1rem;
+    }
+    .quiz-inner h2 {
+      color: var(--white);
+      font-size: 3.2rem;
+      margin-bottom: 0.8rem;
+    }
+    .quiz-subhead {
+      font-size: 1.6rem;
+      color: rgba(255,255,255,0.65);
+      margin-bottom: 3.5rem;
+    }
+    .quiz-step { display: none; }
+    .quiz-step.active { display: block; }
+
+    .quiz-question {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.2rem;
+      font-style: italic;
+      color: var(--white);
+      margin-bottom: 2.2rem;
+      line-height: 1.45;
+    }
+    .quiz-progress {
+      display: flex;
+      justify-content: center;
+      gap: 0.6rem;
+      margin-bottom: 2rem;
+    }
+    .quiz-pip {
+      width: 28px; height: 4px;
+      border-radius: 2px;
+      background: rgba(255,255,255,0.2);
+      transition: background 0.3s;
+    }
+    .quiz-pip.done { background: var(--accent); }
+    .quiz-pip.current { background: rgba(198,160,82,0.5); }
+
+    .quiz-options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    @media (max-width: 540px) { .quiz-options { grid-template-columns: 1fr; } }
+
+    .quiz-opt {
+      background: rgba(255,255,255,0.07);
+      border: 1.5px solid rgba(255,255,255,0.15);
+      border-radius: 8px;
+      padding: 1.4rem 1.6rem;
+      color: rgba(255,255,255,0.88);
+      font-size: 1.5rem;
+      font-family: 'Open Sans', sans-serif;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.22s;
+      line-height: 1.4;
+    }
+    .quiz-opt:hover {
+      background: rgba(198,160,82,0.15);
+      border-color: var(--accent);
+      color: var(--white);
+      transform: translateY(-2px);
+    }
+    .quiz-opt .opt-label {
+      display: block;
+      font-weight: 700;
+      font-size: 1.35rem;
+      color: var(--accent);
+      margin-bottom: 0.3rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    /* Result */
+    .quiz-result { display: none; }
+    .quiz-result.active { display: block; }
+    .result-score-bar {
+      width: 100%;
+      height: 8px;
+      background: rgba(255,255,255,0.12);
+      border-radius: 4px;
+      margin: 0 auto 2.5rem;
+      max-width: 400px;
+      overflow: hidden;
+    }
+    .result-score-fill {
+      height: 100%;
+      border-radius: 4px;
+      background: linear-gradient(90deg, #2c5282, var(--accent));
+      width: 0;
+      transition: width 1s ease 0.3s;
+    }
+    .result-badge {
+      display: inline-block;
+      padding: 0.6rem 2rem;
+      border-radius: 30px;
+      font-size: 1.3rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-bottom: 1.5rem;
+    }
+    .badge-resilient { background: rgba(72,187,120,0.2); color: #68d391; border: 1.5px solid #68d391; }
+    .badge-adapting  { background: rgba(198,160,82,0.2); color: var(--accent); border: 1.5px solid var(--accent); }
+    .badge-exposed   { background: rgba(229,62,62,0.18); color: #fc8181; border: 1.5px solid #fc8181; }
+
+    .result-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.8rem;
+      color: var(--white);
+      margin-bottom: 1rem;
+    }
+    .result-body {
+      font-size: 1.65rem;
+      color: rgba(255,255,255,0.78);
+      line-height: 1.8;
+      margin-bottom: 2.5rem;
+    }
+    .result-cta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+    }
+    .quiz-restart {
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.4);
+      font-size: 1.3rem;
+      cursor: pointer;
+      font-family: 'Open Sans', sans-serif;
+      text-decoration: underline;
+    }
+    .quiz-restart:hover { color: rgba(255,255,255,0.7); }
+
+    /* ── CHAPTER INSIGHTS ──────────────────────────────── */
+    .insights-section {
+      background: var(--white);
+      padding: 5.5rem 2rem;
+    }
+    .insights-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.8rem;
+      margin-top: 3rem;
+    }
+    @media (max-width: 850px) { .insights-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 540px) { .insights-grid { grid-template-columns: 1fr; } }
+
+    .insight-card {
+      position: relative;
+      min-height: 220px;
+      border-radius: 10px;
+      overflow: hidden;
+      background: var(--navy);
+      cursor: pointer;
+      border: 1px solid rgba(198,160,82,0.2);
+    }
+    .insight-front {
+      padding: 2.4rem 2rem;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    .insight-chapter {
+      font-size: 1.1rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--accent);
+      margin-bottom: 0.8rem;
+    }
+    .insight-front h3 {
+      font-size: 2rem;
+      color: var(--white);
+      line-height: 1.3;
+      margin-bottom: auto;
+    }
+    .insight-hint {
+      font-size: 1.2rem;
+      color: rgba(255,255,255,0.35);
+      margin-top: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .insight-hint::after {
+      content: '→';
+      transition: transform 0.3s;
+    }
+    .insight-card:hover .insight-hint::after {
+      transform: translateX(4px);
+    }
+
+    .insight-reveal {
+      position: absolute;
+      inset: 0;
+      background: rgba(15,36,64,0.96);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 2.4rem 2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      transform: translateY(100%);
+      transition: transform 0.38s cubic-bezier(0.16, 1, 0.3, 1);
+      border-top: 3px solid var(--accent);
+    }
+    .insight-card:hover .insight-reveal,
+    .insight-card:focus-within .insight-reveal {
+      transform: translateY(0);
+    }
+    .insight-reveal p {
+      font-size: 1.55rem;
+      color: rgba(255,255,255,0.88);
+      line-height: 1.7;
+      margin-bottom: 1.8rem;
+    }
+    .insight-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1.25rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .insight-cta:hover { color: var(--accent-light); }
+
+    /* ── FOOTER ────────────────────────────────────────── */
+    /* FOOTER */
+    footer {
+      background: var(--navy-dark);
+      padding: 4rem 2rem;
+      text-align: center;
+    }
+    
+    .footer-links { margin-bottom: 2rem; }
+    
+    .footer-links a {
+      display: inline-block;
+      margin: 0 1.5rem;
+      font-size: 1.4rem;
+      color: rgba(255,255,255,0.7);
+    }
+    
+    .footer-links a:hover { color: var(--white); }
+    
+    footer p {
+      font-size: 1.3rem;
+      color: rgba(255,255,255,0.5);
+      margin: 0;
+    }
+  </style>
+  
+  <!-- Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-19873828-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'UA-19873828-1');
+  </script>
+</head>
+
+<body>
+  <!-- HEADER - Name Centered -->
+  <header class="site-header">
+    <h1 class="site-name">Benjamin Shiller</h1>
+    <p class="site-tagline">Economist & Author</p>
+  </header>
+
+  <!-- NAV -->
+  <nav class="site-nav">
+    <div class="nav-inner">
+      <button class="menu-toggle" id="menuToggle">&#9776;</button>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index" class="active">Home</a></li>
+        <li><a href="CVBio">About</a></li>
+        <li><a href="Research">Research</a></li>
+        <li><a href="Teaching">Teaching</a></li>
+        <li><a href="CarSafety">Car Safety</a></li>
+        <li><a href="Media">Media</a></li>
+        <li><a href="Contact">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+<<<<<<< HEAD
+
+    <!-- Wake mask definitions (updated by JS every frame) -->
+    <svg class="mask-defs" aria-hidden="true" focusable="false">
+      <defs>
+        <radialGradient id="maskSoft" cx="50%" cy="50%" r="50%">
+          <stop offset="0"   stop-color="black" stop-opacity="1"/>
+          <stop offset="0.55" stop-color="black" stop-opacity="0.92"/>
+          <stop offset="1"   stop-color="black" stop-opacity="0"/>
+        </radialGradient>
+        <mask id="wakeMask-book"     maskUnits="userSpaceOnUse" x="-2000" y="-2000" width="4000" height="4000">
+          <rect x="-2000" y="-2000" width="4000" height="4000" fill="white"/>
+        </mask>
+        <mask id="wakeMask-h1"       maskUnits="userSpaceOnUse" x="-2000" y="-2000" width="4000" height="4000">
+          <rect x="-2000" y="-2000" width="4000" height="4000" fill="white"/>
+        </mask>
+        <mask id="wakeMask-subtitle" maskUnits="userSpaceOnUse" x="-2000" y="-2000" width="4000" height="4000">
+          <rect x="-2000" y="-2000" width="4000" height="4000" fill="white"/>
+        </mask>
+        <mask id="wakeMask-desc"     maskUnits="userSpaceOnUse" x="-2000" y="-2000" width="4000" height="4000">
+          <rect x="-2000" y="-2000" width="4000" height="4000" fill="white"/>
+        </mask>
+        <mask id="wakeMask-byline"   maskUnits="userSpaceOnUse" x="-2000" y="-2000" width="4000" height="4000">
+          <rect x="-2000" y="-2000" width="4000" height="4000" fill="white"/>
+        </mask>
+      </defs>
+    </svg>
+
+    <!-- FOG-OF-WAR MAP (under the fog) -->
+    <img id="fogMap" src="BackgroundImages/AI_Economy_Map.png" alt="" aria-hidden="true">
+
+    <!-- FOG LAYER (gets punched through by cursor trail) -->
+    <canvas id="fogCanvas"></canvas>
+
+    <!-- NEURAL NET (stays on top) -->
+    <canvas id="neuralNet"></canvas>
+
+=======
+    <canvas id="neuralNet"></canvas>
+>>>>>>> 0facd76c6b32460d573e24524973d960b3892870
+    <div class="hero-inner">
+      <div class="hero-book slide-in-left">
+        <img src="BookImages/BookMockup2.jpg" alt="AI Economics book cover">
+      </div>
+      <div class="hero-content slide-in-right">
+        <span class="hero-label">Available Now</span>
+        <h1>AI Economics</h1>
+        <p class="hero-subtitle">How Technology Transforms Jobs, Markets, Life, & Our Future</p>
+        <p class="hero-desc">
+          Discover the hidden economic forces reshaping our world—from algorithmic pricing to the future of work.
+        </p>
+        <p class="hero-byline">by <strong>Benjamin Reed Shiller</strong></p>
+        <div class="buy-buttons">
+          <a href="https://www.amazon.com/dp/B0G45MKBZT" class="buy-btn buy-btn-primary" target="_blank">Amazon<span>print / e-book</span></a>
+          <a href="https://bookshop.org/p/books/ai-economics-how-technology-transforms-jobs-markets-life-our-future-benjamin-shiller/ed6d28a99d4b8128?ean=9798993931210" class="buy-btn buy-btn-primary" target="_blank">Bookshop<span>print</span></a>
+         <a href="https://open.spotify.com/show/0Q4eWhYLAbjaJorYEj9rxH" class="buy-btn buy-btn-primary" target="_blank">Spotify<span>audiobook</span></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="fog-hint">move your cursor to reveal the map beneath the hype</div>
+  </section>
+
+  <!-- BLURBS ORBITING GLOBE -->
+  <section class="orbit-section">
+    <span class="orbit-eyebrow">Praise for AI Economics</span>
+    <h2 class="orbit-heading">What readers are saying</h2>
+    <div class="orbit-stage" id="orbitStage">
+      <button class="orbit-arrow orbit-arrow-prev" id="orbitPrev" aria-label="Previous quote">&#8249;</button>
+      <div class="orbit-globe"></div>
+
+      <div class="orbit-card" data-orbit="0">
+        <blockquote>
+          "Concise, chatty, companionable, ever-so-savvy. There may be a more useful guide to AI out there, but why incur the opportunity cost of searching for it? <b>Having covered AI from the jump, this is as good as it gets.</b>"
+        </blockquote>
+        <cite>
+          <strong>Paul Solman</strong>
+          Business &amp; Economics Correspondent, PBS NewsHour
+        </cite>
+      </div>
+
+      <div class="orbit-card" data-orbit="1">
+        <blockquote>
+          "<b>This book represents the best in bringing real research to understand what is happening in our current AI-moment.</b> Shiller has accomplished in record time an overview of many of the key issues emerging in the AI economy. An easy and informative read."
+        </blockquote>
+        <cite>
+          <strong>Joshua Gans</strong>
+          University of Toronto; author of <em>Power and Prediction</em> and <em>Prediction Machines: The Simple Economics of Artificial Intelligence</em>
+        </cite>
+      </div>
+
+      <div class="orbit-card" data-orbit="2">
+        <blockquote>
+          "AI Economics brings a lively economic perspective to analyzing how AI will transform our lives. <b>The book is informative and fun to read.</b>"
+        </blockquote>
+        <cite>
+          <strong>Joel Waldfogel</strong>
+          University of Minnesota, author of <em>Scroogenomics</em>
+        </cite>
+      </div>
+
+      <button class="orbit-arrow orbit-arrow-next" id="orbitNext" aria-label="Next quote">&#8250;</button>
+    </div>
+
+    <div class="orbit-dots" id="orbitDots">
+      <button class="orbit-dot active" data-idx="0" aria-label="Quote 1"></button>
+      <button class="orbit-dot" data-idx="1" aria-label="Quote 2"></button>
+      <button class="orbit-dot" data-idx="2" aria-label="Quote 3"></button>
+    </div>
+
+    <p class="orbit-caption">Click a quote, an arrow, or a dot to focus it.</p>
+  </section>
+
+  <!-- AI RISK QUIZ (new position: right after orbit) -->
+  <section class="quiz-section" id="quizSection">
+    <div class="quiz-inner">
+      <span class="quiz-eyebrow">4-Question Quiz</span>
+      <h2>How AI-Proof Is Your Job?</h2>
+      <p class="quiz-subhead">Economists don't ask "can AI do this?" — they ask "which humans does AI replace, and which ones does it make richer?" Four questions, using the logic from the book.</p>
+
+      <!-- Progress pips -->
+      <div class="quiz-progress" id="quizProgress">
+        <div class="quiz-pip current" id="pip0"></div>
+        <div class="quiz-pip" id="pip1"></div>
+        <div class="quiz-pip" id="pip2"></div>
+        <div class="quiz-pip" id="pip3"></div>
+      </div>
+
+      <!-- Q1 Weirdness -->
+      <div class="quiz-step active" id="step0">
+        <p class="quiz-question">"How weird is your job?"</p>
+        <div class="quiz-options">
+          <button class="quiz-opt" onclick="quizAnswer(0,0)">
+            <span class="opt-label">Textbook Standard</span>
+            You could describe it in one sentence, and so could ChatGPT
+          </button>
+          <button class="quiz-opt" onclick="quizAnswer(0,1)">
+            <span class="opt-label">Normal White-Collar</span>
+            Emails, spreadsheets, meetings, repeat
+          </button>
+          <button class="quiz-opt" onclick="quizAnswer(0,2)">
+            <span class="opt-label">Specialized &amp; Quirky</span>
+            Your niche has its own inside jokes
+          </button>
+          <button class="quiz-opt" onclick="quizAnswer(0,3)">
+            <span class="opt-label">Hard to Explain at Parties</span>
+            "Wait, you do WHAT for a living?"
+          </button>
+        </div>
+      </div>
+
+      <!-- Q2 Stakes -->
+      <div class="quiz-step" id="step1">
+        <p class="quiz-question">"How high are the stakes when you screw up?"</p>
+        <div class="quiz-options">
+          <button class="quiz-opt" onclick="quizAnswer(1,0)">
+            <span class="opt-label">Nobody Notices</span>
+            Mistakes get quietly absorbed by the org
+          </button>
+          <button class="quiz-opt" onclick="quizAnswer(1,1)">
+            <span class="opt-label">Embarrassing</span>
+            A manager might flag it
+          </button>
+          <button class="quiz-opt" onclick="quizAnswer(1,2)">
+            <span class="opt-label">Real Money on the Line</span>
+            Errors have financial or legal consequences
+          </button>
+          <button class="quiz-opt" onclick="quizAnswer(1,3)">
+            <span class="opt-label">Someone Could Get Hurt</span>
+            Lives, health, or safety depend on it
+          </button>
+        </div>
+      </div>
+
+      <!-- Q3 Easy vs Hard -->
+      <div class="quiz-step" id="step2">
+        <p class="quiz-question">"Is AI coming for the easy parts of your job, or the hard parts?"</p>
+        <div class="quiz-options">
+          <button class="quiz-opt" onclick="quizAnswer(2,0)">
+            <span class="opt-label">The Hard Parts</span>
+            The stuff I trained years for is exactly what AI does now
+          </button>
+          <button class="quiz-opt" onclick="quizAnswer(2,1)">
+            <span class="opt-label">Both, Honestly</span>
+            It's chewing through everything
+          </button>
+          <button class="quiz-opt" onclick="quizAnswer(2,2)">
+            <span class="opt-label">Not Here Yet</span>
+            My field hasn't really been touched
+          </button>
+          <button class="quiz-opt" onclick="quizAnswer(2,3)">
+            <span class="opt-label">The Easy Parts</span>
+            AI does the busywork; I focus on judgment
+          </button>
+        </div>
+      </div>
+
+      <!-- Q4 Kangaroo question -->
+      <div class="quiz-step" id="step3">
+        <p class="quiz-question">"Would your job survive a kangaroo hopping into the room?"</p>
+        <p style="font-size:1.3rem; color:rgba(255,255,255,0.5); margin-top:-1.5rem; margin-bottom:2.2rem;">(a serious question about physical chaos tolerance)</p>
+        <div class="quiz-options">
+          <button class="quiz-opt" onclick="quizAnswer(3,0)">
+            <span class="opt-label">Pure Screen Time</span>
+            Kangaroo? IT would handle it. I work entirely on a laptop
+          </button>
+          <button class="quiz-opt" onclick="quizAnswer(3,1)">
+            <span class="opt-label">Mostly Digital</span>
+            I'd panic briefly, then file a report
+          </button>
+          <button class="quiz-opt" onclick="quizAnswer(3,2)">
+            <span class="opt-label">Physical Reality Involved</span>
+            Unpredictable stuff happens around me regularly
+          </button>
+          <button class="quiz-opt" onclick="quizAnswer(3,3)">
+            <span class="opt-label">Bring the Kangaroo</span>
+            Chaos IS my job. I'd have it sedated in ten minutes
+          </button>
+        </div>
+      </div>
+
+      <!-- Result -->
+      <div class="quiz-result" id="quizResult">
+        <div class="result-score-bar"><div class="result-score-fill" id="resultFill"></div></div>
+        <div id="resultBadge" class="result-badge"></div>
+        <h3 class="result-title" id="resultTitle"></h3>
+        <p class="result-body" id="resultBody"></p>
+        <div class="result-cta">
+          <a href="https://www.amazon.com/dp/B0G45MKBZT" class="buy-btn buy-btn-primary" target="_blank">Amazon<span>print / e-book</span></a>
+          <a href="https://bookshop.org/p/books/ai-economics-how-technology-transforms-jobs-markets-life-our-future-benjamin-shiller/ed6d28a99d4b8128?ean=9798993931210" class="buy-btn buy-btn-primary" target="_blank">Bookshop<span>print</span></a>
+        </div>
+        <button class="quiz-restart" onclick="quizRestart()">Take the quiz again</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT BOOK -->
+  <section class="panel panel-blue">
+    <div class="container">
+      <div class="book-grid">
+        <div class="book-cover slide-in-left">
+          <img src="BookImages/Ebook.jpg" alt="AI Economics cover">
+        </div>
+        <div class="book-text slide-in-right">
+          <h2>About <em>AI Economics</em></h2>
+          <p>
+            AI isn't just about what the technology <em>can do</em>; it’s about what people <em>actually do</em> with it. That’s why the best way to predict the future isn't to ask a futurist—it's to ask an economist.
+          </p>
+          <p>
+            By applying the <em>Incentive Filter</em>, this book strips away the hype to reveal the new "plumbing" of our economy. It translates decades of research into sharp stories about who gets paid and how power shifts when algorithms meet human nature. It’s your guide to spotting the change before it hits your paycheck or your shopping cart.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT AUTHOR (moved - now after About Book) -->
+  <section class="panel panel-white">
+    <div class="container">
+      <div class="about-grid">
+        <div class="about-text slide-in-left">
+          <h2>About Benjamin</h2>
+          <p>
+            Benjamin Shiller is an Associate Professor of Economics at Brandeis University. His research on personalized pricing, ad-blocking, and technological change has been published in leading journals and covered in <em>The Atlantic</em>, <em>The Economist</em>, <em>Forbes</em>, <em>Fortune</em>, <em>The Guardian</em>, and <em>The Washington Post</em>.
+          </p>
+          <p>
+            With two decades studying AI and disruption, he brings rigorous analysis and accessible storytelling to help readers understand the forces reshaping their world.
+          </p>
+          <a href="CVBio" class="text-link">Full Bio &rarr;</a>
+        </div>
+        <div class="about-photo slide-in-right">
+          <img src="headshots/___headshot.png" alt="Benjamin Shiller">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CHAPTER INSIGHTS (hover-to-reveal) -->
+  <section class="insights-section panel-white">
+    <div class="container">
+      <h2 class="panel-title">What's Inside</h2>
+      <div class="insights-grid">
+
+        <div class="insight-card">
+          <div class="insight-front">
+            <span class="insight-chapter">The Framework</span>
+            <h3>The Incentive Filter</h3>
+            <span class="insight-hint">Hover to peek inside</span>
+          </div>
+          <div class="insight-reveal">
+            <p>One lens to cut through all the AI hype. Before you can predict what AI will do, you need to understand who controls it—and what they want.</p>
+            <a href="https://www.amazon.com/dp/B0G45MKBZT" class="insight-cta" target="_blank">Read more →</a>
+          </div>
+        </div>
+
+        <div class="insight-card">
+          <div class="insight-front">
+            <span class="insight-chapter">Chapter 9</span>
+            <h3>Algorithmic Pricing</h3>
+            <span class="insight-hint">Hover to peek inside</span>
+          </div>
+          <div class="insight-reveal">
+            <p>Your browsing history, your zip code, your timing—all of it feeds models that quietly set the price you see. Find out who wins and who loses.</p>
+            <a href="https://www.amazon.com/dp/B0G45MKBZT" class="insight-cta" target="_blank">Read more →</a>
+          </div>
+        </div>
+
+        <div class="insight-card">
+          <div class="insight-front">
+            <span class="insight-chapter">Chapter 2</span>
+            <h3>The Future of Work</h3>
+            <span class="insight-hint">Hover to peek inside</span>
+          </div>
+          <div class="insight-reveal">
+            <p>Which jobs are truly safe? The answer isn't about whether AI can do them—it's about whether it's <em>profitable</em> to deploy AI to do them.</p>
+            <a href="https://www.amazon.com/dp/B0G45MKBZT" class="insight-cta" target="_blank">Read more →</a>
+          </div>
+        </div>
+
+        <div class="insight-card">
+          <div class="insight-front">
+            <span class="insight-chapter">Chapter 3</span>
+            <h3>The Weirdness Premium</h3>
+            <span class="insight-hint">Hover to peek inside</span>
+          </div>
+          <div class="insight-reveal">
+            <p>In an AI economy, the strangest skill is the safest one. Why unpredictability, empathy, and human weirdness may be your most valuable career assets.</p>
+            <a href="https://www.amazon.com/dp/B0G45MKBZT" class="insight-cta" target="_blank">Read more →</a>
+          </div>
+        </div>
+
+        <div class="insight-card">
+          <div class="insight-front">
+            <span class="insight-chapter">Chapter 13</span>
+            <h3>The Scam Economy</h3>
+            <span class="insight-hint">Hover to peek inside</span>
+          </div>
+          <div class="insight-reveal">
+            <p>AI is making fraud faster, cheaper, and more convincing. Understanding the economic incentives behind scams is your best defense.</p>
+            <a href="https://www.amazon.com/dp/B0G45MKBZT" class="insight-cta" target="_blank">Read more →</a>
+          </div>
+        </div>
+
+        <div class="insight-card">
+          <div class="insight-front">
+            <span class="insight-chapter">Chapter 5</span>
+            <h3>AI & Democracy</h3>
+            <span class="insight-hint">Hover to peek inside</span>
+          </div>
+          <div class="insight-reveal">
+            <p>From deepfakes to filter bubbles—what does economics predict about the future of truth? The answer is more nuanced than the headlines suggest.</p>
+            <a href="https://www.amazon.com/dp/B0G45MKBZT" class="insight-cta" target="_blank">Read more →</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- BOOK INSIDE - Full Bleed -->
+  <section class="book-inside-panel fade-in">
+    <img src="BookImages/BookInsideWide.jpg" alt="Inside AI Economics">
+  </section>
+
+  <!-- MEDIA -->
+  <section class="panel panel-light">
+    <div class="container">
+      <h2 class="panel-title">In the Press</h2>
+      <a href="https://fortune.com/2026/01/16/weirdness-premium-ai-economy-benjamin-shiller-brandeis-interview/" class="media-card" target="_blank">
+        <span class="media-outlet">Fortune</span>
+        <div class="media-content">
+          <h3>In the AI economy, the 'weirdness premium' will set you apart. Lean into it, says expert on tech change economics</h3>
+          <p class="date">January 16, 2026</p>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-links">
+      <a href="https://www.linkedin.com/in/benjamin-shiller/">LinkedIn</a>
+      <a href="https://scholar.google.com/citations?user=3zuDRd0AAAAJ">Google Scholar</a>
+      <a href="https://twitter.com/BenjaminShiller">Twitter</a>
+      <a href="Contact">Media Inquiries</a>
+    </div>
+    <p>&copy; 2026 Benjamin Shiller. All rights reserved.</p>
+  </footer>
+
+  <!-- JavaScript -->
+  <script>
+    (function() {
+      // Mobile menu toggle
+      var menuToggle = document.getElementById('menuToggle');
+      var navLinks = document.getElementById('navLinks');
+      menuToggle.addEventListener('click', function() {
+        navLinks.classList.toggle('active');
+      });
+
+      // Intersection Observer for scroll animations
+      var observerOptions = {
+        threshold: 0.15,
+        rootMargin: '0px 0px -50px 0px'
+      };
+
+      var observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) {
+            entry.target.style.animationPlayState = 'running';
+            observer.unobserve(entry.target);
+          }
+        });
+      }, observerOptions);
+
+      var animatedElements = document.querySelectorAll('.slide-in-left, .slide-in-right, .fade-in');
+      for (var j = 0; j < animatedElements.length; j++) {
+        animatedElements[j].style.animationPlayState = 'paused';
+        observer.observe(animatedElements[j]);
+      }
+    })();
+  </script>
+
+  <!-- INTERACTIVE EFFECTS -->
+  <script>
+  (function() {
+
+    /* ── STATE: cursor position ─────────────────────────── */
+    var mouseX = -9999, mouseY = -9999;
+    var lastMoveAt = 0;
+    document.addEventListener('mousemove', function(e) {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      lastMoveAt = performance.now();
+    });
+
+<<<<<<< HEAD
+    /* ── 1b. FOG-OF-WAR TRAIL (hero only) ────────────────── */
+    var fogCanvas = document.getElementById('fogCanvas');
+    var fogCtx = fogCanvas.getContext('2d');
+    var hero = document.querySelector('.hero');
+    var fogHint = document.querySelector('.fog-hint');
+    var fogBlobs = [];                          // { x, y, r, life }
+    var lastFogPos = null;
+    var fogMouseActive = false;
+    var fogHintDismissed = false;
+
+    // Preload the GlobePic so the fog layer can render it
+    var globeImg = new Image();
+    var globeReady = false;
+    globeImg.onload = function() { globeReady = true; };
+    globeImg.src = 'BackgroundImages/GlobePic.jpg';
+
+    // Elements whose visibility gets "erased" by the cursor wake
+    var maskTargets = [
+      { sel: '.hero-book img',   maskId: 'wakeMask-book' },
+      { sel: '.hero-content h1', maskId: 'wakeMask-h1' },
+      { sel: '.hero-subtitle',   maskId: 'wakeMask-subtitle' },
+      { sel: '.hero-desc',       maskId: 'wakeMask-desc' },
+      { sel: '.hero-byline',     maskId: 'wakeMask-byline' }
+    ];
+    maskTargets.forEach(function(t) {
+      t.el = hero.querySelector(t.sel);
+      t.maskEl = document.getElementById(t.maskId);
+      // Cache the base rect so we don't wipe it
+      t.baseRect = t.maskEl ? t.maskEl.querySelector('rect') : null;
+    });
+    var SVG_NS = 'http://www.w3.org/2000/svg';
+
+    function updateWakeMasks() {
+      var heroRect = hero.getBoundingClientRect();
+      for (var i = 0; i < maskTargets.length; i++) {
+        var t = maskTargets[i];
+        if (!t.el || !t.maskEl) continue;
+        var elRect = t.el.getBoundingClientRect();
+        var offX = elRect.left - heroRect.left;
+        var offY = elRect.top  - heroRect.top;
+        var w = elRect.width;
+        var h = elRect.height;
+
+        // Clear dynamic children (keep base rect)
+        var child = t.maskEl.lastChild;
+        while (child && child !== t.baseRect) {
+          t.maskEl.removeChild(child);
+          child = t.maskEl.lastChild;
+        }
+
+        // Add a circle for each active blob that overlaps this element
+        for (var j = 0; j < fogBlobs.length; j++) {
+          var b = fogBlobs[j];
+          var r = b.r * b.life;
+          if (r <= 0) continue;
+          var lx = b.x - offX;
+          var ly = b.y - offY;
+          // Bounds check — skip if the circle doesn't touch the element's box
+          var cx = Math.max(0, Math.min(lx, w));
+          var cy = Math.max(0, Math.min(ly, h));
+          var dx = lx - cx, dy = ly - cy;
+          if (dx*dx + dy*dy > r*r) continue;
+
+          var circle = document.createElementNS(SVG_NS, 'circle');
+          circle.setAttribute('cx', lx.toFixed(1));
+          circle.setAttribute('cy', ly.toFixed(1));
+          circle.setAttribute('r',  r.toFixed(1));
+          circle.setAttribute('fill', 'url(#maskSoft)');
+          t.maskEl.appendChild(circle);
+        }
+      }
+    }
+
+    function resizeFog() {
+      fogCanvas.width  = hero.offsetWidth;
+      fogCanvas.height = hero.offsetHeight;
+    }
+    resizeFog();
+    window.addEventListener('resize', resizeFog);
+
+    // Track cursor within the hero only
+    hero.addEventListener('mousemove', function(e) {
+      var rect = hero.getBoundingClientRect();
+      var x = e.clientX - rect.left;
+      var y = e.clientY - rect.top;
+
+      // Blob size scales with movement distance (fast move = bigger blob)
+      var dist = lastFogPos
+        ? Math.hypot(x - lastFogPos.x, y - lastFogPos.y)
+        : 0;
+      // Base radius + distance bonus, capped
+      var r = Math.min(110, 55 + dist * 1.4);
+
+      fogBlobs.push({ x: x, y: y, r: r, life: 1.0 });
+      lastFogPos = { x: x, y: y };
+      fogMouseActive = true;
+
+      // Fade the hint after first real motion
+      if (!fogHintDismissed && dist > 4 && fogHint) {
+        fogHintDismissed = true;
+        fogHint.style.transition = 'opacity 1.2s ease';
+        fogHint.style.opacity = '0';
+        setTimeout(function() { fogHint.style.display = 'none'; }, 1400);
+      }
+
+      // Cap the array to avoid unbounded growth on wild motion
+      if (fogBlobs.length > 120) fogBlobs.splice(0, fogBlobs.length - 120);
+    });
+
+    hero.addEventListener('mouseleave', function() {
+      fogMouseActive = false;
+      lastFogPos = null;
+    });
+
+    function drawFog() {
+      var w = fogCanvas.width;
+      var h = fogCanvas.height;
+
+      // Decay each blob — life decreases, blobs shrink and vanish
+      for (var i = fogBlobs.length - 1; i >= 0; i--) {
+        var b = fogBlobs[i];
+        b.life -= 0.012;        // ~1.4 seconds to fully heal
+        if (b.life <= 0) fogBlobs.splice(i, 1);
+      }
+
+      // Clear
+      fogCtx.clearRect(0, 0, w, h);
+
+      // Paint the "surface" fog layer: GlobePic tinted navy.
+      // This replicates the old CSS hero background, now on a canvas so
+      // the cursor trail can erase it to reveal the AI map underneath.
+      if (globeReady) {
+        // Draw the globe image with object-fit: cover emulation
+        var imgW = globeImg.naturalWidth;
+        var imgH = globeImg.naturalHeight;
+        var scale = Math.max(w / imgW, h / imgH);
+        var drawW = imgW * scale;
+        var drawH = imgH * scale;
+        var drawX = (w - drawW) / 2;
+        var drawY = (h - drawH) / 2;
+        fogCtx.drawImage(globeImg, drawX, drawY, drawW, drawH);
+        // Navy tint overlay (matches the old CSS linear-gradient rgba(15,36,64, 0.7-0.8))
+        var tint = fogCtx.createLinearGradient(0, 0, 0, h);
+        tint.addColorStop(0, 'rgba(15,36,64,0.7)');
+        tint.addColorStop(1, 'rgba(15,36,64,0.8)');
+        fogCtx.fillStyle = tint;
+        fogCtx.fillRect(0, 0, w, h);
+      } else {
+        // Fallback while GlobePic is loading
+        var grad = fogCtx.createLinearGradient(0, 0, w, h);
+        grad.addColorStop(0,    '#0f2440');
+        grad.addColorStop(0.5,  '#1a365d');
+        grad.addColorStop(1,    '#2c5282');
+        fogCtx.fillStyle = grad;
+        fogCtx.fillRect(0, 0, w, h);
+      }
+
+      // Cut out the trail using destination-out
+      fogCtx.globalCompositeOperation = 'destination-out';
+      for (var i = 0; i < fogBlobs.length; i++) {
+        var b = fogBlobs[i];
+        var currentR = b.r * b.life;
+        if (currentR <= 0) continue;
+        var holeGrad = fogCtx.createRadialGradient(b.x, b.y, 0, b.x, b.y, currentR);
+        holeGrad.addColorStop(0,   'rgba(0,0,0,' + (0.95 * b.life) + ')');
+        holeGrad.addColorStop(0.55,'rgba(0,0,0,' + (0.55 * b.life) + ')');
+        holeGrad.addColorStop(1,   'rgba(0,0,0,0)');
+        fogCtx.fillStyle = holeGrad;
+        fogCtx.beginPath();
+        fogCtx.arc(b.x, b.y, currentR, 0, Math.PI * 2);
+        fogCtx.fill();
+      }
+      fogCtx.globalCompositeOperation = 'source-over';
+
+      // Update SVG masks so book image + text disappear in the wake
+      updateWakeMasks();
+
+      requestAnimationFrame(drawFog);
+    }
+    drawFog();
+
+=======
+>>>>>>> 0facd76c6b32460d573e24524973d960b3892870
+    /* ── 1. NEURAL NETWORK (brighter, more visible) ────── */
+    var canvas = document.getElementById('neuralNet');
+    var ctx = canvas.getContext('2d');
+    var nodes = [];
+    var NODE_COUNT = 80;
+    var MAX_DIST = 170;
+
+    function resizeCanvas() {
+      var hero = canvas.parentElement;
+      canvas.width = hero.offsetWidth;
+      canvas.height = hero.offsetHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    for (var i = 0; i < NODE_COUNT; i++) {
+      nodes.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        vx: (Math.random() - 0.5) * 0.5,
+        vy: (Math.random() - 0.5) * 0.5,
+        r: Math.random() * 2.4 + 1.4,
+        pulse: Math.random() * Math.PI * 2,
+        pulseSpeed: 0.02 + Math.random() * 0.025,
+        litTimer: 0
+      });
+    }
+
+    function drawNet() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (var i = 0; i < nodes.length; i++) {
+        var n = nodes[i];
+        n.pulse += n.pulseSpeed;
+        n.x += n.vx;
+        n.y += n.vy;
+        if (n.x < 0 || n.x > canvas.width)  n.vx *= -1;
+        if (n.y < 0 || n.y > canvas.height) n.vy *= -1;
+        if (n.litTimer > 0) n.litTimer--;
+
+        for (var j = i + 1; j < nodes.length; j++) {
+          var m = nodes[j];
+          var dx = m.x - n.x, dy = m.y - n.y;
+          var dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < MAX_DIST) {
+            var alpha = (1 - dist / MAX_DIST) * 0.75;
+            var isLit = n.litTimer > 0 || m.litTimer > 0;
+            ctx.beginPath();
+            ctx.moveTo(n.x, n.y);
+            ctx.lineTo(m.x, m.y);
+            if (isLit) {
+              ctx.strokeStyle = 'rgba(220,180,95,' + Math.min(1, alpha * 2.4) + ')';
+              ctx.lineWidth = 2.2;
+              ctx.shadowColor = 'rgba(220,180,95,0.9)';
+              ctx.shadowBlur = 10;
+            } else {
+              ctx.strokeStyle = 'rgba(160,200,240,' + alpha + ')';
+              ctx.lineWidth = 1.1;
+              ctx.shadowBlur = 0;
+            }
+            ctx.stroke();
+          }
+        }
+        ctx.shadowBlur = 0;
+
+        if (Math.random() < 0.0035) n.litTimer = 90;
+
+        var glow = 0.65 + 0.35 * Math.sin(n.pulse);
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, n.r * glow, 0, Math.PI * 2);
+        if (n.litTimer > 0) {
+          ctx.fillStyle = 'rgba(220,180,95,' + Math.min(1, 0.9 + 0.1 * glow) + ')';
+          ctx.shadowColor = 'rgba(220,180,95,0.9)';
+          ctx.shadowBlur = 14;
+        } else {
+          ctx.fillStyle = 'rgba(190,220,255,' + (0.85 * glow) + ')';
+          ctx.shadowColor = 'rgba(190,220,255,0.5)';
+          ctx.shadowBlur = 4;
+        }
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      }
+      requestAnimationFrame(drawNet);
+    }
+    drawNet();
+
+    /* ── 2. ORBITING BLURBS WITH NAVIGATION ────────────────── */
+    var orbitCards = document.querySelectorAll('.orbit-card');
+    var orbitDots  = document.querySelectorAll('.orbit-dot');
+    var orbitPrev  = document.getElementById('orbitPrev');
+    var orbitNext  = document.getElementById('orbitNext');
+    var orbitStage = document.getElementById('orbitStage');
+    var N = orbitCards.length;
+
+    var currentAngle = 0;              // current orbit rotation (radians)
+    var targetAngle  = 0;              // target in manual mode
+    var focusedIdx   = 0;              // which card is (or is heading to) front
+    var autoMode     = true;           // true = drifting, false = pausing on focus
+    var lastInteraction = 0;           // when user last clicked
+    var AUTO_RESUME_MS = 7000;         // resume drift after 7s of inactivity
+    var BASE_SPEED = 0.00022;          // radians/ms when drifting
+    var CARD_STEP  = (2 * Math.PI) / N;
+    var lastFrameTime = performance.now();
+
+    function setFocus(i) {
+      focusedIdx = ((i % N) + N) % N;
+      // Compute target so focused card sits at front (angle 0),
+      // choosing the shortest-path version of that angle.
+      var base = -focusedIdx * CARD_STEP;
+      while (base - currentAngle > Math.PI)  base -= 2 * Math.PI;
+      while (base - currentAngle < -Math.PI) base += 2 * Math.PI;
+      targetAngle = base;
+      autoMode = false;
+      lastInteraction = performance.now();
+      updateDots();
+    }
+
+    function updateDots() {
+      orbitDots.forEach(function(dot, i) {
+        dot.classList.toggle('active', i === focusedIdx);
+      });
+    }
+
+    // Click handlers
+    if (orbitPrev) orbitPrev.addEventListener('click', function(e) {
+      e.stopPropagation(); setFocus(focusedIdx - 1);
+    });
+    if (orbitNext) orbitNext.addEventListener('click', function(e) {
+      e.stopPropagation(); setFocus(focusedIdx + 1);
+    });
+    orbitDots.forEach(function(dot, i) {
+      dot.addEventListener('click', function(e) {
+        e.stopPropagation(); setFocus(i);
+      });
+    });
+    orbitCards.forEach(function(card, i) {
+      card.addEventListener('click', function() { setFocus(i); });
+    });
+
+    function animateOrbit() {
+      if (!N) return;
+      var now = performance.now();
+      var dt = Math.min(50, now - lastFrameTime);
+      lastFrameTime = now;
+
+      // Return to auto mode after inactivity
+      if (!autoMode && (now - lastInteraction) > AUTO_RESUME_MS) {
+        autoMode = true;
+      }
+
+      if (autoMode) {
+        currentAngle -= BASE_SPEED * dt;
+        // Track which card is nearest the front for dot highlighting
+        var idx = Math.round(-currentAngle / CARD_STEP);
+        idx = ((idx % N) + N) % N;
+        if (idx !== focusedIdx) { focusedIdx = idx; updateDots(); }
+      } else {
+        // Ease toward target
+        currentAngle += (targetAngle - currentAngle) * 0.09;
+      }
+
+      var isNarrow = window.innerWidth < 700;
+      var radiusX = isNarrow ? 170 : 320;
+      var globeRadius = isNarrow ? 120 : 170;
+
+      orbitCards.forEach(function(card, i) {
+        var angle = currentAngle + (i * CARD_STEP);
+        var x = Math.sin(angle) * radiusX;
+        var z = Math.cos(angle) * radiusX;
+
+        var scale = 0.55 + ((z + radiusX) / (2 * radiusX)) * 0.6;
+
+        var opacity;
+        if (z >= 0) {
+          opacity = 1;
+        } else {
+          var absX = Math.abs(x);
+          if (absX < globeRadius * 0.9) {
+            opacity = 0;
+          } else {
+            opacity = Math.min(1, (absX - globeRadius * 0.75) / (globeRadius * 0.4));
+          }
+        }
+
+        card.style.transform =
+          'translate(-50%, -50%) translate3d(' + x + 'px, 0, ' + z + 'px) scale(' + scale.toFixed(3) + ')';
+        card.style.opacity = opacity;
+        card.style.zIndex = z > 0 ? 10 : 1;
+        card.style.pointerEvents = opacity < 0.35 ? 'none' : 'auto';
+      });
+
+      requestAnimationFrame(animateOrbit);
+    }
+    animateOrbit();
+
+    /* ── 3. SPOTLIGHT + BEAM-TO-BUTTON CANVAS ─────────────── */
+    var spot = document.createElement('canvas');
+    spot.id = 'spotlightCanvas';
+    document.body.appendChild(spot);
+    var spotCtx = spot.getContext('2d');
+
+    function resizeSpot() {
+      spot.width = window.innerWidth;
+      spot.height = window.innerHeight;
+    }
+    resizeSpot();
+    window.addEventListener('resize', resizeSpot);
+
+    var buyBtns = document.querySelectorAll('.buy-btn');
+
+    function drawSpotlight() {
+      spotCtx.clearRect(0, 0, spot.width, spot.height);
+      if (mouseX < 0) { requestAnimationFrame(drawSpotlight); return; }
+
+      // Find nearest visible buy button
+      var nearest = null, minDist = Infinity;
+      buyBtns.forEach(function(btn) {
+        var r = btn.getBoundingClientRect();
+        // Skip hidden or off-screen buttons (e.g. quiz result buttons with display:none)
+        if (r.width === 0 || r.height === 0) return;
+        if (r.bottom < 0 || r.top > spot.height || r.right < 0 || r.left > spot.width) return;
+        var cx = r.left + r.width / 2;
+        var cy = r.top  + r.height / 2;
+        var d = Math.hypot(cx - mouseX, cy - mouseY);
+        if (d < minDist) { minDist = d; nearest = { x: cx, y: cy, d: d }; }
+      });
+
+      // Draw beam — only when a button is visible & cursor is not already ON it
+      if (nearest && nearest.d > 40 && nearest.d < 700) {
+        var strength = Math.max(0, Math.min(1, (700 - nearest.d) / 500)); // closer = stronger
+        var grad = spotCtx.createLinearGradient(mouseX, mouseY, nearest.x, nearest.y);
+        grad.addColorStop(0,   'rgba(198,160,82,' + (0.55 * strength) + ')');
+        grad.addColorStop(0.5, 'rgba(212,175,97,' + (0.32 * strength) + ')');
+        grad.addColorStop(1,   'rgba(255,210,130,' + (0.7 * strength) + ')');
+
+        // Glowing tapered beam
+        spotCtx.save();
+        spotCtx.strokeStyle = grad;
+        spotCtx.lineWidth = 3 + 4 * strength;
+        spotCtx.shadowColor = 'rgba(212,175,97,0.9)';
+        spotCtx.shadowBlur = 20;
+        spotCtx.lineCap = 'round';
+        spotCtx.beginPath();
+        spotCtx.moveTo(mouseX, mouseY);
+        spotCtx.lineTo(nearest.x, nearest.y);
+        spotCtx.stroke();
+        spotCtx.restore();
+
+        // Glow at the button end (target pulse)
+        var pulseR = 20 + 10 * Math.sin(performance.now() / 220);
+        var targetGrad = spotCtx.createRadialGradient(nearest.x, nearest.y, 0, nearest.x, nearest.y, pulseR);
+        targetGrad.addColorStop(0, 'rgba(255,220,140,' + (0.55 * strength) + ')');
+        targetGrad.addColorStop(1, 'rgba(255,220,140,0)');
+        spotCtx.fillStyle = targetGrad;
+        spotCtx.beginPath();
+        spotCtx.arc(nearest.x, nearest.y, pulseR, 0, Math.PI * 2);
+        spotCtx.fill();
+      }
+
+      // Small circular spotlight at cursor (smaller than before)
+      var spotR = 140;
+      var cursorGrad = spotCtx.createRadialGradient(mouseX, mouseY, 0, mouseX, mouseY, spotR);
+      cursorGrad.addColorStop(0,   'rgba(212,175,97,0.22)');
+      cursorGrad.addColorStop(0.5, 'rgba(44,82,130,0.08)');
+      cursorGrad.addColorStop(1,   'rgba(0,0,0,0)');
+      spotCtx.fillStyle = cursorGrad;
+      spotCtx.beginPath();
+      spotCtx.arc(mouseX, mouseY, spotR, 0, Math.PI * 2);
+      spotCtx.fill();
+
+      requestAnimationFrame(drawSpotlight);
+    }
+    drawSpotlight();
+
+    /* ── 4. MAGNETIC + PROXIMITY-REACTIVE BUY BUTTONS ────── */
+    var allBtns = document.querySelectorAll('.buy-btn');
+
+    document.addEventListener('mousemove', function(e) {
+      allBtns.forEach(function(btn) {
+        var rect = btn.getBoundingClientRect();
+        if (rect.width === 0 || rect.height === 0) return; // skip hidden buttons
+        var cx = rect.left + rect.width / 2;
+        var cy = rect.top  + rect.height / 2;
+        var dx = e.clientX - cx;
+        var dy = e.clientY - cy;
+        var dist = Math.sqrt(dx * dx + dy * dy);
+
+        var threshold = 260; // larger proximity zone for color/size
+        var pullThreshold = 110;
+
+        if (dist < threshold) {
+          var t = 1 - (dist / threshold); // 0..1 (close = 1)
+          // Magnetic pull (only when very close)
+          var pull = dist < pullThreshold ? (1 - dist / pullThreshold) * 0.28 : 0;
+          var tx = dx * pull;
+          var ty = dy * pull;
+          // Scale up with proximity (1.0 → 1.15)
+          var scale = 1 + 0.15 * t;
+
+          btn.style.transform = 'translate(' + tx + 'px,' + ty + 'px) scale(' + scale.toFixed(3) + ')';
+
+          // Color transition: gold → lighter/hotter gold as approaching
+          // Base #c6a052 (198,160,82) → Hot #ffd980 (255,217,128)
+          var r = Math.round(198 + (255 - 198) * t);
+          var g = Math.round(160 + (217 - 160) * t);
+          var b = Math.round( 82 + (128 -  82) * t);
+          btn.style.background = 'rgb(' + r + ',' + g + ',' + b + ')';
+
+          // Increasing glow box-shadow
+          var glowAlpha = (0.3 + 0.55 * t).toFixed(2);
+          var glowSize  = (12 + 28 * t).toFixed(0);
+          btn.style.boxShadow = '0 0 ' + glowSize + 'px rgba(255,210,130,' + glowAlpha + '), 0 8px 22px rgba(0,0,0,0.28)';
+        } else {
+          btn.style.transform = '';
+          btn.style.background = '';
+          btn.style.boxShadow = '';
+        }
+      });
+    });
+
+  })();
+
+  /* ── 5. QUIZ LOGIC (4 questions, 6 analogy outcomes) ─── */
+  var quizScores = [-1, -1, -1, -1];
+  var QUIZ_COUNT = 4;
+
+  function quizAnswer(questionIndex, score) {
+    quizScores[questionIndex] = score;
+    var current = document.getElementById('step' + questionIndex);
+    current.classList.remove('active');
+
+    document.getElementById('pip' + questionIndex).classList.remove('current');
+    document.getElementById('pip' + questionIndex).classList.add('done');
+
+    var next = questionIndex + 1;
+    if (next < QUIZ_COUNT) {
+      document.getElementById('step' + next).classList.add('active');
+      document.getElementById('pip' + next).classList.add('current');
+    } else {
+      document.getElementById('quizProgress').style.display = 'none';
+      showQuizResult();
+    }
+  }
+
+  function showQuizResult() {
+    var q1 = quizScores[0];           // weirdness
+    var q2 = quizScores[1];           // stakes
+    var q3 = quizScores[2];           // what AI targets (primary dimension)
+    var q4 = quizScores[3];           // physical chaos tolerance
+    var other = q1 + q2 + q4;         // 0..9 — weirdness/stakes/chaos combined
+
+    var result = document.getElementById('quizResult');
+    var badge  = document.getElementById('resultBadge');
+    var title  = document.getElementById('resultTitle');
+    var body   = document.getElementById('resultBody');
+    var fill   = document.getElementById('resultFill');
+
+    var pct, badgeClass, badgeText, titleText, bodyText;
+
+    // ──────────────────────────────────────────────────────────
+    // Primary routing on Q3 (AI's target), then on other score.
+    // Radiologist removed. Outcomes: Knocker-Upper, Elevator
+    // Operator, Photographer, Centaur, Comedian.
+    // ──────────────────────────────────────────────────────────
+
+    if (q3 === 3) {
+      // AI automates the EASY parts — pure augmentation
+      if (other >= 5) {
+        // Purely augmented AND high on weirdness/stakes/chaos → Centaur
+        pct = 82; badgeClass = 'badge-adapting'; badgeText = 'The Centaur (Advanced Chess)';
+        titleText = 'After Deep Blue beat Kasparov, the best chess player in the world wasn\'t a human or a machine. It was a team.';
+        bodyText  = 'Your answers line up almost perfectly: AI handles your drudgery and difficult computation, and what\'s left is exactly what you\'re good at — judgment under uncertainty and intentional unpredictability. You\'re the human half of a human+AI pair, which right now is the most powerful configuration there is. The catch: centaur eras end. <em>AI Economics</em> explains how to adapt.';
+      } else {
+        // AI takes the easy stuff, but your job isn't weird/high-stakes/physical
+        // → Comedian: what's left is human residue — lean in.
+        pct = 92; badgeClass = 'badge-resilient'; badgeText = 'The Comedian';
+        titleText = 'AI can handle logistics and travel isn\'t necessary. Now your only job task is the hard part, like writing jokes.';
+        bodyText  = 'Here\'s the thing: AI is only taking the boring parts of your job. Whatever is left — your judgment, your presence, the human residue — is getting <em>more</em> valuable, not less. <em>AI Economics</em> (Ch. 3) explains why this residue is worth investing in, and how to turn ordinary human judgment into a premium skill.';
+      }
+    }
+    else if (q3 === 0) {
+      // AI automates the HARD parts — your expertise is being commoditized
+      pct = 48; badgeClass = 'badge-adapting'; badgeText = 'The Photographer';
+      titleText = 'When digital cameras killed the darkroom, photographers didn\'t disappear. They pivoted from craft to vision, but opened the floodgates.';
+      bodyText  = 'The skills you spent years mastering are exactly what AI is now doing cheaply. Now photography entails different skills. The big question for you: do you excel that those skills? How many others do too?. <em>AI Economics</em> gives you the framework to find your field\'s equivalent of "vision": the part that AI makes more valuable, not less.';
+    }
+    else {
+      // Q3 = 1 ("both") or Q3 = 2 ("not here yet")
+      // Fall back to total-score-based outcomes, but without Centaur
+      // (which requires pure augmentation).
+      if (other <= 2) {
+        pct = 12; badgeClass = 'badge-exposed'; badgeText = 'The Knocker-Upper';
+        titleText = 'A 19th-century profession paid people to wake neighbors before dawn. Then alarm clocks arrived.';
+        bodyText  = 'Your job has the profile of a role whose core function can now be done by a machine at near-zero cost. Knocker-uppers weren\'t stupid — they were just slow to see the alarm clock coming. You still have time. <em>AI Economics</em> shows you what the "alarm clock" looks like in your field, and how to avoid someone hitting <em>snooze</em> on your profession.';
+      } else if (other <= 5) {
+        pct = 30; badgeClass = 'badge-exposed'; badgeText = 'The Elevator Operator';
+        titleText = 'Elevator operators didn\'t vanish overnight. They lingered for decades as a hotel status symbol — then were gone.';
+        bodyText  = 'Your role follows a predictable pattern: first AI makes your skills cheaper, then only premium contexts keep you employed, then those fade too. The timeline is longer than the panic suggests, but the direction is clear. The Incentive Filter in <em>AI Economics</em> explains exactly when employers decide automation is worth it, and how to be on the other side of that decision.';
+      } else {
+        // High weirdness/stakes/chaos protects you even if AI status is mixed
+        pct = 88; badgeClass = 'badge-resilient'; badgeText = 'The Comedian';
+        titleText = 'AI can write jokes. It can\'t do stand-up.';
+        bodyText  = 'Your work depends on the irreducibly human: presence, weirdness, timing, judgment calls that defy pattern. Whether AI is already in your field or still on the horizon, your moat is the weirdness premium itself — and in an AI-saturated economy, it\'s going <em>up</em>, not down. <em>AI Economics</em> (Ch. 3) explains why weirdness pays, and how to deploy yours strategically.';
+      }
+    }
+
+    badge.className = 'result-badge ' + badgeClass;
+    badge.textContent = badgeText;
+    title.textContent = titleText;
+    body.innerHTML = bodyText;
+
+    result.classList.add('active');
+    setTimeout(function() { fill.style.width = pct + '%'; }, 100);
+  }
+
+  function quizRestart() {
+    quizScores = [-1, -1, -1, -1];
+    document.getElementById('quizResult').classList.remove('active');
+    document.getElementById('quizProgress').style.display = 'flex';
+    for (var i = 0; i < QUIZ_COUNT; i++) {
+      var pip = document.getElementById('pip' + i);
+      pip.classList.remove('done','current');
+      if (i === 0) pip.classList.add('current');
+      var step = document.getElementById('step' + i);
+      step.classList.remove('active');
+      if (i === 0) step.classList.add('active');
+    }
+    document.getElementById('resultFill').style.width = '0';
+    document.getElementById('quizSection').scrollIntoView({ behavior: 'smooth' });
+  }
+  </script>
+
+</body>
+</html>
