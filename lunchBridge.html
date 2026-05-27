@@ -58,3 +58,63 @@
   </noscript>
 </body>
 </html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>Lunch Menu</title>
+
+  <!-- Keep this utility page out of search results -->
+  <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+
+  <!-- Do not send your webpage URL as the referrer -->
+  <meta name="referrer" content="no-referrer">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #ffffff;
+    }
+
+    iframe {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      border: 0;
+      display: block;
+      background: #ffffff;
+    }
+
+    .fallback {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 18px;
+      color: #333;
+      padding: 24px;
+    }
+  </style>
+</head>
+
+<body>
+  <iframe
+    id="school-menu"
+    title="School lunch menu"
+    referrerpolicy="no-referrer"
+    src="https://menus.healthepro.com/organizations/2106/sites/13499/menus/111826?calendarView=week">
+  </iframe>
+
+  <noscript>
+    <div class="fallback">
+      JavaScript is disabled, but the menu should still load above.
+    </div>
+  </noscript>
+</body>
+</html>
