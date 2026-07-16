@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Obfuscation Game — Search, Prices &amp; Add-Ons</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2C3E50;
+  --navy-deep:#22303F;
+  --gold:#F1C40F;
+  --gold-soft:#F9E79F;
+  --teal:#5EA8A7;
+  --teal-deep:#3F7E7D;
+  --paper:#F5F4EF;
+  --card:#FFFFFF;
+  --ink:#1E2A36;
+  --ink-soft:#5A6A79;
+  --line:#DDD9CE;
+  --red:#C0574F;
+  --green:#3E8E5A;
+  --retro-bg:#ECE9DD;
+  --retro-line:#9A9484;
+  --retro-link:#1440A8;
+  --radius:12px;
+  --font-display:'Space Grotesk',sans-serif;
+  --font-body:'Inter',system-ui,sans-serif;
+  --font-mono:'IBM Plex Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--paper);color:var(--ink);font-family:var(--font-body);font-size:16px;line-height:1.5;min-height:100vh}
+button{font-family:var(--font-body);cursor:pointer}
+input,select{font-family:var(--font-body)}
+.hidden{display:none!important}
+
+/* ---------- layout shells ---------- */
+.shell{max-width:1080px;margin:0 auto;padding:20px 16px 64px}
+.shell.narrow{max-width:460px}
+header.top{background:var(--navy);color:#fff;padding:14px 0}
+header.top .shell{padding:0 16px;display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:4px}
+.brand{font-family:var(--font-display);font-weight:700;font-size:20px;letter-spacing:.2px}
+.brand .accent{color:var(--gold)}
+.session-tag{font-family:var(--font-mono);font-size:13px;color:#CBD6E0}
+.session-tag b{color:var(--gold);letter-spacing:2px}
+
+/* ---------- cards & type ---------- */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px;margin-top:18px}
+h1{font-family:var(--font-display);font-size:clamp(26px,5vw,40px);line-height:1.12;color:var(--navy)}
+h2{font-family:var(--font-display);font-size:21px;color:var(--navy);margin-bottom:10px}
+h3{font-family:var(--font-display);font-size:16px;color:var(--navy)}
+p.sub{color:var(--ink-soft);margin-top:8px;max-width:56ch}
+.eyebrow{font-family:var(--font-mono);font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--teal-deep);margin-bottom:6px}
+
+/* ---------- buttons ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;border-radius:10px;padding:13px 22px;font-size:16px;font-weight:600;transition:transform .06s ease,box-shadow .12s ease}
+.btn:active{transform:translateY(1px)}
+.btn:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.btn-primary{background:var(--navy);color:#fff}
+.btn-primary:hover{box-shadow:0 4px 14px rgba(44,62,80,.28)}
+.btn-gold{background:var(--gold);color:var(--navy-deep)}
+.btn-gold:hover{box-shadow:0 4px 14px rgba(241,196,15,.4)}
+.btn-teal{background:var(--teal);color:#fff}
+.btn-teal:hover{background:var(--teal-deep)}
+.btn-ghost{background:transparent;color:var(--navy);border:1.5px solid var(--navy)}
+.btn-block{width:100%}
+.btn[disabled]{opacity:.45;cursor:not-allowed;box-shadow:none}
+.btn-sm{padding:8px 14px;font-size:14px;border-radius:8px}
+
+/* ---------- forms ---------- */
+label.f{display:block;font-size:13px;font-weight:600;color:var(--ink-soft);margin:14px 0 5px;text-transform:uppercase;letter-spacing:.6px}
+input.f{width:100%;padding:12px 14px;font-size:17px;border:1.5px solid var(--line);border-radius:10px;background:#fff;color:var(--ink)}
+input.f:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(94,168,167,.18)}
+input.f.money{font-family:var(--font-mono);font-weight:600}
+.f-err{color:var(--red);font-size:13px;margin-top:6px;min-height:18px}
+.code-input{font-family:var(--font-mono);letter-spacing:8px;text-transform:uppercase;text-align:center;font-size:24px!important}
+
+/* ---------- landing ---------- */
+.land-hero{padding:44px 0 8px;text-align:left}
+.role-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:22px}
+@media(max-width:640px){.role-grid{grid-template-columns:1fr}}
+.role-card{background:var(--card);border:1.5px solid var(--line);border-radius:var(--radius);padding:22px;text-align:left;transition:border-color .12s,box-shadow .12s}
+.role-card:hover{border-color:var(--teal);box-shadow:0 6px 20px rgba(44,62,80,.10)}
+.role-card h3{font-size:19px;margin-bottom:6px}
+.role-card p{font-size:14px;color:var(--ink-soft)}
+.role-card .go{margin-top:14px;font-weight:700;color:var(--teal-deep);font-size:14px}
+
+/* ---------- pricing sliders / bid form ---------- */
+.bid-panel{border-left:5px solid var(--gold)}
+.money-row{display:flex;align-items:center;gap:10px}
+.money-row .cur{font-family:var(--font-mono);font-size:20px;color:var(--ink-soft)}
+.hint{font-size:13px;color:var(--ink-soft);margin-top:6px}
+.cost-strip{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.chip{font-family:var(--font-mono);font-size:12.5px;background:var(--retro-bg);border:1px solid var(--line);border-radius:999px;padding:5px 12px;color:var(--ink)}
+.chip b{color:var(--navy)}
+.margin-live{margin-top:16px;padding:12px 14px;background:var(--paper);border-radius:10px;font-size:14px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.margin-live span{font-family:var(--font-mono)}
+.pos{color:var(--green)}.neg{color:var(--red)}
+
+/* ---------- waiting / status ---------- */
+.pulse-dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--teal);margin-right:8px;animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.35}50%{opacity:1}}
+@media(prefers-reduced-motion:reduce){.pulse-dot{animation:none}}
+.big-count{font-family:var(--font-display);font-size:56px;color:var(--navy);line-height:1}
+.big-count small{font-size:20px;color:var(--ink-soft);font-family:var(--font-body);font-weight:400}
+
+/* ---------- THE SIGNATURE: retro search-engine list ---------- */
+.partswatch{margin-top:18px;border:2px solid var(--retro-line);border-radius:4px;overflow:hidden;background:#fff;box-shadow:3px 3px 0 rgba(44,62,80,.12)}
+.pw-head{background:var(--retro-bg);border-bottom:2px solid var(--retro-line);padding:8px 12px;display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:4px}
+.pw-logo{font-family:var(--font-mono);font-weight:600;font-size:15px;color:var(--navy)}
+.pw-logo em{font-style:normal;color:var(--red)}
+.pw-query{font-family:var(--font-mono);font-size:11.5px;color:#6B6350}
+.pw-table{width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:13px}
+.pw-table th{background:var(--retro-bg);border:1px solid var(--retro-line);padding:5px 8px;font-size:10.5px;text-transform:uppercase;letter-spacing:1px;color:#57503E;text-align:left}
+.pw-table td{border:1px solid #C9C4B4;padding:7px 8px;vertical-align:middle}
+.pw-table tr:nth-child(even) td{background:#FAF9F4}
+.pw-dealer{color:var(--retro-link);text-decoration:underline;font-weight:600}
+.pw-price{font-weight:600;color:var(--ink)}
+.pw-me td{background:var(--gold-soft)!important}
+.pw-rank{color:#8A8471;width:34px;text-align:center}
+.pw-upgrade{color:#8A5A00}
+.pw-note{font-size:11px;color:#8A8471;padding:6px 10px;background:var(--retro-bg);border-top:1px solid var(--retro-line)}
+
+/* ---------- results ---------- */
+.result-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:14px}
+.stat{background:var(--paper);border-radius:10px;padding:14px;text-align:center}
+.stat .v{font-family:var(--font-mono);font-weight:600;font-size:22px;color:var(--navy)}
+.stat .v.pos{color:var(--green)}.stat .v.neg{color:var(--red)}
+.stat .l{font-size:11.5px;text-transform:uppercase;letter-spacing:.8px;color:var(--ink-soft);margin-top:4px}
+.profit-eq{font-family:var(--font-mono);font-size:13px;background:var(--navy);color:#DCE6EE;padding:12px 14px;border-radius:10px;margin-top:14px;overflow-x:auto;white-space:nowrap}
+.profit-eq b{color:var(--gold)}
+
+/* ---------- leaderboard ---------- */
+.lb{width:100%;border-collapse:collapse;margin-top:10px}
+.lb th{font-size:11.5px;text-transform:uppercase;letter-spacing:1px;color:var(--ink-soft);text-align:left;padding:8px 10px;border-bottom:2px solid var(--line)}
+.lb td{padding:10px;border-bottom:1px solid var(--line);font-size:15px}
+.lb td.num{font-family:var(--font-mono);text-align:right}
+.lb tr.first td{background:var(--gold-soft);font-weight:600}
+.lb .medal{font-size:17px}
+
+/* ---------- instructor ---------- */
+.host-bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:16px}
+.roster{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.roster .p{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-size:14px;font-weight:500}
+.roster .p.in{border-color:var(--teal);background:#EAF4F4}
+.join-code{font-family:var(--font-mono);font-size:clamp(40px,9vw,72px);font-weight:600;letter-spacing:14px;color:var(--navy);background:var(--gold);display:inline-block;padding:10px 18px 10px 32px;border-radius:14px;margin-top:10px}
+.settings-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-top:8px}
+details.settings{margin-top:16px}
+details.settings summary{cursor:pointer;font-weight:600;color:var(--teal-deep);font-size:14px}
+.discuss{border-left:5px solid var(--teal)}
+.discuss ul{margin:8px 0 0 18px;font-size:14.5px;color:var(--ink)}
+.discuss li{margin-top:6px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}
+@media(max-width:860px){.two-col{grid-template-columns:1fr}}
+.setup-steps{margin:10px 0 0 18px;font-size:15px}
+.setup-steps li{margin-top:10px}
+.setup-steps code{font-family:var(--font-mono);background:var(--retro-bg);padding:2px 6px;border-radius:4px;font-size:13px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:12px 22px;border-radius:10px;font-size:14.5px;box-shadow:0 8px 24px rgba(0,0,0,.25);z-index:50;transition:opacity .3s}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="shell">
+    <div class="brand">The <span class="accent">Obfuscation</span> Game</div>
+    <div class="session-tag" id="topTag">Search, prices &amp; add-ons · after Ellison &amp; Ellison (2009)</div>
+  </div>
+</header>
+
+<!-- ============ SETUP (shown until Firebase config pasted) ============ -->
+<div id="viewSetup" class="shell hidden">
+  <div class="card">
+    <div class="eyebrow">One-time setup</div>
+    <h2>Connect a free Firebase database</h2>
+    <p class="sub">Live multiplayer needs one shared place for bids to land. Firebase's free tier handles a class of any realistic size. This takes about five minutes:</p>
+    <ol class="setup-steps">
+      <li>Go to <code>console.firebase.google.com</code>, sign in with any Google account, and click <b>Create a project</b> (name it anything; Analytics can be off).</li>
+      <li>In the left menu choose <b>Build → Realtime Database → Create database</b>. Pick the default location and start in <b>test mode</b>.</li>
+      <li>Click the gear icon → <b>Project settings</b>. Under "Your apps," click the <b>&lt;/&gt;</b> (web) icon, register an app (no hosting needed), and copy the <code>firebaseConfig</code> object it shows you.</li>
+      <li>Open this HTML file in a text editor, find <code>FIREBASE_CONFIG</code> near the top of the script, and paste your values over the placeholders. Make sure <code>databaseURL</code> is included (copy it from the Realtime Database page if it isn't in the snippet).</li>
+      <li>Re-upload the file to your website. Done — this screen disappears.</li>
+    </ol>
+    <p class="hint" style="margin-top:14px">Test-mode rules expire after 30 days; the README that came with this file has two lines of permanent rules to paste in before the semester starts.</p>
+  </div>
+</div>
+
+<!-- ============ LANDING ============ -->
+<div id="viewLanding" class="shell hidden">
+  <div class="land-hero">
+    <div class="eyebrow">A live classroom market experiment</div>
+    <h1>Can you beat the search engine?</h1>
+    <p class="sub">You run a small online parts shop. Your posted price lands on a public list sorted cheapest-first — but what you charge for the <em>upgrade</em> is yours to hide. Price low and you win the list; price smart and you win the game.</p>
+  </div>
+  <div class="role-grid">
+    <button class="role-card" onclick="App.showJoin()">
+      <h3>🛒 Join as a retailer</h3>
+      <p>Enter the session code from the screen and start setting prices.</p>
+      <div class="go">Join a session →</div>
+    </button>
+    <button class="role-card" onclick="App.showHost()">
+      <h3>📊 Run a session</h3>
+      <p>Instructor view: open rounds, reveal the list, project the leaderboard.</p>
+      <div class="go">Host a session →</div>
+    </button>
+  </div>
+</div>
+
+<!-- ============ STUDENT: JOIN ============ -->
+<div id="viewJoin" class="shell narrow hidden">
+  <div class="card">
+    <h2>Join the market</h2>
+    <label class="f" for="joinCode">Session code</label>
+    <input class="f code-input" id="joinCode" maxlength="4" autocomplete="off" placeholder="····">
+    <label class="f" for="joinName">Your shop's name</label>
+    <input class="f" id="joinName" maxlength="18" autocomplete="off" placeholder="e.g. Ben's Bargain Bits">
+    <div class="f-err" id="joinErr"></div>
+    <button class="btn btn-gold btn-block" onclick="App.join()">Enter the market</button>
+  </div>
+</div>
+
+<!-- ============ STUDENT: LOBBY / WAIT ============ -->
+<div id="viewStudentWait" class="shell narrow hidden">
+  <div class="card" style="text-align:center">
+    <div class="eyebrow" id="swEyebrow">You're in</div>
+    <h2 id="swTitle">Waiting for the round to open…</h2>
+    <p class="sub" id="swSub" style="margin:8px auto 0"><span class="pulse-dot"></span>Keep this page open. Your instructor controls the rounds.</p>
+  </div>
+</div>
+
+<!-- ============ STUDENT: BID ============ -->
+<div id="viewBid" class="shell narrow hidden">
+  <div class="card bid-panel">
+    <div class="eyebrow" id="bidRoundTag">Round 1</div>
+    <h2>Set your two prices</h2>
+    <div class="cost-strip">
+      <span class="chip">Your cost, basic item: <b id="chipCL">$50</b></span>
+      <span class="chip">Extra cost of premium: <b id="chipCU">+$20</b></span>
+    </div>
+
+    <label class="f" for="pLow">Posted price — basic item <span style="font-weight:400;text-transform:none">(goes on the public list)</span></label>
+    <div class="money-row"><span class="cur">$</span><input class="f money" id="pLow" type="number" inputmode="decimal" min="1" step="1" placeholder="e.g. 55"></div>
+
+    <label class="f" for="pHi">Hidden price — premium item <span style="font-weight:400;text-transform:none">(shoppers see it only after clicking you)</span></label>
+    <div class="money-row"><span class="cur">$</span><input class="f money" id="pHi" type="number" inputmode="decimal" min="1" step="1" placeholder="e.g. 89"></div>
+
+    <div class="margin-live" id="marginLive">
+      <div>Margin if they buy basic: <span id="mBase">—</span></div>
+      <div>Margin if they upgrade: <span id="mUp">—</span></div>
+    </div>
+    <div class="f-err" id="bidErr"></div>
+    <button class="btn btn-primary btn-block" id="bidBtn" onclick="App.submitBid()">Post my prices</button>
+    <p class="hint" style="margin-top:10px">Shoppers find stores through the sorted list — a low posted price means traffic. But shoppers drawn in by rock-bottom prices are the least likely to pay for the upgrade. Choose your customers.</p>
+  </div>
+</div>
+
+<!-- ============ STUDENT: RESULTS ============ -->
+<div id="viewStudentResults" class="shell hidden">
+  <div class="card">
+    <div class="eyebrow" id="srRoundTag">Round 1 results</div>
+    <h2 id="srHeadline">Your shop's performance</h2>
+    <div class="result-grid" id="srStats"></div>
+    <div class="profit-eq" id="srEq"></div>
+  </div>
+  <div id="srList"></div>
+  <div class="card">
+    <h3>Standings so far</h3>
+    <table class="lb" id="srBoard"></table>
+  </div>
+  <div class="card" style="text-align:center">
+    <p class="sub" style="margin:0 auto"><span class="pulse-dot"></span>Waiting for the next round…</p>
+  </div>
+</div>
+
+<!-- ============ HOST: CREATE ============ -->
+<div id="viewHostCreate" class="shell narrow hidden">
+  <div class="card">
+    <h2>Run a session</h2>
+    <p class="sub">You'll get a 4-letter code to put on the projector. Students join from their phones or laptops at this same page.</p>
+    <details class="settings">
+      <summary>Market parameters (defaults follow the paper)</summary>
+      <div class="settings-grid">
+        <div><label class="f" for="setCL">Cost: basic ($)</label><input class="f money" id="setCL" type="number" value="50"></div>
+        <div><label class="f" for="setCU">Extra cost: premium ($)</label><input class="f money" id="setCU" type="number" value="20"></div>
+        <div><label class="f" for="setM">Shoppers per retailer</label><input class="f money" id="setM" type="number" value="100"></div>
+        <div><label class="f" for="setChoke">Shoppers' walk-away price ($)</label><input class="f money" id="setChoke" type="number" value="120"></div>
+        <div><label class="f" for="setWTP">Typical value of upgrade ($)</label><input class="f money" id="setWTP" type="number" value="30"></div>
+        <div><label class="f" for="setAdv">Adverse-selection strength (0–1)</label><input class="f money" id="setAdv" type="number" step="0.1" value="0.4"></div>
+      </div>
+    </details>
+    <button class="btn btn-primary btn-block" style="margin-top:18px" onclick="App.createGame()">Create session</button>
+  </div>
+</div>
+
+<!-- ============ HOST: DASHBOARD ============ -->
+<div id="viewHost" class="shell hidden">
+  <div class="card" id="hostLobbyCard">
+    <div class="eyebrow">Students join with this code</div>
+    <div class="join-code" id="hostCode">····</div>
+    <p class="sub" id="hostUrlHint"></p>
+    <h3 style="margin-top:18px">Retailers in the market: <span id="hostCount">0</span></h3>
+    <div class="roster" id="hostRoster"></div>
+  </div>
+
+  <div class="host-bar">
+    <button class="btn btn-gold" id="btnOpenRound" onclick="App.openRound()">Open Round 1</button>
+    <button class="btn btn-primary hidden" id="btnCloseRound" onclick="App.closeRound()">Close bidding &amp; reveal</button>
+    <button class="btn btn-ghost btn-sm hidden" id="btnNextRound" onclick="App.openRound()">Open next round</button>
+    <span id="hostPhaseNote" style="font-size:14.5px;color:var(--ink-soft)"></span>
+  </div>
+
+  <div class="card hidden" id="hostOpenCard" style="text-align:center">
+    <div class="eyebrow" id="hostRoundTag">Round 1 — bidding open</div>
+    <div class="big-count"><span id="hostSubCount">0</span><small> of <span id="hostSubTotal">0</span> prices posted</small></div>
+    <p class="sub" style="margin:10px auto 0">Close whenever you're ready — retailers who haven't posted sit the round out.</p>
+  </div>
+
+  <div id="hostResults" class="hidden">
+    <div class="two-col">
+      <div>
+        <div id="hostList"></div>
+      </div>
+      <div>
+        <div class="card" style="margin-top:18px">
+          <h3>Cumulative profit</h3>
+          <table class="lb" id="hostBoard"></table>
+        </div>
+        <div class="card discuss">
+          <h3>For discussion</h3>
+          <ul id="hostDiscuss"></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast hidden" id="toast"></div>
+
+<!-- Firebase compat SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
+/* =====================================================================
+   PASTE YOUR FIREBASE CONFIG HERE  (see setup screen / README)
+   ===================================================================== */
+const firebaseConfig = {
+    apiKey: "AIzaSyDQ8gn5w_Jj4OzcXFBz2lY2SKuaKEo2wbk",
+    authDomain: "obfuscationgame.firebaseapp.com",
+    databaseURL: "https://obfuscationgame-default-rtdb.firebaseio.com",
+    projectId: "obfuscationgame",
+    storageBucket: "obfuscationgame.firebasestorage.app",
+    messagingSenderId: "443679460937",
+    appId: "1:443679460937:web:d6b2806717894b3c923998"
+  };
+
+/* ===================================================================== */
+
+const App = (() => {
+  let db = null, code = null, uid = null, myName = null, isHost = false;
+  let params = null, state = null, players = {}, listeners = [];
+  let lastRenderedRound = -1;
+
+  /* ---------- utilities ---------- */
+  const $ = id => document.getElementById(id);
+  const views = ["viewSetup","viewLanding","viewJoin","viewStudentWait","viewBid","viewStudentResults","viewHostCreate","viewHost"];
+  function show(v){ views.forEach(x => $(x).classList.toggle("hidden", x !== v)); window.scrollTo(0,0); }
+  function toast(msg){ const t=$("toast"); t.textContent=msg; t.classList.remove("hidden"); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.add("hidden"),2600); }
+  const money = n => (n<0?"−$":"$") + Math.abs(Math.round(n)).toLocaleString();
+  const money2 = n => (n<0?"−$":"$") + Math.abs(n).toFixed(2).replace(/\.00$/,"");
+  function getUid(){ let u = localStorage.getItem("obf_uid"); if(!u){ u = (crypto.randomUUID ? crypto.randomUUID() : "u"+Date.now()+Math.random().toString(36).slice(2)); localStorage.setItem("obf_uid", u);} return u; }
+  function clearListeners(){ listeners.forEach(([ref,ev,cb]) => ref.off(ev,cb)); listeners = []; }
+  function on(ref,ev,cb){ ref.on(ev,cb); listeners.push([ref,ev,cb]); }
+
+  /* ---------- boot ---------- */
+  function boot(){
+    if (FIREBASE_CONFIG.apiKey.startsWith("PASTE")){ show("viewSetup"); return; }
+    firebase.initializeApp(FIREBASE_CONFIG);
+    db = firebase.database();
+    uid = getUid();
+    const qs = new URLSearchParams(location.search);
+    if (qs.get("g")) { show("viewJoin"); $("joinCode").value = qs.get("g").toUpperCase(); $("joinName").focus(); }
+    else show("viewLanding");
+  }
+
+  /* =====================================================================
+     THE ECONOMICS ENGINE
+     Calibrated to Ellison & Ellison (Econometrica 2009):
+     – Traffic falls with list rank at elasticity ~1.29 (their log-rank coef.)
+     – Upgrade take-up falls with the hidden upgrade price…
+     – …and falls when your posted price undercuts the market (adverse
+       selection: deep discounts attract shoppers who won't upgrade).
+     ===================================================================== */
+  function computeRound(bids, p){
+    const RANK_ELAST = 1.29, SPREAD = 8, MIN_X = 0.02, MAX_X = 0.95;
+    const active = bids.filter(b => b.pLow <= p.choke);
+    const M = p.consumersPer * bids.length;
+
+    // rank by posted price; ties share the average of their positions' weights
+    const sorted = [...active].sort((a,b) => a.pLow - b.pLow);
+    const weights = sorted.map((_,i) => Math.pow(i+1, -RANK_ELAST));
+    let i = 0;
+    while (i < sorted.length){
+      let j = i; while (j+1 < sorted.length && sorted[j+1].pLow === sorted[i].pLow) j++;
+      const avg = weights.slice(i,j+1).reduce((s,w)=>s+w,0)/(j-i+1);
+      for (let k=i;k<=j;k++){ sorted[k]._w = avg; sorted[k]._rank = i+1; }
+      i = j+1;
+    }
+    const sumW = sorted.reduce((s,b)=>s+b._w,0) || 1;
+    const lows = sorted.map(b=>b.pLow).sort((a,b)=>a-b);
+    const median = lows.length ? lows[Math.floor(lows.length/2)] : 0;
+    const minLow = lows.length ? lows[0] : 0;
+
+    const results = {};
+    bids.forEach(b => {
+      if (b.pLow > p.choke){
+        results[b.uid] = { rank:null, traffic:0, upgrades:0, xFrac:0, profit:0,
+          baseProfit:0, upProfit:0, pLow:b.pLow, pHi:b.pHi, name:b.name, priced_out:true };
+        return;
+      }
+      const s = sorted.find(x=>x.uid===b.uid);
+      // shoppers see posted prices on the list: the further above the cheapest
+      // listing you sit, the more of them walk away before clicking you
+      const walk = p.choke > minLow ? Math.min(1, Math.max(0, (p.choke - b.pLow)/(p.choke - minLow))) : 1;
+      const traffic = Math.round(M * (s._w / sumW) * walk);
+      const pU = b.pHi - b.pLow;
+      // adverse selection: mean WTP for the upgrade shifts with how you price vs the market
+      const meanWTP = p.wtpBase + p.advSel * (b.pLow - median);
+      let x = 1/(1+Math.exp((pU - meanWTP)/SPREAD));
+      x = Math.min(MAX_X, Math.max(MIN_X, x));
+      const upgrades = Math.round(traffic * x);
+      const baseProfit = traffic * (b.pLow - p.cL);
+      const upProfit = upgrades * (pU - p.cU);
+      results[b.uid] = { rank:s._rank, traffic, upgrades, xFrac:x,
+        profit: Math.round(baseProfit + upProfit),
+        baseProfit: Math.round(baseProfit), upProfit: Math.round(upProfit),
+        pLow:b.pLow, pHi:b.pHi, name:b.name, priced_out:false };
+    });
+    return results;
+  }
+
+  /* =====================================================================
+     STUDENT SIDE
+     ===================================================================== */
+  function showJoin(){ show("viewJoin"); }
+
+  async function join(){
+    const c = $("joinCode").value.trim().toUpperCase();
+    const n = $("joinName").value.trim();
+    const err = $("joinErr");
+    if (c.length !== 4){ err.textContent = "Enter the 4-letter code on the screen."; return; }
+    if (!n){ err.textContent = "Give your shop a name."; return; }
+    err.textContent = "";
+    const snap = await db.ref(`games/${c}/state`).get();
+    if (!snap.exists()){ err.textContent = "No session with that code — check the projector."; return; }
+    code = c; myName = n; isHost = false;
+    await db.ref(`games/${code}/players/${uid}`).update({ name: n, joinedAt: Date.now() });
+    $("topTag").innerHTML = `Session <b>${code}</b> · ${escapeHtml(n)}`;
+    listenGame();
+  }
+
+  function listenGame(){
+    clearListeners();
+    on(db.ref(`games/${code}/params`), "value", s => { params = s.val() || params; });
+    on(db.ref(`games/${code}/players`), "value", s => { players = s.val() || {}; renderRosterIfHost(); });
+    on(db.ref(`games/${code}/state`), "value", s => {
+      state = s.val(); if (!state) return;
+      if (isHost) renderHost(); else renderStudent();
+    });
+  }
+
+  async function renderStudent(){
+    const { phase, round } = state;
+    if (phase === "lobby"){
+      $("swEyebrow").textContent = "You're in";
+      $("swTitle").textContent = "Waiting for Round 1 to open…";
+      show("viewStudentWait"); return;
+    }
+    if (phase === "open"){
+      const mine = await db.ref(`games/${code}/bids/${round}/${uid}`).get();
+      if (mine.exists()){
+        $("swEyebrow").textContent = `Round ${round}`;
+        $("swTitle").textContent = "Prices posted ✓";
+        show("viewStudentWait");
+      } else {
+        $("bidRoundTag").textContent = `Round ${round}`;
+        $("chipCL").textContent = money(params.cL);
+        $("chipCU").textContent = "+"+money(params.cU);
+        $("bidErr").textContent = "";
+        $("bidBtn").disabled = false;
+        show("viewBid"); updateMarginLive();
+      }
+      return;
+    }
+    if (phase === "results"){ await renderStudentResults(round); show("viewStudentResults"); }
+  }
+
+  function updateMarginLive(){
+    if (!params) return;
+    const pl = parseFloat($("pLow").value), ph = parseFloat($("pHi").value);
+    const mb = $("mBase"), mu = $("mUp");
+    if (!isNaN(pl)){ const m = pl - params.cL; mb.textContent = money2(m)+" / sale"; mb.className = m>=0?"pos":"neg"; } else mb.textContent="—";
+    if (!isNaN(pl) && !isNaN(ph)){ const m = (ph-pl) - params.cU; mu.textContent = "+"+""+money2(m)+" extra"; mu.className = m>=0?"pos":"neg"; } else mu.textContent="—";
+  }
+
+  async function submitBid(){
+    const pl = parseFloat($("pLow").value), ph = parseFloat($("pHi").value);
+    const err = $("bidErr");
+    if (isNaN(pl) || isNaN(ph)){ err.textContent = "Enter both prices."; return; }
+    if (pl <= 0 || ph <= 0){ err.textContent = "Prices must be positive."; return; }
+    if (ph < pl){ err.textContent = "The premium price can't be below the basic price."; return; }
+    err.textContent = "";
+    $("bidBtn").disabled = true;
+    await db.ref(`games/${code}/bids/${state.round}/${uid}`).set({ pLow: pl, pHi: ph, name: myName });
+    toast("Prices posted — good luck!");
+    renderStudent();
+  }
+
+  async function renderStudentResults(round){
+    const [resSnap, totSnap] = await Promise.all([
+      db.ref(`games/${code}/results/${round}`).get(),
+      db.ref(`games/${code}/totals`).get()
+    ]);
+    const results = resSnap.val() || {}, totals = totSnap.val() || {};
+    const me = results[uid];
+    $("srRoundTag").textContent = `Round ${round} results`;
+
+    if (!me){
+      $("srHeadline").textContent = "You sat this round out";
+      $("srStats").innerHTML = ""; $("srEq").classList.add("hidden");
+    } else if (me.priced_out){
+      $("srHeadline").textContent = "Priced above what shoppers would pay";
+      $("srStats").innerHTML = statBox("0","shoppers") + statBox("$0","profit");
+      $("srEq").classList.add("hidden");
+    } else {
+      $("srEq").classList.remove("hidden");
+      const ordinal = ["","1st","2nd","3rd"][me.rank] || me.rank+"th";
+      $("srHeadline").textContent = `${ordinal} on the list — ${me.traffic} shoppers came`;
+      $("srStats").innerHTML =
+        statBox("#"+me.rank, "list rank") +
+        statBox(me.traffic, "shoppers") +
+        statBox(Math.round(me.xFrac*100)+"%", "upgraded") +
+        statBox(money(me.profit), "round profit", me.profit>=0?"pos":"neg");
+      $("srEq").innerHTML =
+        `${me.traffic} × (${money(me.pLow)} − ${money(params.cL)}) &nbsp;+&nbsp; ${me.upgrades} × (${money(me.pHi-me.pLow)} − ${money(params.cU)}) &nbsp;=&nbsp; <b>${money(me.profit)}</b><br>` +
+        `<span style="opacity:.75">basic sales ${money(me.baseProfit)} &nbsp;·&nbsp; upgrade sales ${money(me.upProfit)}</span>`;
+    }
+    $("srList").innerHTML = partswatchHtml(results, round, uid, /*revealHidden=*/true);
+    $("srBoard").innerHTML = leaderboardHtml(totals, uid);
+  }
+
+  /* =====================================================================
+     HOST SIDE
+     ===================================================================== */
+  function showHost(){ show("viewHostCreate"); }
+
+  async function createGame(){
+    isHost = true;
+    code = Array.from({length:4},()=> "ABCDEFGHJKLMNPQRSTUVWXYZ"[Math.floor(Math.random()*24)]).join("");
+    params = {
+      cL: num("setCL",50), cU: num("setCU",20), consumersPer: num("setM",100),
+      choke: num("setChoke",120), wtpBase: num("setWTP",30), advSel: num("setAdv",0.4)
+    };
+    await db.ref(`games/${code}`).set({
+      params, state: { phase:"lobby", round:0, createdAt: Date.now() }
+    });
+    $("hostCode").textContent = code;
+    const url = location.origin + location.pathname + "?g=" + code;
+    $("hostUrlHint").textContent = "Students open this page (or scan your course QR) and enter the code. Direct link: " + url;
+    $("topTag").innerHTML = `Hosting session <b>${code}</b>`;
+    listenGame();
+    on(db.ref(`games/${code}/bids`), "value", s => { window._bids = s.val() || {}; renderHostCounts(); });
+    show("viewHost");
+  }
+  function num(id, d){ const v = parseFloat($(id).value); return isNaN(v) ? d : v; }
+
+  function renderRosterIfHost(){
+    if (!isHost) return;
+    const list = Object.entries(players);
+    $("hostCount").textContent = list.length;
+    const roundBids = (window._bids || {})[state?.round] || {};
+    $("hostRoster").innerHTML = list.map(([id,p]) =>
+      `<span class="p ${roundBids[id] ? "in":""}">${escapeHtml(p.name)}</span>`).join("");
+  }
+
+  function renderHostCounts(){
+    if (!isHost || !state) return;
+    const roundBids = (window._bids || {})[state.round] || {};
+    $("hostSubCount").textContent = Object.keys(roundBids).length;
+    $("hostSubTotal").textContent = Object.keys(players).length;
+    renderRosterIfHost();
+  }
+
+  async function renderHost(){
+    const { phase, round } = state;
+    $("btnOpenRound").classList.toggle("hidden", phase !== "lobby");
+    $("btnCloseRound").classList.toggle("hidden", phase !== "open");
+    $("btnNextRound").classList.toggle("hidden", phase !== "results");
+    $("hostOpenCard").classList.toggle("hidden", phase !== "open");
+    $("hostResults").classList.toggle("hidden", phase !== "results");
+    $("hostLobbyCard").classList.toggle("hidden", phase === "results");
+    $("btnNextRound").textContent = `Open round ${round+1}`;
+    if (phase === "open"){
+      $("hostRoundTag").textContent = `Round ${round} — bidding open`;
+      $("hostPhaseNote").textContent = "";
+      renderHostCounts();
+    }
+    if (phase === "results" && round !== lastRenderedRound){
+      lastRenderedRound = round;
+      await renderHostResults(round);
+    }
+  }
+
+  async function openRound(){
+    const next = (state?.round || 0) + 1;
+    await db.ref(`games/${code}/state`).update({ phase:"open", round: next });
+    toast(`Round ${next} is open`);
+  }
+
+  async function closeRound(){
+    const round = state.round;
+    const bidsSnap = await db.ref(`games/${code}/bids/${round}`).get();
+    const raw = bidsSnap.val() || {};
+    const bids = Object.entries(raw).map(([id,b]) => ({ uid:id, ...b }));
+    if (bids.length === 0){ toast("No prices posted yet."); return; }
+    const results = computeRound(bids, params);
+    const totSnap = await db.ref(`games/${code}/totals`).get();
+    const totals = totSnap.val() || {};
+    Object.entries(results).forEach(([id,r]) => {
+      totals[id] = { name: r.name, profit: (totals[id]?.profit || 0) + r.profit };
+    });
+    await db.ref(`games/${code}`).update({
+      [`results/${round}`]: results, totals, state: { ...state, phase:"results" }
+    });
+  }
+
+  async function renderHostResults(round){
+    const [resSnap, totSnap] = await Promise.all([
+      db.ref(`games/${code}/results/${round}`).get(),
+      db.ref(`games/${code}/totals`).get()
+    ]);
+    const results = resSnap.val() || {}, totals = totSnap.val() || {};
+    $("hostList").innerHTML = partswatchHtml(results, round, null, true);
+    $("hostBoard").innerHTML = leaderboardHtml(totals, null);
+    $("hostDiscuss").innerHTML = discussionHtml(results);
+  }
+
+  function discussionHtml(results){
+    const rs = Object.values(results).filter(r => !r.priced_out && r.rank);
+    if (!rs.length) return "";
+    const totalTraffic = rs.reduce((s,r)=>s+r.traffic,0) || 1;
+    const top = rs.filter(r=>r.rank===1);
+    const topShare = Math.round(100 * top.reduce((s,r)=>s+r.traffic,0)/totalTraffic);
+    const topX = top.length ? Math.round(100*top.reduce((s,r)=>s+r.xFrac,0)/top.length) : 0;
+    const restX = rs.filter(r=>r.rank>1);
+    const restXavg = restX.length ? Math.round(100*restX.reduce((s,r)=>s+r.xFrac,0)/restX.length) : 0;
+    const best = rs.reduce((a,b)=> b.profit>a.profit ? b:a);
+    const cheapest = rs.reduce((a,b)=> b.pLow<a.pLow ? b:a);
+    const items = [];
+    items.push(`<li><b>${topShare}%</b> of shoppers went to the #1 listing — the paper found rank effects this steep (elasticities of −20 and beyond).</li>`);
+    items.push(`<li>Upgrade take-up at the top of the list: <b>${topX}%</b>, vs. <b>${restXavg}%</b> further down. Why do the cheapest listings attract the worst upgrade customers?</li>`);
+    if (best.uid !== cheapest.uid || best.name !== cheapest.name)
+      items.push(`<li><b>${escapeHtml(best.name)}</b> made the most money — but <b>${escapeHtml(cheapest.name)}</b> had the lowest posted price. What's the difference in their strategies?</li>`);
+    else
+      items.push(`<li>This round, the cheapest listing also earned the most. Is that stable — what happens if everyone copies it next round?</li>`);
+    const below = rs.filter(r => r.pLow < 0 + params.cL);
+    if (below.length) items.push(`<li>${below.length} retailer${below.length>1?"s":""} posted <em>below cost</em>. Loss leader or loss maker?</li>`);
+    return items.join("");
+  }
+
+  /* =====================================================================
+     SHARED RENDERERS
+     ===================================================================== */
+  function statBox(v,l,cls=""){ return `<div class="stat"><div class="v ${cls}">${v}</div><div class="l">${l}</div></div>`; }
+
+  function partswatchHtml(results, round, highlightUid, revealHidden){
+    const rows = Object.entries(results)
+      .filter(([,r]) => !r.priced_out)
+      .sort((a,b) => a[1].pLow - b[1].pLow);
+    const outs = Object.entries(results).filter(([,r]) => r.priced_out);
+    let html = `<div class="partswatch">
+      <div class="pw-head"><span class="pw-logo">PARTS<em>WATCH</em>®</span>
+      <span class="pw-query">Query = Basic Widget · sorted by price · Round ${round}</span></div>
+      <table class="pw-table"><tr><th>#</th><th>Dealer</th><th>Price</th><th>Shoppers</th>${revealHidden?"<th>Hidden premium</th><th>Upgraded</th><th>Profit</th>":""}</tr>`;
+    rows.forEach(([id,r]) => {
+      html += `<tr class="${id===highlightUid?"pw-me":""}">
+        <td class="pw-rank">${r.rank}</td>
+        <td><span class="pw-dealer">${escapeHtml(r.name)}</span></td>
+        <td class="pw-price">${money(r.pLow)}</td>
+        <td>${r.traffic}</td>`;
+      if (revealHidden) html += `<td class="pw-upgrade">${money(r.pHi)}</td><td>${Math.round(r.xFrac*100)}%</td><td class="pw-price" style="color:${r.profit>=0?'var(--green)':'var(--red)'}">${money(r.profit)}</td>`;
+      html += `</tr>`;
+    });
+    outs.forEach(([id,r]) => {
+      html += `<tr class="${id===highlightUid?"pw-me":""}"><td class="pw-rank">–</td>
+        <td><span class="pw-dealer">${escapeHtml(r.name)}</span></td>
+        <td class="pw-price">${money(r.pLow)}</td><td>0</td>${revealHidden?`<td class="pw-upgrade">${money(r.pHi)}</td><td>–</td><td>$0</td>`:""}</tr>`;
+    });
+    html += `</table><div class="pw-note">Shoppers click from the top: traffic ∝ rank<sup>−1.29</sup>, the elasticity Ellison &amp; Ellison estimated on Pricewatch.</div></div>`;
+    return html;
+  }
+
+  function leaderboardHtml(totals, highlightUid){
+    const rows = Object.entries(totals).sort((a,b) => b[1].profit - a[1].profit);
+    const medals = ["🥇","🥈","🥉"];
+    let html = `<tr><th></th><th>Retailer</th><th style="text-align:right">Total profit</th></tr>`;
+    rows.forEach(([id,t],i) => {
+      html += `<tr class="${i===0?"first":""}${id===highlightUid?" pw-me":""}">
+        <td class="medal">${medals[i]||i+1}</td>
+        <td>${escapeHtml(t.name)}${id===highlightUid?" <b>(you)</b>":""}</td>
+        <td class="num" style="color:${t.profit>=0?'var(--green)':'var(--red)'}">${money(t.profit)}</td></tr>`;
+    });
+    return html;
+  }
+
+  function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+
+  /* ---------- wire up ---------- */
+  document.addEventListener("DOMContentLoaded", () => {
+    boot();
+    ["pLow","pHi"].forEach(id => $(id)?.addEventListener("input", updateMarginLive));
+    $("joinCode")?.addEventListener("input", e => e.target.value = e.target.value.toUpperCase());
+  });
+
+  return { showJoin, showHost, join, submitBid, createGame, openRound, closeRound };
+})();
+</script>
+</body>
+</html>
