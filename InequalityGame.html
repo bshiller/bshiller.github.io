@@ -366,10 +366,10 @@
     <div class="m-sub">Every response below is a parameter you are invited to argue with. That argument is the point of the exercise.</div>
     <table>
       <tr><th>Mechanism</th><th>Assumption &amp; source</th></tr>
-      <tr><td>Top earners' response to income tax</td><td>Elasticity of taxable income ≈ 0.25 (Saez, Slemrod &amp; Giertz 2012). Revenue-maximizing top rate lands near the ~73% of Diamond &amp; Saez (2011) once income-shifting is included.</td></tr>
+      <tr><td>Top earners' response to income tax</td><td>Elasticity of taxable income ≈ 0.25 with Pareto weight ≈ 1.5 (Saez, Slemrod &amp; Giertz 2012), giving a Diamond &amp; Saez (2011) revenue-maximizing top rate ≈ 73%. The model builds in the full inverted-U (Laffer curve): revenue rises to a peak near 73%, then falls — with avoidance escalating past the peak (Slemrod's response hierarchy), so by ≈ 88–90% the top bracket collects <em>less</em> than today's 40.8% does.</td></tr>
       <tr><td>Income shifting into capital gains</td><td>When the wage rate far exceeds the capital-gains rate and step-up remains open, reported wage income leaks into lightly-taxed gains (Slemrod's "avoidance first" hierarchy).</td></tr>
       <tr><td>Superstar inventor migration</td><td>Domestic star inventors barely move (elasticity ≈ 0.03); foreign stars are highly mobile (≈ 1.0). Akcigit, Baslandze &amp; Stantcheva (AER 2016). Kicks in above a 70% top rate; slows innovation-driven growth.</td></tr>
-      <tr><td>Capital-gains realizations (lock-in)</td><td>Long-run realization response calibrated so revenue peaks near ~30% under current law (CBO/JCT practice; Dowd, McClelland &amp; Muthitacharoen 2015) — and near ~40%+ once step-up is closed (Agersnap &amp; Zidar 2021).</td></tr>
+      <tr><td>Capital-gains realizations (lock-in)</td><td>Long-run realization response calibrated so revenue peaks near ~30% under current law (CBO/JCT practice; Dowd, McClelland &amp; Muthitacharoen 2015) — and near ~40%+ once step-up is closed (Agersnap &amp; Zidar 2021). Above the peak, revenue falls below current-law collections. Announcing a meaningful hike also triggers a one-time rush to sell at the old rate (realizations nearly doubled ahead of the 1986 increase) — a windfall borrowed from future years, not added to them.</td></tr>
       <tr><td>Closing step-up at death</td><td>≈ $105B over ten years directly (Joint Committee on Taxation), plus the realization-elasticity shift above.</td></tr>
       <tr><td>Wealth tax base &amp; avoidance</td><td>≈ $11T held above $50M; reported wealth falls ≈ 8% per point of tax (between Saez &amp; Zucman 2019 and the larger Swiss responses in Brülhart et al. 2022).</td></tr>
       <tr><td>Millionaire migration</td><td>≈ 2%/yr of the base leaves per point of wealth tax above 0.5% — the France ISF / Norway 2022 dynamic. Departure is much faster than return.</td></tr>
@@ -507,7 +507,11 @@ function stepYear(s, p) {
 
   // ---- revenue: top income tax --------------------------------------------
   const B_top = 2600 * scale;                                  // taxable income in top bracket
-  let revTop = B_top * (p.top / 100) * Math.pow((1 - p.top / 100) / (1 - 0.408), 0.25);
+  // Diamond-Saez Laffer curve: exponent = Pareto weight (~1.5) x ETI (~0.25) = 0.375 -> revenue peaks near 73%.
+  // Past the peak, avoidance escalates (Slemrod's hierarchy: timing, then shifting, then real responses),
+  // so by ~88% the top bracket collects LESS than current law does.
+  const eTop = 0.375 + 0.9 * Math.max(0, p.top / 100 - 0.727);
+  let revTop = B_top * (p.top / 100) * Math.pow((1 - p.top / 100) / (1 - 0.408), eTop);
   if (!p.stepUp) {                                             // income shifting into CG form
     const gap = p.top - p.cg - 17;
     if (gap > 0) revTop *= (1 - 0.005 * gap);
@@ -622,10 +626,16 @@ function stepYear(s, p) {
     'A wealth tax is a tax you can walk away from. France\u2019s ISF saw an estimated 42,000 millionaires leave before it was repealed in 2017; Norway\u2019s 2022 increase sent a wave of billionaires to Switzerland within two years. Revenue starts strong — watch what happens to the base.');
   if (p.wt >= 5) fireEvent(s, 'wt5', yr, 'Exodus accelerates',
     'At these rates the tax exceeds a normal safe return on wealth — staying means shrinking. Of a dozen OECD countries with wealth taxes in 1990, only three or four remain, and none at rates like this.');
-  if (p.cg >= 33 && !p.stepUp) fireEvent(s, 'lockin', yr, 'Capital gains revenue disappoints',
+  if (p.cg >= 33 && p.cg < 38 && !p.stepUp) fireEvent(s, 'lockin', yr, 'Capital gains revenue disappoints',
     'You raised the rate, but collections barely moved: with step-up at death still open, investors simply stop selling and wait — lock-in. The same thing sank revenue projections after 1986. The loophole, not the rate, is doing the work.');
+  if (p.cg >= 38 && !p.stepUp) fireEvent(s, 'cgLaffer', yr, 'Past the peak: the capital-gains tax now collects less than the old one',
+    'Realizations are the tax base, and realizations are voluntary. With step-up at death still open, holders can defer forever and die untaxed — so at this rate they do, and collections fall below what the 23.8% rate raised. You are past the capital-gains Laffer peak (~30% under current law — Dowd, McClelland & Muthitacharoen 2015). Either cut the rate or close the escape hatch.');
+  if (p.cg >= 50 && p.stepUp) fireEvent(s, 'cgLaffer2', yr, 'Even with the loophole closed, lock-in wins at this rate',
+    'Closing step-up moved the revenue-maximizing capital-gains rate up to roughly 40-45% (Agersnap & Zidar 2021) — but not to 50%+. Deferral still pays: waiting postpones the tax and lets gains compound untaxed in the meantime. Past the peak, every extra point of rate shrinks realizations faster than it raises the take.');
   if (p.stepUp) fireEvent(s, 'stepup', yr, 'Step-up at death is closed',
     'The quiet workhorse: ~$105B over ten years directly (JCT), and — more important — with the escape hatch gone, higher capital-gains rates now actually collect. Agersnap & Zidar estimate the revenue-maximizing rate jumps to roughly 40%+ once deferral can\u2019t end in forgiveness.');
+  if (p.top >= 76) fireEvent(s, 'laffer', yr, 'You\u2019ve crossed the Laffer peak on income',
+    'Somewhere around 73%, the top income-tax rate stops raising more money (Diamond & Saez 2011) — and while step-up at death stays open, the peak is lower still, because wage income can masquerade as lightly-taxed capital gains. You are past it: each extra point now shrinks reported income — through timing, shifting, sheltering, and eventually just working and founding less — faster than it raises the rate. Push toward 90% and the top bracket collects less than today\u2019s 40.8% does. The inverted U is not a slogan; it\u2019s an elasticity.');
   if (p.top >= 70) fireEvent(s, 'einstein', yr, 'The Einsteins look at the exits',
     'Home-grown superstar inventors barely move (elasticity \u2248 0.03) — but foreign superstars are highly mobile (\u2248 1.0), and they\u2019re disproportionately at the frontier. Akcigit, Baslandze & Stantcheva (2016). Innovation slows a little every year this persists.');
   if (p.vat >= 8) fireEvent(s, 'kleven', yr, 'You\u2019ve discovered the Scandinavian secret',
