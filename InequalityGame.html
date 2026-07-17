@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Good Intentions — A Tax Policy Simulator</title>
+<style>
+  :root{
+    --navy:#2C3E50; --navy-deep:#22303F; --gold:#F1C40F; --teal:#5EA8A7;
+    --red:#C0392B; --ink:#26313C; --mut:#6B7A89; --line:#DFE5EA;
+    --bg:#F4F6F8; --card:#FFFFFF;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{-webkit-text-size-adjust:100%;}
+  body{font-family:"Segoe UI",Calibri,-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;
+       background:var(--bg); color:var(--ink); line-height:1.45;}
+  button{font-family:inherit; cursor:pointer;}
+  .wrap{max-width:1180px; margin:0 auto; padding:0 18px 60px;}
+
+  /* ---------- intro ---------- */
+  #intro{min-height:100vh; background:var(--navy); color:#fff; display:flex; align-items:center;}
+  .intro-inner{max-width:860px; margin:0 auto; padding:56px 24px;}
+  .kicker{font-size:13px; letter-spacing:.22em; text-transform:uppercase; color:var(--gold); font-weight:700;}
+  h1.title{font-size:clamp(40px,7vw,72px); font-weight:800; letter-spacing:-.02em; line-height:1.02; margin:10px 0 6px;}
+  h1.title .thin{color:var(--teal); font-weight:300;}
+  .tagline{font-size:17px; color:#C7D2DC; max-width:640px; margin-bottom:30px;}
+  .role-card{background:var(--navy-deep); border:1px solid rgba(255,255,255,.12); border-radius:12px; padding:20px 22px; margin-bottom:18px;}
+  .role-card .rc-label{font-size:12px; letter-spacing:.18em; text-transform:uppercase; color:var(--teal); font-weight:700; margin-bottom:6px;}
+  .role-card h2{font-size:24px; font-weight:800; color:var(--gold); margin-bottom:4px;}
+  .role-card p{font-size:15px; color:#C7D2DC;}
+  .rc-btns{margin-top:12px;}
+  .ghost-btn{background:none; border:1px solid rgba(255,255,255,.35); color:#fff; border-radius:8px; padding:7px 14px; font-size:13px; font-weight:600;}
+  .ghost-btn:hover{border-color:var(--gold); color:var(--gold);}
+  .pred-label{font-size:14px; font-weight:700; margin:22px 0 6px; color:#fff;}
+  .pred-sub{font-size:13px; color:#9FB0BF; margin-bottom:8px;}
+  #prediction{width:100%; min-height:88px; border-radius:10px; border:1px solid rgba(255,255,255,.2);
+              background:#1B2833; color:#fff; padding:12px 14px; font-size:15px; font-family:inherit; resize:vertical;}
+  #prediction:focus{outline:2px solid var(--gold);}
+  .go-btn{margin-top:20px; background:var(--gold); color:var(--navy); border:none; border-radius:10px;
+          padding:14px 30px; font-size:17px; font-weight:800; letter-spacing:.01em;}
+  .go-btn:hover{filter:brightness(1.06);}
+  .go-btn:disabled{opacity:.45; cursor:not-allowed;}
+  .intro-note{margin-top:14px; font-size:13px; color:#8FA2B2;}
+
+  /* ---------- game header ---------- */
+  #game{display:none;}
+  .g-head{background:var(--navy); color:#fff; padding:14px 0 16px; margin-bottom:20px;}
+  .g-head-inner{max-width:1180px; margin:0 auto; padding:0 18px; display:flex; flex-wrap:wrap; gap:12px 24px; align-items:center; justify-content:space-between;}
+  .g-title{font-size:18px; font-weight:800;}
+  .g-title span{color:var(--gold);}
+  .g-role{font-size:13px; background:var(--navy-deep); border:1px solid rgba(255,255,255,.15); padding:5px 12px; border-radius:999px;}
+  .g-role b{color:var(--gold);}
+  .yearbar{flex:1 1 260px; min-width:220px;}
+  .yearbar .yb-top{display:flex; justify-content:space-between; font-size:12px; color:#9FB0BF; margin-bottom:4px;}
+  .yearbar .yb-top b{color:#fff; font-size:14px;}
+  .yb-track{height:8px; background:rgba(255,255,255,.15); border-radius:99px; overflow:hidden;}
+  .yb-fill{height:100%; background:var(--gold); width:0%; border-radius:99px; transition:width .6s ease;}
+
+  /* ---------- layout ---------- */
+  .cols{display:grid; grid-template-columns:340px 1fr; gap:20px; align-items:start;}
+  @media(max-width:880px){.cols{grid-template-columns:1fr;}}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:18px;}
+  .card h3{font-size:13px; letter-spacing:.16em; text-transform:uppercase; color:var(--mut); font-weight:700; margin-bottom:14px;}
+
+  /* ---------- policy console ---------- */
+  .lever{margin-bottom:18px;}
+  .lever-top{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:2px;}
+  .lever-top label{font-size:14px; font-weight:700;}
+  .lever-val{font-size:15px; font-weight:800; color:var(--navy); font-variant-numeric:tabular-nums;}
+  .lever small{display:block; font-size:12px; color:var(--mut); margin-bottom:6px;}
+  input[type=range]{width:100%; accent-color:var(--navy); height:26px;}
+  .tog{display:flex; align-items:flex-start; gap:10px; padding:10px 12px; border:1px solid var(--line); border-radius:10px; margin-bottom:10px; background:#FBFCFD;}
+  .tog input{margin-top:3px; width:17px; height:17px; accent-color:var(--navy); flex:none;}
+  .tog .t-name{font-size:14px; font-weight:700;}
+  .tog .t-sub{font-size:12px; color:var(--mut);}
+  .tog.danger{border-color:#E8C6C1; background:#FDF7F6;}
+  .tog.danger .t-name{color:var(--red);}
+  .prog{display:flex; flex-direction:column; gap:8px;}
+  .prog label{display:flex; gap:10px; align-items:flex-start; padding:10px 12px; border:1px solid var(--line); border-radius:10px; background:#FBFCFD; cursor:pointer;}
+  .prog input{margin-top:3px; accent-color:var(--navy); width:16px; height:16px; flex:none;}
+  .prog .p-name{font-size:14px; font-weight:700;}
+  .prog .p-sub{font-size:12px; color:var(--mut);}
+  .advance{width:100%; margin-top:14px; background:var(--navy); color:#fff; border:none; border-radius:10px;
+           padding:14px; font-size:16px; font-weight:800;}
+  .advance:hover{background:#1E2B38;}
+  .advance:disabled{background:#95A5B1; cursor:not-allowed;}
+  .console-note{font-size:12px; color:var(--mut); margin-top:10px; text-align:center;}
+  .mini-links{margin-top:12px; text-align:center;}
+  .mini-links button{background:none; border:none; color:var(--mut); font-size:12.5px; text-decoration:underline; text-underline-offset:2px;}
+  .mini-links button:hover{color:var(--navy);}
+
+  /* ---------- dashboard ---------- */
+  .tiles{display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:10px; margin-bottom:20px;}
+  .tile{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:12px 14px;}
+  .tile .t-label{font-size:11.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--mut); font-weight:700;}
+  .tile .t-val{font-size:22px; font-weight:800; margin-top:3px; font-variant-numeric:tabular-nums;}
+  .tile .t-delta{font-size:11.5px; font-weight:600; margin-top:2px; line-height:1.35; color:var(--mut);}
+  .tile .t-delta.up{color:var(--teal);} .tile .t-delta.down{color:var(--red);}
+  .tile-click{cursor:pointer; border-color:var(--navy);}
+  .tile-click:hover{box-shadow:0 2px 10px rgba(44,62,80,.12);}
+  .t-more{font-size:11px; font-weight:800; color:var(--navy); margin-top:5px; letter-spacing:.04em;}
+  .brk{display:flex; justify-content:space-between; gap:12px; padding:7px 0; border-bottom:1px solid var(--line); font-size:13.5px;}
+  .brk:last-child{border-bottom:none;}
+  .brk .b-name{color:#3D4B59;}
+  .brk .b-val{font-weight:800; font-variant-numeric:tabular-nums; white-space:nowrap;}
+  .brk .b-val.pos{color:var(--teal);} .brk .b-val.neg{color:var(--red);}
+  .up{color:var(--teal);} .down{color:var(--red);} .flat{color:var(--mut);}
+
+  .duo{display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:20px;}
+  @media(max-width:720px){.duo{grid-template-columns:1fr;}}
+
+  /* trust gauge (signature) */
+  .gauge-wrap{text-align:center;}
+  .gauge-note{font-size:12.5px; color:var(--mut); margin-top:6px; font-style:italic;}
+  .gauge-num{font-size:30px; font-weight:800; margin-top:-8px;}
+
+  .chart-cap{font-size:12px; color:var(--mut); margin-top:6px;}
+  svg text{font-family:inherit;}
+  .debt-grid{display:grid; grid-template-columns:1.1fr 1fr; gap:20px; align-items:start;}
+  @media(max-width:720px){.debt-grid{grid-template-columns:1fr;}}
+  .dstat{display:flex; justify-content:space-between; align-items:baseline; gap:12px; padding:9px 0; border-bottom:1px solid var(--line);}
+  .dstat:last-child{border-bottom:none;}
+  .dstat .ds-name{font-size:13px; color:var(--mut); font-weight:600;}
+  .dstat .ds-val{font-size:17px; font-weight:800; font-variant-numeric:tabular-nums; white-space:nowrap;}
+  .dstat .ds-val.bad{color:var(--red);} .dstat .ds-val.good{color:var(--teal);}
+  .debt-plain{font-size:13.5px; color:#3D4B59; background:#FBFCFD; border:1px solid var(--line); border-radius:8px; padding:10px 12px; margin-top:10px;}
+  .debt-plain b{color:var(--navy);}
+
+  /* news feed */
+  .feed{max-height:420px; overflow-y:auto; display:flex; flex-direction:column; gap:10px;}
+  .news{border:1px solid var(--line); border-left:4px solid var(--gold); border-radius:8px; padding:10px 14px; background:#FFFDF4;}
+  .news.calm{border-left-color:var(--teal); background:#F5FAFA;}
+  .news .n-year{font-size:11px; font-weight:800; letter-spacing:.12em; color:var(--mut);}
+  .news .n-title{font-size:15px; font-weight:800; color:var(--navy); margin:1px 0 3px;}
+  .news .n-body{font-size:13.5px; color:#3D4B59;}
+  .feed-empty{font-size:13.5px; color:var(--mut); font-style:italic; padding:6px 2px;}
+
+  /* ---------- results ---------- */
+  #results{display:none;}
+  .res-head{background:var(--navy); color:#fff; border-radius:14px; padding:28px; margin-bottom:20px; text-align:center;}
+  .res-head h2{font-size:30px; font-weight:800;}
+  .res-head .sub{color:#C7D2DC; font-size:15px; margin-top:6px;}
+  .grades{display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px; margin-bottom:20px;}
+  .gcard{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px; position:relative;}
+  .gcard.mine{border:2px solid var(--gold); box-shadow:0 3px 14px rgba(44,62,80,.10);}
+  .gcard .yours{position:absolute; top:-11px; left:14px; background:var(--gold); color:var(--navy); font-size:11px; font-weight:800; padding:2px 10px; border-radius:99px; letter-spacing:.06em;}
+  .gcard .g-obj{font-size:13px; font-weight:700; color:var(--mut); text-transform:uppercase; letter-spacing:.08em;}
+  .gcard .g-letter{font-size:44px; font-weight:800; margin:2px 0;}
+  .gA{color:var(--teal);} .gB{color:#7DA860;} .gC{color:#C9930A;} .gD{color:#C46A1B;} .gF{color:var(--red);}
+  .gcard .g-detail{font-size:13px; color:#3D4B59;}
+  .badge{display:inline-block; font-size:13px; font-weight:800; padding:5px 14px; border-radius:99px; margin-top:8px;}
+  .badge.ok{background:#E4F2F1; color:#2E6E6C;}
+  .badge.no{background:#F8E7E4; color:var(--red);}
+  .pred-echo{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:18px; margin-bottom:20px;}
+  .pred-echo h3{font-size:13px; letter-spacing:.16em; text-transform:uppercase; color:var(--mut); font-weight:700; margin-bottom:8px;}
+  .pred-echo blockquote{font-size:15px; font-style:italic; color:#3D4B59; border-left:3px solid var(--gold); padding-left:12px;}
+  .debrief{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:18px; margin-bottom:20px;}
+  .debrief h3{font-size:13px; letter-spacing:.16em; text-transform:uppercase; color:var(--mut); font-weight:700; margin-bottom:10px;}
+  .debrief p{font-size:15px; margin-bottom:9px;}
+  .debrief p b{color:var(--navy);}
+  .res-btns{display:flex; gap:12px; flex-wrap:wrap;}
+  .res-btns .go-btn{margin-top:0;}
+  .navy-btn{background:var(--navy); color:#fff; border:none; border-radius:10px; padding:14px 24px; font-size:15px; font-weight:700;}
+  .navy-btn:hover{background:#1E2B38;}
+
+  /* ---------- modal ---------- */
+  .modal-bg{display:none; position:fixed; inset:0; background:rgba(20,30,40,.55); z-index:50; padding:24px; overflow-y:auto;}
+  .modal{max-width:760px; margin:30px auto; background:#fff; border-radius:14px; padding:26px 28px;}
+  .modal h2{font-size:22px; font-weight:800; color:var(--navy); margin-bottom:4px;}
+  .modal .m-sub{font-size:14px; color:var(--mut); margin-bottom:16px;}
+  .modal table{width:100%; border-collapse:collapse; font-size:13.5px;}
+  .modal th{text-align:left; font-size:11.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--mut); padding:6px 8px; border-bottom:2px solid var(--line);}
+  .modal td{padding:8px; border-bottom:1px solid var(--line); vertical-align:top;}
+  .modal td:first-child{font-weight:700; white-space:normal; width:34%;}
+  .modal .close-x{float:right; background:none; border:none; font-size:24px; color:var(--mut); line-height:1;}
+  .modal .m-foot{font-size:13px; color:var(--mut); margin-top:14px; font-style:italic;}
+</style>
+</head>
+<body>
+
+<!-- ================= INTRO ================= -->
+<section id="intro">
+  <div class="intro-inner">
+    <div class="kicker">FYS 7b · Big Tech Under Fire · Day 3</div>
+    <h1 class="title">GOOD<br>INTENTIONS<span class="thin"> —</span></h1>
+    <p class="tagline">You have the President's ear and thirty years. Tax the top, fund a program, fix inequality — the levers are yours. The economy, however, will respond as it actually does, not as you hope it will.</p>
+
+    <div class="role-card">
+      <div class="rc-label">Your assignment</div>
+      <h2 id="roleName"></h2>
+      <p id="roleDesc"></p>
+      <div class="rc-btns"><button class="ghost-btn" id="reroll">Deal me a different role</button></div>
+    </div>
+
+    <div class="pred-label">Before you touch anything: commit to a prediction.</div>
+    <div class="pred-sub">What will you do, and what do you expect to happen? One or two sentences. You'll be confronted with this at the end.</div>
+    <textarea id="prediction" placeholder="e.g., I'll set a 4% wealth tax and use it to fund UBI. I predict revenue rises and inequality falls with little downside…"></textarea>
+    <button class="go-btn" id="startBtn" disabled>Take office →</button>
+    <div class="intro-note">Every behavioral response in this simulator is calibrated to a published study — open "What the model assumes" in-game to see the receipts, and to argue with them.</div>
+  </div>
+</section>
+
+<!-- ================= GAME ================= -->
+<section id="game">
+  <div class="g-head">
+    <div class="g-head-inner">
+      <div class="g-title">GOOD <span>INTENTIONS</span></div>
+      <div class="yearbar">
+        <div class="yb-top"><span>2026</span><b id="yearNow">2026</b><span>2056</span></div>
+        <div class="yb-track"><div class="yb-fill" id="yearFill"></div></div>
+      </div>
+      <div class="g-role" id="roleBadge"></div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="cols">
+      <!-- POLICY CONSOLE -->
+      <div>
+        <div class="card">
+          <h3>Policy console</h3>
+
+          <div class="lever">
+            <div class="lever-top"><label for="pTop">Top income tax rate</label><span class="lever-val" id="vTop">40.8%</span></div>
+            <small>Current law: 40.8% (37% + surtaxes)</small>
+            <input type="range" id="pTop" min="20" max="90" step="0.2" value="40.8">
+          </div>
+
+          <div class="lever">
+            <div class="lever-top"><label for="pCG">Capital gains top rate</label><span class="lever-val" id="vCG">23.8%</span></div>
+            <small>Current law: 23.8% on long-term gains</small>
+            <input type="range" id="pCG" min="10" max="60" step="0.2" value="23.8">
+          </div>
+
+          <div class="lever">
+            <div class="lever-top"><label for="pWT">Wealth tax</label><span class="lever-val" id="vWT">0%</span></div>
+            <small>Each year, on fortunes above $50M · current law: none</small>
+            <input type="range" id="pWT" min="0" max="8" step="0.5" value="0">
+          </div>
+
+          <div class="lever">
+            <div class="lever-top"><label for="pVAT">National sales tax</label><span class="lever-val" id="vVAT">0%</span></div>
+            <small>On (nearly) everything everyone buys · current federal law: none</small>
+            <input type="range" id="pVAT" min="0" max="15" step="1" value="0">
+          </div>
+
+          <label class="tog"><input type="checkbox" id="pStep">
+            <span><span class="t-name">Close "step-up at death"</span><br>
+            <span class="t-sub">Unrealized gains no longer forgiven when assets pass to heirs</span></span></label>
+
+          <label class="tog danger"><input type="checkbox" id="pSeize">
+            <span><span class="t-name">One-time transfer: 50% of leading AI companies</span><br>
+            <span class="t-sub">A single extraordinary measure — half the equity of frontier AI firms moves to a public sovereign wealth fund. Just this once.</span></span></label>
+
+          <h3 style="margin-top:16px;">Spending programs — combine freely</h3>
+          <div class="prog">
+            <label><input type="radio" name="prog" value="none" checked>
+              <span><span class="p-name">No basic income</span><br><span class="p-sub">New revenue reduces the deficit</span></span></label>
+            <label><input type="radio" name="prog" value="ubi">
+              <span><span class="p-name">Basic income — $500/month</span><br><span class="p-sub">To every adult · ≈ $1.6T per year</span></span></label>
+            <label><input type="radio" name="prog" value="ubi2k">
+              <span><span class="p-name">Basic income — $2,000/month</span><br><span class="p-sub">To every adult · ≈ $6.2T per year</span></span></label>
+          </div>
+          <label class="tog" style="margin-top:10px;"><input type="checkbox" id="pUHC">
+            <span><span class="t-name">Universal health insurance</span><br>
+            <span class="t-sub">Single-payer coverage · ≈ $1.5T per year in new federal cost · stacks with a basic income</span></span></label>
+
+          <button class="advance" id="advanceBtn">See the immediate effect (first year) →</button>
+          <div class="console-note">Policies stay in force until you change them.</div>
+          <div class="mini-links"><button id="notesBtn">What the model assumes (and its sources)</button></div>
+        </div>
+      </div>
+
+      <!-- DASHBOARD -->
+      <div>
+        <div class="card" id="dashWait" style="text-align:center; padding:46px 24px;">
+          <div style="font-size:38px; margin-bottom:8px;">⏳</div>
+          <div style="font-size:17px; font-weight:800; color:var(--navy); margin-bottom:6px;">The economy hasn't responded yet.</div>
+          <div style="font-size:14px; color:var(--mut); max-width:380px; margin:0 auto;">Set your policies on the left, then advance the clock. The dashboard appears once your first five years have played out.</div>
+        </div>
+        <div id="dashArea" style="display:none;">
+        <div class="tiles" id="tiles"></div>
+        <div class="card" id="revBreak" style="display:none; margin-bottom:20px;">
+          <h3>Where this year's net new revenue comes from</h3>
+          <div id="revBreakRows"></div>
+          <div class="chart-cap" style="margin-top:8px;">Each line already includes how people reacted — moving, waiting to sell, shifting income. The last line is revenue every existing tax gained or lost because the whole economy is bigger or smaller than the no-change path.</div>
+        </div>
+
+        <div class="duo">
+          <div class="card gauge-wrap">
+            <h3>Investor trust</h3>
+            <div id="gauge"></div>
+            <div class="gauge-num" id="gaugeNum">85</div>
+            <div class="gauge-note">Credibility is a stock, not a flow — it falls in a day and recovers over decades.</div>
+          </div>
+          <div class="card">
+            <h3>Size of the economy: you vs. doing nothing</h3>
+            <div id="gdpChart"></div>
+            <div class="chart-cap"><span style="color:var(--navy);font-weight:700;">━ Your economy</span> &nbsp; <span style="color:#A9B7C2;font-weight:700;">╌ If you had changed nothing</span> &nbsp; · in $ trillions</div>
+          </div>
+        </div>
+
+        <div class="duo">
+          <div class="card">
+            <h3>Net new tax revenue, year by year</h3>
+            <div id="revChart"></div>
+            <div class="chart-cap">Teal = collecting more than current law would have; red = less. Counts everything: your new taxes, people\u2019s reactions to them, and taxes gained or lost because the economy itself grew or shrank.</div>
+          </div>
+          <div class="card">
+            <h3>The wire · what just happened</h3>
+            <div class="feed" id="feed"><div class="feed-empty">Nothing yet. Set your policies and advance the clock.</div></div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:20px;">
+          <h3>Debt &amp; borrowing — the part that compounds</h3>
+          <div class="debt-grid">
+            <div>
+              <div id="debtChart"></div>
+              <div class="chart-cap">Extra debt you've added, in $ trillions. Debt doesn't just sit there — you pay interest on it every year, and if you borrow to pay the interest, the pile grows by itself. <span id="debtCapNote" style="display:none;"><span style="color:#8A98A6;font-weight:700;">╌ Lending limit</span> — the most markets will ever finance (about 1.5× the size of the economy).</span></div>
+            </div>
+            <div class="debt-stats" id="debtStats"></div>
+          </div>
+        </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= RESULTS ================= -->
+<section id="results">
+  <div class="wrap" style="padding-top:26px;">
+    <div class="res-head">
+      <h2>2056 · Your thirty years are up</h2>
+      <div class="sub" id="resSub"></div>
+    </div>
+
+    <div class="grades" id="gradeCards"></div>
+
+    <div class="pred-echo">
+      <h3>What you predicted in 2026</h3>
+      <blockquote id="predEcho"></blockquote>
+      <p style="font-size:14px; margin-top:10px; color:#3D4B59;">Did the economy agree with you? Where exactly did it push back — and which assumption of yours did it push back on?</p>
+    </div>
+
+    <div class="debrief">
+      <h3>Bring to the class discussion</h3>
+      <p><b>1.</b> Which of your policies raised less than you expected, and what did the money do instead of showing up?</p>
+      <p><b>2.</b> Compare grades with someone who had a different assignment. Did the "best" policy depend on the goal?</p>
+      <p><b>3.</b> Open "What the model assumes." Pick one parameter you'd challenge. What evidence would settle it?</p>
+    </div>
+
+    <div class="res-btns">
+      <button class="go-btn" id="replayBtn">Play again — same prediction, wiser hands</button>
+      <button class="navy-btn" id="notesBtn2">What the model assumes</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================= MODEL NOTES MODAL ================= -->
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <button class="close-x" id="modalClose">×</button>
+    <h2>What the model assumes</h2>
+    <div class="m-sub">Every response below is a parameter you are invited to argue with. That argument is the point of the exercise.</div>
+    <table>
+      <tr><th>Mechanism</th><th>Assumption &amp; source</th></tr>
+      <tr><td>Top earners' response to income tax</td><td>Elasticity of taxable income ≈ 0.25 (Saez, Slemrod &amp; Giertz 2012). Revenue-maximizing top rate lands near the ~73% of Diamond &amp; Saez (2011) once income-shifting is included.</td></tr>
+      <tr><td>Income shifting into capital gains</td><td>When the wage rate far exceeds the capital-gains rate and step-up remains open, reported wage income leaks into lightly-taxed gains (Slemrod's "avoidance first" hierarchy).</td></tr>
+      <tr><td>Superstar inventor migration</td><td>Domestic star inventors barely move (elasticity ≈ 0.03); foreign stars are highly mobile (≈ 1.0). Akcigit, Baslandze &amp; Stantcheva (AER 2016). Kicks in above a 70% top rate; slows innovation-driven growth.</td></tr>
+      <tr><td>Capital-gains realizations (lock-in)</td><td>Long-run realization response calibrated so revenue peaks near ~30% under current law (CBO/JCT practice; Dowd, McClelland &amp; Muthitacharoen 2015) — and near ~40%+ once step-up is closed (Agersnap &amp; Zidar 2021).</td></tr>
+      <tr><td>Closing step-up at death</td><td>≈ $105B over ten years directly (Joint Committee on Taxation), plus the realization-elasticity shift above.</td></tr>
+      <tr><td>Wealth tax base &amp; avoidance</td><td>≈ $11T held above $50M; reported wealth falls ≈ 8% per point of tax (between Saez &amp; Zucman 2019 and the larger Swiss responses in Brülhart et al. 2022).</td></tr>
+      <tr><td>Millionaire migration</td><td>≈ 2%/yr of the base leaves per point of wealth tax above 0.5% — the France ISF / Norway 2022 dynamic. Departure is much faster than return.</td></tr>
+      <tr><td>Wealth tax &amp; investor confidence</td><td>Introducing any wealth tax at all cuts investor confidence by ≈ 20%, worsening slightly with the rate — the idea that taxing wealth stocks signals regime risk the way taxing income flows does not. Repealing it restores most — not all — of the lost confidence: markets have learned this government will tax wealth when pressed, and price that in (France's post-2017 experience). This is the least empirically pinned-down mechanism in the model. If you think it's too big (or too small), say what evidence would settle it.</td></tr>
+      <tr><td>National sales tax revenue</td><td>≈ $62B per point (CBO Budget Options: a broad 5% VAT-style tax ≈ $310B/yr). Efficient but regressive: it raises the Gini and trims median real income unless paired with transfers (Kleven 2014 on Scandinavia).</td></tr>
+      <tr><td>"One-time" seizure / expropriation</td><td>The taking is announced as a one-off, but expectations are what move markets: investor trust collapses and recovers only slowly even after reversal (Argentina's 2012 YPF seizure and its investment aftermath). The sovereign fund's shares are impaired and underperform under state ownership.</td></tr>
+      <tr><td>Investment → growth</td><td>Investment share of GDP moves with after-tax returns and trust; each point of investment share ≈ 0.1pp of growth. Innovation adds or subtracts up to ~0.4pp.</td></tr>
+      <tr><td>Deficits, debt &amp; bond markets</td><td>Interest rates rise ≈ 2.5bp per point of debt/GDP (Laubach 2009). Sustained deficits &gt;3.5% of GDP beyond baseline trigger a bond-market revolt (UK, Sept 2022); debt past ~120% forces Greek-style austerity. Once the lending ceiling (~150% of GDP) binds, forced cuts carry crisis-sized fiscal multipliers ≈ 1.5 (Blanchard &amp; Leigh 2013) — Greece lost ~25% of GDP closing its gap.</td></tr>
+      <tr><td>Basic income, $500/mo</td><td>≈ $1.6T/yr. Poverty falls sharply; aggregate employment effects ≈ 0 at this level (Alaska dividend — Jones &amp; Marinescu 2022).</td></tr>
+      <tr><td>Basic income, $2,000/mo</td><td>≈ $6.2T/yr. Work responds at this generosity: the OpenResearch $1,000/mo RCT (Vivalt, Rhodes, Broockman &amp; Miller 2024) found employment −2pp and earnings −12–21¢ per $1 received; SIME/DIME negative-income-tax experiments found hours −7–9% for primary earners. Scaled to $24k/yr: ≈ 3% lower labor input, phased in over five years.</td></tr>
+      <tr><td>Universal health insurance</td><td>≈ $1.5T/yr in new federal cost (Urban Institute single-payer estimates). Median families save on premiums; a healthier workforce adds a small productivity gain after a decade.</td></tr>
+    </table>
+    <div class="m-foot">This is a teaching model: deliberately simple, directionally honest, quantitatively arguable. If you think a parameter is wrong, say so in class — and say what evidence would prove it.</div>
+  </div>
+</div>
+
+<script>
+// Good Intentions — policy simulator economic model
+// All revenue figures in $B/yr unless noted; GDP/wealth/debt in $T.
+// Calibration sources are in MODEL_NOTES (bottom).
+
+const clamp = (x, lo, hi) => Math.max(lo, Math.min(hi, x));
+
+const BASELINE = {
+  top: 40.8,     // top marginal income rate incl. NIIT-style add-ons
+  cg: 23.8,      // top long-term capital gains rate
+  stepUp: false, // step-up basis CLOSED? false = current law (loophole open)
+  wt: 0,         // annual wealth tax, % on fortunes > $50M
+  vat: 0,        // broad consumption tax, %
+  seize: false,  // 50% stake of leading AI firms into a sovereign wealth fund
+  ubi: 'none',   // 'none' | 'ubi' ($500/mo) | 'ubi2k' ($2000/mo)
+  uhc: false
+};
+
+function initState() {
+  return {
+    year: 2026,
+    spiral: false,
+    gdp: 28, gdpBase: 28,          // $T, real
+    trust: 85,                      // investor confidence 0-100 (slow-recovering stock)
+    wealth: 11, wealthPot: 11,      // taxable wealth above $50M, $T (Saez-Zucman)
+    medianCore: 80,                 // $k, pre-transfer median household income
+    gini: 0.48, pov: 11, median: 80,
+    cumRev: 0,                      // $T cumulative, vs baseline path (incl. base erosion)
+    debt: 0,                        // Δ debt vs baseline, $T
+    deficit: 0, defShare: 0, defStreak: 0, interest: 0, capBind: false,
+    seized: false, seizedEver: false, swf: 0, marketCrash: 0,
+    crisisYears: 0, crisisFired: false,
+    uhcYears: 0, laborGap: 0, prevCG: 23.8, wtMax: 0, prevWT: 0, rate: 0.035,
+    growth: 2.0, iShare: 21, dRev: 0,
+    flags: {},                      // one-time event flags
+    events: [],
+    hist: { year: [], gdp: [], gdpBase: [], trust: [], dRev: [], gini: [], pov: [], median: [], debt: [], rate: [], cap: [] }
+  };
+}
+
+function fireEvent(s, key, year, title, body) {
+  if (s.flags[key]) return;
+  s.flags[key] = true;
+  s.events.push({ year, key, title, body });
+}
+
+function stepYear(s, p) {
+  const yr = s.year;
+
+  // ---- seizure transitions -------------------------------------------------
+  if (p.seize && !s.seized) {
+    s.seized = true; s.seizedEver = true;
+    s.trust = Math.min(s.trust, 32);
+    s.swf = 5.0 * 0.58;            // $5T of equity taken, immediately impaired ~42%
+    s.wealth *= 0.85;               // market-wide crash hits the wealth base too
+    s.marketCrash = 2;
+    fireEvent(s, 'seize', yr, 'Markets crater on the seizure',
+      'The 50% stake is taken — and every investor reprices the risk that their industry is next. Equity values fall economy-wide; venture funding dries up. Cf. Argentina\u2019s 2012 YPF expropriation, after which foreign investment collapsed. The sovereign fund\u2019s dividends turn out to be a rounding error next to the growth you\u2019re losing.');
+  }
+  if (!p.seize && s.seized) {
+    s.seized = false; s.swf = 0;
+    fireEvent(s, 'unseize', yr, 'Shares returned — trust is not',
+      'You reversed the seizure, but credibility is a stock, not a flow: investors remember what the government did once and price in that it could happen again. Confidence recovers over decades, not quarters.');
+  }
+
+  // ---- trust dynamics (fast to fall, slow to heal) -------------------------
+  let tTarget;
+  if (p.wt > 0) {
+    s.wtMax = Math.max(s.wtMax, p.wt);
+    tTarget = 68 - 2 * p.wt;                     // any wealth tax at all costs ~20% of confidence; more as it rises
+  } else {
+    tTarget = 85 - (s.wtMax > 0 ? clamp(2 * s.wtMax, 3, 9) : 0);   // repeal recovers most, not all: expectations stay dented
+  }
+  if (s.seized) tTarget = 30;
+  else if (s.seizedEver) tTarget = Math.min(tTarget, 78);
+  if (s.crisisYears > 0) tTarget -= 12;
+  if (p.wt === 0 && s.prevWT > 0) fireEvent(s, 'wtRepeal', yr, 'The wealth tax is gone \u2014 the wariness isn\u2019t',
+    'Repeal works, partially: confidence climbs back and some fortunes trickle home. But investors have learned something they can\u2019t unlearn \u2014 this government will tax wealth when it needs to \u2014 and they price that in forever. Cf. France after the 2017 ISF repeal: inflows resumed, slowly, and below the old trend.');
+  s.prevWT = p.wt;
+  const diff = tTarget - s.trust;
+  s.trust += diff > 0 ? Math.min(diff, (s.seizedEver || s.wtMax > 0) ? 2.8 : 4) : Math.max(diff, -8);
+  s.trust = clamp(s.trust, 15, 95);
+
+  // ---- investment share of GDP --------------------------------------------
+  const retFactor =
+    Math.pow((1 - p.cg / 100) / (1 - 0.238), 0.06) *
+    (1 - 0.010 * Math.max(0, p.wt - 1));
+  s.iShare = 21 * (0.66 + 0.34 * s.trust / 85) * retFactor;
+
+  // ---- innovation / entrepreneurship term (pp of growth) -------------------
+  let inv = 0;
+  if (p.top > 70) inv -= 0.25 * (p.top - 70) / 20;           // foreign superstar inventors leave
+  if (s.seized) inv -= (s.trust < 50 ? 0.35 : 0.20);          // VC & founder flight
+  else if (s.seizedEver && s.trust < 70) inv -= 0.12;
+  inv -= 0.05 * Math.max(0, p.wt - 2);                        // founder emigration
+  if (p.uhc) { s.uhcYears++; if (s.uhcYears > 10) inv += 0.05; }
+  else s.uhcYears = 0;
+
+  // Generous UBI labor-supply response: hours fall ~5% x labor share 0.65 => ~3.2% GDP level, phased in
+  const gapTarget = p.ubi === 'ubi2k' ? 3.2 : 0;
+  const gapMove = clamp(gapTarget - s.laborGap, -0.65, 0.65);
+  s.laborGap += gapMove;
+  const laborDrag = -gapMove;
+
+  const chronic = (s.crisisFired && s.defShare > 4) ? -0.35 : 0;
+  const spiralDrag = (s.spiral && s.defShare > 2) ? -0.6 : 0;
+  const austerity = s.capBind ? -0.25 * clamp(s.defShare, 0, 12) : 0;   // forced cuts, multiplier ~1.5 (Blanchard-Leigh 2013)
+  const crisisDrag = (s.crisisYears > 0 ? -1.0 : 0) + chronic + spiralDrag + austerity;
+  const debtRatio0 = Math.max(0, s.debt) / s.gdp * 100;
+  const crowdOut = Math.max(-0.35, -0.015 * Math.max(0, debtRatio0 - 30));
+
+  // ---- growth --------------------------------------------------------------
+  let g = 2.0 + 0.10 * (s.iShare - 21) + inv + laborDrag + crisisDrag + crowdOut;
+  g = clamp(g, -3, 4.5);
+  s.growth = g;
+  s.gdp *= 1 + g / 100;
+  s.gdpBase *= 1.02;
+  const scale = s.gdp / 28;
+
+  // ---- revenue: top income tax --------------------------------------------
+  const B_top = 2600 * scale;                                  // taxable income in top bracket
+  let revTop = B_top * (p.top / 100) * Math.pow((1 - p.top / 100) / (1 - 0.408), 0.25);
+  if (!p.stepUp) {                                             // income shifting into CG form
+    const gap = p.top - p.cg - 17;
+    if (gap > 0) revTop *= (1 - 0.005 * gap);
+  }
+  const dTop = revTop - B_top * 0.408;
+
+  // ---- revenue: capital gains ---------------------------------------------
+  const crashMult = s.marketCrash > 0 ? 0.65 : 1;
+  const eReal = p.stepUp ? 1.25 : 2.33;                        // realization elasticity regime
+  const revCG = 1300 * scale * crashMult *
+    Math.pow((1 - p.cg / 100) / (1 - 0.238), eReal) * (p.cg / 100);
+  const dCG = revCG - 1300 * scale * 0.238;
+  if (s.marketCrash > 0) s.marketCrash--;
+
+  // Anticipatory surge: a meaningful rate hike triggers a one-time rush to sell at the OLD rate
+  let dSurge = 0;
+  if (p.cg > s.prevCG + 2) {
+    const extraReal = 1300 * scale * Math.min(1.0, 0.08 * (p.cg - s.prevCG));
+    dSurge = extraReal * (s.prevCG / 100);
+    fireEvent(s, 'surge' + Math.round(p.cg), yr, 'A rush for the exits \u2014 in a good way, for now',
+      'Investors dump assets to lock in the old, lower rate before yours takes effect \u2014 a one-time revenue windfall. The same thing happened in 1986: realizations nearly doubled ahead of the hike\u2026 then collapsed the year after. Enjoy this while it lasts; it is borrowed from future years, not added to them.');
+  }
+  s.prevCG = p.cg;
+
+  const dStep = p.stepUp ? 12 * scale : 0;                     // JCT direct score
+
+  // ---- revenue: wealth tax -------------------------------------------------
+  const reported = s.wealth * Math.max(0.5, 1 - 0.08 * p.wt);  // avoidance/valuation response
+  const dWT = (p.wt / 100) * reported * 1000;
+  const exodus = 0.02 * Math.max(0, p.wt - 0.5);               // millionaire migration, per yr
+  s.wealthPot *= 1.035;
+  s.wealth = Math.min(s.wealth * (1.035 - exodus), s.wealthPot);
+  if (p.wt === 0) s.wealth = Math.min(s.wealthPot, s.wealth + Math.max(0, s.wealthPot * (s.wtMax > 0 ? 0.93 : 1) - s.wealth) * 0.04); // slow, partial return if repealed
+
+  // ---- revenue: VAT --------------------------------------------------------
+  const dVAT = 62 * p.vat * scale;
+
+  // ---- sovereign wealth fund dividends ------------------------------------
+  let dSWF = 0;
+  if (s.seized) { dSWF = s.swf * 1000 * 0.016; s.swf *= 1.015; } // state-run: underperforms
+
+  // ---- program cost --------------------------------------------------------
+  let cost = (p.ubi === 'ubi' ? 1560 * scale : p.ubi === 'ubi2k' ? 6240 * scale : 0)
+           + (p.uhc ? 1500 * scale : 0);
+  if (s.capBind) cost *= 0.8;               // at the ceiling, cuts are imposed, not chosen
+
+  // ---- totals, incl. erosion of the BASELINE tax base ----------------------
+  const baseErosion = 0.175 * (s.gdp - s.gdpBase) * 1000;      // lost (or gained) revenue on all existing taxes
+  const dRevPolicy = dTop + dCG + dSurge + dStep + dWT + dVAT + dSWF;   // your taxes minus behavioral responses
+  const dRev = dRevPolicy + baseErosion;                        // what the Treasury actually sees vs. baseline
+  s.dRev = dRev;
+  s.comp = { dTop, dCG, dSurge, dStep, dWT, dVAT, dSWF, baseErosion };
+  s.cumRev += dRev / 1000;
+
+  // ---- deficit, debt, interest --------------------------------------------
+  const r = Math.min(0.06, 0.035 + 0.00025 * Math.max(0, s.debt) / s.gdp * 100) + (s.trust < 50 ? 0.005 : 0);
+  s.rate = r;
+  const interest = Math.max(0, s.debt) * 1000 * r;
+  const deficit = cost - dRevPolicy + interest;
+  s.deficit = deficit; s.interest = interest;
+  s.debt += deficit / 1000;
+  const ceiling = 1.5 * s.gdp;              // beyond this, markets stop lending at any price
+  s.capBind = false;
+  if (s.debt >= ceiling) {
+    s.capBind = true;
+    s.debt = 0.9 * s.gdp;                   // forced restructuring: creditors take a haircut
+    s.trust = Math.max(20, s.trust - 15);
+    fireEvent(s, 'default', yr, 'Default \u2014 the creditors take a haircut',
+      'The debt could not be financed, so it was not honored: a forced restructuring writes it down, the way Greece\u2019s 2012 deal cut private bondholders\u2019 claims roughly in half. The books can breathe again \u2014 but everyone who lent to you lost money, they will not forget it, and the austerity that came with it scars the economy for years.');
+  }
+  s.defShare = deficit / (s.gdp * 1000) * 100;
+  if (!s.spiral && Math.max(0, s.debt) / s.gdp * 100 > 120) {
+    s.spiral = true;
+    fireEvent(s, 'spiral', yr, 'Debt spiral \u2014 the reckoning',
+      'Lenders will no longer finance deficits this size at any reasonable price. Austerity is forced from outside, not chosen. Cf. Greece 2010\u201315: GDP fell roughly a quarter before the books balanced.');
+  }
+
+  // ---- bond-market crisis --------------------------------------------------
+  s.defStreak = s.defShare > 3.5 ? s.defStreak + 1 : 0;
+  if (!s.crisisFired && s.defStreak >= 2) {
+    s.crisisFired = true; s.crisisYears = 3;
+    fireEvent(s, 'crisis', yr, 'Bond markets revolt',
+      'Deficits this large, with no credible plan, and lenders demand a premium — borrowing costs spike and the economy stalls. Cf. the UK\u2019s September 2022 mini-budget: unfunded cuts of ~2% of GDP triggered a gilt crisis within days and toppled a government in seven weeks.');
+  }
+  if (s.crisisYears > 0) s.crisisYears--;
+
+  // ---- distribution --------------------------------------------------------
+  const progressivity =
+    clamp((p.top - 40.8) / 40, -0.3, 1) * 0.012 +
+    clamp((p.cg - 23.8) / 30, -0.3, 1) * 0.006 +
+    (p.stepUp ? 0.003 : 0) +
+    clamp(p.wt / 3, 0, 1) * 0.012;
+  const transfers = (p.ubi === 'ubi' ? 0.045 : p.ubi === 'ubi2k' ? 0.085 : 0) + (p.uhc ? 0.012 : 0);
+  s.gini = clamp(0.48 - progressivity - transfers + 0.0012 * p.vat, 0.36, 0.55);
+
+  const recession = Math.max(0, 1 - s.gdp / s.gdpBase) * 100;
+  const recPov = (p.ubi === 'ubi2k' ? 0.05 : 0.25) * recession;
+  s.pov = clamp(
+    11 + 0.09 * p.vat
+      - (p.ubi === 'ubi' ? 5.5 : p.ubi === 'ubi2k' ? 8 : 0) - (p.uhc ? 1.8 : 0)
+      + recPov + (s.spiral ? 2 : 0), 3, 20);
+
+  s.medianCore *= 1 + 0.8 * g / 100;
+  const cut = s.spiral ? 0.6 : 1;    // forced austerity trims the checks
+  s.median = s.medianCore
+    + ((p.ubi === 'ubi' ? 6 : p.ubi === 'ubi2k' ? 42 : 0)) * cut
+    + (p.uhc ? 4 : 0)                 // premium/out-of-pocket savings for a median family
+    - 0.45 * p.vat;
+
+  // ---- narrative triggers --------------------------------------------------
+  if (p.wt >= 2) fireEvent(s, 'wt2', yr, 'The moving vans start loading',
+    'A wealth tax is a tax you can walk away from. France\u2019s ISF saw an estimated 42,000 millionaires leave before it was repealed in 2017; Norway\u2019s 2022 increase sent a wave of billionaires to Switzerland within two years. Revenue starts strong — watch what happens to the base.');
+  if (p.wt >= 5) fireEvent(s, 'wt5', yr, 'Exodus accelerates',
+    'At these rates the tax exceeds a normal safe return on wealth — staying means shrinking. Of a dozen OECD countries with wealth taxes in 1990, only three or four remain, and none at rates like this.');
+  if (p.cg >= 33 && !p.stepUp) fireEvent(s, 'lockin', yr, 'Capital gains revenue disappoints',
+    'You raised the rate, but collections barely moved: with step-up at death still open, investors simply stop selling and wait — lock-in. The same thing sank revenue projections after 1986. The loophole, not the rate, is doing the work.');
+  if (p.stepUp) fireEvent(s, 'stepup', yr, 'Step-up at death is closed',
+    'The quiet workhorse: ~$105B over ten years directly (JCT), and — more important — with the escape hatch gone, higher capital-gains rates now actually collect. Agersnap & Zidar estimate the revenue-maximizing rate jumps to roughly 40%+ once deferral can\u2019t end in forgiveness.');
+  if (p.top >= 70) fireEvent(s, 'einstein', yr, 'The Einsteins look at the exits',
+    'Home-grown superstar inventors barely move (elasticity \u2248 0.03) — but foreign superstars are highly mobile (\u2248 1.0), and they\u2019re disproportionately at the frontier. Akcigit, Baslandze & Stantcheva (2016). Innovation slows a little every year this persists.');
+  if (p.vat >= 8) fireEvent(s, 'kleven', yr, 'You\u2019ve discovered the Scandinavian secret',
+    'Denmark and Sweden don\u2019t fund their welfare states by taxing only the rich — they can\u2019t. They use broad 25% national sales taxes (VATs) and high taxes on ordinary workers (Kleven 2014). Efficient and big — but regressive on its own. Pair it with transfers or the median family pays for everyone\u2019s program.');
+  if (p.ubi === 'ubi') fireEvent(s, 'ubi', yr, 'UBI launches',
+    '$500/month to every adult: ~$1.6T a year — poverty plummets. The labor-supply scare mostly hasn\u2019t materialized in the data: Alaska\u2019s dividend shows no fall in aggregate employment (Jones & Marinescu 2022). At this modest level the hard problem isn\u2019t incentives \u2014 it\u2019s the price tag. (At much bigger checks, the incentive story changes. Try it.)');
+  if (p.ubi === 'ubi2k') fireEvent(s, 'ubi2k', yr, 'The $2,000 checks land \u2014 and some paychecks don\u2019t',
+    'Nearly poverty-ending, and staggeringly expensive: ~$6.2T a year, a quarter of the federal-plus budget. And at this generosity, work does respond: the 2024 OpenResearch randomized trial of $1,000/month found employment fell ~2 points and earnings dropped 12\u201321 cents per dollar received; the 1970s negative-income-tax experiments found hours down 7\u20139% for primary earners. Scaled to $24k/yr, the model phases in roughly a 3% hit to labor input.');
+  if (p.uhc) fireEvent(s, 'uhc', yr, 'Universal coverage launches',
+    'Roughly $1.5T/yr in new federal cost (Urban Institute\u2019s single-payer estimates). Families stop paying premiums, medical bankruptcies fade, and after a decade a healthier workforce shows up in productivity — but the bill arrives every single year.');
+  const dCuts = dTop + dCG;
+  if (dCuts < -250 && p.wt === 0 && p.vat === 0) fireEvent(s, 'kansas', yr, 'The cuts are not paying for themselves',
+    'Growth ticked up less than the revenue fell — the Laffer peak is well above current U.S. rates. Cf. Kansas 2012\u201317: promised takeoff, delivered budget crisis, repealed by a Republican legislature.');
+
+  // ---- history -------------------------------------------------------------
+  s.hist.year.push(yr);
+  s.hist.gdp.push(s.gdp);
+  s.hist.gdpBase.push(s.gdpBase);
+  s.hist.trust.push(s.trust);
+  s.hist.dRev.push(dRev);
+  s.hist.gini.push(s.gini);
+  s.hist.pov.push(s.pov);
+  s.hist.median.push(s.median);
+  s.hist.debt.push(Math.max(0, s.debt));
+  s.hist.rate.push(r);
+  s.hist.cap.push(1.5 * s.gdp);
+
+  s.year++;
+  return { dTop, dCG, dStep, dWT, dVAT, dSWF, baseErosion, cost, deficit };
+}
+
+function advance5(s, p) {
+  const out = [];
+  for (let i = 0; i < 5 && s.year < 2056; i++) out.push(stepYear(s, p));
+  return out;
+}
+
+// ---- scoring ---------------------------------------------------------------
+function grade(val, cuts) { // cuts = [A,B,C,D] descending thresholds
+  if (val >= cuts[0]) return 'A';
+  if (val >= cuts[1]) return 'B';
+  if (val >= cuts[2]) return 'C';
+  if (val >= cuts[3]) return 'D';
+  return 'F';
+}
+
+function score(s) {
+  const ratio = s.gdp / s.gdpBase;
+  const eq = (0.48 - s.gini) * 300 + (11 - s.pov);
+  return {
+    revenue: { value: s.cumRev, grade: grade(s.cumRev, [40, 18, 4, -3]),
+      label: `${s.cumRev>=0?'+':'\u2212'}$${Math.abs(s.cumRev).toFixed(1)}T total extra taxes collected over 30 years, compared with leaving the law alone` },
+    growth: { value: ratio, grade: grade(ratio, [0.97, 0.93, 0.88, 0.80]),
+      label: `Economy is ${ratio >= 1 ? '+' : ''}${((ratio - 1) * 100).toFixed(1)}% vs. the no-change path` },
+    equality: { value: eq, grade: grade(eq, [14, 8, 3, 0]),
+      label: `Gini ${s.gini.toFixed(3)} \u00b7 poverty ${s.pov.toFixed(1)}%` },
+    median: { value: s.median, grade: grade(s.median, [126, 118, 108, 95]),
+      label: `Median household: $${s.median.toFixed(0)}k` },
+    sustainable: s.defShare <= 1.2,
+    defShare: s.defShare
+  };
+}
+
+const OBJECTIVES = [
+  { id: 'revenue', name: 'The Revenue Raiser', desc: 'The Treasury sent you: maximize cumulative new revenue over 30 years — without torching the base it\u2019s collected from.' },
+  { id: 'growth', name: 'The Growth Guardian', desc: 'The CEA sent you: keep long-run GDP as close to (or above) the baseline path as possible.' },
+  { id: 'equality', name: 'The Equality Advocate', desc: 'You answer to the movement: drive the Gini coefficient and the poverty rate as low as they\u2019ll go.' },
+  { id: 'median', name: 'The Median Family\u2019s Champion', desc: 'You answer to the swing voter: maximize the median household\u2019s income, transfers included, taxes deducted.' }
+];
+
+
+
+
+/* ===================== UI ===================== */
+(function(){
+  const $ = id => document.getElementById(id);
+  let S = initState();
+  let myObj = OBJECTIVES[Math.floor(Math.random()*OBJECTIVES.length)];
+  let feedCount = 0;
+  let playCount = 1;
+
+  /* ---- intro ---- */
+  function paintRole(){ $('roleName').textContent = myObj.name; $('roleDesc').textContent = myObj.desc; }
+  paintRole();
+  $('reroll').onclick = () => {
+    let n; do { n = OBJECTIVES[Math.floor(Math.random()*OBJECTIVES.length)]; } while (n.id === myObj.id);
+    myObj = n; paintRole();
+  };
+  $('prediction').addEventListener('input', () => {
+    $('startBtn').disabled = $('prediction').value.trim().length < 15;
+  });
+  $('startBtn').onclick = () => {
+    $('intro').style.display = 'none';
+    $('game').style.display = 'block';
+    $('roleBadge').innerHTML = 'Role: <b>' + myObj.name + '</b>';
+    render();
+    window.scrollTo(0,0);
+  };
+
+  /* ---- policy reads ---- */
+  function readPolicy(){
+    return {
+      top: parseFloat($('pTop').value),
+      cg: parseFloat($('pCG').value),
+      wt: parseFloat($('pWT').value),
+      vat: parseFloat($('pVAT').value),
+      stepUp: $('pStep').checked,
+      seize: $('pSeize').checked,
+      ubi: document.querySelector('input[name=prog]:checked').value,
+      uhc: $('pUHC').checked
+    };
+  }
+  const fmtPct = v => (v % 1 ? v.toFixed(1) : v) + '%';
+  $('pTop').oninput = e => $('vTop').textContent = fmtPct(+e.target.value);
+  $('pCG').oninput  = e => $('vCG').textContent  = fmtPct(+e.target.value);
+  $('pWT').oninput  = e => $('vWT').textContent  = fmtPct(+e.target.value);
+  $('pVAT').oninput = e => $('vVAT').textContent = fmtPct(+e.target.value);
+
+  /* ---- advance ---- */
+  $('advanceBtn').onclick = () => {
+    if (S.year >= 2056) return;
+    if (S.hist.year.length === 0) stepYear(S, readPolicy());   // first click: just the immediate effect
+    else advance5(S, readPolicy());
+    render();
+    if (S.year >= 2056) finish();
+  };
+
+  /* ---- tiles ---- */
+  function fmtB(v){ const a=Math.abs(v); return a>=1000 ? '$'+(a/1000).toFixed(1)+'T' : '$'+a.toFixed(0)+'B'; }
+  function tile(label, val, delta, cls){
+    return '<div class="tile"><div class="t-label">'+label+'</div><div class="t-val">'+val+'</div>' +
+           (delta ? '<div class="t-delta '+cls+'">'+delta+'</div>' : '') + '</div>';
+  }
+  function renderTiles(){
+    const ratio = (S.gdp/S.gdpBase - 1)*100;
+    $('tiles').innerHTML =
+      tile('The economy (GDP)', '$'+S.gdp.toFixed(1)+'T', (ratio>=0?'+':'\u2212')+Math.abs(ratio).toFixed(1)+'% vs. doing nothing', ratio>=-0.05?(ratio>0.05?'up':'flat'):'down') +
+      tile('Growth', S.growth.toFixed(1)+'%/yr', 'how fast the economy is expanding', S.growth>=2?'up':'down') +
+      '<div class="tile tile-click" id="revTile"><div class="t-label">Net new tax revenue</div><div class="t-val">'+(S.dRev>=0?'+':'\u2212')+fmtB(S.dRev)+'/yr</div><div class="t-delta '+(S.dRev>=0?'up':'down')+'">extra taxes actually collected vs. current law, after people react \u00b7 '+(S.cumRev>=0?'+$':'\u2212$')+Math.abs(S.cumRev).toFixed(1)+'T so far</div><div class="t-more">\u25be where it comes from</div></div>' +
+      tile('Inequality (Gini)', S.gini.toFixed(3), '0 = all equal \u00b7 1 = one person has everything \u00b7 '+(S.gini<0.4795?'\u25bc more equal':S.gini>0.4805?'\u25b2 less equal':'unchanged'), S.gini<0.4795?'up':(S.gini>0.4805?'down':'flat')) +
+      tile('Poverty rate', S.pov.toFixed(1)+'%', 'share of people below the poverty line', S.pov<10.9?'up':(S.pov>11.1?'down':'flat')) +
+      tile('Typical family', '$'+S.median.toFixed(0)+'k/yr', 'median household income \u2014 benefits added, taxes taken out', 'flat') +
+      tile('Ultra-rich wealth', '$'+S.wealth.toFixed(1)+'T', 'fortunes above $50M still here to tax', 'flat');
+  }
+
+  /* ---- gauge ---- */
+  function renderGauge(){
+    const t = S.trust, a = Math.PI * (1 - t/100);
+    const cx=110, cy=100, r=82;
+    const nx = cx + r*0.78*Math.cos(a), ny = cy - r*0.78*Math.sin(a);
+    const arc = (from,to,color,w) => {
+      const x1=cx+r*Math.cos(Math.PI*(1-from/100)), y1=cy-r*Math.sin(Math.PI*(1-from/100));
+      const x2=cx+r*Math.cos(Math.PI*(1-to/100)),   y2=cy-r*Math.sin(Math.PI*(1-to/100));
+      return '<path d="M'+x1.toFixed(1)+' '+y1.toFixed(1)+' A'+r+' '+r+' 0 0 1 '+x2.toFixed(1)+' '+y2.toFixed(1)+'" stroke="'+color+'" stroke-width="'+w+'" fill="none" stroke-linecap="round"/>';
+    };
+    $('gauge').innerHTML =
+      '<svg viewBox="0 0 220 112" style="width:100%;max-width:240px;">' +
+      arc(0,33,'#E4B7B0',14) + arc(33,66,'#EEDFA8',14) + arc(66,100,'#BBD9D8',14) +
+      '<line x1="'+cx+'" y1="'+cy+'" x2="'+nx.toFixed(1)+'" y2="'+ny.toFixed(1)+'" stroke="#2C3E50" stroke-width="5" stroke-linecap="round"/>' +
+      '<circle cx="'+cx+'" cy="'+cy+'" r="7" fill="#2C3E50"/>' +
+      '<text x="14" y="110" font-size="11" fill="#8A98A6">panic</text>' +
+      '<text x="176" y="110" font-size="11" fill="#8A98A6">confident</text></svg>';
+    $('gaugeNum').textContent = Math.round(t);
+  }
+
+  /* ---- charts ---- */
+  function lineChart(el, series, ymin, ymax){
+    const W=340,H=170,L=44,B=22,T=8,R=8;
+    const n = Math.max(2, series[0].data.length);
+    const X = i => L + (W-L-R) * i/(Math.max(1,n-1));
+    const Y = v => T + (H-T-B) * (1 - (v-ymin)/(ymax-ymin));
+    let g = '<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;">';
+    for (let k=0;k<=3;k++){
+      const v = ymin + (ymax-ymin)*k/3, y = Y(v);
+      g += '<line x1="'+L+'" y1="'+y+'" x2="'+(W-R)+'" y2="'+y+'" stroke="#EEF1F4" stroke-width="1"/>';
+      g += '<text x="'+(L-6)+'" y="'+(y+4)+'" font-size="10" fill="#8A98A6" text-anchor="end">'+v.toFixed(0)+'</text>';
+    }
+    series.forEach(s => {
+      if (s.data.length < 2) return;
+      const pts = s.data.map((v,i)=>X(i).toFixed(1)+','+Y(v).toFixed(1)).join(' ');
+      g += '<polyline points="'+pts+'" fill="none" stroke="'+s.color+'" stroke-width="'+(s.w||2.5)+'"'+(s.dash?' stroke-dasharray="5,4"':'')+'/>';
+    });
+    const yrs = S.hist.year;
+    if (yrs.length){
+      g += '<text x="'+L+'" y="'+(H-6)+'" font-size="10" fill="#8A98A6">'+2026+'</text>';
+      g += '<text x="'+(W-R)+'" y="'+(H-6)+'" font-size="10" fill="#8A98A6" text-anchor="end">'+yrs[yrs.length-1]+'</text>';
+    }
+    el.innerHTML = g + '</svg>';
+  }
+  function barChart(el, data){
+    const W=340,H=170,L=48,B=22,T=8,R=8;
+    const maxAbs = Math.max(200, ...data.map(v=>Math.abs(v)));
+    const ymin=-maxAbs, ymax=maxAbs;
+    const n=Math.max(1,data.length), bw=Math.min(14,(W-L-R)/n - 2);
+    const X=i=>L+(W-L-R)*(i+0.5)/n, Y=v=>T+(H-T-B)*(1-(v-ymin)/(ymax-ymin));
+    let g='<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;">';
+    g+='<line x1="'+L+'" y1="'+Y(0)+'" x2="'+(W-R)+'" y2="'+Y(0)+'" stroke="#C6CFD7" stroke-width="1"/>';
+    [ymax,0,ymin].forEach(v=>{ g+='<text x="'+(L-6)+'" y="'+(Y(v)+4)+'" font-size="10" fill="#8A98A6" text-anchor="end">'+(v>0?'+':'')+v.toFixed(0)+'</text>'; });
+    data.forEach((v,i)=>{
+      const y0=Y(0), y1=Y(v);
+      g+='<rect x="'+(X(i)-bw/2).toFixed(1)+'" y="'+Math.min(y0,y1).toFixed(1)+'" width="'+bw+'" height="'+Math.max(1,Math.abs(y1-y0)).toFixed(1)+'" rx="2" fill="'+(v>=0?'#5EA8A7':'#C0392B')+'"/>';
+    });
+    g+='<text x="'+(W-R)+'" y="'+(H-6)+'" font-size="10" fill="#8A98A6" text-anchor="end">$B/yr</text>';
+    el.innerHTML=g+'</svg>';
+  }
+
+  /* ---- revenue breakdown ---- */
+  let breakOpen = false;
+  function renderBreak(){
+    if (!S.comp) return;
+    const c = S.comp;
+    const items = [
+      ['Top income tax', c.dTop],
+      ['Capital gains tax (after lock-in)', c.dCG],
+      ['One-time rush to sell before your rate hike', c.dSurge],
+      ['Closing step-up at death', c.dStep],
+      ['Wealth tax (on what\u2019s still here)', c.dWT],
+      ['National sales tax', c.dVAT],
+      ['Sovereign wealth fund dividends', c.dSWF],
+      ['Economy '+(c.baseErosion>=0?'bigger':'smaller')+' than baseline \u2192 all other taxes', c.baseErosion]
+    ].filter(x => Math.abs(x[1]) >= 0.5);
+    $('revBreakRows').innerHTML = items.length
+      ? items.map(x => '<div class="brk"><span class="b-name">'+x[0]+'</span><span class="b-val '+(x[1]>=0?'pos':'neg')+'">'+(x[1]>=0?'+':'\u2212')+fmtB(x[1])+'/yr</span></div>').join('')
+        + '<div class="brk" style="border-top:2px solid var(--line);"><span class="b-name"><b>Total, this year</b></span><span class="b-val '+(S.dRev>=0?'pos':'neg')+'"><b>'+(S.dRev>=0?'+':'\u2212')+fmtB(S.dRev)+'/yr</b></span></div>'
+      : '<div class="brk"><span class="b-name">You haven\u2019t changed any taxes \u2014 nothing to break down.</span></div>';
+    $('revBreak').style.display = breakOpen ? 'block' : 'none';
+  }
+  function bindRevTile(){
+    const t = $('revTile');
+    if (t) t.onclick = () => { breakOpen = !breakOpen; renderBreak(); };
+  }
+
+  /* ---- debt panel ---- */
+  function renderDebt(){
+    const debtD = S.hist.debt.length ? [0].concat(S.hist.debt) : [0,0];
+    const capD  = S.hist.cap.length ? [42].concat(S.hist.cap) : [42,42];
+    const nearCap = Math.max(...debtD) >= 0.35 * capD[capD.length-1];
+    const series = nearCap
+      ? [{data:capD, color:'#8A98A6', dash:true, w:2}, {data:debtD, color:'#C0392B', w:3}]
+      : [{data:debtD, color:'#C0392B', w:3}];
+    const hi = Math.max(1, nearCap ? Math.max(...capD)*1.08 : Math.max(...debtD)*1.15);
+    lineChart($('debtChart'), series, 0, hi);
+    $('debtCapNote').style.display = nearCap ? 'inline' : 'none';
+    const debtPos = Math.max(0, S.debt);
+    const interest = Math.max(0, S.interest);
+    const debtHH = debtPos * 1e12 / 132e6;
+    const intHH  = interest * 1e9 / 132e6;
+    const taxes  = 0.175 * S.gdp * 1000 + Math.max(0, S.dRev);   // total federal take, $B
+    const cents  = Math.min(99, interest / taxes * 100);
+    const rate   = (S.rate * 100);
+    const borrowing = S.deficit > 0;
+    const selfFeed = borrowing && interest > 1 ? Math.min(100, interest / S.deficit * 100) : 0;
+    let rows =
+      dstat('This year\u2019s gap', (S.deficit>=0?'\u2212':'+')+fmtB(S.deficit), S.deficit>1?'bad':'good',
+            S.deficit>1?'spending exceeds taxes; the difference is borrowed':'collecting more than spending') +
+      dstat('Debt added so far', debtPos<0.05?'None':'$'+debtPos.toFixed(1)+'T', debtPos<0.05?'good':'bad',
+            debtPos<0.05?'no borrowing beyond the current path':'\u2248 $'+Math.round(debtHH/1000)+'k per U.S. household') +
+      dstat('Your borrowing rate', rate.toFixed(1)+'%', rate>4.5?'bad':(rate>3.6?'':'good'),
+            'what lenders charge \u2014 it climbs as debt piles up and confidence falls') +
+      dstat('Interest bill', fmtB(interest)+'/yr', interest>50?'bad':'good',
+            interest>1?'\u2248 $'+Math.round(intHH).toLocaleString()+' per household, every year':'\u2014');
+    let plain = '';
+    if (S.capBind){
+      plain = '<b>Lenders are done.</b> No one will finance more debt at any price \u2014 the red line has hit the ceiling. From here, every dollar of the gap is forced out of spending whether you choose it or not: benefits trimmed, checks cut, projects stopped. This is what \u201cthe market imposes austerity\u201d means \u2014 and forced cuts hit hard: every dollar cut in a crisis costs about $1.50 of GDP (Blanchard &amp; Leigh 2013). Cf. Greece, 2010\u201315. The only way out: shrink the gap.';
+    } else if (interest > 20 && cents >= 0.5){
+      plain = 'Of every <b>$1</b> collected in taxes, <b>'+(cents<1?cents.toFixed(1):Math.round(cents))+'\u00a2</b> now goes straight to interest before the government buys anything.';
+      if (selfFeed >= 20) plain += ' And <b>'+Math.round(selfFeed)+'%</b> of this year\u2019s new borrowing is just interest on the old borrowing \u2014 the debt is feeding itself.';
+    } else {
+      plain = 'Little to report: the budget is close to balanced, so lenders stay relaxed and the interest bill stays small. This panel gets interesting when the gap widens.';
+    }
+    $('debtStats').innerHTML = rows + '<div class="debt-plain">'+plain+'</div>';
+  }
+  function dstat(name, val, cls, sub){
+    return '<div class="dstat"><div><div class="ds-name">'+name+'</div>' +
+           (sub?'<div style="font-size:11.5px;color:#93A2B0;margin-top:1px;">'+sub+'</div>':'') +
+           '</div><div class="ds-val '+(cls||'')+'">'+val+'</div></div>';
+  }
+
+  /* ---- feed ---- */
+  function renderFeed(){
+    if (!S.events.length) return;
+    const feed = $('feed');
+    if (feedCount === 0) feed.innerHTML = '';
+    for (let i = feedCount; i < S.events.length; i++){
+      const e = S.events[i];
+      const div = document.createElement('div');
+      const calm = ['stepup','kleven','ubi','uhc'].includes(e.key);
+      div.className = 'news' + (calm ? ' calm' : '');
+      div.innerHTML = '<div class="n-year">'+e.year+'</div><div class="n-title">'+e.title+'</div><div class="n-body">'+e.body+'</div>';
+      feed.prepend(div);
+    }
+    feedCount = S.events.length;
+  }
+
+  /* ---- render ---- */
+  function render(){
+    const started = S.hist.year.length > 0;
+    $('dashWait').style.display = started ? 'none' : 'block';
+    $('dashArea').style.display = started ? 'block' : 'none';
+    $('yearNow').textContent = S.year;
+    $('yearFill').style.width = ((S.year-2026)/30*100) + '%';
+    renderTiles(); bindRevTile(); renderBreak(); renderGauge(); renderFeed(); renderDebt();
+    const gdpD  = S.hist.gdp.length  ? [28].concat(S.hist.gdp)     : [28, 28];
+    const baseD = S.hist.gdpBase.length ? [28].concat(S.hist.gdpBase) : [28, 28];
+    const revD  = S.hist.dRev.length ? S.hist.dRev : [0];
+    const hi = Math.max(...baseD, ...gdpD)*1.04;
+    const lo = Math.min(...gdpD, 28)*0.92;
+    lineChart($('gdpChart'), [
+      {data:baseD, color:'#A9B7C2', dash:true, w:2},
+      {data:gdpD, color:'#2C3E50', w:3}
+    ], lo, hi);
+    barChart($('revChart'), revD);
+    $('advanceBtn').disabled = S.year >= 2056;
+    $('advanceBtn').textContent = S.year >= 2056 ? 'Term complete'
+      : S.hist.year.length === 0 ? 'See the immediate effect (first year) →'
+      : 'Advance 5 years → ('+S.year+'–'+Math.min(S.year+5,2056)+')';
+  }
+
+  /* ---- results ---- */
+  function finish(){
+    const sc = score(S);
+    $('game').style.display = 'none';
+    $('results').style.display = 'block';
+    $('resSub').textContent = playCount === 1
+      ? 'First term. Study the report card, then run it back — the second attempt is where the learning shows.'
+      : 'Term '+playCount+'. Compare this report card with your first.';
+    const defs = [
+      {id:'revenue', name:'Revenue Raiser', d:sc.revenue},
+      {id:'growth',  name:'Growth Guardian', d:sc.growth},
+      {id:'equality',name:'Equality Advocate', d:sc.equality},
+      {id:'median',  name:'Median Family', d:sc.median}
+    ];
+    $('gradeCards').innerHTML = defs.map(o =>
+      '<div class="gcard'+(o.id===myObj.id?' mine':'')+'">' +
+      (o.id===myObj.id?'<div class="yours">YOUR ASSIGNMENT</div>':'') +
+      '<div class="g-obj">'+o.name+'</div>' +
+      '<div class="g-letter g'+o.d.grade+'">'+o.d.grade+'</div>' +
+      '<div class="g-detail">'+o.d.label+'</div></div>'
+    ).join('') +
+    '<div class="gcard"><div class="g-obj">Fiscal reality check</div>' +
+    '<div style="margin:10px 0 4px;"><span class="badge '+(sc.sustainable?'ok':'no')+'">'+(sc.sustainable?'✓ Sustainable budget':'✗ Not sustainable')+'</span></div>' +
+    '<div class="g-detail">Final-year deficit '+(Math.min(sc.defShare,25)>=0?'+':'')+Math.min(sc.defShare,25).toFixed(1)+'% of GDP vs. baseline. '+(sc.sustainable?'The books close.':'Someone after you pays for this.')+'</div></div>';
+    $('predEcho').textContent = '\u201C' + $('prediction').value.trim() + '\u201D';
+    window.scrollTo(0,0);
+  }
+
+  $('replayBtn').onclick = () => {
+    S = initState(); feedCount = 0; playCount++;
+    $('feed').innerHTML = '<div class="feed-empty">A clean slate. Same world, wiser advisor.</div>';
+    $('results').style.display = 'none';
+    $('game').style.display = 'block';
+    render();
+    window.scrollTo(0,0);
+  };
+
+  /* ---- modal ---- */
+  const openModal = () => $('modalBg').style.display = 'block';
+  $('notesBtn').onclick = openModal;
+  $('notesBtn2').onclick = openModal;
+  $('modalClose').onclick = () => $('modalBg').style.display = 'none';
+  $('modalBg').addEventListener('click', e => { if (e.target === $('modalBg')) $('modalBg').style.display = 'none'; });
+})();
+</script>
+</body>
+</html>
