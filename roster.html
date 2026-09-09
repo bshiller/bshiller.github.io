@@ -69,6 +69,10 @@
     display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex:none}
   .jersey.blank{background:#C7CDC6;color:#5A625A}
   .prow .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:560}
+  .tgt{width:46px;padding:5px 6px;border:1px solid var(--edge);border-radius:7px;background:#fff;
+    text-align:center;font-size:13px;flex:none}
+  .chk{display:flex;align-items:center;gap:9px;font-size:14.5px;font-weight:560}
+  .chk input{width:20px;height:20px;accent-color:var(--pitch)}
   .x{padding:5px 9px;color:var(--muted);font-size:19px;line-height:1;border-radius:6px}
   .x:hover{background:#E8EAE6;color:var(--red)}
 
@@ -88,6 +92,11 @@
   .clockbtn{padding:11px 16px;border-radius:9px;background:rgba(255,255,255,.16);color:#fff;font-weight:650;
     border:1px solid rgba(255,255,255,.28);font-size:15px}
   .clockbtn.go{background:#fff;color:var(--pitch-dark)}
+  .fixrow{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin:-5px 0 11px}
+  .fix{padding:5px 9px;border-radius:7px;font-size:12.5px;font-weight:620;background:var(--card);
+    border:1px solid var(--edge);color:var(--muted)}
+  .fix.warn{background:var(--amber-bg);border-color:#E7C98E;color:#7A4E06}
+  .fixlbl{font-size:11px;color:var(--muted);margin-right:6px}
   .banner{background:var(--amber-bg);border:1px solid #E7C98E;color:#7A4E06;border-radius:10px;padding:9px 12px;
     font-size:14px;font-weight:600;margin-bottom:11px;display:flex;align-items:center;justify-content:space-between;gap:10px}
 
@@ -108,9 +117,15 @@
   .chip .mins{font-size:11px;font-weight:500;line-height:1.1;color:var(--muted)}
   .chip .mins b{font-size:15px;font-weight:720;color:var(--ink)}
   .over .mins b{color:var(--amber)} .under .mins b{color:var(--blue)}
-  .chip .bar{width:100%;height:3px;border-radius:2px;background:#DFE3DE;overflow:hidden;margin-top:2px}
-  .chip .bar i{display:block;height:100%;background:var(--pitch)}
-  .over .bar i{background:var(--amber)} .under .bar i{background:var(--blue)}
+  .bar{position:relative;display:block;width:100%;height:5px;border-radius:3px;background:#DFE3DE;margin-top:3px}
+  .bar i{display:block;height:100%;border-radius:3px;background:var(--pitch)}
+  .bar u{position:absolute;top:-2px;width:1.5px;height:9px;background:rgba(0,0,0,.5);text-decoration:none}
+  .bar.over i{background:var(--amber)} .bar.under i{background:var(--blue)}
+  .gst{font-style:normal;font-size:8.5px;font-weight:800;color:#fff;background:var(--blue);
+    border-radius:3px;padding:1px 3px;margin-left:3px;vertical-align:middle}
+  .chip .delta{font-size:9.5px;color:var(--muted);line-height:1.2}
+  .prow-slots.tight .delta{display:none}
+  .benchcard .bar{margin-top:4px}
   .stint{font-size:10.5px;color:var(--muted);line-height:1}
   .longstint{color:var(--red);font-weight:700}
   .prow-slots.tight{gap:4px}
@@ -121,6 +136,7 @@
   .prow-slots.tight .pos{font-size:9px}
   .prow-slots.tight .stint{font-size:9px}
 
+  .legend{font-size:11.5px;color:var(--muted);margin:-6px 0 10px}
   .shaperow{display:flex;align-items:center;gap:5px;margin:-4px 0 14px;flex-wrap:wrap}
   .shapelbl{font-size:12.5px;color:var(--muted);margin-right:3px}
   .shapebtn{padding:6px 10px;border-radius:7px;font-size:13px;font-weight:620;background:var(--card);
@@ -147,6 +163,8 @@
   th:first-child,td:first-child{text-align:left;font-weight:600}
   tbody tr:last-child td{border-bottom:none}
   td.zero{color:#B4BAB3}
+  td.soft{color:var(--muted)}
+  td.over{color:var(--amber);font-weight:650} td.under{color:var(--blue);font-weight:650}
 
   .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--ink);color:#fff;
     padding:10px 16px;border-radius:9px;font-size:14px;font-weight:560;z-index:90;opacity:0;pointer-events:none;
@@ -235,6 +253,8 @@ function newTeam(name,size,seeded){
   return {id:uid(), name:name||'New team', size:sz,
     formation:Object.keys(FORMATIONS[sz])[0], players:[],
     periods:2, periodLength:30, remindEvery:0, longShift:8,
+    excludeGK:true,            // keeper minutes sit outside the fairness split
+    defaultLineup:null,        // {formation:'2-3-1', slots:{slotId:playerId}}
     seeded:!!seeded, game:null};
 }
 function shape(){
@@ -251,8 +271,16 @@ function rows(){
   return shape().map(function(row,ri){ return row.map(function(s,si){
     return {id:'r'+ri+'s'+si,label:s[0],group:s[1]}; }); });
 }
-function playerById(id){ var p=T().players; for(var i=0;i<p.length;i++) if(p[i].id===id) return p[i]; return null; }
+/* Roster plus anyone borrowed for today. */
+function rosterAll(){
+  var g=G();
+  return (g&&g.guests&&g.guests.length) ? T().players.concat(g.guests) : T().players;
+}
+function playerById(id){
+  var p=rosterAll(); for(var i=0;i<p.length;i++) if(p[i].id===id) return p[i]; return null;
+}
 function nameOf(id){ var p=playerById(id); return p?p.name:'\u2014'; }
+function isGuest(id){ var p=playerById(id); return !!(p&&p.guest); }
 
 function save(){ store.set('sideline.v2', JSON.stringify(S)); }
 function load(){
@@ -278,12 +306,43 @@ function load(){
 /* ---------- time ---------- */
 function mmss(ms){ if(ms<0)ms=0; var t=Math.floor(ms/1000),m=Math.floor(t/60),s=t%60; return m+':'+(s<10?'0':'')+s; }
 function mins1(ms){ return (ms/60000).toFixed(1); }
-function totalGameMs(){ return T().periods*T().periodLength*60000; }
-function periodNow(){ return Math.min(T().periods, Math.floor(G().elapsed/(T().periodLength*60000))+1); }
+/* Referees don't stop at exactly 30:00, so each period carries its own
+   added time. Everything downstream reads these bounds rather than
+   assuming equal periods. */
+function periodEnds(){
+  var t=T(), g=G(), out=[], acc=0;
+  for(var i=0;i<t.periods;i++){
+    acc += t.periodLength*60000 + ((g&&g.extra&&g.extra[i])||0);
+    out.push(acc);
+  }
+  return out;
+}
+function totalGameMs(){ var e=periodEnds(); return e[e.length-1]||0; }
+function periodNow(){
+  var e=periodEnds(), el=G().elapsed;
+  for(var i=0;i<e.length;i++) if(el<e[i]) return i+1;
+  return e.length;
+}
 function periodRemain(){
-  var per=T().periodLength*60000;
-  if(G().elapsed>=totalGameMs()) return 0;
-  return per-(G().elapsed%per);
+  var e=periodEnds(), el=G().elapsed;
+  for(var i=0;i<e.length;i++) if(el<e[i]) return e[i]-el;
+  return 0;
+}
+function addTime(mins){
+  var g=G(), i=periodNow()-1;
+  if(!g.extra) g.extra=[];
+  g.extra[i]=Math.max(0,(g.extra[i]||0)+mins*60000);
+  save(); render();
+  toast(mins>0 ? mins+' min added to this period' : 'Added time removed');
+}
+/* You will forget to start the clock at kickoff. This puts it right, and
+   credits or debits everyone on the field for the same amount. */
+function nudgeClock(secs){
+  var g=G();
+  if(secs<0 && g.elapsed+secs*1000<0) secs=-g.elapsed/1000;
+  advance(secs*1000);
+  save(); render();
+  toast((secs>0?'+':'')+Math.round(secs)+'s');
 }
 /* what this player was owed, given who was actually available while
    the clock ran — accrues per tick, so arrivals and departures
@@ -349,11 +408,27 @@ function newGame(){
   t.game={ label:new Date().toLocaleDateString(undefined,{month:'short',day:'numeric'}),
     stage:'attendance', present:t.players.map(function(p){return p.id;}),
     onField:{}, bench:[], elapsed:0, running:false,
+    guests:[],                 // borrowed for today only; never join the roster
+    opponent:'',               // who you played, for the exported record
+    extra:[],                  // added time, per period
     time:{}, fair:{}, arrived:{}, departed:{},
     benchSince:{}, stintSince:{}, lastNudge:0, nudge:false };
   t.players.forEach(function(p){ t.game.time[p.id]={total:0,GK:0,DEF:0,MID:0,FWD:0}; });
   t.game.present.forEach(function(id){ t.game.fair[id]=0; });
   sel=null; undoStack=[]; save(); render(); show('game');
+}
+
+/* Borrowed for today. Lives on the game, never on the roster. */
+function addGuest(){
+  var g=G(), n=document.getElementById('guestName'), m=document.getElementById('guestNum');
+  var name=(n.value||'').trim();
+  if(!name){ toast('Give the guest a name.'); return; }
+  var p={id:uid(), name:name, num:(m.value||'').trim(), guest:true};
+  g.guests.push(p); g.present.push(p.id);
+  if(!g.time[p.id]) g.time[p.id]={total:0,GK:0,DEF:0,MID:0,FWD:0};
+  if(g.stage!=='attendance'){ g.fair[p.id]=0; g.bench.push(p.id); g.benchSince[p.id]=0; g.arrived[p.id]=g.elapsed; }
+  n.value=''; m.value='';
+  save(); render(); toast(name+' added for today');
 }
 function togglePresent(id){
   var pr=G().present, i=pr.indexOf(id);
@@ -364,14 +439,34 @@ function toLineup(){
   if(G().present.length<T().size){ toast('You need at least '+T().size+' players checked in.'); return; }
   G().stage='lineup'; autoFill();
 }
-function autoFill(){
-  var g=G(), order=T().players.map(function(p){return p.id;});
+/* Saved lineup first, then roster order for whatever's left. */
+function autoFill(useDefault){
+  var g=G(), t=T(), sl=slots();
+  var order=rosterAll().map(function(p){return p.id;});
   var pool=g.present.slice().sort(function(a,b){ return order.indexOf(a)-order.indexOf(b); });
-  g.onField={}; var sl=slots();
-  for(var i=0;i<sl.length;i++) g.onField[sl[i].id]=pool[i];
-  g.bench=pool.slice(sl.length);
+  g.onField={};
+
+  var placed={};
+  if(useDefault!==false && t.defaultLineup && t.defaultLineup.formation===t.formation){
+    sl.forEach(function(s){
+      var pid=t.defaultLineup.slots[s.id];
+      if(pid && pool.indexOf(pid)>=0 && !placed[pid]){ g.onField[s.id]=pid; placed[pid]=1; }
+    });
+  }
+  var spare=pool.filter(function(p){ return !placed[p]; });
+  sl.forEach(function(s){ if(!g.onField[s.id]) g.onField[s.id]=spare.shift(); });
+  g.bench=spare;
   sel=null; save(); render();
 }
+function saveDefaultLineup(){
+  var g=G(), t=T();
+  if(!g||!g.onField){ toast('Set a lineup first.'); return; }
+  var slotsMap={};
+  slots().forEach(function(s){ if(g.onField[s.id]) slotsMap[s.id]=g.onField[s.id]; });
+  t.defaultLineup={formation:t.formation, slots:slotsMap};
+  save(); render(); toast('Saved as this team\u2019s usual lineup');
+}
+function clearDefaultLineup(){ T().defaultLineup=null; save(); render(); toast('Default lineup cleared'); }
 function kickoff(){
   var g=G(), sl=slots();
   for(var i=0;i<sl.length;i++) if(!g.onField[sl[i].id]){ toast('Fill every position first.'); return; }
@@ -389,26 +484,102 @@ function toggleClock(){
 function startTimer(){ if(!timer) timer=setInterval(tick,500); }
 function stopTimer(){ if(timer){ clearInterval(timer); timer=null; } }
 
+
+/* Move the clock by d milliseconds, crediting everyone accordingly.
+   Negative d walks it back — used by the clock correction, so a mis-timed
+   start doesn't leave every player's minutes permanently wrong. */
+function advance(d){
+  var g=G(); if(!g) return;
+  g.elapsed=Math.max(0, Math.min(totalGameMs(), g.elapsed+d));
+  slots().forEach(function(s){
+    var pid=g.onField[s.id]; if(!pid) return;
+    var t=g.time[pid]; if(!t) return;
+    t.total=Math.max(0,t.total+d); t[s.group]=Math.max(0,t[s.group]+d);
+    g.stintSince[pid]=Math.max(0,(g.stintSince[pid]||0)+d);
+  });
+  g.bench.forEach(function(pid){ g.benchSince[pid]=Math.max(0,(g.benchSince[pid]||0)+d); });
+  accrueFair(d);
+}
 function tick(){
   var g=G(); if(!g||!g.running) return;
   var now=Date.now(), d=now-lastTick; lastTick=now;
   if(d<=0) return;
   if(g.elapsed>=totalGameMs()){ g.running=false; stopTimer(); releaseWake(); render(); return; }
-  g.elapsed+=d;
-  slots().forEach(function(s){
-    var pid=g.onField[s.id]; if(!pid) return;
-    var t=g.time[pid]; if(!t) return;
-    t.total+=d; t[s.group]+=d;
-    g.stintSince[pid]=(g.stintSince[pid]||0)+d;
-  });
-  g.bench.forEach(function(pid){ g.benchSince[pid]=(g.benchSince[pid]||0)+d; });
-  var share=d*Math.min(1, slots().length/Math.max(1,g.present.length));
-  g.present.forEach(function(pid){ g.fair[pid]=(g.fair[pid]||0)+share; });
+  advance(d);
   if(T().remindEvery>0){
     var every=T().remindEvery*60000;
     if(g.elapsed-g.lastNudge>=every){ g.lastNudge=Math.floor(g.elapsed/every)*every; g.nudge=true; beep(); }
   }
   render();
+}
+
+
+/* ---------------------------------------------------------------
+   Fair share, with two wrinkles the simple version can't express.
+
+   Keeper time. Standing in goal isn't the thing players are competing
+   for, and counting it makes every keeper look wildly over-played. When
+   excludeGK is on, the goal slot leaves the pool AND whoever is in it
+   stops accruing — so a full-game keeper reads "not counted" rather than
+   "hugely over" or "hugely owed".
+
+   Targets. A player can be aimed at a specific number of minutes. Their
+   weight becomes that target; everyone without one splits what's left.
+   With no targets set, this collapses back to an even split exactly.
+   --------------------------------------------------------------- */
+
+/* Who is between the posts right now, if anyone. */
+function keeperNow(){
+  var g=G(); if(!g) return null;
+  var sl=slots();
+  for(var i=0;i<sl.length;i++)
+    if(sl[i].group==='GK' && g.onField[sl[i].id]) return g.onField[sl[i].id];
+  return null;
+}
+
+/* Minutes that count toward fairness — keeper time optionally removed. */
+function playedCounted(id){
+  var g=G(), t=g&&g.time[id]; if(!t) return 0;
+  return T().excludeGK ? Math.max(0, t.total-(t.GK||0)) : t.total;
+}
+
+/* Relative claim on the minutes. Equal unless someone has a target. */
+function fairWeights(){
+  var t=T(), g=G(), W={};
+  if(!g) return W;
+  var counted=slots().filter(function(s){ return !(t.excludeGK && s.group==='GK'); }).length;
+  var capacity=totalGameMs()*counted;
+
+  var here=rosterAll().filter(function(p){ return g.present.indexOf(p.id)>=0; });
+  var aimed=here.filter(function(p){ return p.target>0; });
+  var rest =here.filter(function(p){ return !(p.target>0); });
+
+  var claimed=aimed.reduce(function(a,p){ return a+p.target*60000; },0);
+  // If the targets ask for more than the game has, leave a sliver for
+  // everyone else rather than going negative.
+  var left=Math.max(capacity*0.05, capacity-claimed);
+  var avg=rest.length ? left/rest.length : 1;
+
+  here.forEach(function(p){ W[p.id]=(p.target>0 ? p.target*60000 : avg)||1; });
+  return W;
+}
+
+function accrueFair(d){
+  var g=G(), t=T(), sl=slots();
+  var gk=t.excludeGK ? keeperNow() : null;
+  var counted=sl.filter(function(s){ return !(t.excludeGK && s.group==='GK'); }).length;
+  var pool=g.present.filter(function(p){ return p!==gk; });
+  if(!pool.length || !counted) return;
+
+  var W=fairWeights();
+  var sum=pool.reduce(function(a,p){ return a+(W[p]||1); },0);
+  if(sum<=0) return;
+  pool.forEach(function(p){
+    // Nobody can be owed more time than has actually been played.
+    var add=d*counted*(W[p]||1)/sum;
+    add = d>=0 ? Math.min(d, add) : Math.max(d, add);
+    g.fair[p]=Math.max(0,(g.fair[p]||0)+add);
+  });
 }
 
 /* ---------- selection & swapping ---------- */
@@ -483,7 +654,7 @@ function arriveLate(id){
   snapshot();
   g.present.push(id);
   if(!g.time[id]) g.time[id]={total:0,GK:0,DEF:0,MID:0,FWD:0};
-  g.fair[id]=g.time[id].total;      // owed nothing for time they weren't here
+  g.fair[id]=playedCounted(id);     // owed nothing for time they weren't here
   g.arrived[id]=g.elapsed; delete g.departed[id];
   g.bench.push(id); g.benchSince[id]=0;
   sel=null; save(); render();
@@ -498,7 +669,7 @@ function leaveEarly(id){
   if(spot){
     // whoever is owed the most comes on in their place
     var due=g.bench.slice().sort(function(a,b){
-      return (fairMs(b)-playerTotal(b))-(fairMs(a)-playerTotal(a)); });
+      return (fairMs(b)-playedCounted(b))-(fairMs(a)-playedCounted(a)); });
     var repl=due[0];
     if(!repl && !confirm(nameOf(id)+' is on the field and there’s nobody to replace them. Leave the spot empty?')) return;
     snapshot();
@@ -589,7 +760,22 @@ function renderGame(){
          (p.num?' <span class="num" style="color:var(--muted);font-weight:500;font-size:12.5px">'+esc(p.num)+'</span>':'')+
          '</span></button>';
     });
-    h+='</div><div class="row"><button class="btn primary" onclick="toLineup()">'+
+    g.guests.forEach(function(p){
+      var on=g.present.indexOf(p.id)>=0;
+      h+='<button class="att" aria-pressed="'+on+'" onclick="togglePresent(\''+p.id+'\')">'+
+         '<span class="tick">'+(on?'\u2713':'')+'</span><span>'+esc(p.name)+
+         '<i class="gst">G</i></span></button>';
+    });
+    h+='</div>';
+    h+='<label class="field-lbl" for="oppo">Playing against (optional)</label>'+
+       '<input class="inp" id="oppo" value="'+esc(g.opponent||'')+'" placeholder="e.g. Concord Green" '+
+       'onchange="G().opponent=this.value;save()" style="margin-bottom:11px">';
+    h+='<div class="row" style="margin-bottom:11px">'+
+       '<input class="inp num" id="guestNum" placeholder="#" style="width:60px" inputmode="numeric">'+
+       '<input class="inp" id="guestName" placeholder="Guest player" style="flex:1;min-width:110px">'+
+       '<button class="btn sm" onclick="addGuest()">Add guest</button></div>'+
+       '<div class="note" style="margin-bottom:11px">Guests play today only. They never join the roster.</div>';
+    h+='<div class="row"><button class="btn primary" onclick="toLineup()">'+
        g.present.length+' here \u2014 set the lineup</button>'+
        '<button class="btn danger" onclick="scrapGame()">Cancel</button></div></div>';
     el.innerHTML=h; return;
@@ -603,13 +789,30 @@ function renderGame(){
        (over?'':mmss(periodRemain())+' left in this one')+'</div>'+
        '<button class="clockbtn '+(g.running?'':'go')+'" onclick="toggleClock()">'+
        (g.running?'Pause':(g.elapsed?'Resume':'Start'))+'</button></div>';
+    h+='<div class="fixrow">'+
+       '<button class="fix" onclick="nudgeClock(-30)">\u201230s</button>'+
+       '<button class="fix" onclick="nudgeClock(30)">+30s</button>'+
+       '<span class="fixlbl">clock</span>'+
+       '<button class="fix" onclick="addTime(1)">+1 min</button>'+
+       '<button class="fix" onclick="addTime(5)">+5 min</button>'+
+       ((g.extra&&g.extra[periodNow()-1])
+          ? '<button class="fix warn" onclick="addTime(-99)">'+
+            mmss(g.extra[periodNow()-1])+' added \u00d7</button>' : '')+
+       '<span class="fixlbl">this period</span></div>';
     if(g.nudge) h+='<div class="banner"><span>Time to look at subs.</span>'+
        '<button class="btn sm" onclick="clearNudge()">Got it</button></div>';
   } else {
     h+='<div class="panel"><h2>Starting lineup</h2>'+
-       '<div class="sub">Pre-filled in roster order. Tap two players to swap them, '+
-       'or tap a bench player then a position.</div>'+
-       '<div class="row"><button class="btn sm" onclick="autoFill()">Reset to roster order</button></div></div>';
+       '<div class="sub">'+
+       (t.defaultLineup&&t.defaultLineup.formation===t.formation
+          ? 'Filled from your usual lineup. ' : 'Pre-filled in roster order. ')+
+       'Tap two players to swap them, or tap a bench player then a position.</div>'+
+       '<div class="row">'+
+       (t.defaultLineup&&t.defaultLineup.formation===t.formation
+          ? '<button class="btn sm" onclick="autoFill(true)">Use usual lineup</button>' : '')+
+       '<button class="btn sm" onclick="autoFill(false)">Roster order</button>'+
+       '<button class="btn sm" onclick="saveDefaultLineup()">Save this as usual</button>'+
+       '</div></div>';
   }
 
   h+='<div class="pitch">';
@@ -620,6 +823,7 @@ function renderGame(){
   });
   h+='</div>';
 
+  if(live) h+='<div class="legend">The mark on each bar is an even share of the minutes played so far.</div>';
   h+='<div class="shaperow"><span class="shapelbl">Shape</span>';
   Object.keys(FORMATIONS[t.size]).forEach(function(k){
     h+='<button class="shapebtn'+(t.formation===k?' on':'')+'" onclick="setFormation(\''+k+'\')">'+k+'</button>';
@@ -646,6 +850,10 @@ function renderGame(){
       });
       h+='</div>';
     } else h+='<div class="note" style="margin-bottom:11px">Everyone on the roster is playing.</div>';
+    h+='<div class="row" style="margin:11px 0">'+
+       '<input class="inp num" id="guestNum" placeholder="#" style="width:60px" inputmode="numeric">'+
+       '<input class="inp" id="guestName" placeholder="Guest player" style="flex:1;min-width:110px">'+
+       '<button class="btn sm" onclick="addGuest()">Add guest</button></div>';
     h+='<div class="field-lbl">Playing \u2014 tap to take out</div><div class="attgrid">';
     g.present.forEach(function(id){
       h+='<button class="att" aria-pressed="true" onclick="leaveEarly(\''+id+'\')">'+
@@ -678,27 +886,48 @@ function chipHTML(s,live){
   var isSel=sel&&sel.kind==='slot'&&sel.id===s.id;
   if(!pid) return '<button class="chip vacant '+(isSel?'sel':'')+'" onclick="pick(\'slot\',\''+s.id+'\')">'+
     '<span class="pos">'+s.label+'</span><span class="who">Empty</span></button>';
-  var tot=playerTotal(pid), exp=live?fairMs(pid):0, cls='', pct=0;
-  if(live){
-    if(tot>exp+60000) cls='over'; else if(tot<exp-60000) cls='under';
-    var mx=maxPlayed(); pct=mx? tot/mx*100 : 0;
+  var tot=playerTotal(pid), cnt=live?playedCounted(pid):0, exp=live?fairMs(pid):0, cls='';
+  var inGoal=T().excludeGK && s.group==='GK';
+  if(live && !inGoal){
+    if(cnt>exp+60000) cls='over'; else if(cnt<exp-60000) cls='under';
   }
   var stint=g.stintSince[pid]||0;
   var lng=T().longShift>0&&stint>=T().longShift*60000;
+  var d=cnt-exp;
+  var delta = !live ? ''
+    : inGoal ? 'in goal \u2014 not counted'
+    : (Math.abs(d)<60000 ? 'fair '+mmss(exp)
+       : (d>0 ? '+'+mmss(d)+' over' : mmss(-d)+' owed'));
+  var tgt=playerById(pid); tgt = tgt&&tgt.target>0 ? tgt.target : 0;
   return '<button class="chip '+cls+' '+(isSel?'sel':'')+'" onclick="pick(\'slot\',\''+s.id+'\')">'+
-    '<span class="pos">'+s.label+'</span><span class="who">'+esc(nameOf(pid))+'</span>'+
-    (live?'<span class="mins num"><b>'+mmss(tot)+'</b> played</span>':'')+
+    '<span class="pos">'+s.label+'</span>'+
+    '<span class="who">'+esc(nameOf(pid))+(isGuest(pid)?'<i class="gst">G</i>':'')+'</span>'+
+    (live?'<span class="mins num"><b>'+mmss(tot)+'</b> played'+(tgt?' / '+tgt+'m':'')+'</span>':'')+
     (live?'<span class="stint '+(lng?'longstint':'')+'">this shift '+mmss(stint)+'</span>':'')+
-    (live?'<span class="bar"><i style="width:'+pct.toFixed(0)+'%"></i></span>':'')+'</button>';
+    (live&&!inGoal?fairBar(cnt,exp,cls):'')+
+    (live?'<span class="delta num">'+delta+'</span>':'')+'</button>';
 }
+/* Played against fair-share-so-far. The tick is always "an even share
+   right now"; the fill is what they've actually had. */
+function fairBar(tot,fair,cls){
+  var anchor=62;                       // where the tick sits, in %
+  var ratio = fair>1000 ? tot/fair : 0;
+  var fill = Math.min(100, anchor*ratio);
+  return '<span class="bar '+cls+'"><i style="width:'+fill.toFixed(1)+'%"></i>'+
+         '<u style="left:'+anchor+'%"></u></span>';
+}
+
 function benchHTML(id,live){
   var g=G(), isSel=sel&&sel.kind==='bench'&&sel.id===id;
-  var tot=playerTotal(id), exp=live?fairMs(id):0, due=live&&tot<exp-60000, cls='';
-  if(live){ if(tot>exp+60000) cls='over'; else if(due) cls='under'; }
+  var tot=playerTotal(id), cnt=live?playedCounted(id):0, exp=live?fairMs(id):0;
+  var due=live&&cnt<exp-60000, cls='';
+  if(live){ if(cnt>exp+60000) cls='over'; else if(due) cls='under'; }
   return '<button class="benchcard '+(due?'due':'')+' '+(isSel?'sel':'')+'" onclick="pick(\'bench\',\''+id+'\')">'+
-    '<span class="who">'+esc(nameOf(id))+'</span>'+
+    '<span class="who">'+esc(nameOf(id))+(isGuest(id)?'<i class="gst">G</i>':'')+'</span>'+
     (live?'<span class="mins num '+cls+'"><b>'+mmss(tot)+'</b> played</span>':'')+
-    (live?'<span class="wait num">off '+mmss(g.benchSince[id]||0)+'</span>':'')+'</button>';
+    (live?fairBar(cnt,exp,cls):'')+
+    (live?'<span class="wait num">'+(due?mmss(exp-tot)+' owed':'off '+mmss(g.benchSince[id]||0))+'</span>':'')+
+    '</button>';
 }
 
 /* ---------- team ---------- */
@@ -716,12 +945,15 @@ function renderTeam(){
   h+='</div></div>';
 
   h+='<div class="panel"><h2>Roster</h2>'+
-     '<div class="sub">Everyone who might show up. You pick who\u2019s actually there on game day.</div>'+
+     '<div class="sub">Everyone who might show up. You pick who\u2019s actually there on game day. '+
+     'The small box is a target in minutes \u2014 leave it blank for an even share.</div>'+
      '<div class="plist">';
   if(!t.players.length) h+='<div class="empty">Nobody yet. Add your first player below.</div>';
   t.players.forEach(function(p){
     h+='<div class="prow"><span class="jersey '+(p.num?'':'blank')+'">'+esc(p.num||'\u2013')+'</span>'+
        '<span class="nm">'+esc(p.name)+'</span>'+
+       '<input class="tgt num" inputmode="numeric" placeholder="\u2014" title="Target minutes" '+
+       'value="'+(p.target>0?p.target:'')+'" onchange="setTarget(\''+p.id+'\',this.value)">'+
        '<button class="x" aria-label="Remove '+esc(p.name)+'" onclick="removePlayer(\''+p.id+'\')">\u00d7</button></div>';
   });
   h+='</div><div class="row">'+
@@ -738,6 +970,22 @@ function renderTeam(){
   });
   h+='</div><div class="note" style="margin-top:10px">'+slots().map(function(s){return s.label;}).join(' \u00b7 ')+'</div></div>';
 
+  h+='<div class="panel"><h2>Fairness</h2>'+
+     '<label class="chk"><input type="checkbox" id="exgk" '+(t.excludeGK?'checked':'')+
+     ' onchange="T().excludeGK=this.checked;save();render()"> '+
+     'Keep goalkeeper minutes out of the split</label>'+
+     '<div class="note" style="margin-top:7px">Standing in goal isn\u2019t what players compete for. '+
+     'With this on, a keeper reads \u201cnot counted\u201d instead of wildly over-played, and the '+
+     'outfield share is worked out among everyone else.</div>';
+  if(t.defaultLineup){
+    h+='<div class="row" style="margin-top:12px">'+
+       '<button class="btn sm" onclick="clearDefaultLineup()">Clear usual lineup ('+esc(t.defaultLineup.formation)+')</button></div>';
+  } else {
+    h+='<div class="note" style="margin-top:12px">No usual lineup saved. Set one on the lineup screen '+
+       'and tap \u201cSave this as usual\u201d.</div>';
+  }
+  h+='</div>';
+
   h+='<div class="panel"><h2>Game format</h2><div class="grid2">'+
      '<div><label class="field-lbl" for="nPeriods">Periods</label>'+
      '<select class="inp" id="nPeriods" onchange="setNum(\'periods\',this.value)">'+
@@ -753,10 +1001,31 @@ function renderTeam(){
        opt(0,t.longShift,'Never')+[6,8,10,12].map(function(n){return opt(n,t.longShift,n+' min');}).join('')+'</select></div>'+
      '</div></div>';
 
+  if(backupOverdue()){
+    h+='<div class="banner"><span>No backup in a while. Browsers clear saved data '+
+       'after a stretch of not visiting \u2014 save a copy below.</span></div>';
+  }
+
+  h+='<div class="panel"><h2>Send this to another coach</h2>'+
+     '<div class="sub">They get their own copy with their own roster. Nothing is shared '+
+     'between you afterwards.</div>'+
+     '<div class="row">'+
+     '<button class="btn primary" onclick="shareApp()">Share the app</button>'+
+     '<button class="btn" onclick="emailApp()">Email a link</button>'+
+     '<button class="btn" onclick="textApp()">Text a link</button></div>'+
+     '<div class="note" style="margin-top:10px">Tell them to open it and use '+
+     'Share \u2192 Add to Home Screen. After that it runs with no signal.</div></div>';
+
   h+='<div class="panel"><h2>Backup</h2>'+
-     '<div class="sub">Save every team and roster to a file, or move them to another device.</div>'+
-     '<div class="row"><button class="btn" onclick="exportAll()">Save backup file</button>'+
-     '<button class="btn" onclick="document.getElementById(\'importFile\').click()">Load backup</button>'+
+     '<div class="sub">A saved team carries its roster, formation, targets and usual lineup \u2014 '+
+     'enough for another coach to pick up, or for you to restore after a new phone. '+
+     'Loading a file adds teams rather than replacing them.</div>'+
+     '<div class="row"><button class="btn" onclick="exportTeam()">Save this team</button>'+
+     '<button class="btn" onclick="emailTeam()">Email this team</button>'+
+     '<button class="btn" onclick="copyTeam()">Copy to clipboard</button></div>'+
+     '<div class="row" style="margin-top:8px">'+
+     '<button class="btn" onclick="exportAll()">Save everything</button>'+
+     '<button class="btn" onclick="document.getElementById(\'importFile\').click()">Load a file</button>'+
      '<input type="file" id="importFile" accept=".json,application/json" hidden onchange="importAll(event)">'+
      '<button class="btn danger" onclick="deleteTeam()">Delete this team</button></div>'+
      '<div class="note" style="margin-top:10px">'+
@@ -783,6 +1052,13 @@ function addPlayer(){
   var g=G(); if(g&&g.stage!=='done') g.time[np.id]={total:0,GK:0,DEF:0,MID:0,FWD:0};
   save(); render();
   var f=document.getElementById('newNum'); if(f) f.focus();
+}
+
+function setTarget(id,val){
+  var p=playerById(id); if(!p) return;
+  var n=parseInt(val,10);
+  if(isNaN(n)||n<=0) delete p.target; else p.target=Math.min(200,n);
+  save(); render();
 }
 function removePlayer(id){
   var p=playerById(id); if(!p) return;
@@ -812,7 +1088,9 @@ function renderStats(){
   var done=g.stage==='done';
   var ids=gameIds().sort(function(a,b){ return playerTotal(b)-playerTotal(a); });
   h='<div class="panel"><h2>'+(done?'Final minutes':'This game')+'</h2>'+
-    '<div class="sub">'+esc(T().name)+' \u2014 time on the field, and which positions it was spent in.</div>'+
+    '<div class="sub">'+esc(T().name)+(G().opponent?' vs '+esc(G().opponent):'')+
+    ' \u2014 played against possible, and which positions the time was spent in.'+
+    (T().excludeGK?' Keeper minutes sit outside the share.':'')+'</div>'+
     table(ids)+'<div class="row" style="margin-top:12px">'+
     '<button class="btn" onclick="exportCSV()">Save as spreadsheet</button>'+
     (done?'<button class="btn primary" onclick="newGame()">Start next game</button>':'')+
@@ -820,11 +1098,18 @@ function renderStats(){
   el.innerHTML=h;
 }
 function table(ids){
-  var g=G();
-  var h='<table><thead><tr><th>Player</th><th>Total</th><th>GK</th><th>Def</th><th>Mid</th><th>Fwd</th></tr></thead><tbody>';
+  var g=G(), ex=T().excludeGK;
+  var h='<table><thead><tr><th>Player</th><th>Played</th><th>Poss.</th><th>Share</th>'+
+        '<th>GK</th><th>Def</th><th>Mid</th><th>Fwd</th></tr></thead><tbody>';
   ids.forEach(function(id){
     var t=g.time[id]||{total:0,GK:0,DEF:0,MID:0,FWD:0};
-    h+='<tr><td>'+esc(nameOf(id))+'</td><td class="num">'+mins1(t.total)+'</td>'+
+    var cnt=ex?Math.max(0,t.total-(t.GK||0)):t.total, poss=fairMs(id);
+    var pct=poss>60000?Math.round(cnt/poss*100)+'%':'\u2013';
+    var tone=poss>60000?(cnt>poss*1.15?'over':(cnt<poss*0.85?'under':'')):'';
+    h+='<tr><td>'+esc(nameOf(id))+(isGuest(id)?'<i class="gst">G</i>':'')+'</td>'+
+       '<td class="num">'+mins1(t.total)+'</td>'+
+       '<td class="num soft">'+(poss>1000?mins1(poss):'\u2013')+'</td>'+
+       '<td class="num '+tone+'">'+pct+'</td>'+
        cell(t.GK)+cell(t.DEF)+cell(t.MID)+cell(t.FWD)+'</tr>';
   });
   return h+'</tbody></table>';
@@ -837,20 +1122,117 @@ function download(name,text,type){
   a.href=u; a.download=name; document.body.appendChild(a); a.click();
   document.body.removeChild(a); setTimeout(function(){URL.revokeObjectURL(u);},2000);
 }
+
+/* One team, without its game in progress — that's today's business, not
+   something worth carrying to another phone. */
+function teamPayload(){
+  var t=JSON.parse(JSON.stringify(T()));
+  delete t.game;
+  return {kind:'sideline-team', version:2, exported:new Date().toISOString(), team:t};
+}
+function teamFilename(){
+  return (T().name||'team').replace(/[^a-z0-9]+/gi,'-').toLowerCase()+'-sideline.json';
+}
+
+/* ---------------------------------------------------------------
+   Sharing the app. Whoever you send this to gets their own copy with
+   its own storage — nothing is synced, and their roster is theirs.
+   --------------------------------------------------------------- */
+function appURL(){
+  return location.href.split('#')[0].split('?')[0];
+}
+function shareApp(){
+  var url=appURL(), t={
+    title:'Sideline', text:'A playing-time tracker for youth soccer. Works offline.', url:url
+  };
+  if(navigator.share){ navigator.share(t).catch(function(){}); return; }
+  copyText(url, 'Link copied \u2014 paste it into a message');
+}
+function emailApp(){
+  var url=appURL();
+  window.location.href='mailto:?subject='+encodeURIComponent('Sideline \u2014 soccer playing-time tracker')+
+    '&body='+encodeURIComponent(
+      'This tracks who has played how long, and in what position.\n\n'+url+
+      '\n\nOpen it on your phone, then use Share \u2192 Add to Home Screen. '+
+      'It works with no signal once it is there.');
+}
+function textApp(){
+  var url=appURL();
+  window.location.href='sms:?&body='+encodeURIComponent('Sideline \u2014 soccer sub tracker: '+url);
+}
+function copyText(text, msg){
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(function(){ toast(msg); },
+      function(){ fallbackCopy(text, function(){ toast(msg); }); });
+  } else fallbackCopy(text, function(){ toast(msg); });
+}
+
+/* Browsers evict site storage after a stretch of not visiting. A bye
+   week is long enough, so nudge once a fortnight if games have happened
+   and nothing has been backed up. */
+function backupOverdue(){
+  var last=Number(store.get('sideline.lastBackup')||0);
+  var played=S.teams.some(function(t){ return t.game && t.game.stage==='done'; });
+  return played && (Date.now()-last > 14*86400000);
+}
+function markBackedUp(){ store.set('sideline.lastBackup', String(Date.now())); }
+function exportTeam(){
+  download(teamFilename(), JSON.stringify(teamPayload(),null,2), 'application/json');
+  markBackedUp();
+  toast('Saved \u2014 attach it to an email or put it in your files');
+}
+function copyTeam(){
+  var text=JSON.stringify(teamPayload());
+  var done=function(){ toast('Copied \u2014 paste it into an email to yourself'); };
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(done, function(){ fallbackCopy(text,done); });
+  } else fallbackCopy(text,done);
+}
+function fallbackCopy(text,done){
+  var a=document.createElement('textarea');
+  a.value=text; a.style.position='fixed'; a.style.opacity='0';
+  document.body.appendChild(a); a.select();
+  try{ document.execCommand('copy'); done(); }catch(e){ toast('Couldn\u2019t copy \u2014 use Save this team instead.'); }
+  document.body.removeChild(a);
+}
+/* Mail clients cap URL length, so the file is the reliable route and the
+   message says so. Short rosters travel fine in the body. */
+function emailTeam(){
+  var t=T(), payload=JSON.stringify(teamPayload());
+  var body='Sideline setup for '+t.name+'.\n\n'+
+    'To restore it: open Sideline, go to the Team tab, tap Load a file, and pick the '+
+    'attached file. Or copy the text below into a file called '+teamFilename()+'.\n\n';
+  var url='mailto:?subject='+encodeURIComponent('Sideline setup \u2014 '+t.name)+
+          '&body='+encodeURIComponent(body+payload);
+  if(url.length>1800){
+    exportTeam();
+    toast('Roster is too big to email inline \u2014 saved a file to attach instead.');
+    return;
+  }
+  window.location.href=url;
+}
 function exportAll(){
   download('sideline-backup.json', JSON.stringify(S,null,2), 'application/json');
-  toast('Backup saved');
+  markBackedUp(); toast('Backup saved');
 }
 function importAll(ev){
   var f=ev.target.files[0]; if(!f) return;
   var r=new FileReader();
   r.onload=function(){
     try{
-      var d=JSON.parse(r.result);
-      if(d.teams&&d.teams.length){ S=d; S.active=0; }
-      else if(d.players){ var t=newTeam(d.teamName||'Imported team',7,false); t.players=d.players; S={teams:[t],active:0}; }
-      else throw 0;
-      sel=null; undoStack=[]; save(); render(); toast('Backup loaded');
+      var d=JSON.parse(r.result), added=0;
+      if(d.kind==='sideline-team' && d.team){
+        d.team.id=uid(); d.team.game=null;
+        S.teams.push(d.team); S.active=S.teams.length-1; added=1;
+      } else if(d.teams&&d.teams.length){
+        d.teams.forEach(function(t){ t.id=uid(); S.teams.push(t); added++; });
+        S.active=S.teams.length-1;
+      } else if(d.players){
+        var t=newTeam(d.teamName||'Imported team',7,false);
+        t.players=d.players; S.teams.push(t); S.active=S.teams.length-1; added=1;
+      } else throw 0;
+      sel=null; undoStack=[]; save(); render();
+      toast(added===1?'Team added':added+' teams added');
     }catch(e){ toast('That file isn\u2019t a Sideline backup.'); }
   };
   r.readAsText(f); ev.target.value='';
@@ -858,10 +1240,16 @@ function importAll(ev){
 function exportCSV(){
   var g=G(); if(!g){ toast('No game to export.'); return; }
   var ids=gameIds().sort(function(a,b){ return playerTotal(b)-playerTotal(a); });
-  var out='Player,Jersey,Minutes played,GK,Defense,Midfield,Forward\n';
+  var ex=T().excludeGK;
+  var out='Date,Opponent,Player,Jersey,Guest,Target,Minutes played,Counted minutes,Possible minutes,Share,GK,Defense,Midfield,Forward\n';
   ids.forEach(function(id){
     var t=g.time[id]||{total:0,GK:0,DEF:0,MID:0,FWD:0}, p=playerById(id);
-    out+='"'+nameOf(id).replace(/"/g,'""')+'",'+((p&&p.num)||'')+','+mins1(t.total)+','+
+    var cnt=ex?Math.max(0,t.total-(t.GK||0)):t.total, poss=fairMs(id);
+    out+=new Date().toISOString().slice(0,10)+',"'+(g.opponent||'').replace(/"/g,'""')+'",'+
+         '"'+nameOf(id).replace(/"/g,'""')+'",'+((p&&p.num)||'')+','+(isGuest(id)?'yes':'')+','+
+         ((p&&p.target>0)?p.target:'')+','+
+         mins1(t.total)+','+mins1(cnt)+','+mins1(poss)+','+
+         (poss>1000?(cnt/poss).toFixed(3):'')+','+
          mins1(t.GK)+','+mins1(t.DEF)+','+mins1(t.MID)+','+mins1(t.FWD)+'\n';
   });
   download(T().name.replace(/\s+/g,'-').toLowerCase()+'-'+g.label.replace(/[ ,]+/g,'-').toLowerCase()+'.csv',
