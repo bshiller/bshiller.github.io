@@ -224,7 +224,7 @@ var BOBCATS = [
 
 /* ---------- state ---------- */
 var S={teams:[],active:0};
-var sel=null, undoStack=[], lastTick=0, timer=null, wakeLock=null;
+var sel=null, undoStack=[], lastTick=0, timer=null, wakeLock=null, showRoster=false;
 
 function uid(){ return 'x'+Math.random().toString(36).slice(2,9); }
 function T(){ return S.teams[S.active]; }
@@ -285,9 +285,26 @@ function periodRemain(){
   if(G().elapsed>=totalGameMs()) return 0;
   return per-(G().elapsed%per);
 }
-function expectedMs(){
-  var g=G(); if(!g||!g.present.length) return 0;
-  return g.elapsed*slots().length/g.present.length;
+/* what this player was owed, given who was actually available while
+   the clock ran — accrues per tick, so arrivals and departures
+   are handled exactly rather than approximated */
+function fairMs(id){ var g=G(); return (g&&g.fair&&g.fair[id])||0; }
+function maxPlayed(){
+  var g=G(), m=0;
+  gameIds().forEach(function(id){ var t=playerTotal(id); if(t>m) m=t; });
+  return m;
+}
+/* everyone this game touched: still here, or here earlier */
+function gameIds(){
+  var g=G(); if(!g) return [];
+  var out=g.present.slice();
+  Object.keys(g.time).forEach(function(id){
+    if(g.time[id].total>0 && out.indexOf(id)<0) out.push(id);
+  });
+  Object.keys(g.departed).forEach(function(id){   // keep a 0-minute departure visible
+    if(out.indexOf(id)<0) out.push(id);
+  });
+  return out;
 }
 function playerTotal(id){ var t=G().time[id]; return t?t.total:0; }
 
@@ -332,8 +349,10 @@ function newGame(){
   t.game={ label:new Date().toLocaleDateString(undefined,{month:'short',day:'numeric'}),
     stage:'attendance', present:t.players.map(function(p){return p.id;}),
     onField:{}, bench:[], elapsed:0, running:false,
-    time:{}, benchSince:{}, stintSince:{}, lastNudge:0, nudge:false };
+    time:{}, fair:{}, arrived:{}, departed:{},
+    benchSince:{}, stintSince:{}, lastNudge:0, nudge:false };
   t.players.forEach(function(p){ t.game.time[p.id]={total:0,GK:0,DEF:0,MID:0,FWD:0}; });
+  t.game.present.forEach(function(id){ t.game.fair[id]=0; });
   sel=null; undoStack=[]; save(); render(); show('game');
 }
 function togglePresent(id){
@@ -383,6 +402,8 @@ function tick(){
     g.stintSince[pid]=(g.stintSince[pid]||0)+d;
   });
   g.bench.forEach(function(pid){ g.benchSince[pid]=(g.benchSince[pid]||0)+d; });
+  var share=d*Math.min(1, slots().length/Math.max(1,g.present.length));
+  g.present.forEach(function(pid){ g.fair[pid]=(g.fair[pid]||0)+share; });
   if(T().remindEvery>0){
     var every=T().remindEvery*60000;
     if(g.elapsed-g.lastNudge>=every){ g.lastNudge=Math.floor(g.elapsed/every)*every; g.nudge=true; beep(); }
@@ -450,12 +471,52 @@ function setFormation(k){
 function endGame(){
   if(!confirm('End the game? The minutes stay on screen until you start the next one.')) return;
   var g=G(); g.running=false; stopTimer(); releaseWake();
-  g.stage='done'; sel=null; undoStack=[]; save(); show('stats'); render();
+  g.stage='done'; sel=null; undoStack=[]; showRoster=false; save(); show('stats'); render();
 }
 function scrapGame(){
   if(!confirm('Discard this game without saving any minutes?')) return;
   T().game=null; sel=null; stopTimer(); releaseWake(); save(); render();
 }
+/* someone turns up after kickoff */
+function arriveLate(id){
+  var g=G(); if(g.present.indexOf(id)>=0) return;
+  snapshot();
+  g.present.push(id);
+  if(!g.time[id]) g.time[id]={total:0,GK:0,DEF:0,MID:0,FWD:0};
+  g.fair[id]=g.time[id].total;      // owed nothing for time they weren't here
+  g.arrived[id]=g.elapsed; delete g.departed[id];
+  g.bench.push(id); g.benchSince[id]=0;
+  sel=null; save(); render();
+  toast(nameOf(id)+' added — on the bench, owed nothing yet');
+}
+
+/* someone has to leave */
+function leaveEarly(id){
+  var g=G(), sl=slots(), spot=null;
+  for(var i=0;i<sl.length;i++) if(g.onField[sl[i].id]===id) spot=sl[i].id;
+
+  if(spot){
+    // whoever is owed the most comes on in their place
+    var due=g.bench.slice().sort(function(a,b){
+      return (fairMs(b)-playerTotal(b))-(fairMs(a)-playerTotal(a)); });
+    var repl=due[0];
+    if(!repl && !confirm(nameOf(id)+' is on the field and there’s nobody to replace them. Leave the spot empty?')) return;
+    snapshot();
+    if(repl){
+      g.onField[spot]=repl;
+      g.bench.splice(g.bench.indexOf(repl),1);
+      g.stintSince[repl]=0;
+    } else delete g.onField[spot];
+  } else snapshot();
+
+  var b=g.bench.indexOf(id); if(b>=0) g.bench.splice(b,1);
+  var pr=g.present.indexOf(id); if(pr>=0) g.present.splice(pr,1);
+  g.departed[id]=g.elapsed; delete g.arrived[id];
+  sel=null; save(); render();
+  toast(nameOf(id)+' out for the day'+(spot? ' — '+nameOf(g.onField[spot]||'')+' on':''));
+}
+function toggleRoster(){ showRoster=!showRoster; render(); }
+
 function backToAttendance(){ G().stage='attendance'; sel=null; save(); render(); }
 
 /* ---------- screen & sound ---------- */
@@ -572,8 +633,32 @@ function renderGame(){
   h+= bench.length ? '<div class="bench">'+bench.map(function(id){return benchHTML(id,live);}).join('')+'</div>'
                    : '<div class="empty">Everyone present is on the field.</div>';
 
+  if(live && showRoster){
+    var away=t.players.filter(function(p){ return g.present.indexOf(p.id)<0; });
+    h+='<div class="panel" style="margin-top:14px"><h2>Who\u2019s available</h2>'+
+       '<div class="sub">Add someone who turned up late, or take out anyone who has to go.</div>';
+    if(away.length){
+      h+='<div class="field-lbl">Not playing \u2014 tap to add</div><div class="attgrid">';
+      away.forEach(function(p){
+        var mins=g.time[p.id]&&g.time[p.id].total>0 ? ' \u00b7 left at '+mmss(g.departed[p.id]||0) : '';
+        h+='<button class="att" onclick="arriveLate(\''+p.id+'\')">'+
+           '<span class="tick">+</span><span>'+esc(p.name)+mins+'</span></button>';
+      });
+      h+='</div>';
+    } else h+='<div class="note" style="margin-bottom:11px">Everyone on the roster is playing.</div>';
+    h+='<div class="field-lbl">Playing \u2014 tap to take out</div><div class="attgrid">';
+    g.present.forEach(function(id){
+      h+='<button class="att" aria-pressed="true" onclick="leaveEarly(\''+id+'\')">'+
+         '<span class="tick">\u2713</span><span>'+esc(nameOf(id))+
+         (g.arrived[id]!==undefined?' \u00b7 on at '+mmss(g.arrived[id]):'')+'</span></button>';
+    });
+    h+='</div></div>';
+  }
+
   h+='<div class="row" style="margin-top:14px">';
-  h+= live ? '<button class="btn" onclick="undo()">Undo last change</button>'+
+  h+= live ? '<button class="btn'+(showRoster?' primary':'')+'" onclick="toggleRoster()">'+
+             (showRoster?'Done with roster':'Late or leaving')+'</button>'+
+             '<button class="btn" onclick="undo()">Undo last change</button>'+
              '<button class="btn danger" onclick="endGame()">End game</button>'
            : '<button class="btn primary" onclick="kickoff()">Ready \u2014 go to the clock</button>'+
              '<button class="btn" onclick="backToAttendance()">Back to attendance</button>';
@@ -593,11 +678,10 @@ function chipHTML(s,live){
   var isSel=sel&&sel.kind==='slot'&&sel.id===s.id;
   if(!pid) return '<button class="chip vacant '+(isSel?'sel':'')+'" onclick="pick(\'slot\',\''+s.id+'\')">'+
     '<span class="pos">'+s.label+'</span><span class="who">Empty</span></button>';
-  var tot=playerTotal(pid), exp=live?expectedMs():0, cls='', pct=0;
+  var tot=playerTotal(pid), exp=live?fairMs(pid):0, cls='', pct=0;
   if(live){
     if(tot>exp+60000) cls='over'; else if(tot<exp-60000) cls='under';
-    var fair=totalGameMs()*slots().length/Math.max(1,g.present.length);
-    pct=Math.min(100, fair? tot/fair*100 : 0);
+    var mx=maxPlayed(); pct=mx? tot/mx*100 : 0;
   }
   var stint=g.stintSince[pid]||0;
   var lng=T().longShift>0&&stint>=T().longShift*60000;
@@ -609,7 +693,7 @@ function chipHTML(s,live){
 }
 function benchHTML(id,live){
   var g=G(), isSel=sel&&sel.kind==='bench'&&sel.id===id;
-  var tot=playerTotal(id), exp=live?expectedMs():0, due=live&&tot<exp-60000, cls='';
+  var tot=playerTotal(id), exp=live?fairMs(id):0, due=live&&tot<exp-60000, cls='';
   if(live){ if(tot>exp+60000) cls='over'; else if(due) cls='under'; }
   return '<button class="benchcard '+(due?'due':'')+' '+(isSel?'sel':'')+'" onclick="pick(\'bench\',\''+id+'\')">'+
     '<span class="who">'+esc(nameOf(id))+'</span>'+
@@ -694,7 +778,9 @@ function setNum(key,val){
 function addPlayer(){
   var n=document.getElementById('newName').value.trim(), num=document.getElementById('newNum').value.trim();
   if(!n){ toast('Give the player a name.'); return; }
-  T().players.push({id:uid(),name:n,num:num});
+  var np={id:uid(),name:n,num:num};
+  T().players.push(np);
+  var g=G(); if(g&&g.stage!=='done') g.time[np.id]={total:0,GK:0,DEF:0,MID:0,FWD:0};
   save(); render();
   var f=document.getElementById('newNum'); if(f) f.focus();
 }
@@ -724,7 +810,7 @@ function renderStats(){
     return;
   }
   var done=g.stage==='done';
-  var ids=g.present.slice().sort(function(a,b){ return playerTotal(b)-playerTotal(a); });
+  var ids=gameIds().sort(function(a,b){ return playerTotal(b)-playerTotal(a); });
   h='<div class="panel"><h2>'+(done?'Final minutes':'This game')+'</h2>'+
     '<div class="sub">'+esc(T().name)+' \u2014 time on the field, and which positions it was spent in.</div>'+
     table(ids)+'<div class="row" style="margin-top:12px">'+
@@ -771,7 +857,7 @@ function importAll(ev){
 }
 function exportCSV(){
   var g=G(); if(!g){ toast('No game to export.'); return; }
-  var ids=g.present.slice().sort(function(a,b){ return playerTotal(b)-playerTotal(a); });
+  var ids=gameIds().sort(function(a,b){ return playerTotal(b)-playerTotal(a); });
   var out='Player,Jersey,Minutes played,GK,Defense,Midfield,Forward\n';
   ids.forEach(function(id){
     var t=g.time[id]||{total:0,GK:0,DEF:0,MID:0,FWD:0}, p=playerById(id);
