@@ -166,6 +166,10 @@
   td.soft{color:var(--muted)}
   td.over{color:var(--amber);font-weight:650} td.under{color:var(--blue);font-weight:650}
 
+  #fault{display:none;position:fixed;left:0;right:0;top:0;z-index:99;background:#8C2A18;color:#fff;
+    padding:10px 14px;font-size:13px;line-height:1.4}
+  #warn{background:var(--amber-bg);border:1px solid #E7C98E;color:#7A4E06;border-radius:11px;
+    padding:11px 13px;font-size:13.5px;line-height:1.5;margin:0 14px 10px;max-width:640px}
   .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--ink);color:#fff;
     padding:10px 16px;border-radius:9px;font-size:14px;font-weight:560;z-index:90;opacity:0;pointer-events:none;
     transition:opacity .18s;max-width:88vw;text-align:center}
@@ -185,12 +189,15 @@
   </nav>
 </header>
 
+<div id="warn" style="display:none"></div>
+
 <div class="wrap">
   <section class="screen on" id="s-game"></section>
   <section class="screen" id="s-team"></section>
   <section class="screen" id="s-stats"></section>
 </div>
 
+<div id="fault" role="alert"></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
@@ -201,6 +208,8 @@
    ========================================================= */
 
 var _mem={}, storageOK=true;
+try{ localStorage.setItem('sideline.probe','1'); localStorage.removeItem('sideline.probe'); }
+catch(e){ storageOK=false; }
 var store={
   get:function(k){ try{ return localStorage.getItem(k); }catch(e){ storageOK=false; return _mem[k]||null; } },
   set:function(k,v){ try{ localStorage.setItem(k,v); }catch(e){ storageOK=false; _mem[k]=v; } }
@@ -283,6 +292,43 @@ function nameOf(id){ var p=playerById(id); return p?p.name:'\u2014'; }
 function isGuest(id){ var p=playerById(id); return !!(p&&p.guest); }
 
 function save(){ store.set('sideline.v2', JSON.stringify(S)); }
+
+/* Saved data from an older build is missing fields this one reads. Fill
+   them in rather than letting the first `undefined.forEach` blank the
+   screen. Cheap, and it runs before anything touches the state. */
+function migrate(){
+  if(!S || !S.teams) S={teams:[],active:0};
+  if(typeof S.active!=='number' || S.active>=S.teams.length) S.active=0;
+
+  S.teams.forEach(function(t){
+    if(t.excludeGK===undefined) t.excludeGK=true;
+    if(t.defaultLineup===undefined) t.defaultLineup=null;
+    if(!t.players) t.players=[];
+    if(!t.size) t.size=7;
+    if(!FORMATIONS[t.size]) t.size=7;
+    if(!FORMATIONS[t.size][t.formation]) t.formation=Object.keys(FORMATIONS[t.size])[0];
+    if(!t.periods) t.periods=2;
+    if(!t.periodLength) t.periodLength=30;
+    if(t.remindEvery===undefined) t.remindEvery=0;
+    if(t.longShift===undefined) t.longShift=8;
+
+    var g=t.game;
+    if(!g) return;
+    ['guests','bench','present','extra'].forEach(function(k){ if(!Array.isArray(g[k])) g[k]=[]; });
+    ['time','fair','arrived','departed','benchSince','stintSince','onField']
+      .forEach(function(k){ if(!g[k]||typeof g[k]!=='object') g[k]={}; });
+    if(typeof g.opponent!=='string') g.opponent='';
+    if(typeof g.elapsed!=='number') g.elapsed=0;
+    if(typeof g.lastNudge!=='number') g.lastNudge=0;
+    if(!g.stage) g.stage='attendance';
+    g.running=false;
+
+    // Anyone present without a time record would divide by nothing later.
+    g.present.forEach(function(id){
+      if(!g.time[id]) g.time[id]={total:0,GK:0,DEF:0,MID:0,FWD:0};
+    });
+  });
+}
 function load(){
   var raw=store.get('sideline.v2');
   if(raw){ try{ var d=JSON.parse(raw); if(d.teams&&d.teams.length){ S=d; return; } }catch(e){} }
@@ -732,6 +778,19 @@ function renderTeamBar(){
 }
 
 function renderGame(){
+  try { renderGameInner(); }
+  catch(err){
+    document.getElementById('s-game').innerHTML =
+      '<div class="panel"><h2>This game record can\u2019t be shown</h2>'+
+      '<div class="sub">Usually a game saved by an older version of this page. '+
+      'Discarding it keeps your roster and settings.</div>'+
+      '<div class="row"><button class="btn primary" onclick="forceDiscard()">Discard the game</button></div>'+
+      '<div class="note" style="margin-top:10px">'+esc(String(err&&err.message||err))+'</div></div>';
+  }
+}
+function forceDiscard(){ T().game=null; sel=null; stopTimer(); releaseWake(); save(); render(); }
+
+function renderGameInner(){
   var el=document.getElementById('s-game'), t=T(), g=t.game, h='';
 
   if(g&&g.stage==='done'){
@@ -1277,9 +1336,22 @@ window.addEventListener('beforeunload',function(e){
 
 /* ---------- boot ---------- */
 load();
-S.teams.forEach(function(t){ if(t.game&&t.game.running) t.game.running=false; });
+migrate();
 lastTick=Date.now();
 render();
+
+/* Local files can't keep saved data in most browsers. Say so plainly and
+   at the top, rather than letting a roster quietly vanish on reload. */
+if(!storageOK){
+  var wn=document.getElementById('warn');
+  wn.style.display='block';
+  wn.innerHTML='<b>Nothing will be saved.</b> This browser blocks storage for files opened '+
+    'directly from disk, so your roster disappears when you reload.<br>'+
+    'Fix it by putting the file on a web address \u2014 upload it to your site, or run '+
+    '<code>python3 -m http.server</code> in the folder and open '+
+    '<code>http://localhost:8000/sideline.html</code>. '+
+    'Safari on iPhone saves fine once the page is on a real address.';
+}
 </script>
 </body>
 </html>
