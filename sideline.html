@@ -7,7 +7,248 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="description" content="Sideline — fair playing time for youth soccer coaches. Works offline; nothing leaves your phone.">
 <title>Sideline</title>
-<link rel="stylesheet" href="sideline/style.css">
+<style>
+/* Sideline — the look, matching the iOS app: light only, pitch green, white
+   shirts with a yellow keeper. The palette is the app's Theme.swift. */
+
+:root{
+  --pitch:#2C6E4A; --pitch-dark:#235739; --line:rgba(255,255,255,.40);
+  --ink:#101713; --shell:#EEF0EB; --card:#FFFFFF; --edge:#D3D8D1; --muted:#6B7570;
+  --amber:#B0700B; --amber-bg:#FBEDD3; --blue:#24557E; --blue-bg:#DDE8F3; --red:#A8321F;
+  --keeper:#FDDA3A;
+  --pair1:#DC2680; --pair2:#0099CC; --pair3:#8440D1; --pair4:#C71F38;
+  --font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{font-family:var(--font);background:var(--shell);color:var(--ink);font-size:16px;line-height:1.45;
+  padding-bottom:env(safe-area-inset-bottom);-webkit-text-size-adjust:100%}
+.num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+button{font:inherit;color:inherit;cursor:pointer;border:none;background:none}
+input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3{margin:0;font-weight:650;letter-spacing:-.01em}
+
+.wrap{max-width:640px;margin:0 auto;padding:0 14px 90px}
+header{position:sticky;top:0;z-index:40;background:var(--shell);padding:10px 14px 0;max-width:640px;margin:0 auto}
+.brand{font-size:19px;font-weight:700;letter-spacing:-.02em;margin-bottom:8px}
+.brand span{color:var(--pitch)}
+
+.teams{display:flex;gap:6px;overflow-x:auto;padding-bottom:9px;scrollbar-width:none}
+.teams::-webkit-scrollbar{display:none}
+.teampill{flex:none;display:flex;align-items:center;gap:6px;padding:7px 13px;border-radius:20px;
+  background:var(--card);border:1.5px solid var(--edge);font-size:14px;font-weight:600;color:var(--muted);white-space:nowrap}
+.teampill.on{background:var(--pitch);border-color:var(--pitch-dark);color:#fff}
+.teampill .sz{font-size:11.5px;opacity:.72;font-weight:500}
+.teampill .dot{width:6px;height:6px;border-radius:50%;background:#E8A800;flex:none}
+.addteam{flex:none;padding:7px 13px;border-radius:20px;border:1.5px dashed #B9C0B8;color:var(--muted);
+  font-size:14px;font-weight:600;background:transparent}
+
+nav{display:flex;gap:4px;background:#E1E4DE;padding:3px;border-radius:11px}
+nav button{flex:1;padding:8px 4px;border-radius:8px;font-size:14px;font-weight:600;color:var(--muted)}
+nav button[aria-selected="true"]{background:var(--card);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.screen{display:none;padding-top:14px}
+.screen.on{display:block}
+
+/* ---------- panels, buttons, fields ---------- */
+
+.panel{background:var(--card);border:1px solid var(--edge);border-radius:13px;padding:14px;margin-bottom:12px}
+.panel h2{font-size:15px;margin-bottom:3px}
+.panel .sub{font-size:13px;color:var(--muted);margin-bottom:11px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:11px 15px;border-radius:9px;
+  font-weight:620;font-size:15px;background:#E4E7E2;border:1px solid var(--edge)}
+.btn:active{transform:translateY(1px)}
+.btn.primary{background:var(--pitch);color:#fff;border-color:var(--pitch-dark)}
+.btn.danger{background:#fff;color:var(--red);border-color:#E2C4BE}
+.btn.wide{width:100%}
+.btn.sm{padding:7px 11px;font-size:13.5px;border-radius:7px}
+.btn[disabled]{opacity:.45;pointer-events:none}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.field-lbl{display:block;font-size:13px;color:var(--muted);margin-bottom:4px}
+.inp{width:100%;padding:9px 11px;border:1px solid var(--edge);border-radius:8px;background:#FAFBFA}
+textarea.inp{min-height:200px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:15px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.note{font-size:13px;color:var(--muted);line-height:1.5}
+.empty{padding:22px 14px;text-align:center;color:var(--muted);font-size:14px;
+  border:1px dashed var(--edge);border-radius:11px;background:#F7F8F6}
+.inp:focus-visible,.btn:focus-visible,nav button:focus-visible,.token:focus-visible,
+.benchcard:focus-visible,.teampill:focus-visible,.addteam:focus-visible,.info:focus-visible,
+.att:focus-visible,.shapebtn:focus-visible,.fix:focus-visible{outline:3px solid #1B7FD4;outline-offset:2px}
+
+/* the ⓘ that opens a short explanation */
+.info{width:26px;height:26px;border-radius:50%;border:1px solid var(--edge);color:var(--muted);
+  font-size:13px;font-weight:700;line-height:1;flex:none;background:var(--card)}
+.info[aria-expanded="true"]{background:var(--pitch);color:#fff;border-color:var(--pitch-dark)}
+.help{margin:8px 0 0;padding:11px 13px;border-radius:10px;background:#F3F6F2;border:1px solid var(--edge);
+  font-size:13px;line-height:1.5;color:var(--ink)}
+.help b{display:block;margin-bottom:3px}
+.headrow{display:flex;align-items:center;gap:6px;justify-content:space-between}
+.headrow h2{flex:1;min-width:0}
+
+/* ---------- roster rows ---------- */
+
+.plist{display:flex;flex-direction:column;gap:6px;margin-bottom:11px}
+.prow{display:flex;align-items:center;gap:9px;padding:8px 10px;background:#F7F8F6;border:1px solid var(--edge);border-radius:9px}
+.numbadge{min-width:30px;height:30px;padding:0 5px;border-radius:7px;background:var(--pitch);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex:none}
+.numbadge.blank{background:#C7CDC6;color:#5A625A}
+.prow .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:560}
+.tgt{width:52px;padding:5px 6px;border:1px solid var(--edge);border-radius:7px;background:#fff;
+  text-align:center;font-size:13px;flex:none}
+.chk{display:flex;align-items:center;gap:9px;font-size:14.5px;font-weight:560}
+.chk input{width:20px;height:20px;accent-color:var(--pitch)}
+.x{padding:5px 9px;color:var(--muted);font-size:19px;line-height:1;border-radius:6px}
+.x:hover{background:#E8EAE6;color:var(--red)}
+.attgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:7px;margin-bottom:12px}
+.att{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:9px;border:1.5px solid var(--edge);
+  background:#F7F8F6;text-align:left;font-size:14.5px;font-weight:560}
+.att[aria-pressed="true"]{border-color:var(--pitch);background:#E9F2EC}
+.tick{width:19px;height:19px;border-radius:5px;border:1.5px solid #B9C0B8;background:#fff;flex:none;
+  display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;font-weight:800}
+.att[aria-pressed="true"] .tick{background:var(--pitch);border-color:var(--pitch)}
+.gst{font-style:normal;font-size:8.5px;font-weight:800;color:#fff;background:var(--blue);
+  border-radius:3px;padding:1px 3px;margin-left:3px;vertical-align:middle}
+
+/* ---------- the clock ---------- */
+
+.clockbar{position:sticky;top:0;z-index:30;background:var(--pitch);color:#fff;border-radius:13px;
+  padding:11px 13px;margin-bottom:11px;display:flex;align-items:center;gap:10px;box-shadow:0 2px 10px rgba(16,23,19,.16)}
+.clockbar .time{font-size:34px;font-weight:700;letter-spacing:-.03em;line-height:1;white-space:nowrap;flex:none}
+.clockbar .meta{flex:1;min-width:0;font-size:12.5px;opacity:.85;line-height:1.3}
+.clockbar .meta b{display:block;font-size:13.5px;font-weight:650;opacity:1}
+.clockbtn{padding:11px 16px;border-radius:9px;background:rgba(255,255,255,.16);color:#fff;font-weight:650;
+  border:1px solid rgba(255,255,255,.28);font-size:15px;flex:none}
+.clockbtn.go{background:#fff;color:var(--pitch-dark)}
+.fixrow{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin:-4px 0 11px}
+.fix{padding:5px 9px;border-radius:7px;font-size:12.5px;font-weight:620;background:var(--card);
+  border:1px solid var(--edge);color:var(--muted)}
+.fix.warn{background:var(--amber-bg);border-color:#E7C98E;color:#7A4E06}
+.fixlbl{font-size:11px;color:var(--muted)}
+.banner{background:var(--amber-bg);border:1px solid #E7C98E;color:#7A4E06;border-radius:10px;padding:9px 12px;
+  font-size:14px;font-weight:600;margin-bottom:11px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+
+/* ---------- our half of the pitch ---------- */
+
+.pitch{position:relative;overflow:hidden;border-radius:13px;margin-bottom:12px;
+  padding:16px 10px 26px;
+  background:repeating-linear-gradient(0deg,var(--pitch) 0 34px,#2A6847 34px 68px)}
+.pitch .field{position:absolute;inset:8px;border:2px solid var(--line);border-radius:4px;pointer-events:none}
+/* the halfway line is the top edge; half the centre circle hangs below it */
+.pitch .circle{position:absolute;left:50%;top:8px;width:30%;aspect-ratio:2/1;transform:translateX(-50%);
+  border:2px solid var(--line);border-top:none;border-radius:0 0 999px 999px;pointer-events:none}
+.pitch .box{position:absolute;left:50%;bottom:8px;width:62%;height:19%;max-height:100px;transform:translateX(-50%);
+  border:2px solid var(--line);border-bottom:none;pointer-events:none}
+.pitch .sixbox{position:absolute;left:50%;bottom:8px;width:30%;height:7%;max-height:36px;transform:translateX(-50%);
+  border:2px solid var(--line);border-bottom:none;pointer-events:none}
+.pitch .goal{position:absolute;left:50%;bottom:2px;width:14%;height:6px;transform:translateX(-50%);
+  border:2px solid var(--line);border-bottom:none;pointer-events:none}
+.prow-slots{position:relative;z-index:2;display:flex;align-items:flex-start;gap:0;margin-bottom:10px}
+.prow-slots:last-child{margin-bottom:0}
+
+/* a player as a shirt: name across the shoulders, number below */
+.token{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;gap:3px;background:none}
+.token .pos{font-size:9.5px;font-weight:800;letter-spacing:.04em;color:rgba(255,255,255,.85)}
+/* container-type lets the name and number scale with the shirt's own width
+   (cqw units below) rather than with the surrounding font size */
+.shirt{position:relative;width:58px;container-type:inline-size;
+  --fill:#fff;--ring:rgba(0,0,0,.15);--ringw:1px}
+.prow-slots.tight .shirt{width:46px}
+.prow-slots.four .shirt{width:52px}
+.shirt svg{display:block;width:100%;height:auto;filter:drop-shadow(0 1px 1.5px rgba(0,0,0,.22))}
+.shirt svg path{fill:var(--fill);stroke:var(--ring);stroke-width:var(--ringw);stroke-linejoin:round;
+  vector-effect:non-scaling-stroke}
+.shirt.keeper{--fill:var(--keeper)}
+.shirt.sel{--ring:#E8A800;--ringw:3px}
+.shirt.empty svg path{fill:rgba(255,255,255,.16);stroke:rgba(255,255,255,.6);stroke-dasharray:4 3}
+.shirt.empty.sel svg path{stroke:#E8A800;stroke-width:3px}
+.shirt .nm,.shirt .no{position:absolute;left:50%;transform:translateX(-50%);text-align:center;
+  color:var(--pitch-dark);pointer-events:none;white-space:nowrap;overflow:hidden;text-overflow:clip}
+.shirt .nm{top:26%;width:74%;font-size:13cqw;font-weight:700;letter-spacing:.02em}
+.shirt .no{top:41%;width:58%;font-size:34cqw;font-weight:800;line-height:1}
+.shirt .emptylbl{position:absolute;left:0;right:0;top:44%;text-align:center;font-size:9px;font-weight:600;
+  color:rgba(255,255,255,.85)}
+.shirt .gst{position:absolute;top:-2px;right:-4px;margin:0}
+/* OFF on the pitch, the position on the bench: one tag per planned pair */
+.pairchip{position:absolute;top:-2px;left:-4px;font-size:8.5px;font-weight:800;color:#fff;
+  padding:1px 4px;border-radius:999px;line-height:1.3}
+
+/* the small white label under a shirt: minutes, bar, shift */
+.tag{background:rgba(255,255,255,.95);border-radius:6px;padding:3px 4px;display:flex;flex-direction:column;
+  align-items:center;gap:2px;min-width:0;width:calc(100% - 4px);max-width:74px}
+.tag .mins{font-size:12px;font-weight:700;line-height:1.1;white-space:nowrap}
+.tag .mins small{font-size:9px;font-weight:500;color:var(--muted)}
+.tag .shift{font-size:8.5px;color:var(--muted);line-height:1.1;white-space:nowrap}
+.tag .shift.long{color:var(--red);font-weight:700}
+.tag .ingoal{font-size:9px;color:var(--muted);line-height:1.1}
+.over{color:var(--amber)} .under{color:var(--blue)}
+
+/* played against fair share: the fill is minutes, the mark is the share */
+.bar{position:relative;display:block;width:100%;height:5px;border-radius:3px;background:#DEE2DD;margin:2px 0}
+.bar i{display:block;height:100%;border-radius:3px;background:var(--pitch)}
+.bar u{position:absolute;top:-2px;width:1.5px;height:9px;background:rgba(0,0,0,.5);text-decoration:none}
+.bar.over i{background:var(--amber)} .bar.under i{background:var(--blue)}
+
+/* ---------- shape, bench, planned subs ---------- */
+
+.shaperow{display:flex;align-items:center;gap:5px;margin:0 0 12px;flex-wrap:wrap}
+.shapelbl{font-size:12.5px;color:var(--muted)}
+.shapebtn{padding:6px 10px;border-radius:7px;font-size:13px;font-weight:620;background:var(--card);
+  border:1.5px solid var(--edge);color:var(--muted)}
+.shapebtn.on{background:var(--pitch);border-color:var(--pitch-dark);color:#fff}
+
+.benchhead{display:flex;align-items:center;gap:6px;margin-bottom:7px}
+.benchhead h2{font-size:15px}
+.benchhead .hint{margin-left:auto;font-size:12.5px;color:var(--muted);text-align:right}
+.bench{display:grid;grid-template-columns:repeat(auto-fill,minmax(82px,1fr));gap:8px}
+.benchcard{display:flex;flex-direction:column;align-items:center;gap:3px;padding:2px;background:none}
+.benchcard .shirt{width:54px;--ring:var(--edge)}
+.benchcard.due .shirt{--ring:var(--blue);--ringw:2.5px}
+.benchcard.sel .shirt{--ring:#E8A800;--ringw:2.5px}
+.benchcard .mins{font-size:12px;font-weight:700;line-height:1.1;white-space:nowrap}
+.benchcard .mins small{font-size:9px;font-weight:500;color:var(--muted)}
+.benchcard .wait{font-size:9px;color:var(--muted);line-height:1.1;white-space:nowrap}
+.benchcard .wait.due{color:var(--blue)}
+
+.planentry{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.planentry .note{flex:1;min-width:120px}
+.planrow{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;margin-bottom:4px}
+.planrow .pairdot{width:9px;height:9px;border-radius:50%;flex:none}
+.planrow .arrow{color:var(--muted);font-weight:400}
+.planrow .where{font-size:11px;color:var(--muted);font-weight:500}
+
+.legend .samples{display:flex;gap:12px;margin-top:9px}
+.legend .sample{flex:1;min-width:0}
+.legend .sample b{display:block;font-size:12px;margin:4px 0 2px}
+.legend .sample span{font-size:10.5px;color:var(--muted);line-height:1.35;display:block}
+.legend summary{cursor:pointer;font-size:13.5px;font-weight:650;list-style:none}
+.legend summary::-webkit-details-marker{display:none}
+.legend summary::before{content:"▸ ";color:var(--muted)}
+.legend[open] summary::before{content:"▾ "}
+
+/* ---------- tables ---------- */
+
+.tablewrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th,td{padding:7px 5px;text-align:right;border-bottom:1px solid #E7EAE6;white-space:nowrap}
+th{font-size:11.5px;color:var(--muted);font-weight:650}
+th:first-child,td:first-child{text-align:left;font-weight:600;position:sticky;left:0;background:var(--card)}
+tbody tr:last-child td{border-bottom:none}
+td.zero{color:#B4BAB3}
+td.soft{color:var(--muted)}
+td.over{color:var(--amber);font-weight:650} td.under{color:var(--blue);font-weight:650}
+
+/* ---------- chrome ---------- */
+
+#warn{background:var(--amber-bg);border:1px solid #E7C98E;color:#7A4E06;border-radius:11px;
+  padding:11px 13px;font-size:13.5px;line-height:1.5;margin:0 auto 10px;max-width:640px}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--ink);color:#fff;
+  padding:10px 16px;border-radius:9px;font-size:14px;font-weight:560;z-index:90;opacity:0;pointer-events:none;
+  transition:opacity .18s;max-width:88vw;text-align:center}
+.toast.show{opacity:.96}
+.steps{display:flex;gap:5px;margin:8px 0 16px}
+.steps i{flex:1;height:3px;border-radius:2px;background:var(--edge)}
+.steps i.on{background:var(--pitch)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
 </head>
 <body>
 
@@ -31,6 +272,2248 @@
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-<script type="module" src="sideline/ui.js"></script>
+<script>
+const SLEngine = (() => {
+/* Sideline — the engine, ported from the iOS app's Swift (Model/*.swift).
+   No DOM in here: every number the page shows is derived from a small event
+   log, so the same functions can be tested under Node.
+
+   Two event kinds:
+     stints — this player held this slot between these two clock times
+     spells — this player was at the game between these two clock times
+
+   Nothing is incremented on a tick. That is the whole trick behind the
+   clock surviving a locked screen or a backgrounded tab: there is no
+   counter to fall behind.
+
+   Units: clock times and durations are SECONDS of game time. Wall-clock
+   instants are milliseconds (Date.now()), and only `runStartedAt` holds one. */
+
+const GROUPS = ['GK', 'DEF', 'MID', 'FWD'];
+const SIZES = [5, 7, 9, 11];
+
+/* ---------- formations: row -> [label, group], goalkeeper first ---------- */
+
+const TABLE = {
+  5: {
+    '1-2-1': [[['GK', 'GK']], [['CB', 'DEF']], [['LM', 'MID'], ['RM', 'MID']], [['ST', 'FWD']]],
+    '2-1-1': [[['GK', 'GK']], [['LB', 'DEF'], ['RB', 'DEF']], [['CM', 'MID']], [['ST', 'FWD']]],
+    '2-2':   [[['GK', 'GK']], [['LB', 'DEF'], ['RB', 'DEF']], [['LS', 'FWD'], ['RS', 'FWD']]]
+  },
+  7: {
+    '2-3-1':   [[['GK', 'GK']], [['LB', 'DEF'], ['RB', 'DEF']],
+                [['LM', 'MID'], ['CM', 'MID'], ['RM', 'MID']], [['ST', 'FWD']]],
+    '3-2-1':   [[['GK', 'GK']], [['LB', 'DEF'], ['CB', 'DEF'], ['RB', 'DEF']],
+                [['LM', 'MID'], ['RM', 'MID']], [['ST', 'FWD']]],
+    '2-1-2-1': [[['GK', 'GK']], [['LB', 'DEF'], ['RB', 'DEF']], [['CDM', 'MID']],
+                [['LM', 'MID'], ['RM', 'MID']], [['ST', 'FWD']]],
+    '3-1-2':   [[['GK', 'GK']], [['LB', 'DEF'], ['CB', 'DEF'], ['RB', 'DEF']],
+                [['CM', 'MID']], [['LS', 'FWD'], ['RS', 'FWD']]]
+  },
+  9: {
+    '3-3-2': [[['GK', 'GK']], [['LB', 'DEF'], ['CB', 'DEF'], ['RB', 'DEF']],
+              [['LM', 'MID'], ['CM', 'MID'], ['RM', 'MID']], [['LS', 'FWD'], ['RS', 'FWD']]],
+    '3-2-3': [[['GK', 'GK']], [['LB', 'DEF'], ['CB', 'DEF'], ['RB', 'DEF']],
+              [['LCM', 'MID'], ['RCM', 'MID']],
+              [['LW', 'FWD'], ['ST', 'FWD'], ['RW', 'FWD']]],
+    '2-3-3': [[['GK', 'GK']], [['LB', 'DEF'], ['RB', 'DEF']],
+              [['LM', 'MID'], ['CM', 'MID'], ['RM', 'MID']],
+              [['LW', 'FWD'], ['ST', 'FWD'], ['RW', 'FWD']]],
+    '3-4-1': [[['GK', 'GK']], [['LB', 'DEF'], ['CB', 'DEF'], ['RB', 'DEF']],
+              [['LM', 'MID'], ['LCM', 'MID'], ['RCM', 'MID'], ['RM', 'MID']], [['ST', 'FWD']]]
+  },
+  11: {
+    '4-4-2':   [[['GK', 'GK']], [['LB', 'DEF'], ['LCB', 'DEF'], ['RCB', 'DEF'], ['RB', 'DEF']],
+                [['LM', 'MID'], ['LCM', 'MID'], ['RCM', 'MID'], ['RM', 'MID']],
+                [['LS', 'FWD'], ['RS', 'FWD']]],
+    '4-3-3':   [[['GK', 'GK']], [['LB', 'DEF'], ['LCB', 'DEF'], ['RCB', 'DEF'], ['RB', 'DEF']],
+                [['LCM', 'MID'], ['CM', 'MID'], ['RCM', 'MID']],
+                [['LW', 'FWD'], ['ST', 'FWD'], ['RW', 'FWD']]],
+    '4-2-3-1': [[['GK', 'GK']], [['LB', 'DEF'], ['LCB', 'DEF'], ['RCB', 'DEF'], ['RB', 'DEF']],
+                [['LDM', 'MID'], ['RDM', 'MID']],
+                [['LAM', 'MID'], ['CAM', 'MID'], ['RAM', 'MID']], [['ST', 'FWD']]],
+    '3-5-2':   [[['GK', 'GK']], [['LCB', 'DEF'], ['CB', 'DEF'], ['RCB', 'DEF']],
+                [['LWB', 'MID'], ['LCM', 'MID'], ['CM', 'MID'], ['RCM', 'MID'], ['RWB', 'MID']],
+                [['LS', 'FWD'], ['RS', 'FWD']]]
+  }
+};
+
+function formationKeys(size) {
+  return Object.keys(TABLE[size] || {}).sort();
+}
+
+function defaultKey(size) {
+  switch (size) {
+    case 5:  return '1-2-1';
+    case 7:  return '2-3-1';
+    case 9:  return '3-3-2';
+    default: return '4-4-2';
+  }
+}
+
+/** Rows of slots, goalkeeper row first. Slot IDs are stable within a shape
+    and mean nothing across shapes. */
+function rows(size, key) {
+  const set = TABLE[size] || {};
+  const shape = set[key] || set[defaultKey(size)] || [];
+  return shape.map((row, r) => row.map(([label, group], c) => ({
+    id: `r${r}s${c}`, label, group, row: r
+  })));
+}
+
+function slots(size, key) {
+  return rows(size, key).flat();
+}
+
+const slotsOf = g => slots(g.squadSize, g.formationKey);
+const rowsOf  = g => rows(g.squadSize, g.formationKey);
+
+/* ---------- minutes split by position ---------- */
+
+const newGroupMinutes = () => ({ GK: 0, DEF: 0, MID: 0, FWD: 0 });
+const groupTotal = gm => GROUPS.reduce((a, k) => a + (gm[k] || 0), 0);
+const addGroupMinutes = (a, b) => {
+  const out = newGroupMinutes();
+  for (const k of GROUPS) out[k] = (a[k] || 0) + (b[k] || 0);
+  return out;
+};
+
+/* ---------- the game ---------- */
+
+let seq = 0;
+/** UUID-shaped, so ids line up with the app's (which uses UUIDs) and nothing
+    collides between devices sharing a team file. */
+function uid() {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) return crypto.randomUUID();
+  seq += 1;
+  return 'i' + Date.now().toString(36) + seq.toString(36) + Math.random().toString(36).slice(2, 7);
+}
+
+function makeGame({ squadSize = 7, formationKey, periods = 2, periodMinutes = 30,
+                           checkedIn = [] } = {}) {
+  return {
+    id: uid(),
+    date: new Date().toISOString(),
+    stage: 'attendance',                 // attendance | lineup | live | done
+    squadSize,
+    formationKey: formationKey || defaultKey(squadSize),
+    periods,
+    periodMinutes,
+    /** Clock seconds banked from every previous running interval. */
+    accumulated: 0,
+    /** Wall-clock ms the clock was last started; null while paused. */
+    runStartedAt: null,
+    guests: [],
+    opponent: '',
+    extraSeconds: [],                    // added time, per period
+    checkedIn: checkedIn.slice(),
+    stints: [],
+    spells: []
+  };
+}
+
+function beginGame(team) {
+  return makeGame({
+    squadSize: team.squadSize,
+    formationKey: team.formationKey,
+    periods: team.periods,
+    periodMinutes: team.periodMinutes,
+    checkedIn: team.players.map(p => p.id)
+  });
+}
+
+function fairnessRules(team) {
+  const targets = {};
+  for (const p of everyone(team)) if ((p.target || 0) > 0) targets[p.id] = p.target;
+  return { excludeGK: team.excludeGK !== false, targets };
+}
+
+/** Roster plus anyone borrowed for the game in progress. */
+function everyone(team) {
+  const guests = team.game && team.game.guests ? team.game.guests : [];
+  return guests.length ? team.players.concat(guests) : team.players;
+}
+
+/* ---------- the clock ---------- */
+
+/** Cumulative end of each period, added time included. */
+function periodEnds(g) {
+  const out = [];
+  let acc = 0;
+  for (let i = 0; i < g.periods; i++) {
+    acc += g.periodMinutes * 60 + (g.extraSeconds[i] || 0);
+    out.push(acc);
+  }
+  return out;
+}
+
+const totalDuration = g => {
+  const e = periodEnds(g);
+  return e.length ? e[e.length - 1] : 0;
+};
+
+const isRunning = g => g.runStartedAt != null;
+
+/** Seconds of game played so far. Never past full time, and while running
+    never past the end of the period in play — the same boundary
+    `settleBoundaries` parks on, so a tab read during the break shows 30:00. */
+function elapsed(g, wallMs = Date.now()) {
+  const live = g.runStartedAt == null ? 0 : (wallMs - g.runStartedAt) / 1000;
+  const cap = g.runStartedAt == null
+    ? totalDuration(g)
+    : (periodEnds(g).find(e => e > g.accumulated + 0.5) ?? totalDuration(g));
+  return Math.min(cap, Math.max(0, g.accumulated + live));
+}
+
+const isFullTime = (g, wallMs = Date.now()) => elapsed(g, wallMs) >= totalDuration(g);
+
+function period(g, t) {
+  const ends = periodEnds(g);
+  for (let i = 0; i < ends.length; i++) if (t < ends[i]) return i + 1;
+  return Math.max(1, ends.length);
+}
+
+function remainingInPeriod(g, t) {
+  for (const end of periodEnds(g)) if (t < end) return end - t;
+  return 0;
+}
+
+/** True when `t` sits (within half a second) on the end of a period. */
+const isAtPeriodEnd = (g, t) => periodEnds(g).some(e => Math.abs(e - t) < 0.5);
+
+/** Which period added time belongs to: normally the one in play, but with
+    the clock stopped exactly on a boundary, the one that just ended. */
+function addedTimePeriod(g, t) {
+  const ends = periodEnds(g);
+  if (!isRunning(g)) {
+    const i = ends.findIndex(e => Math.abs(e - t) < 0.5);
+    if (i >= 0 && i < ends.length - 1) return i;
+  }
+  return period(g, t) - 1;
+}
+
+function start(g, wallMs = Date.now()) {
+  if (g.runStartedAt != null || isFullTime(g, wallMs)) return;
+  g.runStartedAt = wallMs;
+}
+
+function pause(g, wallMs = Date.now()) {
+  if (g.runStartedAt == null) return;
+  g.accumulated = elapsed(g, wallMs);
+  g.runStartedAt = null;
+}
+
+/** Stops the clock at the end of a period or at full time, banking exactly
+    the playable seconds rather than the wall-clock gap. Returns true if it
+    just stopped the clock, so the caller can blow the whistle. */
+function settleBoundaries(g, wallMs = Date.now()) {
+  if (g.runStartedAt == null) return false;
+  const raw = g.accumulated + (wallMs - g.runStartedAt) / 1000;
+  const ends = periodEnds(g);
+  if (!ends.length) return false;
+  const boundary = ends.find(e => e > g.accumulated + 0.5) ?? totalDuration(g);
+  if (raw >= boundary) {
+    g.accumulated = boundary;
+    g.runStartedAt = null;
+    return true;
+  }
+  return false;
+}
+
+/** Nudge the clock. Because elapsed is derived and stints live in clock
+    coordinates, this shifts every player's minutes by the same amount. */
+function nudge(g, seconds, wallMs = Date.now()) {
+  if (g.runStartedAt != null) {
+    const e = elapsed(g, wallMs);
+    g.accumulated = e;
+    g.runStartedAt = isAtPeriodEnd(g, e) ? null : wallMs;
+  }
+  const before = g.accumulated;
+  let after = Math.max(0, Math.min(totalDuration(g), before + seconds));
+  // Never run through a whistle: a forward nudge stops on the first period
+  // end it reaches, and stops the clock there.
+  if (after > before) {
+    const end = periodEnds(g).find(e => e > before + 0.5);
+    if (end != null && after >= end) {
+      after = end;
+      g.runStartedAt = null;
+    }
+  }
+  g.accumulated = after;
+}
+
+/** Extend the period in play (or the one that just ended). */
+function addTime(g, minutes, wallMs = Date.now()) {
+  settleBoundaries(g, wallMs);
+  const e = elapsed(g, wallMs);
+  const i = addedTimePeriod(g, e);
+  while (g.extraSeconds.length < g.periods) g.extraSeconds.push(0);
+  if (i < 0 || i >= g.extraSeconds.length) return;
+  // Added time already played can't be taken back: that would rewind the
+  // clock and clip every open stint.
+  const alreadyPlayed = Math.max(0, e - (periodEnds(g)[i] - g.extraSeconds[i]));
+  const kept = Math.max(alreadyPlayed, g.extraSeconds[i] + minutes * 60);
+  g.extraSeconds[i] = kept < 1 ? 0 : kept;
+}
+
+/** The referee blew early: jump a paused clock to the end of the period in
+    play, so Resume starts the next one. */
+function endPeriodNow(g) {
+  if (g.runStartedAt != null || isFullTime(g) || isAtPeriodEnd(g, g.accumulated)) return;
+  const end = periodEnds(g).find(e => e > g.accumulated + 0.5);
+  if (end == null) return;
+  g.accumulated = Math.min(totalDuration(g), end);
+}
+
+/* ---------- reading the field ---------- */
+
+/** slotID -> playerID, from whichever stints are still open. */
+function onField(g) {
+  const out = {};
+  for (const s of g.stints) if (s.end == null) out[s.slotID] = s.playerID;
+  return out;
+}
+
+function slotOf(playerID, g) {
+  const s = g.stints.find(s => s.playerID === playerID && s.end == null);
+  return s ? s.slotID : null;
+}
+
+const covers = (sp, t) => t >= sp.from && (sp.to == null || t < sp.to);
+
+/** Everyone available to play at `t`. Before kickoff nobody has a spell
+    yet, so attendance is the authority. */
+function available(g, t) {
+  if (g.stage === 'attendance' || g.stage === 'lineup') return g.checkedIn.slice();
+  const seen = new Set(), out = [];
+  for (const sp of g.spells) {
+    if (covers(sp, t) && !seen.has(sp.playerID)) { seen.add(sp.playerID); out.push(sp.playerID); }
+  }
+  return out;
+}
+
+function bench(g, t) {
+  const on = new Set(Object.values(onField(g)));
+  return available(g, t).filter(id => !on.has(id));
+}
+
+/** Anyone this game touched: still here, or here earlier. */
+function participants(g, t) {
+  const seen = new Set(), out = [];
+  for (const sp of g.spells) {
+    if (sp.from <= t && !seen.has(sp.playerID)) { seen.add(sp.playerID); out.push(sp.playerID); }
+  }
+  return out;
+}
+
+/* ---------- minutes ---------- */
+
+/** Clipped at `now` even when closed, so "minutes at half time" is a real
+    question and a backwards clock nudge can't credit anyone past the clock. */
+const stintDuration = (s, now) => Math.max(0, Math.min(s.end ?? now, now) - s.start);
+
+function played(playerID, g, t) {
+  return g.stints.filter(s => s.playerID === playerID)
+                 .reduce((a, s) => a + stintDuration(s, t), 0);
+}
+
+function playedByGroup(playerID, g, t) {
+  const out = newGroupMinutes();
+  for (const s of g.stints) if (s.playerID === playerID) out[s.group] += stintDuration(s, t);
+  return out;
+}
+
+/** The stint that began a player's current unbroken run on the field, or
+    null if they're on the bench. A shape change or a position swap closes
+    one stint and opens the next at the same instant; the player never left
+    the field, so the run carries on through it. Coming off ends it. */
+function firstStintOfShift(playerID, g) {
+  let first = g.stints.find(s => s.playerID === playerID && s.end == null);
+  if (!first) return null;
+  for (;;) {
+    const earlier = g.stints.find(s => s.playerID === playerID &&
+                                       s.end === first.start && s.start < first.start);
+    if (!earlier) return first;
+    first = earlier;
+  }
+}
+
+function currentShift(playerID, g, t) {
+  const s = firstStintOfShift(playerID, g);
+  return s ? Math.max(0, t - s.start) : 0;
+}
+
+/** How long a player was at the game and available to be picked. */
+function availableDuration(playerID, g, t) {
+  return g.spells.filter(sp => sp.playerID === playerID)
+                 .reduce((a, sp) => a + Math.max(0, Math.min(sp.to ?? t, t) - sp.from), 0);
+}
+
+/** Minutes that count toward fairness — keeper time optionally removed. */
+function countedPlayed(playerID, g, t, rules) {
+  const by = playedByGroup(playerID, g, t);
+  const total = groupTotal(by);
+  return rules.excludeGK ? Math.max(0, total - by.GK) : total;
+}
+
+/** Whoever is between the posts right now. */
+function keeper(g) {
+  const s = g.stints.find(s => s.end == null && s.group === 'GK');
+  return s ? s.playerID : null;
+}
+
+/** Relative claim on the minutes for the people present in one segment.
+    Everyone is equal unless a target is set; those who have one claim their
+    target (stretched by `scale` over the time they're at the game), and the
+    rest split the remainder of what the open slots hold over the whole game.
+    With no targets this collapses back to an even split exactly. */
+function fairWeights({ here, open, duration, rules, scale = {} }) {
+  const capacity = duration * Math.max(1, open);
+  const targets = rules.targets || {};
+  const aimed = here.filter(p => (targets[p] || 0) > 0);
+  const rest = here.length - aimed.length;
+  const claimed = aimed.reduce((a, p) => a + (targets[p] || 0) * 60 * (scale[p] ?? 1), 0);
+  // If the targets ask for more than the game holds, leave a sliver for
+  // everyone else rather than going negative.
+  const left = Math.max(capacity * 0.05, capacity - claimed);
+  const average = rest === 0 ? 1 : left / rest;
+
+  const w = {};
+  for (const p of here) {
+    const target = (targets[p] || 0) * 60 * (scale[p] ?? 1);
+    w[p] = target > 0 ? target : average;
+  }
+  return w;
+}
+
+/** Splits `open` slots among `here` in proportion to weight, with nobody
+    claiming more than one whole slot. Anything a capped player can't take is
+    re-shared, so the slots stay fully allocated and sum(possible) stays
+    equal to sum(played). */
+function shares(open, here, weights) {
+  const claims = {};
+  let pool = here.slice();
+  let slotsLeft = open;
+  while (pool.length && slotsLeft > 0) {
+    const sum = pool.reduce((a, p) => a + (weights[p] ?? 1), 0);
+    if (!(sum > 0)) break;
+    const capped = pool.filter(p => slotsLeft * (weights[p] ?? 1) / sum >= 1);
+    if (!capped.length) {
+      for (const p of pool) claims[p] = slotsLeft * (weights[p] ?? 1) / sum;
+      break;
+    }
+    for (const p of capped) claims[p] = 1;
+    slotsLeft -= capped.length;
+    pool = pool.filter(p => !capped.includes(p));
+  }
+  return claims;
+}
+
+/** Minutes a player could reasonably have expected, split by position group
+    — integrated over both who was available and what shape was on the field,
+    so a formation change mid-game is accounted for.
+
+    Summed across groups this is the same number as `fairShares`, and summed
+    across players it equals the minutes actually played. */
+function possibleByGroup(g, t, rules = { excludeGK: true, targets: {} }) {
+  const out = {};
+  if (!(t > 0)) return out;
+
+  const cuts = new Set([0, t]);
+  for (const sp of g.spells) {
+    if (sp.from > 0 && sp.from < t) cuts.add(sp.from);
+    if (sp.to != null && sp.to > 0 && sp.to < t) cuts.add(sp.to);
+  }
+  for (const st of g.stints) {                       // formation changes land here
+    if (st.start > 0 && st.start < t) cuts.add(st.start);
+    if (st.end != null && st.end > 0 && st.end < t) cuts.add(st.end);
+  }
+  const marks = [...cuts].sort((a, b) => a - b);
+  const duration = totalDuration(g);
+
+  // A target is minutes for the game, so it is stretched over the time that
+  // player is (or was) actually here.
+  const scale = {};
+  for (const p of Object.keys(rules.targets || {})) {
+    const planned = g.spells.filter(sp => sp.playerID === p)
+      .reduce((a, sp) => a + Math.max(0, Math.min(sp.to ?? duration, duration) - sp.from), 0);
+    if (planned > 0) scale[p] = duration / planned;
+  }
+
+  for (let i = 0; i < marks.length - 1; i++) {
+    const a = marks[i], b = marks[i + 1], span = b - a;
+    if (!(span > 0)) continue;
+    const mid = a + span / 2;
+
+    const counts = newGroupMinutes();                // reused as a slot tally
+    let open = 0, keeperID = null;
+    for (const st of g.stints) {
+      if (!(st.start <= mid && (st.end ?? Infinity) > mid)) continue;
+      if (st.group === 'GK') {
+        keeperID = st.playerID;
+        if (rules.excludeGK) continue;               // the goal isn't in the pool
+      }
+      counts[st.group] += 1;
+      open += 1;
+    }
+    if (open === 0) continue;
+
+    // Whoever is in goal isn't competing for outfield minutes, so they
+    // accrue nothing while they're there.
+    let here = available(g, mid);
+    if (rules.excludeGK && keeperID) here = here.filter(p => p !== keeperID);
+    if (!here.length) continue;
+
+    const weights = fairWeights({ here, open, duration, rules, scale });
+    const claims = shares(open, here, weights);
+
+    for (const p of here) {
+      const claim = claims[p] || 0;
+      const gm = out[p] || (out[p] = newGroupMinutes());
+      for (const grp of GROUPS) if (counts[grp] > 0) gm[grp] += span * claim * counts[grp] / open;
+    }
+  }
+  return out;
+}
+
+/** Minutes a player was owed, integrated over who was actually available. */
+function fairShares(g, t, rules = { excludeGK: true, targets: {} }) {
+  const out = {};
+  const by = possibleByGroup(g, t, rules);
+  for (const id of Object.keys(by)) out[id] = groupTotal(by[id]);
+  return out;
+}
+
+/* ---------- setting up ---------- */
+
+/** Saved lineup first, then roster order for whatever's left. */
+function autoFill(g, roster, usual = null) {
+  const order = roster.map(p => p.id);
+  const rank = id => {
+    const i = order.indexOf(id);
+    return i < 0 ? Number.MAX_SAFE_INTEGER : i;
+  };
+  let pool = g.checkedIn.slice().sort((a, b) => rank(a) - rank(b));
+  g.stints = [];
+
+  const placed = {};
+  if (usual && usual.formationKey === g.formationKey) {
+    for (const s of slotsOf(g)) {
+      const pid = usual.slots[s.id];
+      const at = pid ? pool.indexOf(pid) : -1;
+      if (at >= 0) { placed[s.id] = pid; pool.splice(at, 1); }
+    }
+  }
+  for (const s of slotsOf(g)) {
+    const pid = placed[s.id] ?? (pool.length ? pool.shift() : null);
+    if (pid) g.stints.push({ id: uid(), playerID: pid, slotID: s.id, group: s.group, start: 0, end: null });
+  }
+}
+
+/** Freeze the current shape as this team's usual lineup. */
+const captureLineup = g => ({ formationKey: g.formationKey, slots: onField(g) });
+
+/** Borrow a player for this game only. */
+function addGuest(g, { name, jersey = '', at = 0, live = false }) {
+  const p = { id: uid(), name, jersey, isGuest: true };
+  g.guests.push(p);
+  if (live) g.spells.push({ id: uid(), playerID: p.id, from: at, to: null });
+  else g.checkedIn.push(p.id);
+  return p;
+}
+
+function kickoff(g) {
+  g.spells = g.checkedIn.map(id => ({ id: uid(), playerID: id, from: 0, to: null }));
+  g.stage = 'live';
+}
+
+/* ---------- substitutions ---------- */
+
+function sub(g, { slotID, incoming, at }) {
+  const s = slotsOf(g).find(s => s.id === slotID);
+  if (!s) return;
+  for (const st of g.stints) if (st.slotID === slotID && st.end == null) st.end = at;
+  g.stints.push({ id: uid(), playerID: incoming, slotID, group: s.group, start: at, end: null });
+}
+
+/** Two slots trade occupants. Both stints are closed and reopened so
+    position minutes split at exactly the right instant. One slot may be
+    empty, which simply moves the other player across. */
+function swapPositions(g, { slotA, slotB, at }) {
+  const on = onField(g);
+  const pa = on[slotA], pb = on[slotB];
+  const sa = slotsOf(g).find(s => s.id === slotA);
+  const sb = slotsOf(g).find(s => s.id === slotB);
+  if (slotA === slotB || (!pa && !pb) || !sa || !sb) return false;
+  for (const st of g.stints) {
+    if (st.end == null && (st.slotID === slotA || st.slotID === slotB)) st.end = at;
+  }
+  if (pb) g.stints.push({ id: uid(), playerID: pb, slotID: slotA, group: sa.group, start: at, end: null });
+  if (pa) g.stints.push({ id: uid(), playerID: pa, slotID: slotB, group: sb.group, start: at, end: null });
+  return true;
+}
+
+/** Change shape without anyone leaving the field. Players keep their role
+    where the new formation has room; the rest fill what's left. */
+function changeFormation(g, key, at) {
+  const previous = slotsOf(g);
+  const on = onField(g);
+  const pool = [];
+  for (const s of previous) if (on[s.id]) pool.push({ group: s.group, player: on[s.id] });
+
+  for (const st of g.stints) if (st.end == null) st.end = at;
+  g.formationKey = key;
+
+  const used = new Set();
+  const assigned = [];
+  const target = slotsOf(g);
+
+  for (const s of target) {                          // same role first
+    const i = pool.findIndex((c, idx) => !used.has(idx) && c.group === s.group);
+    if (i >= 0) { used.add(i); assigned.push([s, pool[i].player]); }
+  }
+  for (const s of target) {
+    if (assigned.some(([slot]) => slot.id === s.id)) continue;
+    const i = pool.findIndex((c, idx) => !used.has(idx));
+    if (i >= 0) { used.add(i); assigned.push([s, pool[i].player]); }
+  }
+  for (const [s, p] of assigned) {
+    g.stints.push({ id: uid(), playerID: p, slotID: s.id, group: s.group, start: at, end: null });
+  }
+}
+
+/* ---------- arrivals and departures ---------- */
+
+function arriveLate(g, playerID, at) {
+  if (available(g, at).includes(playerID)) return;
+  g.spells.push({ id: uid(), playerID, from: at, to: null });
+}
+
+/** Someone has to go. If they're on the field and anyone is on the bench,
+    the most-owed substitute takes their place; with nobody spare the
+    position is left empty for the coach to fill. */
+function leaveEarly(g, playerID, at, rules = { excludeGK: true, targets: {} }) {
+  let replacement = null;
+  const slotID = slotOf(playerID, g);
+
+  if (slotID) {
+    const owed = fairShares(g, at, rules);
+    const candidates = bench(g, at).slice().sort((a, b) =>
+      ((owed[b] || 0) - countedPlayed(b, g, at, rules)) -
+      ((owed[a] || 0) - countedPlayed(a, g, at, rules)));
+    if (candidates.length) {
+      sub(g, { slotID, incoming: candidates[0], at });
+      replacement = candidates[0];
+    } else {
+      for (const st of g.stints) if (st.slotID === slotID && st.end == null) st.end = at;
+    }
+  }
+  for (const sp of g.spells) if (sp.playerID === playerID && sp.to == null) sp.to = at;
+  return replacement;
+}
+
+function endGame(g, wallMs = Date.now()) {
+  const t = elapsed(g, wallMs);
+  pause(g, wallMs);
+  for (const st of g.stints) if (st.end == null) st.end = t;
+  for (const sp of g.spells) if (sp.to == null) sp.to = t;
+  g.stage = 'done';
+}
+
+/* ---------- season records ---------- */
+
+/** Freeze a finished game into something a season can hold onto. Name and
+    jersey are copied in: a season record has to survive someone leaving the
+    roster. */
+function summarize(g, roster, rules = { excludeGK: true, targets: {} }, wallMs = Date.now()) {
+  const t = elapsed(g, wallMs);
+  const possible = possibleByGroup(g, t, rules);
+  const lines = participants(g, t).map(id => {
+    const p = roster.find(p => p.id === id);
+    return {
+      playerID: id,
+      name: p ? p.name : 'Unknown',
+      jersey: p ? (p.jersey || '') : '',
+      played: playedByGroup(id, g, t),
+      available: availableDuration(id, g, t),
+      possible: possible[id] || newGroupMinutes()
+    };
+  });
+  return {
+    id: uid(),
+    date: g.date,
+    opponent: g.opponent || '',
+    squadSize: g.squadSize,
+    duration: t,
+    lines
+  };
+}
+
+function makeSeason(name) {
+  return { id: uid(), name, startedAt: new Date().toISOString(), endedAt: null, games: [] };
+}
+
+const isCurrentSeason = s => !s.endedAt;
+
+/** "Fall 2026", "Spring 2027" — a guess the coach can overwrite. */
+function suggestedSeasonName(now = new Date()) {
+  const m = now.getMonth() + 1, y = now.getFullYear();
+  const part = m >= 3 && m <= 5 ? 'Spring'
+             : m >= 6 && m <= 8 ? 'Summer'
+             : m >= 9 && m <= 11 ? 'Fall' : 'Winter';
+  return `${part} ${y}`;
+}
+
+/** Totals across every game in a season, newest roster names winning. */
+function seasonTotals(season) {
+  const byPlayer = new Map();
+  for (const game of season.games) {
+    for (const line of game.lines) {
+      const counts = groupTotal(line.played) > 0 || line.available > 0 ? 1 : 0;
+      const at = byPlayer.get(line.playerID);
+      if (at) {
+        at.games += counts;
+        at.played = addGroupMinutes(at.played, line.played);
+        at.available += line.available;
+        at.possible = addGroupMinutes(at.possible, line.possible);
+        at.name = line.name;
+        at.jersey = line.jersey;
+      } else {
+        byPlayer.set(line.playerID, {
+          playerID: line.playerID, name: line.name, jersey: line.jersey,
+          games: counts, played: line.played, available: line.available,
+          possible: line.possible
+        });
+      }
+    }
+  }
+  const out = [...byPlayer.values()];
+  for (const l of out) {
+    l.shareOfPossible = groupTotal(l.possible) > 0 ? groupTotal(l.played) / groupTotal(l.possible) : 0;
+  }
+  return out.sort((a, b) => groupTotal(b.played) - groupTotal(a.played));
+}
+
+/* ---------- small shared helpers ---------- */
+
+function clockText(seconds) {
+  const s = Math.max(0, Math.floor(seconds));
+  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+}
+
+const minutesText = seconds => (seconds / 60).toFixed(1);
+
+/** "10 William" -> jersey 10, name William. "William" -> no jersey.
+    Tolerates tabs, commas, and a stray header row. */
+function parseRoster(text) {
+  const out = [];
+  for (const raw of String(text).split(/\r?\n/)) {
+    const line = raw.trim();
+    if (!line) continue;
+    const parts = line.split(/[\t, ]+/).filter(Boolean);
+    if (!parts.length) continue;
+    const isNum = s => /^\d+$/.test(s);
+    if (parts.length > 1 && isNum(parts[0])) {
+      out.push({ id: uid(), name: parts.slice(1).join(' '), jersey: parts[0] });
+      continue;
+    }
+    if (parts.length > 1 && isNum(parts[parts.length - 1])) {
+      out.push({ id: uid(), name: parts.slice(0, -1).join(' '), jersey: parts[parts.length - 1] });
+      continue;
+    }
+    const name = parts.join(' ');
+    const low = name.toLowerCase();
+    if (low.startsWith('jersey') || low === 'name') continue;
+    out.push({ id: uid(), name, jersey: '' });
+  }
+  return out;
+}
+
+/** A safe, readable file-name stem from a user-typed name. */
+function fileSlug(s, fallback = 'team') {
+  const slug = String(s).split(/[/\\:"?*|<>,\s]+/).filter(Boolean).join('-').toLowerCase();
+  return slug ? slug.slice(0, 80) : fallback;
+}
+
+return { GROUPS, SIZES, formationKeys, defaultKey, rows, slots, slotsOf, rowsOf, newGroupMinutes, groupTotal, addGroupMinutes, uid, makeGame, beginGame, fairnessRules, everyone, periodEnds, totalDuration, isRunning, elapsed, isFullTime, period, remainingInPeriod, isAtPeriodEnd, addedTimePeriod, start, pause, settleBoundaries, nudge, addTime, endPeriodNow, onField, slotOf, available, bench, participants, played, playedByGroup, firstStintOfShift, currentShift, availableDuration, countedPlayed, keeper, fairWeights, shares, possibleByGroup, fairShares, autoFill, captureLineup, addGuest, kickoff, sub, swapPositions, changeFormation, arriveLate, leaveEarly, endGame, summarize, makeSeason, isCurrentSeason, suggestedSeasonName, seasonTotals, clockText, minutesText, parseRoster, fileSlug };
+})();
+
+(() => {
+/* Sideline — the screens. All the arithmetic lives in engine.js; this file
+   only draws it and collects taps.
+
+   Rendering is wholesale: an action changes state, then the screen is drawn
+   again from scratch. Cheap at this size, and it means there is never a
+   stale number on screen. The clock is derived (engine.elapsed), so the
+   once-a-second redraw is cosmetic: if it stops — tab hidden, phone asleep —
+   no time is lost. */
+
+const E = SLEngine;
+
+const KEY = 'sideline.v3';
+const OLD_KEY = 'sideline.v2';
+
+/* ---------- storage ---------- */
+
+let storageOK = true;
+const mem = {};
+const store = {
+  get(k) { try { return localStorage.getItem(k); } catch { storageOK = false; return mem[k] ?? null; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch { storageOK = false; mem[k] = v; } }
+};
+
+/* ---------- state ---------- */
+
+let S = { teams: [], active: 0 };
+let sel = null;                 // {kind:'slot'|'bench', id}
+let planning = false;
+let plan = [];                  // [{slot, incoming}] — intention only, never saved
+let undoStack = [];
+let showRoster = false;
+let helpOpen = null;
+let onboarding = null;
+let scope = 0;                  // Minutes tab: 0 = this game, 1 = season
+let seasonIndex = null;
+let tab = 'game';
+let timer = null, wakeLock = null, migratedNote = '';
+const buzzed = new Set();       // shifts already flagged for running long
+let lastNudge = 0;
+
+const team = () => S.teams[S.active] || null;
+const game = () => (team() ? team().game : null);
+const save = () => store.set(KEY, JSON.stringify(S));
+const esc = s => String(s ?? '').replace(/[&<>"']/g,
+  c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+function newTeam(name = 'New team', squadSize = 7) {
+  return {
+    id: E.uid(), name, squadSize,
+    formationKey: E.defaultKey(squadSize),
+    periods: 2, periodMinutes: 30,
+    longShiftMinutes: 8, nudgeMinutes: 0,
+    excludeGK: true,
+    defaultLineup: null,
+    players: [],
+    seasons: [E.makeSeason(E.suggestedSeasonName())],
+    game: null
+  };
+}
+
+/** Teams saved by the old single-file page carry over; a game in progress
+    does not, because the old format counted minutes on a timer and there are
+    no stints to rebuild from. */
+function migrateOld(raw) {
+  const d = JSON.parse(raw);
+  if (!d || !Array.isArray(d.teams) || !d.teams.length) return null;
+  let droppedGame = false;
+  const teams = d.teams.map(t => {
+    const size = E.SIZES.includes(t.size) ? t.size : 7;
+    const nt = newTeam(t.name || 'My team', size);
+    if (E.formationKeys(size).includes(t.formation)) nt.formationKey = t.formation;
+    nt.periods = [2, 3, 4].includes(t.periods) ? t.periods : 2;
+    nt.periodMinutes = Math.min(45, Math.max(5, t.periodLength || 30));
+    nt.longShiftMinutes = t.longShift ?? 8;
+    nt.nudgeMinutes = t.remindEvery ?? 0;
+    nt.excludeGK = t.excludeGK !== false;
+    nt.players = (t.players || []).map(p => ({
+      id: p.id || E.uid(), name: p.name || 'Player', jersey: p.num || p.jersey || '',
+      target: p.target > 0 ? p.target : null
+    }));
+    if (t.defaultLineup && t.defaultLineup.formation) {
+      nt.defaultLineup = { formationKey: t.defaultLineup.formation, slots: t.defaultLineup.slots || {} };
+    }
+    if (t.game) droppedGame = true;
+    return nt;
+  });
+  if (droppedGame) {
+    migratedNote = 'Your teams and rosters carried over from the older version. ' +
+      'A game that was in progress could not: the new version records substitutions as events, ' +
+      'and the old one only kept running totals.';
+  }
+  return { teams, active: 0 };
+}
+
+function load() {
+  const raw = store.get(KEY);
+  if (raw) {
+    try {
+      const d = JSON.parse(raw);
+      if (d && Array.isArray(d.teams)) { S = d; fixUp(); return; }
+    } catch { /* fall through to the older key */ }
+  }
+  const old = store.get(OLD_KEY);
+  if (old) {
+    try {
+      const moved = migrateOld(old);
+      if (moved) { S = moved; save(); return; }
+    } catch { /* start fresh */ }
+  }
+  S = { teams: [], active: 0 };
+}
+
+/** Anything a newer field expects, filled in rather than left undefined. */
+function fixUp() {
+  if (typeof S.active !== 'number' || S.active >= S.teams.length) S.active = 0;
+  for (const t of S.teams) {
+    if (!Array.isArray(t.players)) t.players = [];
+    if (!E.SIZES.includes(t.squadSize)) t.squadSize = 7;
+    if (!E.formationKeys(t.squadSize).includes(t.formationKey)) t.formationKey = E.defaultKey(t.squadSize);
+    if (!Array.isArray(t.seasons) || !t.seasons.length) t.seasons = [E.makeSeason(E.suggestedSeasonName())];
+    if (t.excludeGK === undefined) t.excludeGK = true;
+    if (t.longShiftMinutes === undefined) t.longShiftMinutes = 8;
+    if (t.nudgeMinutes === undefined) t.nudgeMinutes = 0;
+    const g = t.game;
+    if (!g) continue;
+    for (const k of ['stints', 'spells', 'guests', 'checkedIn', 'extraSeconds']) {
+      if (!Array.isArray(g[k])) g[k] = [];
+    }
+    if (typeof g.accumulated !== 'number') g.accumulated = 0;
+    if (g.runStartedAt !== null && typeof g.runStartedAt !== 'number') g.runStartedAt = null;
+  }
+}
+
+/* ---------- little helpers ---------- */
+
+const rules = () => E.fairnessRules({ ...team(), excludeGK: team().excludeGK });
+const everyone = () => E.everyone(team());
+const playerById = id => everyone().find(p => p.id === id) || null;
+const nameOf = id => (playerById(id)?.name ?? '—');
+const now = () => (game() ? E.elapsed(game()) : 0);
+
+let toastTimer = null;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+function beep() {
+  try {
+    if (navigator.vibrate) navigator.vibrate(60);
+    const C = window.AudioContext || window.webkitAudioContext;
+    if (!C) return;
+    const c = new C(), o = c.createOscillator(), g = c.createGain();
+    o.connect(g); g.connect(c.destination);
+    o.type = 'sine'; o.frequency.value = 880;
+    g.gain.setValueAtTime(0.001, c.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.22, c.currentTime + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.3);
+    o.start(); o.stop(c.currentTime + 0.31);
+  } catch { /* sound is a nicety */ }
+}
+
+function mutate(fn) {
+  const g = game();
+  if (!g) return;
+  fn(g);
+  save();
+  render();
+}
+
+/** Anything that rearranges players is undoable: you will mis-tap on a phone
+    held at waist height while watching a game. */
+function checkpoint() {
+  const g = game();
+  if (!g) return;
+  undoStack.push(JSON.stringify({
+    stints: g.stints, spells: g.spells, guests: g.guests, formationKey: g.formationKey
+  }));
+  if (undoStack.length > 25) undoStack.shift();
+}
+
+/* ---------- the ⓘ explanations ---------- */
+
+const HELP = {
+  squadSize: ['Players on the field',
+    'How many of your team are on at once, goalkeeper included — 7 for 7v7. It decides which shapes are offered and how the fair share is worked out. It can’t change once a lineup is set.'],
+  shape: ['Shape',
+    'The formation read from the back: 2-3-1 is two defenders, three midfielders and a striker, plus the keeper. Changing it mid-game rearranges the pitch with nobody leaving it, and position minutes split at that exact second.'],
+  keeper: ['Goalkeeper minutes',
+    'Standing in goal isn’t what players compete for. With this on, time in goal doesn’t count toward a player’s share, and whoever is in goal stops earning a share while they’re there — so a full-game keeper reads “in goal” instead of hugely over-played.'],
+  targets: ['Minutes target',
+    'Aim a player at a number of minutes for the game. Their share becomes that number and everyone else splits what’s left. Blank means an even share. A target is stretched over the time the player is actually here.'],
+  usualLineup: ['Usual lineup',
+    'The lineup you normally start. Save it from the lineup screen and every game starts pre-filled with it. It’s tied to the shape it was saved under.'],
+  format: ['Game format',
+    'How many periods and how long each runs. The clock stops itself at the end of every period and at full time. Changes apply to the next game you kick off.'],
+  clock: ['The clock',
+    'Start it at the whistle. It keeps counting with the tab closed or the phone asleep — it remembers when it started rather than counting up — and it stops itself at the end of each period.'],
+  clockFixes: ['Clock corrections',
+    'Forgot to press Start? +30s moves the whole game forward and every player’s minutes move with it. A forward nudge never runs through a whistle. +1 and +5 min add referee’s time to the period being played, and the amber chip takes back whatever hasn’t been played yet. “End half now” appears while paused mid-period.'],
+  pitch: ['Reading the pitch',
+    'Each shirt is a player in their position on your half, keeper in yellow. Under it: minutes played, the fairness bar, and how long their current shift has run. The bar’s fill is minutes played; the mark is their fair share so far. Level is fair, blue is owed, amber is over. Tap two shirts to swap positions, or a shirt then a bench player to substitute.'],
+  plannedSubs: ['Planned subs',
+    'For when you want three changes at the next whistle. Tap “Plan subs”, then a player on the pitch and the bench player coming on for them. Nobody moves yet: each pair shares an outline colour, the shirt coming off is tagged OFF and the bench shirt is tagged with the position it’s going into. Execute makes every change at once; Undo takes the whole batch back.'],
+  bench: ['Bench',
+    'Sorted with the player most owed minutes first; blue means they’re behind their fair share. Tap a bench player, then a position on the pitch, to bring them on.'],
+  lateLeaving: ['Late or leaving',
+    'Add someone who arrived after kickoff, or take out anyone who has to go. A guest who left can be added back the same way. If they’re on the field and anyone is on the bench, the most-owed substitute takes their place.'],
+  guests: ['Guest players',
+    'Borrowing a player from another team for today? Add them here. Guests are marked G, earn minutes like anyone else and appear in this game’s record — but they never join the roster.'],
+  season: ['Seasons',
+    'Every finished game is filed into the current season, and the Minutes tab totals it. Starting a new season closes this one and opens a fresh one with totals back at zero. Nothing is deleted.'],
+  minutesTable: ['Reading the table',
+    'Played is time on the field. Poss. is the fair share — what an even split among whoever was actually there would have given this player. Share is played over possible: 100% is dead even, blue under 85%, amber over 115%. Def, Mid and Fwd show played over possible for that position.'],
+  exports: ['Exports',
+    'All CSV, which Numbers, Excel and Google Sheets open directly. “This game” is one row per player. “Season” is one row per player with totals. “Every game” is one row per player per game.'],
+  backup: ['Share or back up',
+    'A team file carries the roster, shape, targets, usual lineup and every season’s minutes. Send it to yourself before a new phone, or to an assistant coach. Loading a file adds a team rather than replacing one.'],
+  roster: ['Roster',
+    'Everyone who might show up; you pick who’s actually there on game day. Jersey numbers are optional. The small box is a minutes target.']
+};
+
+function info(key) {
+  const open = helpOpen === key;
+  return `<button class="info" aria-expanded="${open}" aria-label="About ${esc(HELP[key][0])}"
+    onclick="SL.help('${key}')">i</button>`;
+}
+function helpPanel(key) {
+  if (helpOpen !== key) return '';
+  const [title, body] = HELP[key];
+  return `<div class="help"><b>${esc(title)}</b>${esc(body)}</div>`;
+}
+
+/* ---------- shirts ---------- */
+
+const SHIRT = 'M36 3 Q50 22 64 3 L97 19 L87 41 L80 36 L80 97 L20 97 L20 36 L13 41 L3 19 Z';
+
+function shirtHTML({ name = '', jersey = '', keeper = false, selected = false, guest = false,
+                     pair = null, pairText = '', empty = false, width = null } = {}) {
+  const cls = ['shirt', keeper ? 'keeper' : '', selected ? 'sel' : '', empty ? 'empty' : '']
+    .filter(Boolean).join(' ');
+  const style = [
+    width ? `width:${width}px` : '',
+    pair ? `--ring:${pair};--ringw:3px` : ''
+  ].filter(Boolean).join(';');
+  const label = empty
+    ? '<span class="emptylbl">Empty</span>'
+    : `<span class="nm">${esc(name).toUpperCase()}</span>` +
+      (jersey ? `<span class="no num">${esc(jersey)}</span>` : '');
+  return `<span class="${cls}"${style ? ` style="${style}"` : ''}>` +
+    `<svg viewBox="0 0 100 100" aria-hidden="true"><path d="${SHIRT}"/></svg>` +
+    label +
+    (guest ? '<i class="gst">G</i>' : '') +
+    (pair ? `<span class="pairchip" style="background:${pair}">${esc(pairText)}</span>` : '') +
+    '</span>';
+}
+
+/* ---------- planned substitutions ---------- */
+
+const PAIRS = ['var(--pair1)', 'var(--pair2)', 'var(--pair3)', 'var(--pair4)'];
+
+/** The plan as the pitch and bench draw it: a colour per pair and the
+    position each bench player is going into. A pair whose slot no longer
+    exists (the shape changed under it) is dropped here. */
+function plannedSubs() {
+  const g = game();
+  if (!g) return [];
+  const labels = {};
+  for (const s of E.slotsOf(g)) labels[s.id] = s.label;
+  return plan.map((p, i) => (labels[p.slot] ? {
+    slotID: p.slot, incoming: p.incoming, label: labels[p.slot], color: PAIRS[i % PAIRS.length]
+  } : null)).filter(Boolean);
+}
+
+const plannedForSlot = id => plannedSubs().find(p => p.slotID === id) || null;
+const plannedForPlayer = id => plannedSubs().find(p => p.incoming === id) || null;
+
+/* ---------- the game screen ---------- */
+
+function renderGame() {
+  const el = document.getElementById('s-game');
+  if (onboarding) { el.innerHTML = onboardingHTML(); return; }
+  const t = team(), g = t ? t.game : null;
+  if (!t) { el.innerHTML = ''; return; }
+
+  if (!g) { el.innerHTML = idleHTML(t); return; }
+  if (g.stage === 'done') {
+    el.innerHTML = `<div class="panel"><h2>Full time</h2>
+      <div class="sub">Filed to ${esc(t.seasons.at(-1).name)}. Both this game and the season totals
+      are on the Minutes tab.</div>
+      <button class="btn primary wide" onclick="SL.newGame()">Start next game</button></div>`;
+    return;
+  }
+  if (g.stage === 'attendance') { el.innerHTML = attendanceHTML(t, g); return; }
+
+  const live = g.stage === 'live';
+  const t0 = live ? E.elapsed(g) : 0;
+  let h = '';
+
+  if (live) h += clockHTML(g, t0) + fixesHTML(g, t0);
+  else h += lineupHeaderHTML(t);
+
+  h += pitchHTML(g, t0, live);
+  if (live) h += legendHTML(t);
+  h += shapeRowHTML(t, g);
+  if (live) h += planning ? planBarHTML(g) : planEntryHTML();
+  h += benchHTML(g, t0, live);
+  if (live && showRoster) h += rosterChangesHTML(t, g, t0);
+  h += controlsHTML(live);
+  el.innerHTML = h;
+}
+
+function idleHTML(t) {
+  return `<div class="panel">
+    <div class="headrow"><h2>${esc(t.name)}</h2>${info('squadSize')}</div>
+    ${helpPanel('squadSize')}
+    <div class="sub">${t.squadSize} on the field · ${t.periods}×${t.periodMinutes} min ·
+      ${t.players.length} on the roster</div>
+    ${t.players.length
+      ? (t.players.length < t.squadSize
+          ? `<div class="note" style="color:var(--amber);margin-bottom:10px">Only ${t.players.length}
+             on the roster for ${t.squadSize} a side. You can still play — positions that can’t be
+             filled stay empty.</div>` : '') +
+        '<button class="btn primary wide" onclick="SL.newGame()">Start a game</button>'
+      : '<div class="empty">Add your players on the Team tab first.</div>'}
+    </div>`;
+}
+
+function attendanceHTML(t, g) {
+  const short = g.checkedIn.length < t.squadSize;
+  let h = `<div class="panel">
+    <div class="headrow"><h2>Who’s here today?</h2>${info('guests')}</div>
+    ${helpPanel('guests')}
+    <div class="sub">Tap anyone who didn’t make it to take them out.</div><div class="attgrid">`;
+  for (const p of E.everyone(t)) {
+    const on = g.checkedIn.includes(p.id);
+    h += `<button class="att" aria-pressed="${on}" onclick="SL.togglePresent('${p.id}')">
+      <span class="tick">${on ? '✓' : ''}</span>
+      <span>${esc(p.name)}${p.isGuest ? '<i class="gst">G</i>' : ''}
+      ${p.jersey ? `<span class="num" style="color:var(--muted);font-size:12.5px">${esc(p.jersey)}</span>` : ''}
+      </span></button>`;
+  }
+  h += `</div>
+    <label class="field-lbl" for="oppo">Playing against (optional)</label>
+    <input class="inp" id="oppo" value="${esc(g.opponent)}" placeholder="e.g. Concord Green"
+      onchange="SL.setOpponent(this.value)" style="margin-bottom:11px">
+    ${guestRowHTML(false)}
+    ${short && g.checkedIn.length
+      ? `<div class="note" style="color:var(--amber);margin-bottom:11px">Only ${g.checkedIn.length}
+         of ${t.squadSize}. You can still go ahead — positions that can’t be filled stay empty.</div>` : ''}
+    <div class="row">
+      <button class="btn primary" onclick="SL.toLineup()">${g.checkedIn.length} here — set the lineup</button>
+      <button class="btn danger" onclick="SL.scrapGame()">Cancel</button>
+    </div></div>`;
+  return h;
+}
+
+function guestRowHTML(live) {
+  return `<div class="row" style="margin-bottom:8px">
+      <input class="inp num" id="guestNum" placeholder="#" style="width:64px" inputmode="numeric">
+      <input class="inp" id="guestName" placeholder="Guest player" style="flex:1;min-width:110px">
+      <button class="btn sm" onclick="SL.addGuest(${live})">Add</button>
+    </div>
+    <div class="note" style="margin-bottom:11px">Guests play today only. They never join the roster.</div>`;
+}
+
+function lineupHeaderHTML(t) {
+  const usual = t.defaultLineup && t.defaultLineup.formationKey === t.formationKey;
+  return `<div class="panel">
+    <div class="headrow"><h2>Starting lineup</h2>${info('usualLineup')}</div>
+    ${helpPanel('usualLineup')}
+    <div class="sub">${usual ? 'Filled from your usual lineup.' : 'Pre-filled in roster order.'}
+      Tap two players to swap them, or a bench player then a position.</div>
+    <div class="row">
+      ${usual ? '<button class="btn sm" onclick="SL.autoFill(true)">Use usual</button>' : ''}
+      <button class="btn sm" onclick="SL.autoFill(false)">Roster order</button>
+      <button class="btn sm" onclick="SL.saveUsual()">Save as usual</button>
+    </div></div>`;
+}
+
+function clockHTML(g, t0) {
+  const full = t0 >= E.totalDuration(g);
+  const running = E.isRunning(g);
+  const n = E.period(g, t0), p = g.periods;
+  const ordinal = ['First', 'Second', 'Third', 'Fourth'][Math.min(n, 4) - 1];
+  const label = p === 2 ? (n === 1 ? 'First half' : 'Second half')
+              : p === 3 ? `${ordinal} third`
+              : p === 4 ? `${ordinal} quarter` : `Period ${n}`;
+  return `<div class="clockbar">
+    <div class="time num">${E.clockText(t0)}</div>
+    <div class="meta"><b>${full ? 'Full time' : label}</b>
+      ${full ? '' : `${E.clockText(E.remainingInPeriod(g, t0))} left in this one`}</div>
+    <button class="clockbtn ${running ? '' : 'go'}" onclick="SL.clock()">
+      ${full ? 'End game' : running ? 'Pause' : (t0 > 0 ? 'Resume' : 'Start')}</button>
+  </div>`;
+}
+
+function fixesHTML(g, t0) {
+  const i = E.addedTimePeriod(g, t0);
+  const added = g.extraSeconds[i] || 0;
+  const noun = g.periods === 2 ? 'half' : g.periods === 3 ? 'third' : g.periods === 4 ? 'quarter' : 'period';
+  const ends = E.periodEnds(g);
+  return `<div class="fixrow">
+    ${info('clockFixes')}
+    <button class="fix" onclick="SL.nudge(-30)">−30s</button>
+    <button class="fix" onclick="SL.nudge(30)">+30s</button>
+    ${!E.isRunning(g) && t0 < E.totalDuration(g) && !E.isAtPeriodEnd(g, t0)
+      ? `<button class="fix" onclick="SL.endPeriod()">End ${noun} now</button>` : ''}
+    <span class="fixlbl">clock</span>
+    <button class="fix" onclick="SL.addTime(1)">+1 min</button>
+    <button class="fix" onclick="SL.addTime(5)">+5 min</button>
+    ${added > 0 && t0 < ends[i] - 0.5
+      ? `<button class="fix warn" onclick="SL.addTime(${-added / 60})">${E.clockText(added)} added ×</button>` : ''}
+    <span class="fixlbl">this period</span>
+  </div>${helpPanel('clockFixes')}`;
+}
+
+function pitchHTML(g, t0, live) {
+  const fair = live ? E.fairShares(g, t0, rules()) : {};
+  const rows = E.rowsOf(g);
+  const widest = Math.max(...rows.map(r => r.length));
+  const on = E.onField(g);
+  let h = '<div class="pitch"><div class="field"></div><div class="circle"></div>' +
+          '<div class="box"></div><div class="sixbox"></div><div class="goal"></div>';
+  // forwards at the top by the halfway line, keeper at the bottom
+  for (const row of [...rows].reverse()) {
+    h += `<div class="prow-slots${widest >= 5 ? ' tight' : widest === 4 ? ' four' : ''}">`;
+    for (const s of row) h += tokenHTML(s, on[s.id], g, t0, live, fair);
+    h += '</div>';
+  }
+  return h + '</div>';
+}
+
+function tokenHTML(slot, pid, g, t0, live, fair) {
+  const selected = sel && sel.kind === 'slot' && sel.id === slot.id;
+  const pair = plannedForSlot(slot.id);
+  const p = pid ? playerById(pid) : null;
+  let h = `<button class="token" onclick="SL.tap('slot','${slot.id}')"
+    aria-label="${esc(slot.label)}, ${p ? esc(p.name) : 'empty'}${pair ? ', planned to come off' : ''}">
+    <span class="pos">${esc(slot.label)}</span>`;
+  if (!p) {
+    h += shirtHTML({ empty: true, selected, pair: pair ? pair.color : null, pairText: 'IN' });
+    return h + '</button>';
+  }
+  h += shirtHTML({
+    name: p.name, jersey: p.jersey, keeper: slot.group === 'GK', selected,
+    guest: !!p.isGuest, pair: pair ? pair.color : null, pairText: 'OFF'
+  });
+  if (live) {
+    const played = E.played(pid, g, t0);
+    const counted = E.countedPlayed(pid, g, t0, rules());
+    const owed = fair[pid] || 0;
+    const inGoal = rules().excludeGK && slot.group === 'GK';
+    const shift = E.currentShift(pid, g, t0);
+    const long = team().longShiftMinutes > 0 && shift >= team().longShiftMinutes * 60;
+    h += `<span class="tag">
+      <span class="mins num ${inGoal ? '' : tone(counted, owed)}">${E.clockText(played)}
+        ${p.target > 0 ? `<small>/${p.target}m</small>` : ''}</span>
+      ${inGoal ? '<span class="ingoal">in goal</span>' : barHTML(counted, owed)}
+      <span class="shift num ${long ? 'long' : ''}">shift ${E.clockText(shift)}</span>
+    </span>`;
+  }
+  return h + '</button>';
+}
+
+const tone = (played, fair) => played > fair + 60 ? 'over' : played < fair - 60 ? 'under' : '';
+
+function barHTML(played, fair) {
+  const anchor = 62;                                  // where the mark sits, in %
+  const ratio = fair > 1 ? played / fair : 0;
+  const fill = Math.min(100, anchor * ratio);
+  return `<span class="bar ${tone(played, fair)}"><i style="width:${fill.toFixed(1)}%"></i>` +
+         `<u style="left:${anchor}%"></u></span>`;
+}
+
+function legendHTML(t) {
+  const open = store.get('sideline.legend') !== 'shut';
+  const sample = (label, played, note) => `<div class="sample">${barHTML(played, 600)}
+    <b class="${tone(played, 600)}">${label}</b><span>${note}</span></div>`;
+  return `<details class="panel legend"${open ? ' open' : ''} ontoggle="SL.legend(this.open)">
+    <summary>What the bars mean ${info('pitch')}</summary>
+    <div class="note" style="margin-top:8px">The fill is the minutes a player has played. The black
+      mark is their fair share of the game so far: the minutes played so far, split evenly among
+      everyone who has been here, for the time they were here.${t.excludeGK
+        ? ' Time in goal counts for neither, so the keeper shows “in goal” instead of a bar.' : ''}
+      A minutes target on the Team tab moves that player’s mark.</div>
+    <div class="samples">
+      ${sample('Owed', 300, 'More than a minute short of the mark. Bring them on first.')}
+      ${sample('Even', 600, 'Within a minute of the mark.')}
+      ${sample('Over', 900, 'More than a minute past the mark.')}
+    </div>
+    ${helpPanel('pitch')}
+  </details>`;
+}
+
+function shapeRowHTML(t, g) {
+  let h = `<div class="shaperow"><span class="shapelbl">Shape</span>${info('shape')}`;
+  for (const k of E.formationKeys(t.squadSize)) {
+    h += `<button class="shapebtn ${k === g.formationKey ? 'on' : ''}"
+      onclick="SL.setFormation('${k}')">${k}</button>`;
+  }
+  return h + '</div>' + helpPanel('shape');
+}
+
+function planEntryHTML() {
+  return `<div class="planentry">
+    <button class="btn sm" onclick="SL.planning(true)">Plan subs</button>
+    <span class="note">Line several up, then make them together.</span>
+    ${info('plannedSubs')}
+  </div>${helpPanel('plannedSubs')}`;
+}
+
+function planBarHTML(g) {
+  const planned = plannedSubs();
+  const on = E.onField(g);
+  let h = `<div class="panel">
+    <div class="headrow"><h2>Planned subs</h2>${info('plannedSubs')}
+      <button class="btn sm" onclick="SL.planning(false)">Stop</button></div>
+    ${helpPanel('plannedSubs')}`;
+  if (!planned.length) {
+    h += `<div class="note">Tap a player on the pitch, then who comes on for them. Each pair gets its
+      own outline colour. Nothing changes until you tap Execute.</div>`;
+  } else {
+    for (const p of planned) {
+      h += `<div class="planrow"><span class="pairdot" style="background:${p.color}"></span>
+        <span>${esc(on[p.slotID] ? nameOf(on[p.slotID]) : 'Empty')}</span>
+        <span class="arrow">→</span><span>${esc(nameOf(p.incoming))}</span>
+        <span class="where">${esc(p.label)}</span></div>`;
+    }
+  }
+  h += `<div class="row" style="margin-top:10px">
+      <button class="btn primary" onclick="SL.executePlan()" ${planned.length ? '' : 'disabled'}>
+        Execute ${planned.length === 1 ? '1 sub' : `${planned.length} subs`}</button>
+      <button class="btn" onclick="SL.clearPlan()" ${planned.length ? '' : 'disabled'}>Clear</button>
+    </div></div>`;
+  return h;
+}
+
+function benchHTML(g, t0, live) {
+  const r = rules();
+  const fair = live ? E.fairShares(g, t0, r) : {};
+  const counted = id => live ? E.countedPlayed(id, g, t0, r) : 0;
+  const bench = E.bench(g, t0).slice()
+    .sort((a, b) => ((fair[b] || 0) - counted(b)) - ((fair[a] || 0) - counted(a)));
+  const hint = planning
+    ? (sel ? (sel.kind === 'bench' ? 'Now tap who they replace' : 'Now tap who comes on')
+           : 'Pair a player on the pitch with their sub')
+    : (sel ? (sel.kind === 'bench' ? 'Now tap a position' : 'Now tap who comes on')
+           : 'Tap a player on, then a player off');
+
+  let h = `<div class="benchhead"><h2>Bench</h2>${info('bench')}
+    <span class="hint">${hint}</span></div>${helpPanel('bench')}`;
+  if (!bench.length) return h + '<div class="empty">Everyone available is on the field.</div>';
+
+  h += '<div class="bench">';
+  for (const id of bench) {
+    const p = playerById(id);
+    const owed = fair[id] || 0, cnt = counted(id);
+    const due = live && cnt < owed - 60;
+    const selected = sel && sel.kind === 'bench' && sel.id === id;
+    const pair = plannedForPlayer(id);
+    h += `<button class="benchcard ${due ? 'due' : ''} ${selected ? 'sel' : ''}"
+      onclick="SL.tap('bench','${id}')"
+      aria-label="${esc(p ? p.name : 'Player')}, on the bench${pair ? `, planned to come on at ${esc(pair.label)}` : ''}">
+      ${shirtHTML({ name: p ? p.name : '—', jersey: p ? p.jersey : '', selected,
+                    guest: !!(p && p.isGuest), pair: pair ? pair.color : null,
+                    pairText: pair ? pair.label : '', width: 54 })}
+      ${live ? `<span class="mins num ${tone(cnt, owed)}">${E.clockText(E.played(id, g, t0))}
+          ${p && p.target > 0 ? `<small>/${p.target}m</small>` : ''}</span>
+        ${barHTML(cnt, owed)}
+        <span class="wait num ${due ? 'due' : ''}">${due
+          ? `${E.clockText(owed - cnt)} owed` : `fair ${E.clockText(owed)}`}</span>` : ''}
+    </button>`;
+  }
+  return h + '</div>';
+}
+
+function rosterChangesHTML(t, g, t0) {
+  const here = E.available(g, t0);
+  // Guests included, so one who left early can be brought back.
+  const away = E.everyone(t).filter(p => !here.includes(p.id));
+  let h = `<div class="panel" style="margin-top:14px">
+    <div class="headrow"><h2>Who’s available</h2>${info('lateLeaving')}</div>
+    ${helpPanel('lateLeaving')}
+    <div class="sub">Add someone who turned up late, or take out anyone who has to go.</div>`;
+  if (away.length) {
+    h += '<div class="field-lbl">Not playing — tap to add</div><div class="attgrid">';
+    for (const p of away) {
+      h += `<button class="att" onclick="SL.arriveLate('${p.id}')">
+        <span class="tick">+</span><span>${esc(p.name)}${p.isGuest ? '<i class="gst">G</i>' : ''}</span></button>`;
+    }
+    h += '</div>';
+  }
+  h += guestRowHTML(true);
+  h += '<div class="field-lbl">Playing — tap to take out</div><div class="attgrid">';
+  for (const id of here) {
+    const p = playerById(id);
+    h += `<button class="att" aria-pressed="true" onclick="SL.leaveEarly('${id}')">
+      <span class="tick">✓</span><span>${esc(p ? p.name : '—')}${p && p.isGuest ? '<i class="gst">G</i>' : ''}</span></button>`;
+  }
+  return h + '</div></div>';
+}
+
+function controlsHTML(live) {
+  if (!live) {
+    return `<div class="row" style="margin-top:14px">
+      <button class="btn primary" onclick="SL.kickoff()">Ready — go to the clock</button>
+      <button class="btn" onclick="SL.backToAttendance()">Back</button></div>`;
+  }
+  return `<div class="row" style="margin-top:14px">
+    <button class="btn ${showRoster ? 'primary' : ''}" onclick="SL.toggleRoster()">
+      ${showRoster ? 'Done with roster' : 'Late or leaving'}</button>
+    <button class="btn" onclick="SL.undo()" ${undoStack.length ? '' : 'disabled'}>Undo</button>
+    <button class="btn danger" onclick="SL.endGame()">End game</button></div>`;
+}
+
+/* ---------- onboarding ---------- */
+
+const SAMPLE = `4 Arjun
+7 Theo
+9 Marcus
+11 Elias
+14 Nico
+16 Owen
+21 Rafael
+23 Dmitri
+27 Kofi
+30 Sebastian
+33 Tomas
+44 Caleb
+52 Isaac`;
+
+function onboardingHTML() {
+  const o = onboarding;
+  const steps = `<div class="steps">${[0, 1, 2, 3]
+    .map(i => `<i class="${i <= o.step ? 'on' : ''}"></i>`).join('')}</div>`;
+  let body = '';
+  if (o.step === 0) {
+    body = `<h2 style="font-size:22px">How many play at once?</h2>
+      <div class="note" style="margin:6px 0 12px">Counting the goalkeeper. Each team you add keeps its own.</div>
+      <div class="row">${E.SIZES.map(n => `<button class="btn ${o.size === n ? 'primary' : ''}"
+        onclick="SL.ob('size',${n})">${n} v ${n}</button>`).join('')}</div>`;
+  } else if (o.step === 1) {
+    body = `<h2 style="font-size:22px">Starting shape</h2>
+      <div class="note" style="margin:6px 0 12px">Switchable mid-game without anyone leaving the field.</div>
+      ${E.formationKeys(o.size).map(k => `<button class="btn wide ${o.formation === k ? 'primary' : ''}"
+        style="margin-bottom:7px;justify-content:flex-start"
+        onclick="SL.ob('formation','${k}')">${k}
+        <span style="opacity:.7;font-size:12px">${E.slots(o.size, k).map(s => s.label).join(' · ')}</span>
+      </button>`).join('')}`;
+  } else if (o.step === 2) {
+    body = `<h2 style="font-size:22px">What’s the team called?</h2>
+      <input class="inp" id="obName" value="${esc(o.name)}" placeholder="e.g. Riverside Rovers"
+        style="margin:10px 0 14px" oninput="SL.ob('name',this.value)">
+      <div class="field-lbl">Game format</div>
+      <div class="row">${[2, 3, 4].map(n => `<button class="btn sm ${o.periods === n ? 'primary' : ''}"
+        onclick="SL.ob('periods',${n})">${n === 2 ? '2 halves' : n === 3 ? '3 thirds' : '4 quarters'}</button>`).join('')}</div>
+      <div class="row" style="margin-top:10px"><span class="note">Minutes each</span>
+        <input class="inp num" type="number" min="5" max="45" value="${o.periodMinutes}"
+          style="width:80px" oninput="SL.ob('periodMinutes',this.value)"></div>`;
+  } else {
+    const n = E.parseRoster(o.rosterText).length;
+    body = `<h2 style="font-size:22px">Add your players</h2>
+      <div class="note" style="margin:6px 0 10px">One per line, jersey number first if you have it —
+        “10 William” or just “William”. Paste a list if you have one.</div>
+      <textarea class="inp" id="obRoster" oninput="SL.ob('rosterText',this.value)">${esc(o.rosterText)}</textarea>
+      <div class="row" style="margin-top:8px">
+        <button class="btn sm" onclick="SL.obSample()">Fill in a sample team instead</button></div>
+      <div class="note" style="margin-top:8px">${n === 0 ? 'You can add players later too.'
+        : `${n} player${n === 1 ? '' : 's'}${n < o.size ? ` — you’ll need at least ${o.size} to start a game.` : ''}`}</div>`;
+  }
+  return `<div class="panel">${steps}${body}
+    <div class="row" style="margin-top:16px;justify-content:space-between">
+      ${o.step > 0 ? '<button class="btn" onclick="SL.obStep(-1)">Back</button>' : '<span></span>'}
+      <button class="btn primary" onclick="SL.obStep(1)"
+        ${o.step === 2 && !o.name.trim() ? 'disabled' : ''}>
+        ${o.step === 3 ? 'Start coaching' : 'Next'}</button>
+    </div></div>`;
+}
+
+/* ---------- team screen ---------- */
+
+function renderTeam() {
+  const el = document.getElementById('s-team');
+  const t = team();
+  if (!t) { el.innerHTML = ''; return; }
+  const g = t.game;
+  const locked = !!g && (g.stage === 'lineup' || g.stage === 'live');
+  const season = t.seasons.at(-1);
+
+  let h = `<div class="panel"><div class="headrow"><h2>Team</h2>${info('squadSize')}</div>
+    ${helpPanel('squadSize')}
+    <div class="sub">Saved in this browser. Nothing leaves your device.</div>
+    <label class="field-lbl" for="tname">Name</label>
+    <input class="inp" id="tname" value="${esc(t.name)}" oninput="SL.setName(this.value)">
+    <label class="field-lbl" style="margin-top:11px">Players on the field</label>
+    <div class="row">${E.SIZES.map(n => `<button class="btn sm ${t.squadSize === n ? 'primary' : ''}"
+      onclick="SL.setSize(${n})" ${locked ? 'disabled' : ''}>${n}v${n}</button>`).join('')}</div>
+    ${locked ? '<div class="note" style="margin-top:8px">End the game to change squad size.</div>' : ''}
+    </div>`;
+
+  h += `<div class="panel"><div class="headrow"><h2>Formation</h2>${info('shape')}</div>
+    ${helpPanel('shape')}
+    <div class="row">${E.formationKeys(t.squadSize).map(k => `<button class="btn sm ${t.formationKey === k ? 'primary' : ''}"
+      onclick="SL.setTeamFormation('${k}')" ${locked ? 'disabled' : ''}>${k}</button>`).join('')}</div>
+    <div class="note" style="margin-top:9px">${E.slots(t.squadSize, t.formationKey).map(s => s.label).join(' · ')}</div>
+    ${locked ? '<div class="note" style="margin-top:8px">Change the shape from the Game tab while a game is on.</div>' : ''}
+    </div>`;
+
+  h += `<div class="panel"><div class="headrow"><h2>Fairness</h2>${info('keeper')}</div>
+    ${helpPanel('keeper')}
+    <label class="chk"><input type="checkbox" ${t.excludeGK ? 'checked' : ''}
+      onchange="SL.setExcludeGK(this.checked)"> Keep goalkeeper minutes out of the split</label>
+    <div class="row" style="margin-top:11px">${info('usualLineup')}
+      <span class="note" style="flex:1">${t.defaultLineup
+        ? `Usual lineup saved for ${esc(t.defaultLineup.formationKey)}.`
+        : 'No usual lineup saved. Set one on the lineup screen with “Save as usual”.'}</span>
+      ${t.defaultLineup ? '<button class="btn sm" onclick="SL.clearUsual()">Clear</button>' : ''}</div>
+    ${helpPanel('usualLineup')}</div>`;
+
+  h += `<div class="panel"><div class="headrow"><h2>Game format</h2>${info('format')}</div>
+    ${helpPanel('format')}
+    <div class="grid2">
+      <div><label class="field-lbl">Periods</label>
+        <select class="inp" onchange="SL.setNum('periods',this.value)">
+          ${[2, 3, 4].map(n => `<option value="${n}" ${t.periods === n ? 'selected' : ''}>
+            ${n === 2 ? '2 halves' : n === 3 ? '3 thirds' : '4 quarters'}</option>`).join('')}</select></div>
+      <div><label class="field-lbl">Minutes each</label>
+        <input class="inp num" type="number" min="5" max="45" value="${t.periodMinutes}"
+          onchange="SL.setNum('periodMinutes',this.value)"></div>
+      <div><label class="field-lbl">Flag a shift over</label>
+        <select class="inp" onchange="SL.setNum('longShiftMinutes',this.value)">
+          ${[0, 6, 8, 10, 12].map(n => `<option value="${n}" ${t.longShiftMinutes === n ? 'selected' : ''}>
+            ${n ? n + ' min' : 'Never'}</option>`).join('')}</select></div>
+      <div><label class="field-lbl">Buzz me every</label>
+        <select class="inp" onchange="SL.setNum('nudgeMinutes',this.value)">
+          ${[0, 3, 4, 5, 6, 8].map(n => `<option value="${n}" ${t.nudgeMinutes === n ? 'selected' : ''}>
+            ${n ? n + ' min' : 'Never'}</option>`).join('')}</select></div>
+    </div></div>`;
+
+  h += `<div class="panel"><div class="headrow"><h2>Roster (${t.players.length})</h2>${info('roster')}</div>
+    ${helpPanel('roster')}
+    <div class="note" style="margin-bottom:10px">The minutes box is a target for that player —
+      leave it blank for an even share. ${info('targets')}</div>
+    ${helpPanel('targets')}
+    <div class="plist">`;
+  if (!t.players.length) h += '<div class="empty">Nobody yet. Add your first player below.</div>';
+  for (const p of t.players) {
+    h += `<div class="prow"><span class="numbadge ${p.jersey ? '' : 'blank'}">${esc(p.jersey || '–')}</span>
+      <span class="nm">${esc(p.name)}</span>
+      <input class="tgt num" inputmode="numeric" placeholder="—" title="Target minutes"
+        value="${p.target > 0 ? p.target : ''}" onchange="SL.setTarget('${p.id}',this.value)">
+      <span class="note">min</span>
+      <button class="x" aria-label="Remove ${esc(p.name)}" onclick="SL.removePlayer('${p.id}')"
+        ${locked ? 'disabled' : ''}>×</button></div>`;
+  }
+  h += `</div><div class="row">
+      <input class="inp num" id="newNum" placeholder="#" style="width:64px" inputmode="numeric">
+      <input class="inp" id="newName" placeholder="Player name" style="flex:1;min-width:120px">
+      <button class="btn" onclick="SL.addPlayer()">Add</button></div>
+    <div class="row" style="margin-top:8px">
+      <button class="btn sm" onclick="SL.pasteRoster()">Paste a list</button></div></div>`;
+
+  h += `<div class="panel"><div class="headrow"><h2>Season</h2>${info('season')}</div>
+    ${helpPanel('season')}
+    <label class="field-lbl">Season name</label>
+    <input class="inp" value="${esc(season.name)}" onchange="SL.renameSeason(this.value)">
+    <div class="note" style="margin:9px 0">${season.games.length} game${season.games.length === 1 ? '' : 's'} finished.
+      ${t.seasons.length > 1 ? `${t.seasons.length - 1} earlier season${t.seasons.length === 2 ? '' : 's'} kept — pick them on the Minutes tab.` : ''}</div>
+    <button class="btn" onclick="SL.newSeason()">Start a new season</button></div>`;
+
+  h += `<div class="panel"><div class="headrow"><h2>Share or back up</h2>${info('backup')}</div>
+    ${helpPanel('backup')}
+    <div class="row">
+      <button class="btn" onclick="SL.exportTeam()">Save this team</button>
+      <button class="btn" onclick="SL.loadTeam()">Load a team file</button>
+      <input type="file" id="teamFile" accept=".json,application/json" hidden onchange="SL.importTeam(event)">
+    </div>
+    <div class="row" style="margin-top:8px">
+      <button class="btn" onclick="SL.shareApp()">Send this to another coach</button>
+      <button class="btn danger" onclick="SL.deleteTeam()">Delete this team</button></div>
+    <div class="note" style="margin-top:10px">${storageOK
+      ? 'Your teams save automatically in this browser.'
+      : 'This browser is blocking saved data, so nothing will persist. Put the page on a web address, or keep a backup file.'}</div>
+    </div>`;
+
+  el.innerHTML = h;
+}
+
+/* ---------- minutes screen ---------- */
+
+function renderStats() {
+  const el = document.getElementById('s-stats');
+  const t = team();
+  if (!t) { el.innerHTML = ''; return; }
+  let h = `<div class="row" style="margin-bottom:12px">
+    <button class="btn sm ${scope === 0 ? 'primary' : ''}" onclick="SL.scope(0)">This game</button>
+    <button class="btn sm ${scope === 1 ? 'primary' : ''}" onclick="SL.scope(1)">Season</button>
+    ${info('minutesTable')}</div>${helpPanel('minutesTable')}`;
+  h += scope === 0 ? thisGameHTML(t) : seasonHTML(t);
+  el.innerHTML = h;
+}
+
+function thisGameHTML(t) {
+  const g = t.game;
+  if (!g || (g.stage !== 'live' && g.stage !== 'done')) {
+    return `<div class="panel"><h2>This game</h2>
+      <div class="empty">Numbers appear once the game is under way.</div></div>`;
+  }
+  const t0 = E.elapsed(g), r = rules();
+  const possible = E.possibleByGroup(g, t0, r);
+  const ids = E.participants(g, t0)
+    .sort((a, b) => E.played(b, g, t0) - E.played(a, g, t0));
+  const rowsOut = ids.map(id => ({
+    name: nameOf(id), guest: !!playerById(id)?.isGuest,
+    played: E.playedByGroup(id, g, t0),
+    possible: possible[id] || E.newGroupMinutes()
+  }));
+  return `<div class="panel">
+    <div class="headrow"><h2>${g.stage === 'done' ? 'Final minutes' : 'This game'}</h2>${info('exports')}</div>
+    ${helpPanel('exports')}
+    <div class="sub">${t.excludeGK
+      ? 'Played against possible. Keeper minutes sit outside the split, so a goalkeeper reads as not counted rather than over-played.'
+      : 'Played against possible — what an even split among whoever was there would have given them.'}</div>
+    ${tableHTML(rowsOut, t)}
+    <div class="row" style="margin-top:12px">
+      <button class="btn" onclick="SL.exportGame()">Export this game</button></div></div>`;
+}
+
+function seasonHTML(t) {
+  const i = seasonIndex ?? (t.seasons.length - 1);
+  const s = t.seasons[i] || t.seasons.at(-1);
+  let h = '';
+  if (t.seasons.length > 1) {
+    h += `<div class="row" style="margin-bottom:10px"><select class="inp" onchange="SL.pickSeason(this.value)">
+      ${t.seasons.map((x, j) => `<option value="${j}" ${j === i ? 'selected' : ''}>
+        ${esc(x.name)}${E.isCurrentSeason(x) ? ' (current)' : ''}</option>`).join('')}</select></div>`;
+  }
+  if (!s.games.length) {
+    return h + `<div class="panel"><h2>${esc(s.name)}</h2>
+      <div class="empty">No games finished yet. Totals appear here once you end a game.</div></div>`;
+  }
+  const lines = E.seasonTotals(s);
+  return h + `<div class="panel">
+    <div class="headrow"><h2>${esc(s.name)}</h2>${info('exports')}</div>${helpPanel('exports')}
+    <div class="sub">${s.games.length} game${s.games.length === 1 ? '' : 's'}. Possible minutes count
+      only the games a player turned up to.</div>
+    ${tableHTML(lines.map(l => ({
+      name: l.name, games: l.games, played: l.played, possible: l.possible, share: l.shareOfPossible
+    })), t)}
+    <div class="row" style="margin-top:12px">
+      <button class="btn" onclick="SL.exportSeason(${i})">Export season</button>
+      <button class="btn" onclick="SL.exportEveryGame(${i})">Export every game</button></div></div>`;
+}
+
+function tableHTML(rows, t) {
+  const gp = rows.length && rows[0].games !== undefined;
+  let h = `<div class="tablewrap"><table><thead><tr><th>Player</th>${gp ? '<th>GP</th>' : ''}
+    <th>Played</th><th>Poss.</th><th>Share</th><th>GK</th><th>Def</th><th>Mid</th><th>Fwd</th>
+    </tr></thead><tbody>`;
+  for (const r of rows) {
+    const played = E.groupTotal(r.played), poss = E.groupTotal(r.possible);
+    const share = r.share ?? (poss > 0 ? played / poss : 0);
+    const tn = poss > 0 ? (share > 1.15 ? 'over' : share < 0.85 ? 'under' : '') : '';
+    h += `<tr><td>${esc(r.name)}${r.guest ? '<i class="gst">G</i>' : ''}</td>
+      ${gp ? `<td class="num">${r.games}</td>` : ''}
+      <td class="num">${played < 1 ? '–' : E.minutesText(played)}</td>
+      <td class="num soft">${poss < 1 ? '–' : E.minutesText(poss)}</td>
+      <td class="num ${poss > 0 ? tn : ''}">${poss > 0 ? Math.round(share * 100) + '%' : '–'}</td>
+      ${ratioCell(r.played.GK, r.possible.GK, t.excludeGK)}
+      ${ratioCell(r.played.DEF, r.possible.DEF, false)}
+      ${ratioCell(r.played.MID, r.possible.MID, false)}
+      ${ratioCell(r.played.FWD, r.possible.FWD, false)}</tr>`;
+  }
+  return h + '</tbody></table></div>';
+}
+
+/** played over possible, so an unused position shows as 0.0/6.7. With keeper
+    time kept out of the split there is no possible in goal, so that column is
+    just time in goal. */
+function ratioCell(played, possible, goalExcluded) {
+  if (goalExcluded) {
+    return `<td class="num ${played < 1 ? 'zero' : ''}">${played < 1 ? '–' : E.minutesText(played)}</td>`;
+  }
+  if (possible < 1 && played < 1) return '<td class="num zero">–</td>';
+  return `<td class="num ${played < 1 ? 'over' : ''}">${E.minutesText(played)}/${E.minutesText(possible)}</td>`;
+}
+
+/* ---------- files ---------- */
+
+function download(name, text, type = 'text/plain') {
+  const b = new Blob([text], { type });
+  const u = URL.createObjectURL(b);
+  const a = document.createElement('a');
+  a.href = u; a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(u), 2000);
+}
+
+const CSV_HEAD = 'Player,Jersey,Games,Minutes played,Possible minutes,Share,' +
+  'GK played,GK possible,Def played,Def possible,Mid played,Mid possible,Fwd played,Fwd possible\n';
+const q = s => '"' + String(s ?? '').replace(/"/g, '""') + '"';
+
+function csvRow(name, jersey, games, played, possible) {
+  const p = E.groupTotal(played), ps = E.groupTotal(possible);
+  return `${q(name)},${q(jersey)},${games},${E.minutesText(p)},${E.minutesText(ps)},` +
+    `${ps > 0 ? (p / ps).toFixed(3) : ''},` +
+    `${E.minutesText(played.GK)},${E.minutesText(possible.GK)},` +
+    `${E.minutesText(played.DEF)},${E.minutesText(possible.DEF)},` +
+    `${E.minutesText(played.MID)},${E.minutesText(possible.MID)},` +
+    `${E.minutesText(played.FWD)},${E.minutesText(possible.FWD)}\n`;
+}
+
+/* ---------- the once-a-second housekeeping ---------- */
+
+function startTimer() { if (!timer) timer = setInterval(tick, 1000); }
+
+/** Deliberately separate from the clock itself: it may miss ticks without
+    costing a single minute. It stops any clock that has run past the end of
+    its period — every team, not just the one on screen — and buzzes for
+    shifts running long. */
+function tick() {
+  let whistle = false;
+  for (const t of S.teams) {
+    if (t.game && E.isRunning(t.game) && E.settleBoundaries(t.game)) whistle = true;
+  }
+  if (whistle) { save(); beep(); }
+
+  const t = team(), g = game();
+  if (g && g.stage === 'live' && E.isRunning(g)) {
+    const t0 = E.elapsed(g);
+    if (t.longShiftMinutes > 0) {
+      const limit = t.longShiftMinutes * 60;
+      let fresh = false;
+      for (const pid of Object.values(E.onField(g))) {
+        const run = E.firstStintOfShift(pid, g);
+        if (run && t0 - run.start >= limit && !buzzed.has(run.id)) { buzzed.add(run.id); fresh = true; }
+      }
+      if (fresh) beep();
+    }
+    if (t.nudgeMinutes > 0) {
+      const every = t.nudgeMinutes * 60;
+      if (t0 - lastNudge >= every) {
+        lastNudge = Math.floor(t0 / every) * every;
+        beep();
+        toast('Time to look at subs');
+      }
+    }
+  }
+  // Only redraw when something can have changed: a running clock, or a
+  // whistle just blown. A paused screen holds still, which keeps the page
+  // cheap and stops it fighting with whatever you are typing.
+  if (whistle || (g && g.stage === 'live' && E.isRunning(g))) {
+    renderGame();
+    if (scope === 0) renderStats();
+  }
+}
+
+async function requestWake() {
+  try { if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); }
+  catch { /* not supported, or the tab isn't visible */ }
+}
+function releaseWake() { try { wakeLock?.release(); } catch { } wakeLock = null; }
+
+/* ---------- render ---------- */
+
+function render() {
+  document.getElementById('chrome').hidden = !!onboarding || !S.teams.length;
+  renderTeamBar();
+  // Redrawing wholesale loses focus, so put it back where it was.
+  const active = document.activeElement;
+  const id = active && active.id ? active.id : null;
+  const caret = id && active.selectionStart != null ? active.selectionStart : null;
+  renderGame(); renderTeam(); renderStats();
+  if (id) {
+    const back = document.getElementById(id);
+    if (back) {
+      back.focus();
+      if (caret != null && back.setSelectionRange) {
+        try { back.setSelectionRange(caret, caret); } catch { }
+      }
+    }
+  }
+}
+
+function renderTeamBar() {
+  let h = '';
+  S.teams.forEach((t, i) => {
+    const live = t.game && t.game.stage === 'live';
+    h += `<button class="teampill ${i === S.active ? 'on' : ''}" onclick="SL.pickTeam(${i})"
+      aria-label="${esc(t.name)}, ${t.squadSize} a side${live ? ', game in progress' : ''}">
+      ${live ? '<span class="dot"></span>' : ''}<span>${esc(t.name)}</span>
+      <span class="sz">${t.squadSize}v${t.squadSize}</span></button>`;
+  });
+  h += '<button class="addteam" onclick="SL.addTeam()">+ Team</button>';
+  document.getElementById('teamBar').innerHTML = h;
+}
+
+function show(which) {
+  tab = which;
+  for (const k of ['game', 'team', 'stats']) {
+    document.getElementById('s-' + k).classList.toggle('on', k === which);
+    document.getElementById('tab-' + k).setAttribute('aria-selected', String(k === which));
+  }
+  window.scrollTo(0, 0);
+}
+
+/* ---------- handlers, reached from the markup ---------- */
+
+const SL = {
+  show,
+  help(key) { helpOpen = helpOpen === key ? null : key; render(); },
+  legend(open) { store.set('sideline.legend', open ? 'open' : 'shut'); },
+  scope(n) { scope = n; renderStats(); },
+  pickSeason(i) { seasonIndex = Number(i); renderStats(); },
+
+  /* teams */
+  pickTeam(i) {
+    if (i === S.active) return;
+    S.active = i; sel = null; undoStack = []; plan = []; planning = false;
+    save(); render(); show('game');
+  },
+  addTeam() {
+    S.teams.push(newTeam());
+    S.active = S.teams.length - 1;
+    sel = null; undoStack = [];
+    save(); render(); show('team');
+  },
+  deleteTeam() {
+    const t = team();
+    if (!confirm(`Delete ${t.name}? The roster, seasons and any game in progress go with it.`)) return;
+    S.teams.splice(S.active, 1);
+    S.active = 0; sel = null; undoStack = [];
+    if (!S.teams.length) onboarding = { step: 0, size: 7, formation: E.defaultKey(7), name: '', periods: 2, periodMinutes: 30, rosterText: '' };
+    save(); render(); show('game');
+  },
+  setName(v) { team().name = v; save(); renderTeamBar(); },
+  setSize(n) {
+    const t = team();
+    if (n === t.squadSize) return;
+    t.squadSize = n; t.formationKey = E.defaultKey(n);
+    if (t.game && t.game.stage === 'attendance') {
+      t.game.squadSize = n; t.game.formationKey = t.formationKey;
+    }
+    save(); render();
+  },
+  setTeamFormation(k) {
+    const t = team();
+    t.formationKey = k;
+    if (t.game && t.game.stage === 'attendance') t.game.formationKey = k;
+    save(); render();
+  },
+  setExcludeGK(on) { team().excludeGK = on; save(); render(); },
+  setNum(key, v) {
+    const n = parseInt(v, 10);
+    if (Number.isNaN(n)) return;
+    team()[key] = key === 'periodMinutes' ? Math.min(45, Math.max(5, n)) : n;
+    save(); render();
+  },
+  clearUsual() { team().defaultLineup = null; save(); render(); },
+
+  /* roster */
+  addPlayer() {
+    const name = document.getElementById('newName').value.trim();
+    const jersey = document.getElementById('newNum').value.trim();
+    if (!name) { toast('Give the player a name.'); return; }
+    team().players.push({ id: E.uid(), name, jersey, target: null });
+    save(); render();
+    document.getElementById('newNum')?.focus();
+  },
+  setTarget(id, v) {
+    const p = team().players.find(p => p.id === id);
+    if (!p) return;
+    const n = parseInt(v, 10);
+    p.target = Number.isNaN(n) || n <= 0 ? null : Math.min(200, n);
+    save(); render();
+  },
+  removePlayer(id) {
+    const t = team();
+    const p = t.players.find(p => p.id === id);
+    if (!p || !confirm(`Remove ${p.name} from the roster?`)) return;
+    t.players = t.players.filter(x => x.id !== id);
+    if (t.game && t.game.stage === 'attendance') {
+      t.game.checkedIn = t.game.checkedIn.filter(x => x !== id);
+    }
+    save(); render();
+  },
+  pasteRoster() {
+    const text = prompt('One player per line, jersey number first if you have it.');
+    if (!text) return;
+    const added = E.parseRoster(text);
+    if (!added.length) { toast('Nothing recognised in that list.'); return; }
+    team().players.push(...added);
+    save(); render();
+    toast(`${added.length} player${added.length === 1 ? '' : 's'} added`);
+  },
+
+  /* seasons */
+  renameSeason(v) { team().seasons.at(-1).name = v; save(); },
+  newSeason() {
+    if (!confirm('Start a new season? Minutes start again from zero. The current season is kept.')) return;
+    const t = team();
+    const last = t.seasons.at(-1);
+    if (E.isCurrentSeason(last)) last.endedAt = new Date().toISOString();
+    t.seasons.push(E.makeSeason(E.suggestedSeasonName()));
+    seasonIndex = null;
+    save(); render();
+    toast('New season started');
+  },
+
+  /* game flow */
+  newGame() {
+    const t = team();
+    t.game = E.beginGame(t);
+    sel = null; undoStack = []; plan = []; planning = false; showRoster = false;
+    buzzed.clear(); lastNudge = 0;
+    save(); render(); show('game');
+  },
+  scrapGame() {
+    if (!confirm('Discard this game? No minutes are recorded.')) return;
+    team().game = null; sel = null; undoStack = [];
+    save(); render();
+  },
+  setOpponent(v) { mutate(g => { g.opponent = v; }); },
+  togglePresent(id) {
+    mutate(g => {
+      const i = g.checkedIn.indexOf(id);
+      if (i >= 0) g.checkedIn.splice(i, 1); else g.checkedIn.push(id);
+    });
+  },
+  toLineup() {
+    const g = game();
+    if (!g.checkedIn.length) { toast('Tick at least one player.'); return; }
+    mutate(gg => { E.autoFill(gg, E.everyone(team()), team().defaultLineup); gg.stage = 'lineup'; });
+  },
+  autoFill(useUsual) {
+    mutate(g => E.autoFill(g, E.everyone(team()), useUsual ? team().defaultLineup : null));
+  },
+  saveUsual() {
+    team().defaultLineup = E.captureLineup(game());
+    save(); render();
+    toast('Saved as this team’s usual lineup');
+  },
+  kickoff() {
+    const t = team();
+    mutate(g => {
+      // The clock hasn't run yet, so pick up any format change made since.
+      g.periods = t.periods; g.periodMinutes = t.periodMinutes;
+      E.kickoff(g);
+    });
+    startTimer();
+  },
+  backToAttendance() { mutate(g => { g.stage = 'attendance'; }); },
+  clock() {
+    const g = game();
+    if (E.isFullTime(g)) { SL.endGame(); return; }
+    if (E.isRunning(g)) { E.pause(g); releaseWake(); }
+    else { E.start(g); startTimer(); requestWake(); }
+    save(); render();
+  },
+  nudge(secs) { mutate(g => E.nudge(g, secs)); },
+  addTime(mins) { mutate(g => E.addTime(g, mins)); },
+  endPeriod() { mutate(g => E.endPeriodNow(g)); },
+  endGame() {
+    if (!confirm('End the game? The minutes stay on screen until you start the next one.')) return;
+    const t = team();
+    mutate(g => E.endGame(g));
+    const g = game();
+    const summary = E.summarize(g, E.everyone(t), rules());
+    if (!E.isCurrentSeason(t.seasons.at(-1))) t.seasons.push(E.makeSeason(E.suggestedSeasonName()));
+    t.seasons.at(-1).games.push(summary);
+    showRoster = false; planning = false; plan = []; sel = null;
+    releaseWake();
+    save(); render(); show('stats');
+    beep();
+  },
+  toggleRoster() { showRoster = !showRoster; render(); },
+  undo() {
+    if (!undoStack.length) { toast('Nothing to undo.'); return; }
+    const last = JSON.parse(undoStack.pop());
+    mutate(g => {
+      g.stints = last.stints; g.spells = last.spells;
+      g.guests = last.guests; g.formationKey = last.formationKey;
+    });
+    team().formationKey = last.formationKey;
+    sel = null; plan = [];
+    save(); render();
+    toast('Undone');
+  },
+  setFormation(k) {
+    const g = game();
+    if (k === g.formationKey) return;
+    checkpoint();
+    mutate(gg => E.changeFormation(gg, k, E.elapsed(gg)));
+    // Slot IDs mean nothing across shapes, so a plan made in the old one
+    // would put people in the wrong places.
+    plan = [];
+    team().formationKey = k;
+    save(); render();
+    toast(`Switched to ${k} — nobody left the field`);
+  },
+  addGuest(live) {
+    const name = document.getElementById('guestName').value.trim();
+    const jersey = document.getElementById('guestNum').value.trim();
+    if (!name) { toast('Give the guest a name.'); return; }
+    if (live) checkpoint();
+    mutate(g => E.addGuest(g, { name, jersey, at: E.elapsed(g), live }));
+    toast(`${name} added for today`);
+  },
+  arriveLate(id) {
+    checkpoint();
+    mutate(g => E.arriveLate(g, id, E.elapsed(g)));
+    toast(`${nameOf(id)} is available`);
+  },
+  leaveEarly(id) {
+    checkpoint();
+    let replaced = null;
+    mutate(g => { replaced = E.leaveEarly(g, id, E.elapsed(g), rules()); });
+    toast(`${nameOf(id)} out for the day${replaced ? ` — ${nameOf(replaced)} on` : ''}`);
+  },
+
+  /* tapping shirts */
+  tap(kind, id) {
+    const g = game();
+    if (!g) return;
+    const next = { kind, id };
+    if (sel && sel.kind === kind && sel.id === id) { sel = null; render(); return; }
+    if (planning) { planTap(next); return; }
+    if (!sel) { sel = next; render(); return; }
+    const t0 = E.elapsed(g);
+    if (sel.kind === 'slot' && kind === 'bench') {
+      checkpoint();
+      const slotID = sel.id;
+      mutate(gg => E.sub(gg, { slotID, incoming: id, at: t0 }));
+      sel = null; render();
+    } else if (sel.kind === 'bench' && kind === 'slot') {
+      checkpoint();
+      const incoming = sel.id;
+      mutate(gg => E.sub(gg, { slotID: id, incoming, at: t0 }));
+      sel = null; render();
+    } else if (sel.kind === 'slot' && kind === 'slot') {
+      const on = E.onField(g);
+      if (!on[sel.id] && !on[id]) { sel = null; render(); return; }
+      checkpoint();
+      const slotA = sel.id;
+      mutate(gg => E.swapPositions(gg, { slotA, slotB: id, at: t0 }));
+      sel = null; render();
+    } else {
+      sel = next; render();
+    }
+  },
+
+  /* planned subs */
+  planning(on) {
+    planning = on;
+    if (!on) plan = [];
+    sel = null;
+    render();
+  },
+  clearPlan() { plan = []; sel = null; render(); },
+  executePlan() {
+    const g = game();
+    const onBench = new Set(E.bench(g, E.elapsed(g)));
+    const ready = plannedSubs().filter(p => onBench.has(p.incoming));
+    if (!ready.length) { toast('Nothing to make.'); return; }
+    checkpoint();
+    mutate(gg => {
+      const t0 = E.elapsed(gg);
+      for (const p of ready) E.sub(gg, { slotID: p.slotID, incoming: p.incoming, at: t0 });
+    });
+    plan = []; planning = false; sel = null;
+    save(); render();
+    beep();
+    toast(`${ready.length} sub${ready.length === 1 ? '' : 's'} made`);
+  },
+
+  /* onboarding */
+  ob(key, v) {
+    if (key === 'size') { onboarding.size = v; onboarding.formation = E.defaultKey(v); }
+    else if (key === 'periodMinutes') onboarding.periodMinutes = Math.min(45, Math.max(5, parseInt(v, 10) || 30));
+    else onboarding[key] = v;
+    renderGame();
+  },
+  obSample() { onboarding.rosterText = SAMPLE; renderGame(); },
+  obStep(d) {
+    const o = onboarding;
+    if (d > 0 && o.step === 3) {
+      const t = newTeam(o.name.trim() || 'My team', o.size);
+      t.formationKey = o.formation;
+      t.periods = o.periods;
+      t.periodMinutes = o.periodMinutes;
+      t.players = E.parseRoster(o.rosterText);
+      S.teams.push(t);
+      S.active = S.teams.length - 1;
+      onboarding = null;
+      save(); render(); show('game');
+      return;
+    }
+    o.step = Math.max(0, Math.min(3, o.step + d));
+    renderGame();
+  },
+
+  /* files */
+  exportTeam() {
+    const t = team();
+    const payload = {
+      kind: 'sideline-team', version: 2, exported: new Date().toISOString(),
+      name: t.name, squadSize: t.squadSize, formationKey: t.formationKey,
+      periods: t.periods, periodMinutes: t.periodMinutes,
+      longShiftMinutes: t.longShiftMinutes, nudgeMinutes: t.nudgeMinutes,
+      excludeGoalkeeperTime: t.excludeGK, defaultLineup: t.defaultLineup,
+      players: t.players, seasons: t.seasons
+    };
+    download(`${E.fileSlug(t.name)}-sideline.json`, JSON.stringify(payload, null, 2), 'application/json');
+    toast('Saved — attach it to an email or keep it in your files');
+  },
+  loadTeam() { document.getElementById('teamFile').click(); },
+  importTeam(ev) {
+    const f = ev.target.files[0];
+    if (!f) return;
+    const r = new FileReader();
+    r.onload = () => {
+      try {
+        const d = JSON.parse(r.result);
+        if (d.kind !== 'sideline-team') throw new Error('not a team file');
+        const size = E.SIZES.includes(d.squadSize) ? d.squadSize : 7;
+        const t = newTeam(d.name || 'Imported team', size);
+        if (E.formationKeys(size).includes(d.formationKey)) t.formationKey = d.formationKey;
+        t.periods = [2, 3, 4].includes(d.periods) ? d.periods : 2;
+        t.periodMinutes = Math.min(45, Math.max(5, d.periodMinutes || 30));
+        t.longShiftMinutes = d.longShiftMinutes ?? 8;
+        t.nudgeMinutes = d.nudgeMinutes ?? 0;
+        t.excludeGK = d.excludeGoalkeeperTime !== false;
+        t.defaultLineup = d.defaultLineup || null;
+        t.players = (d.players || []).map(p => ({
+          id: p.id || E.uid(), name: p.name || 'Player',
+          jersey: p.jersey || '', target: p.target > 0 ? p.target : null
+        }));
+        if (Array.isArray(d.seasons) && d.seasons.length) t.seasons = d.seasons;
+        S.teams.push(t);
+        S.active = S.teams.length - 1;
+        save(); render(); show('team');
+        toast(`${t.name} added`);
+      } catch {
+        toast('That file isn’t a Sideline team.');
+      }
+    };
+    r.readAsText(f);
+    ev.target.value = '';
+  },
+  exportGame() {
+    const t = team(), g = t.game;
+    const summary = E.summarize(g, E.everyone(t), rules());
+    let out = CSV_HEAD;
+    for (const l of [...summary.lines].sort((a, b) => E.groupTotal(b.played) - E.groupTotal(a.played))) {
+      out += csvRow(l.name, l.jersey, 1, l.played, l.possible);
+    }
+    download(`${E.fileSlug(t.name)}-game.csv`, out, 'text/csv');
+    toast('Spreadsheet saved');
+  },
+  exportSeason(i) {
+    const t = team(), s = t.seasons[i];
+    let out = CSV_HEAD;
+    for (const l of E.seasonTotals(s)) out += csvRow(l.name, l.jersey, l.games, l.played, l.possible);
+    download(`${E.fileSlug(t.name)}-${E.fileSlug(s.name, 'season')}.csv`, out, 'text/csv');
+    toast('Spreadsheet saved');
+  },
+  exportEveryGame(i) {
+    const t = team(), s = t.seasons[i];
+    let out = 'Date,Opponent,' + CSV_HEAD;
+    const games = [...s.games].sort((a, b) => String(a.date).localeCompare(String(b.date)));
+    for (const game of games) {
+      for (const l of [...game.lines].sort((a, b) => E.groupTotal(b.played) - E.groupTotal(a.played))) {
+        out += String(game.date).slice(0, 10) + ',' + q(game.opponent) + ',' +
+          csvRow(l.name, l.jersey, 1, l.played, l.possible);
+      }
+    }
+    download(`${E.fileSlug(t.name)}-by-game.csv`, out, 'text/csv');
+    toast('Spreadsheet saved');
+  },
+  shareApp() {
+    const url = location.href.split('#')[0].split('?')[0];
+    const text = 'Sideline — a playing-time tracker for youth soccer. Works offline.';
+    if (navigator.share) { navigator.share({ title: 'Sideline', text, url }).catch(() => { }); return; }
+    if (navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(url).then(() => toast('Link copied — paste it into a message'),
+        () => toast(url));
+      return;
+    }
+    toast(url);
+  }
+};
+
+/** While planning, a tap pairs a position with a bench player instead of
+    substituting on the spot. Tapping either shirt of a pair drops it. */
+function planTap(next) {
+  if (sel && sel.kind === 'slot' && next.kind === 'bench') {
+    addToPlan(sel.id, next.id);
+  } else if (sel && sel.kind === 'bench' && next.kind === 'slot') {
+    addToPlan(next.id, sel.id);
+  } else if (!sel && next.kind === 'slot') {
+    const i = plan.findIndex(p => p.slot === next.id);
+    if (i >= 0) plan.splice(i, 1); else sel = next;
+    render();
+  } else if (!sel && next.kind === 'bench') {
+    const i = plan.findIndex(p => p.incoming === next.id);
+    if (i >= 0) plan.splice(i, 1); else sel = next;
+    render();
+  } else {
+    // Two positions, or two bench players: not a substitution. Swapping
+    // positions still works with planning off.
+    sel = next;
+    render();
+  }
+}
+
+function addToPlan(slot, incoming) {
+  // One sub per position, and nobody comes on twice.
+  plan = plan.filter(p => p.slot !== slot && p.incoming !== incoming);
+  plan.push({ slot, incoming });
+  sel = null;
+  render();
+}
+
+/* ---------- boot ---------- */
+
+window.SL = SL;
+load();
+
+if (!S.teams.length) {
+  onboarding = { step: 0, size: 7, formation: E.defaultKey(7), name: '', periods: 2, periodMinutes: 30, rosterText: '' };
+}
+
+for (const k of ['game', 'team', 'stats']) {
+  document.getElementById('tab-' + k).addEventListener('click', () => show(k));
+}
+
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState !== 'visible') return;
+  // The clock needs no catching up — it is derived from a stored instant —
+  // but a game that ran past the end of a period while we were away should
+  // stop cleanly.
+  let whistle = false;
+  for (const t of S.teams) {
+    if (t.game && E.isRunning(t.game) && E.settleBoundaries(t.game)) whistle = true;
+  }
+  if (whistle) save();
+  render();
+  if (game() && E.isRunning(game())) requestWake();
+});
+
+window.addEventListener('beforeunload', e => {
+  if (game() && game().stage === 'live') { e.preventDefault(); e.returnValue = ''; }
+});
+
+render();
+startTimer();
+
+if (!storageOK) {
+  const w = document.getElementById('warn');
+  w.hidden = false;
+  w.innerHTML = '<b>Nothing will be saved.</b> This browser blocks storage for pages opened ' +
+    'directly from disk, so your roster disappears when you reload. Put the page on a web address, ' +
+    'or run <code>python3 -m http.server</code> in the folder and open ' +
+    '<code>http://localhost:8000/sideline.html</code>.';
+} else if (migratedNote) {
+  const w = document.getElementById('warn');
+  w.hidden = false;
+  w.textContent = migratedNote;
+}
+
+})();
+</script>
 </body>
 </html>
