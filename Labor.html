@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#2C3E50">
+<title>Labor — Which Jobs? A classroom forecast game</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2C3E50; --navy-deep:#22303F; --gold:#F1C40F; --gold-soft:#F9E79F; --teal:#5EA8A7; --teal-deep:#3F7E7D;
+  --paper:#F5F4EF; --card:#FFFFFF; --ink:#1E2A36; --ink-soft:#5A6A79; --line:#DDD9CE; --red:#C0574F; --green:#3E8E5A;
+  --up:#3E8E5A; --down:#C0574F; --flat:#B8B2A4; --radius:12px;
+  --font-display:'Space Grotesk',sans-serif; --font-body:'Inter',system-ui,sans-serif; --font-mono:'IBM Plex Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--paper);color:var(--ink);font-family:var(--font-body);font-size:16px;line-height:1.5;min-height:100vh}
+button{font-family:var(--font-body);cursor:pointer}
+input,select{font-family:var(--font-body)}
+.hidden{display:none!important}
+.shell{max-width:1080px;margin:0 auto;padding:20px 16px 64px}
+.shell.narrow{max-width:460px}
+.shell.mid{max-width:640px}
+.shell.wide{max-width:1180px}
+header.top{background:var(--navy);color:#fff;padding:12px 0;position:sticky;top:0;z-index:20}
+header.top .shell{padding:0 16px;display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:4px}
+.brand{font-family:var(--font-display);font-weight:700;font-size:20px}
+.brand .accent{color:var(--gold)}
+.session-tag{font-family:var(--font-mono);font-size:13px;color:#CBD6E0}
+.session-tag b{color:var(--gold);letter-spacing:2px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px;margin-top:18px}
+h1{font-family:var(--font-display);font-size:clamp(26px,5vw,40px);line-height:1.12;color:var(--navy)}
+h2{font-family:var(--font-display);font-size:21px;color:var(--navy);margin-bottom:10px}
+h3{font-family:var(--font-display);font-size:16px;color:var(--navy)}
+p.sub{color:var(--ink-soft);margin-top:8px;max-width:62ch}
+.eyebrow{font-family:var(--font-mono);font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--teal-deep);margin-bottom:6px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;border-radius:10px;padding:13px 22px;font-size:16px;font-weight:600;transition:transform .06s ease,box-shadow .12s ease}
+.btn:active{transform:translateY(1px)}
+.btn:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.btn-primary{background:var(--navy);color:#fff}
+.btn-gold{background:var(--gold);color:var(--navy-deep)}
+.btn-teal{background:var(--teal);color:#fff}
+.btn-ghost{background:transparent;color:var(--navy);border:1.5px solid var(--navy)}
+.btn-block{width:100%}
+.btn[disabled]{opacity:.45;cursor:not-allowed;box-shadow:none}
+.btn-sm{padding:8px 14px;font-size:14px;border-radius:8px}
+label.f{display:block;font-size:13px;font-weight:600;color:var(--ink-soft);margin:14px 0 5px;text-transform:uppercase;letter-spacing:.6px}
+input.f{width:100%;padding:12px 14px;font-size:17px;border:1.5px solid var(--line);border-radius:10px;background:#fff;color:var(--ink)}
+input.f:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(94,168,167,.18)}
+.f-err{color:var(--red);font-size:13px;margin-top:6px;min-height:18px}
+.code-input{font-family:var(--font-mono);letter-spacing:8px;text-transform:uppercase;text-align:center;font-size:24px!important}
+.land-hero{padding:40px 0 8px}
+.role-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:22px}
+@media(max-width:640px){.role-grid{grid-template-columns:1fr}}
+.role-card{background:var(--card);border:1.5px solid var(--line);border-radius:var(--radius);padding:22px;text-align:left;transition:border-color .12s,box-shadow .12s}
+.role-card:hover{border-color:var(--teal);box-shadow:0 6px 20px rgba(44,62,80,.10)}
+.role-card h3{font-size:19px;margin-bottom:6px}
+.role-card p{font-size:14px;color:var(--ink-soft)}
+.role-card .go{margin-top:14px;font-weight:700;color:var(--teal-deep);font-size:14px}
+.pulse-dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--teal);margin-right:8px;animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.35}50%{opacity:1}}
+@media(prefers-reduced-motion:reduce){.pulse-dot{animation:none}}
+.big-count{font-family:var(--font-display);font-size:56px;color:var(--navy);line-height:1}
+.big-count small{font-size:20px;color:var(--ink-soft);font-family:var(--font-body)}
+.join-code{font-family:var(--font-mono);font-size:64px;letter-spacing:14px;color:var(--navy);font-weight:600;line-height:1;margin:6px 0 2px}
+.roster{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.roster .p{font-size:13px;background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:4px 10px}
+.roster .p.in{border-color:var(--teal);background:#E8F4F4}
+.host-bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:16px}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--navy);color:#fff;padding:10px 18px;border-radius:10px;font-weight:600;z-index:50;max-width:90vw}
+/* ---------- student ranking ---------- */
+.hz-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.hz-year{font-family:var(--font-display);font-size:clamp(22px,6vw,30px);color:var(--navy);line-height:1.05}
+.hz-year small{font-size:15px;color:var(--ink-soft);font-family:var(--font-body);font-weight:500}
+.prog{font-family:var(--font-mono);font-size:13px;color:var(--ink-soft)}
+.endcap{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;color:var(--ink-soft);margin:12px 0 6px}
+.endcap .ln{flex:1;height:1px;background:var(--line)}
+.endcap.bottom{margin:6px 0 0}
+ul.ranklist{list-style:none;touch-action:pan-x}
+li.rk{display:flex;align-items:center;gap:10px;background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:10px 10px 10px 8px;margin:6px 0;user-select:none;-webkit-user-select:none;touch-action:none}
+li.rk.drag{opacity:.92;border-color:var(--teal);box-shadow:0 10px 26px rgba(44,62,80,.20);position:relative;z-index:5}
+li.rk.ghost{opacity:.35}
+li.rk .pos{font-family:var(--font-mono);font-size:13px;font-weight:600;color:#fff;background:var(--navy);border-radius:7px;min-width:26px;height:26px;display:flex;align-items:center;justify-content:center;flex:none}
+li.rk .nm{flex:1;font-size:15px;font-weight:600;color:var(--navy);line-height:1.25}
+li.rk .grip{color:#B6B0A2;font-size:17px;letter-spacing:1px;flex:none;cursor:grab}
+li.rk .mv{display:flex;flex-direction:column;gap:3px;flex:none}
+li.rk .mv button{border:1px solid var(--line);background:var(--paper);border-radius:6px;width:34px;height:22px;font-size:12px;line-height:1;color:var(--ink-soft);display:flex;align-items:center;justify-content:center}
+li.rk .mv button:active{background:#E8F4F4;border-color:var(--teal)}
+.mine-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px}
+.mine-grid button{border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:9px 8px;font-size:13.5px;text-align:left}
+.mine-grid button.sel{border-color:var(--teal);background:#E8F4F4;font-weight:600}
+.sticky-ok{position:sticky;bottom:10px;margin-top:16px}
+.steps{display:flex;gap:6px;margin-top:6px}
+.steps span{flex:1;height:5px;border-radius:3px;background:var(--line)}
+.steps span.on{background:var(--teal)}
+/* ---------- results ---------- */
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px}
+.tabs button{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:7px 14px;font-size:14px;font-weight:600;color:var(--ink-soft)}
+.tabs button.sel{background:var(--navy);color:#fff;border-color:var(--navy)}
+table.res{width:100%;border-collapse:collapse;margin-top:12px;font-size:14px}
+table.res th{font-family:var(--font-mono);font-size:11.5px;letter-spacing:1px;text-transform:uppercase;color:var(--ink-soft);text-align:left;padding:6px 8px;border-bottom:1.5px solid var(--line)}
+table.res td{padding:8px;border-bottom:1px solid var(--line);vertical-align:middle}
+table.res td.name{font-weight:600;color:var(--navy);white-space:nowrap}
+table.res td.num{font-family:var(--font-mono);text-align:right;white-space:nowrap}
+.swatch{display:inline-block;width:12px;height:12px;border-radius:3px;border:1px solid rgba(0,0,0,.15);margin-right:6px;vertical-align:-1px}
+.maprow{display:grid;grid-template-columns:minmax(0,1fr) 250px;gap:16px;align-items:start}
+@media(max-width:900px){.maprow{grid-template-columns:1fr}}
+.mapbox{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:6px}
+.keybox{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.keygrid{display:grid;grid-template-columns:auto repeat(3,26px);gap:3px;align-items:center;margin-top:8px}
+.keygrid .cell{width:26px;height:26px;border-radius:4px;border:1px solid rgba(0,0,0,.12)}
+.keygrid .rlab{font-size:11px;color:var(--ink-soft);text-align:right;padding-right:5px}
+.keycols{display:grid;grid-template-columns:auto repeat(3,26px);gap:3px;font-size:11px;color:var(--ink-soft);margin-top:3px;text-align:center}
+.callouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-top:12px}
+.callout{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.callout .k{font-family:var(--font-mono);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--teal-deep)}
+.callout .v{font-family:var(--font-display);font-size:18px;color:var(--navy);margin-top:3px;line-height:1.2}
+.callout .d{font-size:13px;color:var(--ink-soft);margin-top:3px}
+ul.disc{margin:10px 0 0 18px;font-size:15px}
+ul.disc li{margin-bottom:8px}
+.legend{font-size:12.5px;color:var(--ink-soft);margin-top:8px}
+.poll-opt{display:block;width:100%;text-align:left;border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:14px;margin-top:10px;font-size:15px}
+.poll-opt.sel{border-color:var(--teal);background:#E8F4F4}
+.poll-opt b{display:block;font-family:var(--font-display);color:var(--navy);margin-bottom:2px}
+.pollbar{display:flex;align-items:center;gap:10px;margin-top:10px}
+.pollbar .lab{width:220px;font-size:14px;font-weight:600;color:var(--navy)}
+.pollbar .bar{flex:1;height:22px;background:#EEEBE2;border-radius:5px;overflow:hidden}
+.pollbar .bar span{display:block;height:100%;background:var(--teal)}
+.pollbar .n{font-family:var(--font-mono);width:60px;text-align:right}
+.small{font-size:13px;color:var(--ink-soft)}
+.mono{font-family:var(--font-mono)}
+.setup ol{margin:12px 0 0 20px}
+.setup li{margin-bottom:8px}
+code{font-family:var(--font-mono);font-size:.92em;background:var(--paper);padding:1px 5px;border-radius:4px}
+.chk{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--ink-soft);margin-left:4px}
+</style>
+</head>
+<body>
+<header class="top"><div class="shell">
+  <div class="brand">LABOR <span class="accent">/</span> Which jobs?</div>
+  <div class="session-tag" id="topTag">FYS 7b · classroom forecast</div>
+</div></header>
+
+<!-- ============ SETUP ============ -->
+<div id="viewSetup" class="shell mid hidden">
+  <div class="card setup">
+    <div class="eyebrow">One-time setup</div>
+    <h2>Connect a Firebase database</h2>
+    <p class="sub">This page uses the same free Firebase Realtime Database as the other classroom games. Paste the project's config into <code>FIREBASE_CONFIG</code> near the top of the script and reload.</p>
+  </div>
+</div>
+
+<!-- ============ LANDING ============ -->
+<div id="viewLanding" class="shell hidden">
+  <div class="land-hero">
+    <div class="eyebrow">A live classroom forecast</div>
+    <h1>Which jobs will AI expand, and which will it shrink?</h1>
+    <p class="sub">Twelve careers. You rank them twice — once for what AI does to the <b>number of jobs</b>, once for what it does to <b>pay</b>. Then the class sees its own map: where it agrees, where it splits, and what that implies for anyone choosing a career.</p>
+  </div>
+  <div class="role-grid">
+    <button class="role-card" onclick="App.showJoin()">
+      <h3>Join the class session</h3>
+      <p>Enter the 4-letter code on the screen and rank the careers from your phone.</p>
+      <div class="go">Join →</div>
+    </button>
+    <button class="role-card" onclick="App.showHost()">
+      <h3>Host a session</h3>
+      <p>Create a code, watch rankings arrive, then reveal the class map of jobs against pay.</p>
+      <div class="go">Host a session →</div>
+    </button>
+  </div>
+</div>
+
+<!-- ============ JOIN ============ -->
+<div id="viewJoin" class="shell narrow hidden">
+  <div class="card">
+    <div class="eyebrow">Join</div>
+    <h2>Enter the session code</h2>
+    <label class="f" for="joinCode">Code</label>
+    <input class="f code-input" id="joinCode" maxlength="4" autocomplete="off" autocapitalize="characters" placeholder="ABCD">
+    <label class="f" for="joinName">Your name or initials</label>
+    <input class="f" id="joinName" maxlength="24" placeholder="e.g., Sam K.">
+    <div class="f-err" id="joinErr"></div>
+    <button class="btn btn-gold btn-block" onclick="App.join()">Join</button>
+  </div>
+</div>
+
+<!-- ============ STUDENT: WAIT ============ -->
+<div id="viewStudentWait" class="shell narrow hidden">
+  <div class="card" style="text-align:center;padding:36px 22px">
+    <div class="eyebrow" id="swEyebrow">You're in</div>
+    <h2 id="swTitle">Waiting for the host to open the ranking…</h2>
+    <p class="sub" id="swSub" style="margin:8px auto 0"><span class="pulse-dot"></span>Keep this page open.</p>
+  </div>
+</div>
+
+<!-- ============ STUDENT: RANK ============ -->
+<div id="viewRank" class="shell mid hidden">
+  <div class="card">
+    <div class="hz-head">
+      <div><div class="eyebrow" id="rkEyebrow">Step 1 of 2</div><div class="hz-year" id="rkTitle">Number of jobs in 2035</div></div>
+      <div class="prog" id="rkYear"></div>
+    </div>
+    <div class="steps"><span id="rkStep1" class="on"></span><span id="rkStep2"></span></div>
+    <p class="sub" id="rkHint"></p>
+  </div>
+  <div class="card">
+    <div class="endcap"><span id="rkTop">Most</span><span class="ln"></span></div>
+    <ul class="ranklist" id="rankList"></ul>
+    <div class="endcap bottom"><span id="rkBot">Least</span><span class="ln"></span></div>
+    <p class="small" style="margin-top:10px">Drag a row, or use the ▲ ▼ buttons. Every position counts as an answer, so order all twelve.</p>
+  </div>
+  <div id="mineCard" class="card hidden">
+    <h3>Which of these is closest to your own plans? <span class="small">(pick up to two, optional)</span></h3>
+    <div class="mine-grid" id="mineGrid"></div>
+  </div>
+  <div class="sticky-ok">
+    <button class="btn btn-gold btn-block" id="rkBtn" onclick="App.submitStep()">OK — next</button>
+  </div>
+</div>
+
+<!-- ============ STUDENT: POLL ============ -->
+<div id="viewPoll" class="shell narrow hidden">
+  <div class="card">
+    <div class="eyebrow">Quick poll</div>
+    <h2>Is job protection a prisoner's dilemma?</h2>
+    <p class="sub">Each country would rather the others restrain AI while it does not. Pick the description you find most convincing.</p>
+    <button class="poll-opt" data-v="pd" onclick="App.pickPoll(this)"><b>Yes — a prisoner's dilemma</b>Defecting is each country's best move whatever the others do, so mutual restraint collapses even though everyone would prefer it.</button>
+    <button class="poll-opt" data-v="stag" onclick="App.pickPoll(this)"><b>A stag hunt, not a dilemma</b>Restraint works if enough others can be trusted to hold; the problem is trust and observability, not incentives.</button>
+    <button class="poll-opt" data-v="none" onclick="App.pickPoll(this)"><b>Not a dilemma at all</b>Mutual restraint is not actually better: the productivity cost of blocking the technology exceeds the value of the protected jobs.</button>
+    <button class="poll-opt" data-v="local" onclick="App.pickPoll(this)"><b>Depends on the policy</b>Blocking the technology is a dilemma; rules tied to local liability (who signs, who gets sued) are not.</button>
+    <div class="f-err" id="pollErr"></div>
+    <button class="btn btn-gold btn-block" id="pollBtn" onclick="App.submitPoll()" style="margin-top:10px">Submit</button>
+  </div>
+</div>
+
+<!-- ============ HOST: CREATE ============ -->
+<div id="viewHostCreate" class="shell narrow hidden">
+  <div class="card">
+    <div class="eyebrow">Host</div>
+    <h2>Create a session</h2>
+    <p class="sub">Students rank twelve careers twice: by what AI does to the number of jobs, then by what it does to pay. You open the ranking, watch the count, then reveal the class map.</p>
+    <label class="f" for="setYear">Forecast year</label>
+    <input class="f" id="setYear" type="number" value="2035" min="2027" max="2100">
+    <label class="chk"><input type="checkbox" id="setRevote" checked> Allow a re-vote at the end of the hour</label>
+    <button class="btn btn-primary btn-block" style="margin-top:18px" onclick="App.createGame()">Create session</button>
+  </div>
+</div>
+
+<!-- ============ HOST: DASHBOARD ============ -->
+<div id="viewHost" class="shell wide hidden">
+  <div class="card" id="hostLobbyCard">
+    <div class="eyebrow">Students join with this code</div>
+    <div class="join-code" id="hostCode">····</div>
+    <p class="sub" id="hostUrlHint"></p>
+    <h3 style="margin-top:18px">In the room: <span id="hostCount">0</span> &nbsp;·&nbsp; <span id="hostDoneNote" class="small"></span></h3>
+    <div class="roster" id="hostRoster"></div>
+  </div>
+  <div class="host-bar">
+    <button class="btn btn-gold" id="btnOpen" onclick="App.setPhase('open')">Open ranking</button>
+    <button class="btn btn-primary hidden" id="btnResults" onclick="App.setPhase('results')">Close &amp; show the map</button>
+    <button class="btn btn-teal hidden" id="btnPoll" onclick="App.setPhase('poll')">Open prisoner's-dilemma poll</button>
+    <button class="btn btn-primary hidden" id="btnPollResults" onclick="App.setPhase('pollResults')">Show poll</button>
+    <button class="btn btn-teal hidden" id="btnRevote" onclick="App.setPhase('revote')">Open re-vote</button>
+    <button class="btn btn-primary hidden" id="btnRevoteResults" onclick="App.setPhase('revoteResults')">Close &amp; show before / after</button>
+    <button class="btn btn-ghost btn-sm" id="btnBack" onclick="App.setPhase('results')">Back to the map</button>
+    <button class="btn btn-ghost btn-sm" onclick="App.seedDemo()" title="Adds fake rankings so you can preview the results screens">Seed 8 demo responses</button>
+    <span id="hostPhaseNote" class="small"></span>
+  </div>
+  <div class="card hidden" id="hostOpenCard" style="text-align:center">
+    <div class="eyebrow" id="hostRoundTag">Ranking open</div>
+    <div class="big-count"><span id="hostSubCount">0</span><small> of <span id="hostSubTotal">0</span> finished</small></div>
+    <p class="sub" style="margin:10px auto 0" id="hostSubDetail"></p>
+  </div>
+  <div id="hostResults" class="hidden">
+    <div class="card">
+      <div class="hz-head"><div><div class="eyebrow" id="resEyebrow">Results</div><h2 id="resTitle">The class map</h2></div><div class="small" id="resN"></div></div>
+      <div class="tabs" id="resTabs"></div>
+      <div id="resBody"></div>
+      <div class="legend" id="resLegend"></div>
+    </div>
+    <div class="card">
+      <h2>For discussion</h2>
+      <ul class="disc" id="resDiscuss"></ul>
+    </div>
+  </div>
+  <div id="hostPoll" class="card hidden">
+    <div class="eyebrow">Prisoner's-dilemma poll</div>
+    <h2 id="pollTitle">Is job protection a prisoner's dilemma?</h2>
+    <div id="pollBars"></div>
+    <ul class="disc" id="pollDiscuss"></ul>
+  </div>
+</div>
+
+<div id="toast" class="toast hidden"></div>
+
+<!-- Firebase compat SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
+/* =====================================================================
+   FIREBASE CONFIG — same project as Game.html / Drones.html
+   ===================================================================== */
+const FIREBASE_CONFIG = {
+    apiKey: "AIzaSyDQ8gn5w_Jj4OzcXFBz2lY2SKuaKEo2wbk",
+    authDomain: "obfuscationgame.firebaseapp.com",
+    databaseURL: "https://obfuscationgame-default-rtdb.firebaseio.com",
+    projectId: "obfuscationgame",
+    storageBucket: "obfuscationgame.firebasestorage.app",
+    messagingSenderId: "443679460937",
+    appId: "1:443679460937:web:d6b2806717894b3c923998"
+  };
+
+/* Twelve careers. Four of them (software developer, customer service representative,
+   stock clerk, home health aide) are the occupations tracked on the Stanford Digital
+   Economy Lab's Canaries Dashboard, so the class ranking can be checked against data. */
+const PROFESSIONS = [
+  "Radiologist", "Lawyer", "Entry-level software developer", "Customer service representative",
+  "Stock clerk", "Home health aide", "Electrician", "Rideshare driver",
+  "Graphic designer", "Therapist", "Content creator", "Economics professor"
+];
+const SHORT = [
+  "Radiologist", "Lawyer", "SW dev (entry)", "Customer service",
+  "Stock clerk", "Home health aide", "Electrician", "Rideshare driver",
+  "Graphic designer", "Therapist", "Content creator", "Econ professor"
+];
+const N = PROFESSIONS.length;
+const DIMS = {
+  jobs: { key: "jobs", title: y => `Number of jobs in ${y}`, top: "Most jobs added", bottom: "Most jobs lost",
+          hint: y => `Top = where AI leaves the <b>most</b> jobs by ${y}. Bottom = where it destroys the most. You are ranking them against each other, so they cannot all be safe.`,
+          axis: ["fewer jobs", "more jobs"] },
+  pay:  { key: "pay",  title: y => `Pay in ${y}`, top: "Pay rises most", bottom: "Pay falls most",
+          hint: y => `Same twelve careers, now for <b>pay</b>. Top = pay rises most by ${y}; bottom = pay falls most. Jobs and pay do not have to move together.`,
+          axis: ["lower pay", "higher pay"] }
+};
+const POLL_LABELS = { pd: "Yes — a prisoner's dilemma", stag: "A stag hunt (trust, not incentives)", none: "Not a dilemma: restraint is just worse", local: "Depends: blocking is a dilemma, local-liability rules are not" };
+/* Disagreement bands, in standard deviations of rank. A class ranking twelve careers at
+   random would give SD ≈ 3.45, so 3.0+ really is "the room is split". */
+const SD_BANDS = [2.0, 3.0];
+
+const App = (() => {
+  let db = null, code = null, uid = null, myName = null, isHost = false;
+  let meta = null, state = null, players = {}, votes = {}, pollVotes = {}, listeners = [];
+  let cur = { round: null, dim: null, order: [], mine: [] };
+  let resTab = null, lastPhaseRendered = null, showWhiskers = true;
+
+  /* ---------- utilities ---------- */
+  const $ = id => document.getElementById(id);
+  const views = ["viewSetup","viewLanding","viewJoin","viewStudentWait","viewRank","viewPoll","viewHostCreate","viewHost"];
+  function show(v){ views.forEach(x => $(x).classList.toggle("hidden", x !== v)); window.scrollTo(0,0); }
+  function toast(msg){ const t=$("toast"); t.textContent=msg; t.classList.remove("hidden"); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.add("hidden"),2600); }
+  function getUid(){ let u = null; try { u = localStorage.getItem("labor_uid"); } catch(e){} if(!u){ u = (crypto.randomUUID ? crypto.randomUUID() : "u"+Date.now()+Math.random().toString(36).slice(2)); try { localStorage.setItem("labor_uid", u); } catch(e){} } return u; }
+  function clearListeners(){ listeners.forEach(([ref,ev,cb]) => ref.off(ev,cb)); listeners = []; }
+  function on(ref,ev,cb){ ref.on(ev,cb); listeners.push([ref,ev,cb]); }
+  function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+  // The shared database only permits writes under games/, so Labor sessions live at games/labor-CODE.
+  const path = (...p) => ["games", "labor-" + code, ...p].join("/");
+  const YEAR = () => (meta && meta.year) ? meta.year : 2035;
+  const shuffled = () => { const a = PROFESSIONS.map((_, i) => i); for (let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  const fmt1 = n => n.toFixed(1);
+  const fmtSigned = n => (n > 0 ? "+" : n < 0 ? "−" : "±") + Math.abs(n).toFixed(1);
+
+  /* ---------- boot ---------- */
+  function boot(){
+    if (!FIREBASE_CONFIG || !FIREBASE_CONFIG.apiKey || FIREBASE_CONFIG.apiKey.startsWith("PASTE")){ show("viewSetup"); return; }
+    firebase.initializeApp(FIREBASE_CONFIG);
+    db = firebase.database();
+    uid = getUid();
+    const qs = new URLSearchParams(location.search);
+    if (qs.get("g")) { show("viewJoin"); $("joinCode").value = qs.get("g").toUpperCase(); $("joinName").focus(); }
+    else show("viewLanding");
+  }
+
+  /* =====================================================================
+     STUDENT SIDE
+     ===================================================================== */
+  function showJoin(){ show("viewJoin"); }
+
+  async function join(){
+    const c = $("joinCode").value.trim().toUpperCase();
+    const n = $("joinName").value.trim();
+    const err = $("joinErr");
+    if (c.length !== 4){ err.textContent = "Enter the 4-letter code on the screen."; return; }
+    if (!n){ err.textContent = "Add your name or initials."; return; }
+    err.textContent = "";
+    const snap = await db.ref(`games/labor-${c}/state`).get();
+    if (!snap.exists()){ err.textContent = "No session with that code — check the projector."; return; }
+    code = c; myName = n; isHost = false;
+    await db.ref(path("players", uid)).update({ name: n, joinedAt: Date.now() });
+    $("topTag").innerHTML = `Session <b>${code}</b> · ${escapeHtml(n)}`;
+    listenGame();
+  }
+
+  function listenGame(){
+    clearListeners();
+    on(db.ref(path("meta")), "value", s => { meta = s.val() || meta; });
+    on(db.ref(path("players")), "value", s => { players = s.val() || {}; if (isHost) renderHostCounts(); });
+    if (isHost){
+      on(db.ref(path("votes")), "value", s => { votes = s.val() || {}; renderHostCounts(); if (state && (state.phase === "results" || state.phase === "revoteResults")) renderResults(); });
+      on(db.ref(path("poll")), "value", s => { pollVotes = s.val() || {}; if (state && state.phase === "pollResults") renderPollResults(); });
+    }
+    on(db.ref(path("state")), "value", s => { state = s.val(); if (!state) return; if (isHost) renderHost(); else renderStudent(); });
+  }
+
+  async function renderStudent(){
+    const { phase } = state;
+    if (phase === "lobby"){ wait("You're in", "Waiting for the host to open the ranking…"); return; }
+    if (phase === "open" || phase === "revote"){
+      const round = phase === "open" ? "vote" : "revote";
+      const mine = (await db.ref(path("votes", round, uid)).get()).val() || {};
+      const next = !mine.jobs ? "jobs" : !mine.pay ? "pay" : null;
+      if (!next){ wait(round === "revote" ? "Re-vote submitted ✓" : "Rankings submitted ✓", "Watch the screen for the class map."); return; }
+      startStep(round, next);
+      return;
+    }
+    if (phase === "poll"){
+      const mine = (await db.ref(path("poll", uid)).get()).val();
+      if (mine){ wait("Vote recorded ✓", "Watch the screen for the split."); return; }
+      $("pollErr").textContent = ""; $("pollBtn").disabled = false;
+      document.querySelectorAll(".poll-opt").forEach(b => b.classList.remove("sel"));
+      show("viewPoll"); return;
+    }
+    if (phase === "results" || phase === "revoteResults" || phase === "pollResults"){ wait("Results are on the screen", "Look up. Where did the room agree — and is that where you want to be?"); return; }
+  }
+  function wait(eyebrow, title){ $("swEyebrow").textContent = eyebrow; $("swTitle").textContent = title; show("viewStudentWait"); }
+
+  function startStep(round, dimKey){
+    const d = DIMS[dimKey], y = YEAR();
+    cur = { round, dim: dimKey, order: shuffled(), mine: (players[uid] && players[uid].mine) || [] };
+    $("rkEyebrow").textContent = (round === "revote" ? "Re-vote · " : "") + (dimKey === "jobs" ? "Step 1 of 2" : "Step 2 of 2");
+    $("rkTitle").textContent = d.title(y);
+    $("rkYear").textContent = `${y} · ${y - new Date().getFullYear()} years out`;
+    $("rkHint").innerHTML = d.hint(y);
+    $("rkTop").textContent = d.top; $("rkBot").textContent = d.bottom;
+    $("rkStep1").classList.toggle("on", true);
+    $("rkStep2").classList.toggle("on", dimKey === "pay");
+    $("rkBtn").textContent = dimKey === "jobs" ? "OK — now rank pay" : "OK — submit my rankings";
+    $("rkBtn").disabled = false;
+    const showMine = round === "vote" && dimKey === "jobs";
+    $("mineCard").classList.toggle("hidden", !showMine);
+    if (showMine) $("mineGrid").innerHTML = PROFESSIONS.map((p, i) => `<button class="${cur.mine.includes(i) ? "sel" : ""}" onclick="App.toggleMine(${i}, this)">${escapeHtml(p)}</button>`).join("");
+    renderRankList();
+    show("viewRank");
+  }
+
+  function renderRankList(){
+    $("rankList").innerHTML = cur.order.map((i, pos) => `
+      <li class="rk" data-i="${i}">
+        <span class="grip" aria-hidden="true">⠿</span>
+        <span class="pos">${pos + 1}</span>
+        <span class="nm">${escapeHtml(PROFESSIONS[i])}</span>
+        <span class="mv"><button type="button" aria-label="Move up" onclick="App.nudge(${i},-1)">▲</button><button type="button" aria-label="Move down" onclick="App.nudge(${i},1)">▼</button></span>
+      </li>`).join("");
+    wireDrag();
+  }
+  function renumber(){ Array.from($("rankList").children).forEach((li, k) => { li.querySelector(".pos").textContent = k + 1; }); cur.order = Array.from($("rankList").children).map(li => Number(li.dataset.i)); }
+  function nudge(i, d){
+    const at = cur.order.indexOf(i), to = at + d;
+    if (to < 0 || to >= N) return;
+    cur.order.splice(at, 1); cur.order.splice(to, 0, i);
+    renderRankList();
+    const el = $("rankList").querySelector(`li[data-i="${i}"]`);
+    if (el) el.scrollIntoView({ block: "nearest" });
+  }
+
+  /* pointer-drag reordering: works with touch and mouse */
+  function wireDrag(){
+    const list = $("rankList");
+    list.querySelectorAll("li.rk").forEach(li => {
+      li.addEventListener("pointerdown", ev => {
+        if (ev.target.closest(".mv")) return;           // arrows handle themselves
+        if (ev.button && ev.button !== 0) return;
+        ev.preventDefault();
+        const startY = ev.clientY;
+        const rect = li.getBoundingClientRect();
+        let moved = false, scrollTimer = null;
+        // Listen on the document, NOT on the row: moving the row in the DOM makes the
+        // browser drop pointer capture, and the rest of the drag would be lost.
+        const onMove = e => {
+          const dy = e.clientY - startY;
+          if (!moved && Math.abs(dy) < 4) return;
+          if (!moved){ moved = true; li.classList.add("drag"); }
+          li.style.transform = `translateY(${dy}px)`;
+          // move past every sibling midpoint we have crossed, so a fast drag cannot lag behind
+          const y = e.clientY;
+          let shifted = false;
+          for (let pass = 0; pass < N; pass++){
+            let step = false;
+            for (const s of Array.from(list.children)){
+              if (s === li) continue;
+              const r = s.getBoundingClientRect();
+              const mid = r.top + r.height / 2;
+              const rel = s.compareDocumentPosition(li);
+              if (y < mid && (rel & Node.DOCUMENT_POSITION_FOLLOWING)){ list.insertBefore(li, s); step = true; break; }
+              if (y > mid && (rel & Node.DOCUMENT_POSITION_PRECEDING)){ list.insertBefore(li, s.nextSibling); step = true; break; }
+            }
+            if (!step) break;
+            shifted = true;
+          }
+          if (shifted) reset(e);
+          // auto-scroll near the edges of the viewport
+          const vh = window.innerHeight;
+          if (!scrollTimer && (y < 90 || y > vh - 90)){
+            scrollTimer = setInterval(() => window.scrollBy(0, y < 90 ? -14 : 14), 16);
+            setTimeout(() => { clearInterval(scrollTimer); scrollTimer = null; }, 240);
+          }
+        };
+        function reset(e){ // re-anchor the drag offset after a DOM move
+          const nr = li.getBoundingClientRect();
+          li.style.transform = `translateY(${e.clientY - (nr.top + rect.height / 2)}px)`;
+          renumber();
+        }
+        const onUp = e => {
+          // settle on where the finger actually let go, not on the last move event we happened to get
+          if (moved && e && typeof e.clientY === "number") onMove(e);
+          li.classList.remove("drag"); li.style.transform = "";
+          if (scrollTimer){ clearInterval(scrollTimer); scrollTimer = null; }
+          document.removeEventListener("pointermove", onMove);
+          document.removeEventListener("pointerup", onUp);
+          document.removeEventListener("pointercancel", onUp);
+          renumber();
+        };
+        document.addEventListener("pointermove", onMove, { passive: false });
+        document.addEventListener("pointerup", onUp);
+        document.addEventListener("pointercancel", onUp);
+      });
+    });
+  }
+
+  function toggleMine(i, btn){
+    const at = cur.mine.indexOf(i);
+    if (at >= 0) cur.mine.splice(at, 1);
+    else { if (cur.mine.length >= 2){ toast("Up to two — unpick one first."); return; } cur.mine.push(i); }
+    btn.classList.toggle("sel", cur.mine.includes(i));
+  }
+
+  async function submitStep(){
+    renumber();
+    if (cur.order.length !== N){ toast("Something went wrong — reload the page."); return; }
+    $("rkBtn").disabled = true;
+    const updates = { [cur.dim]: cur.order, name: myName, at: Date.now() };
+    await db.ref(path("votes", cur.round, uid)).update(updates);
+    if (cur.round === "vote" && cur.dim === "jobs") await db.ref(path("players", uid)).update({ mine: cur.mine });
+    toast(cur.dim === "jobs" ? "Jobs ranking saved" : "Rankings submitted");
+    renderStudent();
+  }
+
+  function pickPoll(btn){ document.querySelectorAll(".poll-opt").forEach(b => b.classList.remove("sel")); btn.classList.add("sel"); }
+  async function submitPoll(){
+    const sel = document.querySelector(".poll-opt.sel");
+    if (!sel){ $("pollErr").textContent = "Pick one."; return; }
+    $("pollBtn").disabled = true;
+    await db.ref(path("poll", uid)).set(sel.dataset.v);
+    toast("Vote recorded"); renderStudent();
+  }
+
+  /* =====================================================================
+     HOST SIDE
+     ===================================================================== */
+  function showHost(){ show("viewHostCreate"); }
+
+  async function createGame(){
+    isHost = true;
+    code = Array.from({length:4},()=> "ABCDEFGHJKLMNPQRSTUVWXYZ"[Math.floor(Math.random()*24)]).join("");
+    const y = Math.max(new Date().getFullYear() + 1, parseInt($("setYear").value) || 2035);
+    meta = { year: y, revote: $("setRevote").checked, createdAt: Date.now() };
+    await db.ref(path()).set({ meta, state: { phase: "lobby", createdAt: Date.now() } });
+    $("hostCode").textContent = code;
+    const url = location.origin + location.pathname + "?g=" + code;
+    $("hostUrlHint").innerHTML = `Students open <b>${escapeHtml(location.host + location.pathname)}</b> and enter the code, or use the direct link: <span class="mono">${escapeHtml(url)}</span>`;
+    $("topTag").innerHTML = `Hosting session <b>${code}</b>`;
+    listenGame();
+    show("viewHost");
+  }
+
+  function renderRoster(){
+    const list = Object.entries(players);
+    $("hostCount").textContent = list.length;
+    const round = state && state.phase === "revote" ? "revote" : "vote";
+    const rv = votes[round] || {};
+    $("hostRoster").innerHTML = list.map(([id,p]) => {
+      const v = rv[id] || {}; const done = (v.jobs ? 1 : 0) + (v.pay ? 1 : 0);
+      return `<span class="p ${done === 2 ? "in" : ""}">${escapeHtml(p.name)}${done === 1 ? " ·" : ""}</span>`; }).join("");
+  }
+
+  function renderHostCounts(){
+    if (!isHost || !state) return;
+    const round = state.phase === "revote" ? "revote" : "vote";
+    const rv = votes[round] || {};
+    const ids = Object.keys(players);
+    const finished = ids.filter(id => rv[id] && rv[id].jobs && rv[id].pay).length;
+    const onJobs = ids.filter(id => rv[id] && rv[id].jobs).length;
+    $("hostSubCount").textContent = finished; $("hostSubTotal").textContent = ids.length;
+    $("hostSubDetail").textContent = `${onJobs} finished the jobs ranking · ${finished} finished both`;
+    $("hostDoneNote").textContent = (state.phase === "open" || state.phase === "revote") ? `${finished} finished` : "";
+    renderRoster();
+  }
+
+  function renderHost(){
+    const { phase } = state;
+    const vis = (id, on) => $(id).classList.toggle("hidden", !on);
+    const canRevote = !meta || meta.revote !== false;
+    vis("btnOpen", phase === "lobby");
+    vis("btnResults", phase === "open");
+    vis("btnPoll", phase === "results" || phase === "revoteResults");
+    vis("btnPollResults", phase === "poll");
+    vis("btnRevote", canRevote && (phase === "results" || phase === "pollResults"));
+    vis("btnRevoteResults", phase === "revote");
+    vis("btnBack", phase === "pollResults" || phase === "revoteResults");
+    vis("hostOpenCard", phase === "open" || phase === "revote");
+    vis("hostResults", phase === "results" || phase === "revoteResults");
+    vis("hostPoll", phase === "pollResults");
+    vis("hostLobbyCard", phase === "lobby" || phase === "open" || phase === "revote");
+    $("hostRoundTag").textContent = phase === "revote" ? "Re-vote open" : "Ranking open";
+    $("hostPhaseNote").textContent = { lobby: "Waiting for students to join.", open: "Students are ranking. Close when the count settles.", results: "Map shown. Next: the prisoner's-dilemma poll, or the re-vote at the end of the hour.", poll: "Poll open.", pollResults: "", revote: "Re-vote open.", revoteResults: "" }[phase] || "";
+    if (phase === "open" || phase === "revote") renderHostCounts();
+    if (phase === "results" || phase === "revoteResults"){ if (lastPhaseRendered !== phase) resTab = phase === "revoteResults" ? "ba" : "map"; renderResults(); }
+    if (phase === "pollResults") renderPollResults();
+    lastPhaseRendered = phase;
+  }
+
+  async function setPhase(p){
+    if (p === "results" && !Object.keys(votes.vote || {}).length){ toast("Nothing submitted yet."); return; }
+    if (p === "revoteResults" && !Object.keys(votes.revote || {}).length){ toast("No re-votes submitted yet."); return; }
+    await db.ref(path("state")).update({ phase: p, changedAt: Date.now() });
+  }
+
+  async function seedDemo(){
+    const names = ["Demo Ava","Demo Ben","Demo Cai","Demo Dee","Demo Eli","Demo Fay","Demo Gus","Demo Hal"];
+    // latent "class opinion" per career, plus per-career noise: high noise = a split room
+    const jobsLatent = [ 0.3, -0.2, -1.4, -1.8, -1.2,  1.9,  1.6, -1.5, -0.6,  1.0,  0.4, -0.1];
+    const payLatent  = [ 0.6,  0.2, -0.9, -1.5, -1.0,  0.7,  1.4, -1.1, -0.8,  0.9, -0.3,  0.0];
+    const noise      = [ 1.6,  1.2,  1.0,  0.7,  0.8,  0.9,  0.7,  1.1,  1.3,  1.7,  2.0,  1.8];
+    const rank = (latent, k) => PROFESSIONS.map((_, i) => ({ i, s: latent[i] + (Math.random() - .5) * 2 * noise[i] * k }))
+                                           .sort((a, b) => b.s - a.s).map(o => o.i);
+    const upd = {};
+    names.forEach((n, k) => {
+      const id = "demo" + k;
+      upd[`players/${id}`] = { name: n, joinedAt: Date.now(), mine: [k % N, (k * 5) % N] };
+      if (!(votes.vote && votes.vote[id])) upd[`votes/vote/${id}`] = { name: n, at: Date.now(), jobs: rank(jobsLatent, 1), pay: rank(payLatent, 1) };
+      if ((state.phase === "revote" || state.phase === "revoteResults") && !(votes.revote && votes.revote[id]))
+        upd[`votes/revote/${id}`] = { name: n, at: Date.now(), jobs: rank(jobsLatent, .6), pay: rank(payLatent, .6) };
+      if (state.phase === "poll" || state.phase === "pollResults") upd[`poll/${id}`] = ["pd","pd","stag","none","local","pd","stag","local"][k];
+    });
+    await db.ref(path()).update(upd);
+    toast("Demo responses added (names start with Demo).");
+  }
+
+  /* ---------- statistics ----------
+     A ranking is stored as an ordered list of career indices, best first.
+     rank 1 = top of the student's list. Lower mean rank = the class expects more. */
+  function ranksOf(order){ const r = new Array(N).fill(null); (order || []).forEach((careerIdx, pos) => { r[careerIdx] = pos + 1; }); return r; }
+  function stats(round, dim, filterIds){
+    const rv = votes[round] || {};
+    const cols = PROFESSIONS.map(() => []);
+    Object.entries(rv).forEach(([id, v]) => {
+      if (filterIds && !filterIds.has(id)) return;
+      if (!v[dim] || v[dim].length !== N) return;
+      const r = ranksOf(v[dim]);
+      r.forEach((rank, i) => { if (rank) cols[i].push(rank); });
+    });
+    return cols.map((xs, i) => {
+      const n = xs.length;
+      const mean = n ? xs.reduce((s, x) => s + x, 0) / n : 0;
+      const sd = n ? Math.sqrt(xs.reduce((s, x) => s + (x - mean) ** 2, 0) / n) : 0;
+      return { i, name: PROFESSIONS[i], short: SHORT[i], n, mean, sd,
+               top3: n ? xs.filter(x => x <= 3).length / n : 0,
+               bot3: n ? xs.filter(x => x > N - 3).length / n : 0 };
+    });
+  }
+  const band = sd => sd < SD_BANDS[0] ? 0 : sd < SD_BANDS[1] ? 1 : 2;
+  /* Bivariate colour key: teal = the room splits on JOBS, violet = it splits on PAY,
+     dark = it splits on both, pale = it agrees. Colour never encodes good or bad. */
+  function mix(a, b, t){ return a.map((v, k) => Math.round(v + (b[k] - v) * t)); }
+  const BASE = [237, 234, 227], TEAL = [42, 122, 120], VIOLET = [113, 78, 160];
+  function discColor(sdJobs, sdPay){
+    const j = band(sdJobs) / 2, p = band(sdPay) / 2;
+    let c = mix(BASE, TEAL, j * 0.85);
+    c = mix(c, VIOLET, p * 0.85);
+    if (j && p) c = mix(c, [40, 40, 70], 0.18);
+    return `rgb(${c[0]},${c[1]},${c[2]})`;
+  }
+  function bandWord(sd){ return ["the room agrees", "some spread", "the room is split"][band(sd)]; }
+
+  /* ---------- results rendering ---------- */
+  function renderResults(){
+    const hasRevote = Object.keys(votes.revote || {}).length > 0;
+    const tabs = [{ id: "map", label: "The class map" }, { id: "table", label: "Table" }, { id: "mine", label: "Insiders vs. everyone else" }];
+    if (hasRevote) tabs.push({ id: "ba", label: "Before vs. after" });
+    if (!tabs.some(t => t.id === resTab)) resTab = tabs[0].id;
+    $("resTabs").innerHTML = tabs.map(t => `<button class="${t.id === resTab ? "sel" : ""}" onclick="App.tab('${t.id}')">${t.label}</button>`).join("");
+    const n = Object.keys(votes.vote || {}).length;
+    $("resN").textContent = `${n} student${n === 1 ? "" : "s"} submitted`;
+    if (resTab === "map") renderMap();
+    else if (resTab === "table") renderTable();
+    else if (resTab === "mine") renderInsiders();
+    else if (resTab === "ba") renderBeforeAfter();
+  }
+  function tab(id){ resTab = id; renderResults(); }
+  function toggleWhiskers(){ showWhiskers = !showWhiskers; renderResults(); }
+
+  /* the scatter: x = average pay rank, y = average jobs rank, both flipped so up/right = more */
+  function mapSVG(jobs, pay, opts){
+    opts = opts || {};
+    const W = 760, H = 560, L = 78, R = 28, T = 26, B = 66;
+    const x = m => L + (N - m) / (N - 1) * (W - L - R);
+    const y = m => T + (m - 1) / (N - 1) * (H - T - B);
+    const mid = (N + 1) / 2;
+    let s = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;font-family:Inter,sans-serif" role="img" aria-label="Class map of careers">`;
+    s += `<rect x="${L}" y="${T}" width="${W-L-R}" height="${H-T-B}" fill="#FBFAF7" stroke="#DDD9CE"/>`;
+    // quadrant guides
+    s += `<line x1="${x(mid)}" y1="${T}" x2="${x(mid)}" y2="${H-B}" stroke="#C9C3B4" stroke-dasharray="4 4"/>`;
+    s += `<line x1="${L}" y1="${y(mid)}" x2="${W-R}" y2="${y(mid)}" stroke="#C9C3B4" stroke-dasharray="4 4"/>`;
+    const qlab = (tx, ty, t, anchor) => `<text x="${tx}" y="${ty}" text-anchor="${anchor}" font-size="12" fill="#A49C8B">${t}</text>`;
+    s += qlab(W - R - 8, T + 16, "more jobs · higher pay", "end");
+    s += qlab(L + 8, T + 16, "more jobs · lower pay", "start");
+    s += qlab(W - R - 8, H - B - 8, "fewer jobs · higher pay", "end");
+    s += qlab(L + 8, H - B - 8, "fewer jobs · lower pay", "start");
+    // axes
+    s += `<text x="${(L + W - R) / 2}" y="${H - 24}" text-anchor="middle" font-size="13" fill="#5A6A79" font-weight="600">Class ranking: pay in ${YEAR()} →</text>`;
+    s += `<text x="${L}" y="${H - B + 18}" text-anchor="start" font-size="11.5" fill="#8A8778">pay falls most</text>`;
+    s += `<text x="${W - R}" y="${H - B + 18}" text-anchor="end" font-size="11.5" fill="#8A8778">pay rises most</text>`;
+    s += `<text transform="translate(22 ${(T + H - B) / 2}) rotate(-90)" text-anchor="middle" font-size="13" fill="#5A6A79" font-weight="600">Class ranking: number of jobs in ${YEAR()} →</text>`;
+    s += `<text transform="translate(44 ${T + 6}) rotate(-90)" text-anchor="end" font-size="11.5" fill="#8A8778">most jobs added</text>`;
+    s += `<text transform="translate(44 ${H - B - 6}) rotate(-90)" text-anchor="start" font-size="11.5" fill="#8A8778">most jobs lost</text>`;
+    // before/after arrows
+    if (opts.from){
+      opts.from.forEach((f, i) => {
+        const a = { x: x(f.pay), y: y(f.jobs) }, b = { x: x(pay[i].mean), y: y(jobs[i].mean) };
+        if (Math.hypot(b.x - a.x, b.y - a.y) < 3) return;
+        s += `<line x1="${a.x.toFixed(1)}" y1="${a.y.toFixed(1)}" x2="${b.x.toFixed(1)}" y2="${b.y.toFixed(1)}" stroke="#9A9484" stroke-width="1.5" marker-end="url(#ah)"/>`;
+        s += `<circle cx="${a.x.toFixed(1)}" cy="${a.y.toFixed(1)}" r="3" fill="#fff" stroke="#9A9484"/>`;
+      });
+      s = `<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#9A9484"/></marker></defs>` + s;
+    }
+    // dots with optional ±1 SD whiskers
+    const pts = PROFESSIONS.map((_, i) => ({ i, cx: x(pay[i].mean), cy: y(jobs[i].mean), fill: discColor(jobs[i].sd, pay[i].sd) }));
+    if (showWhiskers && !opts.from){
+      pts.forEach(p => {
+        const i = p.i;
+        const x1 = x(Math.min(N, pay[i].mean + pay[i].sd)), x2 = x(Math.max(1, pay[i].mean - pay[i].sd));
+        const y1 = y(Math.max(1, jobs[i].mean - jobs[i].sd)), y2 = y(Math.min(N, jobs[i].mean + jobs[i].sd));
+        s += `<line x1="${x1.toFixed(1)}" y1="${p.cy.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${p.cy.toFixed(1)}" stroke="${p.fill}" stroke-width="2" opacity=".55"/>`;
+        s += `<line x1="${p.cx.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${p.cx.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${p.fill}" stroke-width="2" opacity=".55"/>`;
+      });
+    }
+    // label placement: push apart labels that collide vertically
+    const labs = pts.map(p => ({ ...p, lx: p.cx + 12, ly: p.cy + 4, anchor: "start" }));
+    labs.forEach(l => { if (l.lx > W - R - 90){ l.lx = l.cx - 12; l.anchor = "end"; } });
+    labs.sort((a, b) => a.ly - b.ly).forEach((l, k, arr) => { if (k && l.ly - arr[k-1].ly < 14 && Math.abs(l.lx - arr[k-1].lx) < 120) l.ly = arr[k-1].ly + 14; });
+    pts.forEach(p => { s += `<circle cx="${p.cx.toFixed(1)}" cy="${p.cy.toFixed(1)}" r="9" fill="${p.fill}" stroke="#2C3E50" stroke-width="1.2"><title>${escapeHtml(PROFESSIONS[p.i])} — jobs rank ${fmt1(jobs[p.i].mean)} (SD ${jobs[p.i].sd.toFixed(2)}, ${bandWord(jobs[p.i].sd)}); pay rank ${fmt1(pay[p.i].mean)} (SD ${pay[p.i].sd.toFixed(2)}, ${bandWord(pay[p.i].sd)})</title></circle>`; });
+    labs.forEach(l => { s += `<text x="${l.lx.toFixed(1)}" y="${l.ly.toFixed(1)}" text-anchor="${l.anchor}" font-size="12.5" fill="#1E2A36" font-weight="600" paint-order="stroke" stroke="#FBFAF7" stroke-width="3">${escapeHtml(SHORT[l.i])}</text>`; });
+    s += `</svg>`;
+    return s;
+  }
+
+  function colorKeyHTML(){
+    let rows = "";
+    for (let j = 2; j >= 0; j--){
+      rows += `<div class="rlab">${["agree","", "split"][j === 2 ? 2 : j === 0 ? 0 : 1]}</div>`;
+      for (let p = 0; p <= 2; p++){
+        const sdJ = [1.5, 2.5, 3.4][j], sdP = [1.5, 2.5, 3.4][p];
+        rows += `<div class="cell" style="background:${discColor(sdJ, sdP)}" title="jobs ${["agree","some spread","split"][j]}, pay ${["agree","some spread","split"][p]}"></div>`;
+      }
+    }
+    return `<div class="keybox">
+      <div class="eyebrow">Colour = disagreement</div>
+      <div class="small">Teal: the room splits on <b>jobs</b>. Violet: it splits on <b>pay</b>. Dark: both. Pale: the room agrees. Position shows the forecast; colour shows only how much you disagreed.</div>
+      <div class="keygrid">${rows}</div>
+      <div class="keycols"><div></div><div>agree</div><div></div><div>split</div></div>
+      <div class="small" style="margin-top:6px">← disagreement about pay →</div>
+      <label class="chk" style="margin:10px 0 0"><input type="checkbox" ${showWhiskers ? "checked" : ""} onchange="App.toggleWhiskers()"> show ±1 SD whiskers</label>
+    </div>`;
+  }
+
+  function renderMap(){
+    const jobs = stats("vote", "jobs"), pay = stats("vote", "pay");
+    $("resTitle").textContent = `The class map for ${YEAR()}`;
+    $("resEyebrow").textContent = "average rank on jobs against average rank on pay";
+    $("resBody").innerHTML = `<div class="maprow"><div class="mapbox">${mapSVG(jobs, pay)}</div>${colorKeyHTML()}</div>` + calloutsHTML(jobs, pay);
+    $("resLegend").innerHTML = `Each career's position is the class's <b>average rank</b> (1 to ${N}) — a relative forecast, not a percentage. Whiskers are ±1 standard deviation of the rank.`;
+    $("resDiscuss").innerHTML = discussionHTML(jobs, pay);
+  }
+
+  function calloutsHTML(jobs, pay){
+    const byJobs = jobs.slice().sort((a, b) => a.mean - b.mean);
+    const byPay = pay.slice().sort((a, b) => a.mean - b.mean);
+    const splitJobs = jobs.slice().sort((a, b) => b.sd - a.sd)[0];
+    const agreeJobs = jobs.slice().sort((a, b) => a.sd - b.sd)[0];
+    const splitPay = pay.slice().sort((a, b) => b.sd - a.sd)[0];
+    return `<div class="callouts">
+      ${callout("Jobs: ranked highest", byJobs[0].name, `average rank ${fmt1(byJobs[0].mean)} · ${bandWord(byJobs[0].sd)}`)}
+      ${callout("Jobs: ranked lowest", byJobs[N-1].name, `average rank ${fmt1(byJobs[N-1].mean)} · ${bandWord(byJobs[N-1].sd)}`)}
+      ${callout("Pay: ranked highest", byPay[0].name, `average rank ${fmt1(byPay[0].mean)} · ${bandWord(byPay[0].sd)}`)}
+      ${callout("Most agreement (jobs)", agreeJobs.name, `SD ${agreeJobs.sd.toFixed(2)} — the crowded consensus`)}
+      ${callout("Most disagreement (jobs)", splitJobs.name, `SD ${splitJobs.sd.toFixed(2)} · ${Math.round(splitJobs.top3*100)}% put it top three, ${Math.round(splitJobs.bot3*100)}% bottom three`)}
+      ${callout("Most disagreement (pay)", splitPay.name, `SD ${splitPay.sd.toFixed(2)}`)}
+    </div>`;
+  }
+
+  function discussionHTML(jobs, pay){
+    const byJobs = jobs.slice().sort((a, b) => a.mean - b.mean);
+    const splitJobs = jobs.slice().sort((a, b) => b.sd - a.sd)[0];
+    const agreeJobs = jobs.slice().sort((a, b) => a.sd - b.sd)[0];
+    const oppos = PROFESSIONS.map((_, i) => ({ i, d: (jobs[i].mean - pay[i].mean) }))
+                             .sort((a, b) => Math.abs(b.d) - Math.abs(a.d))[0];
+    const items = [];
+    items.push(`<li><b>${escapeHtml(byJobs[0].name)}</b> is the class's safest bet on jobs and <b>${escapeHtml(byJobs[N-1].name)}</b> the most doomed. Ask the person who ranked them the other way round to name the mechanism — bundle, substitute or complement, elasticity, J-curve, Baumol, cost of failure.</li>`);
+    items.push(`<li><b>${escapeHtml(splitJobs.name)}</b> splits the room most (${Math.round(splitJobs.top3*100)}% top three, ${Math.round(splitJobs.bot3*100)}% bottom three). Is the disagreement about the technology, or about demand?</li>`);
+    items.push(`<li><b>${escapeHtml(agreeJobs.name)}</b> is where you agree most. If everyone in this room — and everyone else your age — believes that, what happens to the supply of people entering it, and then to pay? Agreement is exactly what makes a career crowded.</li>`);
+    items.push(`<li><b>${escapeHtml(PROFESSIONS[oppos.i])}</b> has the biggest gap between its jobs rank (${fmt1(jobs[oppos.i].mean)}) and its pay rank (${fmt1(pay[oppos.i].mean)}). Which half of the bundle is being automated: the routine half (fewer but richer survivors) or the expert core (more workers, lower pay)?</li>`);
+    items.push(`<li>Where you disagreed most is where private information is worth the most. If you are right and the room is wrong, you get the rising demand without the crowd. Who here is making that bet?</li>`);
+    return items.join("");
+  }
+
+  function renderTable(){
+    const jobs = stats("vote", "jobs"), pay = stats("vote", "pay");
+    const rows = jobs.map((s, i) => ({ ...s, pMean: pay[i].mean, pSd: pay[i].sd })).sort((a, b) => a.mean - b.mean);
+    $("resTitle").textContent = `Every career, ranked (${YEAR()})`;
+    $("resEyebrow").textContent = "average rank, disagreement, and how the room split";
+    $("resBody").innerHTML = `<div style="overflow-x:auto"><table class="res">
+      <tr><th></th><th>Career</th><th>Jobs rank</th><th>Disagreement</th><th>Top 3 / bottom 3</th><th>Pay rank</th><th>Disagreement</th></tr>` +
+      rows.map(r => `<tr>
+        <td><span class="swatch" style="background:${discColor(r.sd, r.pSd)}"></span></td>
+        <td class="name">${escapeHtml(r.name)}</td>
+        <td class="num">${fmt1(r.mean)}</td>
+        <td class="num">${r.sd.toFixed(2)} <span class="small">${bandWord(r.sd)}</span></td>
+        <td class="num">${Math.round(r.top3*100)}% / ${Math.round(r.bot3*100)}%</td>
+        <td class="num">${fmt1(r.pMean)}</td>
+        <td class="num">${r.pSd.toFixed(2)} <span class="small">${bandWord(r.pSd)}</span></td></tr>`).join("") + `</table></div>`;
+    $("resLegend").innerHTML = `Rank 1 = the career the class put at the top (most jobs added, or pay rising most) out of ${N}. Disagreement is the standard deviation of the rank; a room ranking at random would average about 3.45.`;
+    $("resDiscuss").innerHTML = discussionHTML(jobs, pay);
+  }
+
+  function renderInsiders(){
+    const insiders = {};
+    Object.entries(players).forEach(([id, p]) => (p.mine || []).forEach(i => { (insiders[i] = insiders[i] || new Set()).add(id); }));
+    const all = stats("vote", "jobs"), allPay = stats("vote", "pay");
+    const rows = all.map((s, i) => {
+      const has = insiders[i] && insiders[i].size;
+      const ins = has ? stats("vote", "jobs", insiders[i])[i] : null;
+      const insPay = has ? stats("vote", "pay", insiders[i])[i] : null;
+      const outIds = new Set(Object.keys(votes.vote || {}).filter(id => !(insiders[i] && insiders[i].has(id))));
+      const out = stats("vote", "jobs", outIds)[i], outPay = stats("vote", "pay", outIds)[i];
+      return { name: s.name, nIn: ins ? ins.n : 0, jIn: ins && ins.n ? ins.mean : null, jOut: out.mean, pIn: insPay && insPay.n ? insPay.mean : null, pOut: outPay.mean };
+    }).sort((a, b) => b.nIn - a.nIn);
+    $("resTitle").textContent = `People aiming at a career vs. everyone else (${YEAR()})`;
+    $("resEyebrow").textContent = "the proximity test: do insiders rank it differently?";
+    const gaps = rows.filter(r => r.jIn != null && r.nIn >= 2).map(r => ({ ...r, gap: r.jOut - r.jIn })).sort((a, b) => Math.abs(b.gap) - Math.abs(a.gap));
+    const head = gaps.length
+      ? `<div class="callouts">${callout("Largest insider gap (jobs)", gaps[0].name, `insiders rank it ${fmt1(gaps[0].jIn)}, everyone else ${fmt1(gaps[0].jOut)} (n = ${gaps[0].nIn})`)}</div>`
+      : `<div class="callouts"><div class="callout"><div class="d">No career has two or more students who marked it as their own plan, so gaps are not shown.</div></div></div>`;
+    $("resBody").innerHTML = head + `<div style="overflow-x:auto"><table class="res">
+      <tr><th>Career</th><th>Insiders (n)</th><th>Jobs: insiders</th><th>Jobs: others</th><th>Pay: insiders</th><th>Pay: others</th></tr>` +
+      rows.map(r => `<tr><td class="name">${escapeHtml(r.name)}</td><td class="num">${r.nIn}</td><td class="num">${r.jIn == null ? "—" : fmt1(r.jIn)}</td><td class="num">${fmt1(r.jOut)}</td><td class="num">${r.pIn == null ? "—" : fmt1(r.pIn)}</td><td class="num">${fmt1(r.pOut)}</td></tr>`).join("") + `</table></div>`;
+    $("resLegend").innerHTML = `Lower average rank = ranked nearer the top of the list.`;
+    $("resDiscuss").innerHTML = [
+      `<li>Where insiders are more optimistic than the room, is that private information (they know the bundle of tasks) or motivated reasoning (they have already picked the major)?</li>`,
+      `<li>Where insiders are more pessimistic, what do they know about liability, licensing, or demand that outsiders miss?</li>`,
+      `<li>If insiders and outsiders agree, the career is priced in: everybody expects the same thing, so nobody earns a return on knowing it.</li>`
+    ].join("");
+  }
+
+  function renderBeforeAfter(){
+    const b = { jobs: stats("vote", "jobs"), pay: stats("vote", "pay") };
+    const a = { jobs: stats("revote", "jobs"), pay: stats("revote", "pay") };
+    const rv = votes.vote || {}, rr = votes.revote || {};
+    const pairIds = Object.keys(rr).filter(id => rv[id] && rv[id].jobs && rr[id].jobs);
+    let movedSlots = 0, totalSlots = 0;
+    pairIds.forEach(id => { const r0 = ranksOf(rv[id].jobs), r1 = ranksOf(rr[id].jobs); r0.forEach((x, i) => { totalSlots++; if (x !== r1[i]) movedSlots++; }); });
+    const rows = PROFESSIONS.map((name, i) => ({ name, j0: b.jobs[i].mean, j1: a.jobs[i].mean, p0: b.pay[i].mean, p1: a.pay[i].mean, sd0: b.jobs[i].sd, sd1: a.jobs[i].sd }))
+                            .sort((x, y) => Math.abs(y.j1 - y.j0) - Math.abs(x.j1 - x.j0));
+    const conv = rows.slice().sort((x, y) => (x.sd1 - x.sd0) - (y.sd1 - y.sd0))[0];
+    const div = rows.slice().sort((x, y) => (y.sd1 - y.sd0) - (x.sd1 - x.sd0))[0];
+    $("resTitle").textContent = `Before vs. after the hour (${YEAR()})`;
+    $("resEyebrow").textContent = "did the evidence move anyone?";
+    const from = PROFESSIONS.map((_, i) => ({ jobs: b.jobs[i].mean, pay: b.pay[i].mean }));
+    $("resBody").innerHTML = `<div class="maprow"><div class="mapbox">${mapSVG(a.jobs, a.pay, { from })}</div>
+      <div class="keybox"><div class="eyebrow">Reading the arrows</div><div class="small">Each hollow circle is where the class stood before the hour; the arrow ends at where it stands now. Colour still shows disagreement, measured on the re-vote.</div></div></div>
+      <div class="callouts">
+        ${callout("Biggest move", rows[0].name, `jobs rank ${fmt1(rows[0].j0)} → ${fmt1(rows[0].j1)}`)}
+        ${callout("Room converged most", conv.name, `SD ${conv.sd0.toFixed(2)} → ${conv.sd1.toFixed(2)}`)}
+        ${callout("Room diverged most", div.name, `SD ${div.sd0.toFixed(2)} → ${div.sd1.toFixed(2)}`)}
+        ${callout("Positions that changed", totalSlots ? `${Math.round(100 * movedSlots / totalSlots)}%` : "—", "of jobs-ranking slots, across all careers")}
+      </div>
+      <div style="overflow-x:auto"><table class="res">
+      <tr><th>Career</th><th>Jobs before</th><th>Jobs after</th><th>Change</th><th>Pay before</th><th>Pay after</th><th>Change</th><th>Disagreement (jobs)</th></tr>` +
+      rows.map(r => `<tr><td class="name">${escapeHtml(r.name)}</td><td class="num">${fmt1(r.j0)}</td><td class="num">${fmt1(r.j1)}</td><td class="num">${fmtSigned(r.j0 - r.j1)}</td><td class="num">${fmt1(r.p0)}</td><td class="num">${fmt1(r.p1)}</td><td class="num">${fmtSigned(r.p0 - r.p1)}</td><td class="num">${r.sd0.toFixed(2)} → ${r.sd1.toFixed(2)}</td></tr>`).join("") + `</table></div>`;
+    $("resLegend").innerHTML = `A positive change means the class moved the career <b>up</b> its list (more jobs, or higher pay) over the hour.`;
+    $("resDiscuss").innerHTML = [
+      `<li>Call on two people who moved <b>${escapeHtml(rows[0].name)}</b>: what moved you — a mechanism, a number, or the open-economy argument?</li>`,
+      `<li>The room ${conv.sd1 < conv.sd0 ? "converged" : "did not converge"} on <b>${escapeHtml(conv.name)}</b>. Convergence after evidence is learning; convergence after a confident speaker is something else. Which was it?</li>`,
+      `<li>Where disagreement <em>grew</em> (<b>${escapeHtml(div.name)}</b>), the hour surfaced a mechanism people weigh differently. Is that a failure of the discussion or its point?</li>`
+    ].join("");
+  }
+
+  function callout(k, v, d){ return `<div class="callout"><div class="k">${k}</div><div class="v">${escapeHtml(v)}</div><div class="d">${escapeHtml(d)}</div></div>`; }
+
+  function renderPollResults(){
+    const counts = { pd: 0, stag: 0, none: 0, local: 0 };
+    Object.values(pollVotes).forEach(v => { if (counts[v] != null) counts[v]++; });
+    const total = Object.values(counts).reduce((s, x) => s + x, 0) || 1;
+    $("pollBars").innerHTML = Object.entries(POLL_LABELS).map(([k, lab]) => `<div class="pollbar"><div class="lab">${lab}</div><div class="bar"><span style="width:${(100 * counts[k] / total).toFixed(0)}%"></span></div><div class="n">${counts[k]} · ${Math.round(100 * counts[k] / total)}%</div></div>`).join("");
+    const lead = Object.entries(counts).sort((a, b) => b[1] - a[1])[0][0];
+    $("pollDiscuss").innerHTML = [
+      `<li>Ask the largest group (<b>${POLL_LABELS[lead]}</b>) to name the assumption that makes their answer right, and the smallest group to name the one that makes it wrong.</li>`,
+      `<li>Prisoner's dilemma requires: (1) mutual restraint really beats the race for both sides, (2) defection is hard to observe, (3) the game is not repeated with reputation or side payments, (4) payoffs are roughly symmetric. Which one do the "stag hunt" and "not a dilemma" groups reject?</li>`,
+      `<li>Export controls on chips are observable; model weights and services are not. Does that make the frontier a stag hunt and the lawyer's job a prisoner's dilemma?</li>`
+    ].join("");
+  }
+
+  /* ---------- wire up ---------- */
+  document.addEventListener("DOMContentLoaded", () => {
+    boot();
+    $("joinCode")?.addEventListener("input", e => e.target.value = e.target.value.toUpperCase());
+  });
+
+  return { showJoin, showHost, join, createGame, setPhase, seedDemo, tab, toggleWhiskers, nudge, toggleMine, submitStep, pickPoll, submitPoll };
+})();
+</script>
+</body>
+</html>
