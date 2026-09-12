@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2C6E4A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="description" content="Sideline — fair playing time for youth soccer coaches. Works offline; nothing leaves your phone.">
+<title>Sideline</title>
+<link rel="stylesheet" href="sideline/style.css">
+</head>
+<body>
+
+<header id="chrome">
+  <div class="brand">Side<span>line</span></div>
+  <div class="teams" id="teamBar" aria-label="Teams"></div>
+  <nav role="tablist">
+    <button role="tab" id="tab-game" aria-selected="true">Game</button>
+    <button role="tab" id="tab-team" aria-selected="false">Team</button>
+    <button role="tab" id="tab-stats" aria-selected="false">Minutes</button>
+  </nav>
+</header>
+
+<div id="warn" hidden></div>
+
+<div class="wrap">
+  <section class="screen on" id="s-game"></section>
+  <section class="screen" id="s-team"></section>
+  <section class="screen" id="s-stats"></section>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script type="module" src="sideline/ui.js"></script>
+</body>
+</html>
