@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#2C6E4A">
+<meta name="description" content="Sideline — fair playing time for youth soccer coaches. Tracks who is on the field, for how long and in which position. Works offline; nothing leaves your phone.">
+<title>Sideline — fair playing time for youth soccer</title>
+<style>
+:root{
+  --pitch:#2C6E4A; --pitch-dark:#235739; --ink:#101713; --shell:#EEF0EB;
+  --card:#FFFFFF; --edge:#D3D8D1; --muted:#6B7570;
+  --font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:var(--font);background:var(--shell);color:var(--ink);font-size:17px;line-height:1.5;-webkit-text-size-adjust:100%}
+header{background:var(--pitch);color:#fff;padding:40px 20px 36px}
+.brand{font-size:34px;font-weight:700;letter-spacing:-.02em}
+.brand span{color:#FDDA3A}
+.tag{font-size:20px;margin:6px 0 0;opacity:.95}
+main{max-width:680px;margin:0 auto;padding:24px 20px 48px}
+.panel{background:var(--card);border:1px solid var(--edge);border-radius:14px;padding:18px 20px;margin:0 0 16px}
+h2{margin:0 0 8px;font-size:19px;font-weight:650;letter-spacing:-.01em}
+p{margin:0 0 10px}
+ul{margin:0 0 10px;padding-left:22px}
+li{margin:4px 0}
+.row{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.btn{display:inline-block;padding:11px 18px;border-radius:999px;font-weight:600;text-decoration:none;
+  background:var(--pitch);color:#fff;border:1.5px solid var(--pitch)}
+.btn.secondary{background:#fff;color:var(--pitch)}
+.btn:hover{background:var(--pitch-dark);border-color:var(--pitch-dark);color:#fff}
+.soon{color:var(--muted);font-size:15px;margin-top:10px}
+a{color:var(--pitch)}
+footer{color:var(--muted);font-size:14px;text-align:center;padding:0 20px 32px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">Side<span>line</span></div>
+  <p class="tag">Fair playing time for youth soccer coaches.</p>
+</header>
+
+<main>
+  <div class="panel">
+    <p>Sideline tracks who’s on the field, for how long and in which position, and shows each player’s fair share of the minutes as the game goes. It counts only the time each player was actually there, and leaves time in goal out of the split.</p>
+    <p>It works with no signal, and nothing leaves your phone: there are no accounts, no sign-in and no tracking.</p>
+    <div class="row">
+      <a class="btn" href="/sideline/app">Try it in your browser</a>
+    </div>
+    <p class="soon">iPhone and iPad app: coming soon to the App Store.</p>
+  </div>
+
+  <div class="panel">
+    <h2>What it does</h2>
+    <ul>
+      <li>A game clock with halves, thirds or quarters, and time added on.</li>
+      <li>A pitch you tap to substitute, plan several changes at once, or switch formation mid-game.</li>
+      <li>Minutes per player and per position, with a fair-share target, updated live.</li>
+      <li>Goals and assists, season totals, and CSV export.</li>
+      <li>Team files you can send to another coach, or keep as a backup.</li>
+    </ul>
+  </div>
+
+  <div class="panel">
+    <h2>Support</h2>
+    <p>Questions, problems or ideas: <a href="mailto:benshiller@yahoo.com">benshiller@yahoo.com</a></p>
+  </div>
+
+  <div class="panel">
+    <h2>Privacy</h2>
+    <p>Sideline doesn’t collect any personal information. Everything you enter stays on your device. <a href="/sideline/privacy">Read the privacy policy.</a></p>
+  </div>
+</main>
+
+<footer>Sideline is made by Benjamin Shiller.</footer>
+
+</body>
+</html>
