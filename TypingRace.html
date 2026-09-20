@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#2C3E50">
+<title>Locked In — a switching-costs typing race</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2C3E50; --navy-deep:#22303F; --gold:#F1C40F; --gold-soft:#F9E79F; --teal:#5EA8A7; --teal-deep:#3F7E7D;
+  --paper:#F5F4EF; --card:#FFFFFF; --ink:#1E2A36; --ink-soft:#5A6A79; --line:#DDD9CE; --red:#C0574F; --red-soft:#F6E0DE; --green:#3E8E5A; --green-soft:#E1F0E6;
+  --radius:12px;
+  --font-display:'Space Grotesk',sans-serif; --font-body:'Inter',system-ui,sans-serif; --font-mono:'IBM Plex Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--paper);color:var(--ink);font-family:var(--font-body);font-size:16px;line-height:1.5;min-height:100vh}
+button{font-family:var(--font-body);cursor:pointer}
+input,textarea{font-family:var(--font-body)}
+.hidden{display:none!important}
+.shell{max-width:1080px;margin:0 auto;padding:20px 16px 64px}
+.shell.narrow{max-width:520px}
+.shell.mid{max-width:820px}
+header.top{background:var(--navy);color:#fff;padding:12px 0;position:sticky;top:0;z-index:20}
+header.top .shell{padding:0 16px;display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:4px}
+.brand{font-family:var(--font-display);font-weight:700;font-size:20px}
+.brand .accent{color:var(--gold)}
+.session-tag{font-family:var(--font-mono);font-size:13px;color:#CBD6E0}
+.session-tag b{color:var(--gold);letter-spacing:2px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px;margin-top:18px}
+.card.tint{background:#EEF6F6;border-color:#CDE3E3}
+.card.warn{background:var(--red-soft);border-color:#E6BDB9}
+h1{font-family:var(--font-display);font-size:clamp(26px,5vw,40px);line-height:1.12;color:var(--navy);text-wrap:balance}
+h2{font-family:var(--font-display);font-size:21px;color:var(--navy);margin-bottom:10px}
+h3{font-family:var(--font-display);font-size:16px;color:var(--navy)}
+p{margin:6px 0}
+p.sub{color:var(--ink-soft);margin-top:8px;max-width:64ch}
+.eyebrow{font-family:var(--font-mono);font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--teal-deep);margin-bottom:6px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;border-radius:10px;padding:13px 22px;font-size:16px;font-weight:600;transition:transform .06s ease,box-shadow .12s ease}
+.btn:active{transform:translateY(1px)}
+.btn:focus-visible,.role-card:focus-visible,.tabs button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.btn-primary{background:var(--navy);color:#fff}
+.btn-gold{background:var(--gold);color:var(--navy-deep)}
+.btn-teal{background:var(--teal);color:#fff}
+.btn-ghost{background:transparent;color:var(--navy);border:1.5px solid var(--navy)}
+.btn-block{width:100%}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.btn-sm{padding:8px 14px;font-size:14px;border-radius:8px}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;align-items:center}
+label.f{display:block;font-size:13px;font-weight:600;color:var(--ink-soft);margin:14px 0 5px;text-transform:uppercase;letter-spacing:.6px}
+input.f,textarea.f{width:100%;padding:12px 14px;font-size:17px;border:1.5px solid var(--line);border-radius:10px;background:#fff;color:var(--ink)}
+textarea.f{font-size:15px;min-height:96px;resize:vertical;line-height:1.5}
+input.f:focus,textarea.f:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(94,168,167,.18)}
+.f-err{color:var(--red);font-size:13px;margin-top:6px;min-height:18px}
+.code-input{font-family:var(--font-mono);letter-spacing:8px;text-transform:uppercase;text-align:center;font-size:24px!important}
+.land-hero{padding:36px 0 8px}
+.role-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:22px}
+@media(max-width:720px){.role-grid{grid-template-columns:1fr}}
+.role-card{background:var(--card);border:1.5px solid var(--line);border-radius:var(--radius);padding:22px;text-align:left;transition:border-color .12s,box-shadow .12s}
+.role-card:hover{border-color:var(--teal);box-shadow:0 6px 20px rgba(44,62,80,.10)}
+.role-card h3{font-size:19px;margin-bottom:6px}
+.role-card p{font-size:14px;color:var(--ink-soft)}
+.role-card .go{margin-top:14px;font-weight:700;color:var(--teal-deep);font-size:14px}
+.pulse-dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--teal);margin-right:8px;animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.35}50%{opacity:1}}
+@media(prefers-reduced-motion:reduce){.pulse-dot{animation:none}.key{transition:none!important}}
+.big-count{font-family:var(--font-display);font-size:56px;color:var(--navy);line-height:1}
+.big-count small{font-size:20px;color:var(--ink-soft);font-family:var(--font-body)}
+.join-code{font-family:var(--font-mono);font-size:64px;letter-spacing:14px;color:var(--navy);font-weight:600;line-height:1;margin:6px 0 2px}
+.roster{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.roster .p{font-size:13px;background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:4px 10px}
+.roster .p.in{border-color:var(--teal);background:#E8F4F4}
+.roster .p.done{border-color:var(--green);background:var(--green-soft)}
+.host-bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:16px}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--navy);color:#fff;padding:10px 18px;border-radius:10px;font-weight:600;z-index:50;max-width:90vw}
+.mono{font-family:var(--font-mono)}
+.small{font-size:13px;color:var(--ink-soft)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:720px){.grid2{grid-template-columns:1fr}}
+.notice{background:#FFF4D6;border:1px solid #EAD48A;color:#6B5500;border-radius:10px;padding:10px 14px;font-size:14px;margin-top:12px}
+
+/* ---------- race ---------- */
+.rh{display:flex;justify-content:space-between;align-items:flex-end;gap:10px;flex-wrap:wrap}
+.rh .big{font-family:var(--font-display);font-size:30px;color:var(--navy);line-height:1}
+.rh .big small{display:block;font-size:15px;color:var(--ink-soft);font-family:var(--font-body);font-weight:500;margin-top:6px}
+.timer{font-family:var(--font-mono);font-size:34px;font-weight:600;color:var(--navy);font-variant-numeric:tabular-nums;line-height:1}
+.timer small{font-size:15px;color:var(--ink-soft)}
+.prompt{margin:16px 0 12px;padding:16px 18px;border-radius:10px;background:var(--paper);border:1px solid var(--line);font-family:var(--font-mono);font-size:19px;line-height:1.75;white-space:pre-wrap;word-break:break-word;color:var(--ink-soft);user-select:none;-webkit-user-select:none}
+.prompt .ok{color:var(--green)}
+.prompt .bad{background:var(--red-soft);color:var(--red);border-radius:2px}
+.prompt .cur{background:var(--gold-soft);color:var(--ink);border-bottom:2px solid var(--navy)}
+.prompt .extra{background:var(--red-soft);color:var(--red)}
+.typebox{width:100%;min-height:92px;padding:12px 14px;font-family:var(--font-mono);font-size:17px;border:1.5px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);resize:none;caret-color:var(--navy)}
+.typebox:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(94,168,167,.18)}
+.typebox.r2:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(241,196,15,.25)}
+.score-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+.score-strip .s{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+.score-strip .k{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--ink-soft)}
+.score-strip .v{font-family:var(--font-mono);font-weight:600;font-size:18px;color:var(--navy);font-variant-numeric:tabular-nums}
+.kbwrap{margin-top:14px;overflow-x:auto;padding-bottom:4px}
+.kb{min-width:600px;padding:12px;border-radius:12px;background:var(--navy);display:flex;flex-direction:column;gap:5px}
+.kbrow{display:flex;gap:5px;justify-content:center}
+.key{width:42px;height:44px;background:#fff;border-radius:7px;border-bottom:3px solid #B9C2CC;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:var(--font-mono);font-weight:600;font-size:15px;color:var(--navy);transition:transform .08s,background .08s}
+.key small{font-size:9px;color:#8A97A5;font-weight:500;line-height:1;margin-top:2px}
+.key.space{width:280px}
+.key.hit{transform:translateY(2px);border-bottom-width:1px;background:var(--gold)}
+.kb .legend{font-family:var(--font-mono);font-size:11px;color:#CBD6E0;text-align:center;margin-top:4px}
+
+/* ---------- results ---------- */
+.kv{display:grid;grid-template-columns:1fr auto;gap:6px 14px;font-size:15px;margin-top:8px}
+.kv .k{color:var(--ink-soft)} .kv .v{font-family:var(--font-mono);font-weight:600;text-align:right;font-variant-numeric:tabular-nums}
+.kv .tot{border-top:2px solid var(--navy);padding-top:6px;font-weight:700}
+.callout-line{background:var(--navy);color:#fff;border-radius:10px;padding:12px 16px;margin-top:14px;font-weight:600}
+.callout-line.gold{background:var(--gold);color:var(--navy-deep)}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.tabs button{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:7px 14px;font-weight:600;color:var(--navy);font-size:13.5px}
+.tabs button.sel{background:var(--navy);border-color:var(--navy);color:#fff}
+table.res{width:100%;border-collapse:collapse;font-size:14px;margin-top:10px}
+table.res th,table.res td{padding:7px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
+table.res th{font-size:12px;text-transform:uppercase;letter-spacing:.6px;color:var(--ink-soft)}
+table.res td.num,table.res th.num{text-align:right;font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+table.res tr.top td{background:var(--gold-soft)}
+table.res tr.me td{background:#E8F4F4}
+.callouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-top:10px}
+.callout{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.callout .k{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--ink-soft)}
+.callout .v{font-family:var(--font-display);font-size:24px;color:var(--navy)}
+.callout .d{font-size:12.5px;color:var(--ink-soft)}
+.hist{margin-top:10px}
+.hist .hrow{display:grid;grid-template-columns:90px 1fr 40px;gap:10px;align-items:center;font-size:14px;margin:5px 0}
+.hist .bar{height:18px;background:var(--paper);border-radius:6px;overflow:hidden;border:1px solid var(--line)}
+.hist .bar span{display:block;height:100%;background:var(--teal)}
+.hist .n{font-family:var(--font-mono);font-size:13px;text-align:right}
+ul.discuss{padding-left:20px;margin-top:10px;font-size:14.5px}
+ul.discuss li{margin:6px 0}
+.slider{display:grid;grid-template-columns:minmax(0,1fr) 160px 56px;gap:10px;align-items:center;margin:10px 0;font-size:14px}
+@media(max-width:560px){.slider{grid-template-columns:1fr 56px}.slider label{grid-column:1/-1}}
+.slider input{width:100%}
+.slider .v{font-family:var(--font-mono);text-align:right}
+</style>
+</head>
+<body>
+<header class="top"><div class="shell">
+  <div class="brand">LOCKED IN <span class="accent">/ typing race</span></div>
+  <div class="session-tag" id="topTag">FYS 7b · classroom game</div>
+</div></header>
+
+<!-- ============ SETUP (Firebase unreachable) ============ -->
+<div id="viewSetup" class="shell mid hidden">
+  <div class="card">
+    <div class="eyebrow">No connection</div>
+    <h2>The class database isn't reachable</h2>
+    <p class="sub">Class sessions need the Firebase database the other classroom games use. Check the connection and reload. Solo play works without it.</p>
+    <div class="btn-row"><button class="btn btn-ghost" onclick="App.showSolo()">Play solo</button></div>
+  </div>
+</div>
+
+<!-- ============ LANDING ============ -->
+<div id="viewLanding" class="shell hidden">
+  <div class="land-hero">
+    <div class="eyebrow">A classroom game in two rounds</div>
+    <h1>Same keyboard. New letters. How much slower are you?</h1>
+    <p class="sub">Type a short paragraph on the QWERTY layout you know. Then type it again after every key has been moved to where it sits on a Dvorak keyboard. The difference in your times is a switching cost, measured in seconds. The class compares times on the scoreboard.</p>
+  </div>
+  <div class="role-grid">
+    <button class="role-card" onclick="App.showJoin()">
+      <h3>Join the class race</h3>
+      <p>Enter the 4-letter code on the screen. Your times go on the scoreboard.</p>
+      <div class="go">Join →</div>
+    </button>
+    <button class="role-card" onclick="App.showSolo()">
+      <h3>Race on your own</h3>
+      <p>No code needed. Same race, no scoreboard.</p>
+      <div class="go">Race solo →</div>
+    </button>
+    <button class="role-card" onclick="App.showHost()">
+      <h3>Host a race</h3>
+      <p>Pick the paragraph, create a code, start the race, and show the class's times and switching costs.</p>
+      <div class="go">Host a race →</div>
+    </button>
+  </div>
+  <p class="notice hidden" id="touchNote">This race needs a physical keyboard. On a phone or tablet the keyboard can't be remapped key by key, so Round 2 won't be a fair test. Use a laptop if you can.</p>
+</div>
+
+<!-- ============ JOIN ============ -->
+<div id="viewJoin" class="shell narrow hidden">
+  <div class="card">
+    <div class="eyebrow">Join</div>
+    <h2>Enter the session code</h2>
+    <label class="f" for="joinCode">Code</label>
+    <input class="f code-input" id="joinCode" maxlength="4" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="····">
+    <label class="f" for="joinName">Your name (goes on the scoreboard)</label>
+    <input class="f" id="joinName" maxlength="24" autocomplete="off" placeholder="First name and last initial">
+    <div class="f-err" id="joinErr"></div>
+    <button class="btn btn-primary btn-block" id="joinBtn" onclick="App.join()">Join</button>
+    <div class="btn-row"><button class="btn btn-ghost btn-sm" onclick="App.showLanding()">Back</button></div>
+  </div>
+</div>
+
+<!-- ============ SOLO ============ -->
+<div id="viewSolo" class="shell narrow hidden">
+  <div class="card">
+    <div class="eyebrow">Solo</div>
+    <h2>Race on your own</h2>
+    <label class="f" for="soloName">Your name</label>
+    <input class="f" id="soloName" maxlength="24" autocomplete="off" placeholder="e.g. Alex">
+    <p class="small" id="soloTexts" style="margin-top:14px"></p>
+    <div class="f-err" id="soloErr"></div>
+    <button class="btn btn-primary btn-block" onclick="App.startSolo()">Start</button>
+    <div class="btn-row"><button class="btn btn-ghost btn-sm" onclick="App.showLanding()">Back</button></div>
+  </div>
+</div>
+
+<!-- ============ WAIT ============ -->
+<div id="viewWait" class="shell narrow hidden">
+  <div class="card">
+    <div class="eyebrow" id="waitEyebrow">You're in</div>
+    <h2 id="waitTitle">Waiting for the host to start the race…</h2>
+    <p class="sub" id="waitSub"><span class="pulse-dot"></span>Keep this page open. Hands on the keyboard: the clock starts on your first keystroke, not when the race opens.</p>
+  </div>
+</div>
+
+<!-- ============ RACE ============ -->
+<div id="viewRace" class="shell mid hidden">
+  <div class="card">
+    <div class="rh">
+      <div class="big" id="raceTitle">Round 1 · QWERTY<small id="raceSub">The layout you already know.</small></div>
+      <div class="timer" id="raceTimer">0.0 <small>s</small></div>
+    </div>
+    <div class="notice hidden" id="r2Notice">Your keyboard hasn't changed, but every key now types the Dvorak letter in that position. Press the key where the letter sits on the map below. The map is all you get. Shorter sentence, same test.</div>
+    <div class="prompt" id="racePrompt" aria-hidden="true"></div>
+    <label class="f" for="raceInput" id="raceLabel">Type the paragraph exactly. The clock starts on your first keystroke.</label>
+    <textarea class="typebox" id="raceInput" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" rows="3" placeholder="Start typing here…"></textarea>
+    <div class="score-strip">
+      <div class="s"><div class="k">Words / min</div><div class="v" id="raceWpm">0</div></div>
+      <div class="s"><div class="k">Mistakes</div><div class="v" id="raceErr">0</div></div>
+      <div class="s"><div class="k">Done</div><div class="v" id="raceProg">0%</div></div>
+    </div>
+    <div class="kbwrap hidden" id="kbWrap"><div class="kb" id="kb" aria-label="Dvorak key map"></div></div>
+  </div>
+</div>
+
+<!-- ============ BETWEEN ROUNDS ============ -->
+<div id="viewBreak" class="shell narrow hidden">
+  <div class="card">
+    <div class="eyebrow">Round 1 done</div>
+    <h2 id="breakTitle"></h2>
+    <p class="sub">Now a layout you've never used. Nothing about the keyboard in front of you will change — only which letter each key types. The sentence is a short one, and it will still take you longer.</p>
+    <button class="btn btn-gold btn-block" style="margin-top:14px" id="breakBtn" onclick="App.startRound2()">Start Round 2: Dvorak</button>
+  </div>
+</div>
+
+<!-- ============ DONE ============ -->
+<div id="viewDone" class="shell mid hidden">
+  <div class="card">
+    <div class="eyebrow" id="doneEyebrow">Your race</div>
+    <h2 id="doneTitle"></h2>
+    <div class="kv" id="doneKv"></div>
+    <div class="callout-line gold" id="doneLine"></div>
+    <p class="sub" id="doneRank"></p>
+    <div class="btn-row" id="doneBtns"></div>
+  </div>
+  <div class="card hidden" id="doneBoards">
+    <div class="rh"><h2 style="margin:0">Class scoreboard</h2><div class="small" id="doneBoardsN"></div></div>
+    <div class="grid2" id="doneBoardsBody"></div>
+  </div>
+</div>
+
+<!-- ============ HOST: CREATE ============ -->
+<div id="viewHostCreate" class="shell mid hidden">
+  <div class="card">
+    <div class="eyebrow">Host</div>
+    <h2>Create a race</h2>
+    <p class="sub">Every student types the same two sentences, in every session, so the scoreboard compares like with like.</p>
+    <div class="kv" id="hostTexts" style="margin-top:14px"></div>
+    <p class="small" style="margin-top:10px">Round 2's sentence is shorter on purpose: at Dvorak pace the Round 1 paragraph would take most students several minutes. Times are compared per character.</p>
+    <div class="f-err" id="hostErr"></div>
+    <button class="btn btn-primary btn-block" style="margin-top:10px" onclick="App.createGame()">Create session</button>
+    <div class="btn-row"><button class="btn btn-ghost btn-sm" onclick="App.showLanding()">Back</button></div>
+  </div>
+</div>
+
+<!-- ============ HOST: RUN ============ -->
+<div id="viewHost" class="shell hidden">
+  <div class="card">
+    <div class="grid2">
+      <div>
+        <div class="eyebrow">Students join with this code</div>
+        <div class="join-code" id="hostCode">····</div>
+        <p class="small" id="hostUrlHint"></p>
+      </div>
+      <div>
+        <div class="eyebrow">In the room</div>
+        <div class="big-count"><span id="hostCount">0</span> <small id="hostPhaseNote"></small></div>
+        <div class="roster" id="hostRoster"></div>
+      </div>
+    </div>
+    <div class="host-bar">
+      <button class="btn btn-gold" id="btnOpen" onclick="App.setPhase('open')">Start the race</button>
+      <button class="btn btn-teal" id="btnClose" onclick="App.setPhase('done')">Close &amp; show results</button>
+      <button class="btn btn-ghost btn-sm" id="btnReopen" onclick="App.setPhase('open')">Reopen for more races</button>
+      <button class="btn btn-ghost btn-sm" onclick="App.seedDemo()">Seed 8 demo players</button>
+    </div>
+    <p class="small" id="hostTextShow" style="margin-top:12px"></p>
+  </div>
+  <div class="card">
+    <div class="rh"><h2 style="margin:0">Class results</h2><div class="small" id="resN"></div></div>
+    <div class="tabs" id="resTabs"></div>
+    <div id="resBody"></div>
+  </div>
+</div>
+
+<div id="toast" class="toast hidden" role="status"></div>
+
+<!-- Firebase compat SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
+/* =====================================================================
+   FIREBASE CONFIG — same project as Obsolescence.html / Labor.html / Drones.html
+   ===================================================================== */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyDQ8gn5w_Jj4OzcXFBz2lY2SKuaKEo2wbk",
+  authDomain: "obfuscationgame.firebaseapp.com",
+  databaseURL: "https://obfuscationgame-default-rtdb.firebaseio.com",
+  projectId: "obfuscationgame",
+  storageBucket: "obfuscationgame.firebasestorage.app",
+  messagingSenderId: "443679460937",
+  appId: "1:443679460937:web:d6b2806717894b3c923998"
+};
+const SITE_URL = "https://benjaminshiller.com/TypingRace";   // used on the host screen when opened from a local file
+// Fixed for everyone, every session: times only compare if the text does not change.
+// Round 2 is deliberately shorter — at three to five times the pace, a full paragraph takes minutes.
+const TEXT_Q = "Technology can be costly to adopt when people must learn a new system, even if the new system is better.";
+const TEXT_D = "The old keyboard is hard to leave behind.";
+
+/* =====================================================================
+   KEY MAPS
+   Physical key (event.code) -> [unshifted, shifted] on each layout.
+   ===================================================================== */
+const DV = {
+  Backquote:["`","~"], Digit1:["1","!"], Digit2:["2","@"], Digit3:["3","#"], Digit4:["4","$"], Digit5:["5","%"],
+  Digit6:["6","^"], Digit7:["7","&"], Digit8:["8","*"], Digit9:["9","("], Digit0:["0",")"], Minus:["[","{"], Equal:["]","}"],
+  KeyQ:["'","\""], KeyW:[",","<"], KeyE:[".",">"], KeyR:["p","P"], KeyT:["y","Y"], KeyY:["f","F"], KeyU:["g","G"],
+  KeyI:["c","C"], KeyO:["r","R"], KeyP:["l","L"], BracketLeft:["/","?"], BracketRight:["=","+"], Backslash:["\\","|"],
+  KeyA:["a","A"], KeyS:["o","O"], KeyD:["e","E"], KeyF:["u","U"], KeyG:["i","I"], KeyH:["d","D"], KeyJ:["h","H"],
+  KeyK:["t","T"], KeyL:["n","N"], Semicolon:["s","S"], Quote:["-","_"],
+  KeyZ:[";",":"], KeyX:["q","Q"], KeyC:["j","J"], KeyV:["k","K"], KeyB:["x","X"], KeyN:["b","B"], KeyM:["m","M"],
+  Comma:["w","W"], Period:["v","V"], Slash:["z","Z"], Space:[" "," "]
+};
+const QW = {
+  Backquote:["`","~"], Digit1:["1","!"], Digit2:["2","@"], Digit3:["3","#"], Digit4:["4","$"], Digit5:["5","%"],
+  Digit6:["6","^"], Digit7:["7","&"], Digit8:["8","*"], Digit9:["9","("], Digit0:["0",")"], Minus:["-","_"], Equal:["=","+"],
+  BracketLeft:["[","{"], BracketRight:["]","}"], Backslash:["\\","|"], Semicolon:[";",":"], Quote:["'","\""],
+  Comma:[",","<"], Period:[".",">"], Slash:["/","?"], Space:[" "," "]
+};
+"ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").forEach(L => QW["Key" + L] = [L.toLowerCase(), L]);
+// Character a QWERTY keyboard produced -> character that key makes on Dvorak.
+// Used only when the browser can't report the physical key (phone and tablet keyboards).
+const Q2D = {};
+Object.keys(QW).forEach(c => { if (DV[c]) { Q2D[QW[c][0]] = DV[c][0]; Q2D[QW[c][1]] = DV[c][1]; } });
+const KB_ROWS = [
+  ["Backquote","Digit1","Digit2","Digit3","Digit4","Digit5","Digit6","Digit7","Digit8","Digit9","Digit0","Minus","Equal"],
+  ["KeyQ","KeyW","KeyE","KeyR","KeyT","KeyY","KeyU","KeyI","KeyO","KeyP","BracketLeft","BracketRight"],
+  ["KeyA","KeyS","KeyD","KeyF","KeyG","KeyH","KeyJ","KeyK","KeyL","Semicolon","Quote"],
+  ["KeyZ","KeyX","KeyC","KeyV","KeyB","KeyN","KeyM","Comma","Period","Slash"],
+  ["Space"]
+];
+
+/* =====================================================================
+   HELPERS
+   ===================================================================== */
+const LQ = TEXT_Q.length, LD = TEXT_D.length;
+// The rounds use different sentences, so speed is compared per character.
+// scaleD converts a Dvorak time into what Round 1's paragraph would have taken at that pace.
+const scaleD = d => d * LQ / LD;
+const slowdown = (q, d) => (d / LD) / (q / LQ);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const sec = x => x == null ? "—" : x.toFixed(1) + " s";
+const signed = x => (x >= 0 ? "+" : "−") + Math.abs(x).toFixed(1) + " s";
+const times = x => x == null ? "—" : x.toFixed(1) + "×";
+const median = a => { if (!a.length) return null; const s = a.slice().sort((x, y) => x - y), m = Math.floor(s.length / 2); return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; };
+const asArray = v => Array.isArray(v) ? v.filter(Boolean) : (v && typeof v === "object" ? Object.keys(v).sort((a, b) => a - b).map(k => v[k]).filter(Boolean) : []);
+// Summarise a player record. "first" is the first attempt: the cleanest measure of the switching cost.
+function summarize(p){
+  const at = asArray(p.attempts).filter(a => isFinite(a.q) && isFinite(a.d));
+  if (!at.length) return { name: p.name, n: 0 };
+  const bq = at.reduce((b, a) => a.q < b.q ? a : b), bd = at.reduce((b, a) => a.d < b.d ? a : b);
+  return { name: p.name, n: at.length, attempts: at, first: at[0], bestQ: bq.q, bestQe: bq.qe, bestD: bd.d, bestDe: bd.de,
+           ratio: slowdown(at[0].q, at[0].d), extra: scaleD(at[0].d) - at[0].q };
+}
+
+/* =====================================================================
+   APP
+   ===================================================================== */
+const App = (() => {
+  let db = null, code = null, uid = null, myName = null, isHost = false, solo = false;
+  let state = null, players = {}, listeners = [];
+  let stage = null;            // student: "wait" | "race" | "break" | "done"
+  let attempts = [];           // my finished races
+  let race = null;             // the race in progress
+  let resTab = "lead", gain = 10;
+
+  const $ = id => document.getElementById(id);
+  const views = ["viewSetup","viewLanding","viewJoin","viewSolo","viewWait","viewRace","viewBreak","viewDone","viewHostCreate","viewHost"];
+  function show(v){ views.forEach(x => $(x).classList.toggle("hidden", x !== v)); window.scrollTo(0, 0); }
+  function toast(msg){ const t = $("toast"); t.textContent = msg; t.classList.remove("hidden"); clearTimeout(t._h); t._h = setTimeout(() => t.classList.add("hidden"), 2800); }
+  function getUid(){ let u = null; try { u = localStorage.getItem("typ_uid"); } catch(e){} if (!u){ u = (crypto.randomUUID ? crypto.randomUUID() : "u" + Date.now() + Math.random().toString(36).slice(2)); try { localStorage.setItem("typ_uid", u); } catch(e){} } return u; }
+  function clearListeners(){ listeners.forEach(([r, e, c]) => r.off(e, c)); listeners = []; }
+  function on(ref, ev, cb){ ref.on(ev, cb); listeners.push([ref, ev, cb]); }
+  // The shared database only permits writes under games/, so sessions live at games/typ-CODE.
+  const path = (...p) => ["games", "typ-" + code, ...p].join("/");
+  async function pushMe(upd){
+    if (solo || !db || !code) return;
+    try { await db.ref(path("players", uid)).update(Object.assign({ updatedAt: Date.now() }, upd)); } catch(e){ console.warn(e); }
+  }
+
+  /* ---------- boot ---------- */
+  function boot(){
+    uid = getUid();
+    try { if (typeof firebase !== "undefined"){ firebase.initializeApp(FIREBASE_CONFIG); db = firebase.database(); } } catch(e){ console.warn(e); db = null; }
+    $("hostTexts").innerHTML = `<div class="k">Round 1 · QWERTY</div><div class="v" style="font-size:13px;text-align:left">${esc(TEXT_Q)}<br><span class="small">${LQ} characters</span></div>` +
+      `<div class="k">Round 2 · Dvorak</div><div class="v" style="font-size:13px;text-align:left">${esc(TEXT_D)}<br><span class="small">${LD} characters</span></div>`;
+    $("soloTexts").innerHTML = `You'll type <b>${esc(TEXT_Q)}</b> on QWERTY, then <b>${esc(TEXT_D)}</b> on Dvorak.`;
+    const touchOnly = window.matchMedia && matchMedia("(hover: none) and (pointer: coarse)").matches;
+    $("touchNote").classList.toggle("hidden", !touchOnly);
+    buildKeyboard();
+    wireInput();
+    let saved = null; try { saved = JSON.parse(localStorage.getItem("typ_last") || "null"); } catch(e){}
+    const qs = new URLSearchParams(location.search);
+    if (!db){ show("viewSetup"); return; }
+    if (qs.get("g")){ show("viewJoin"); $("joinCode").value = qs.get("g").toUpperCase().slice(0, 4); if (saved && saved.name) $("joinName").value = saved.name; $("joinName").focus(); }
+    else if (qs.get("host") != null) show("viewHostCreate");
+    else { show("viewLanding"); if (saved){ $("joinCode").value = saved.code || ""; $("joinName").value = saved.name || ""; } }
+  }
+  function showLanding(){ show(db ? "viewLanding" : "viewSetup"); }
+  function showJoin(){ show("viewJoin"); $(($("joinCode").value ? "joinName" : "joinCode")).focus(); }
+  function showSolo(){ show("viewSolo"); $("soloName").focus(); }
+  function showHost(){ show("viewHostCreate"); }
+
+  /* =====================================================================
+     STUDENT
+     ===================================================================== */
+  async function join(){
+    const c = $("joinCode").value.trim().toUpperCase(), n = $("joinName").value.trim(), err = $("joinErr");
+    if (c.length !== 4){ err.textContent = "Enter the 4-letter code on the screen."; return; }
+    if (!n){ err.textContent = "Add your name so your times show up on the scoreboard."; return; }
+    err.textContent = ""; $("joinBtn").disabled = true;
+    try {
+      const snap = await db.ref(`games/typ-${c}/state`).get();
+      if (!snap.exists()){ err.textContent = "No race with that code. Check the code on the screen."; return; }
+      code = c; myName = n; isHost = false; solo = false;
+      try { localStorage.setItem("typ_last", JSON.stringify({ code: c, name: n })); } catch(e){}
+      // Rejoining (after a reload, say) keeps your earlier races.
+      const prev = (await db.ref(path("players", uid)).get()).val();
+      attempts = prev ? asArray(prev.attempts) : [];
+      stage = attempts.length ? "done" : "wait";
+      await db.ref(path("players", uid)).update({ name: n, joinedAt: (prev && prev.joinedAt) || Date.now(), stage, updatedAt: Date.now() });
+      $("topTag").innerHTML = `Session <b>${code}</b> · ${esc(n)}`;
+      listenGame();
+    } catch(e){ console.warn(e); err.textContent = "Couldn't reach the class database. Check your connection and try again."; }
+    finally { $("joinBtn").disabled = false; }
+  }
+  function startSolo(){
+    const n = $("soloName").value.trim();
+    if (!n){ $("soloErr").textContent = "Add your name."; return; }
+    solo = true; code = null; myName = n; attempts = [];
+    try { attempts = JSON.parse(localStorage.getItem("typ_solo") || "[]"); } catch(e){}
+    $("topTag").innerHTML = `Solo · ${esc(n)}`;
+    startRace();
+  }
+  function listenGame(){
+    clearListeners();
+    on(db.ref(path("state")), "value", s => { state = s.val(); if (!state) return; if (isHost) renderHost(); else route(); });
+    on(db.ref(path("players")), "value", s => { players = s.val() || {}; if (isHost) renderHost(); else if (stage === "done") renderDone(); });
+  }
+  function route(){
+    const phase = state ? state.phase : "lobby";
+    if (stage === "race" || stage === "break") return;              // never interrupt a race in progress
+    if (stage === "wait"){
+      if (phase === "open"){ startRace(); return; }
+      $("waitEyebrow").textContent = phase === "done" ? "Race closed" : "You're in";
+      $("waitTitle").textContent = phase === "done" ? "The host has closed this race. Look up at the screen for the results." : "Waiting for the host to start the race…";
+      show("viewWait"); return;
+    }
+    renderDone();
+  }
+
+  /* ---------- the race ---------- */
+  function startRace(){
+    race = { text: TEXT_Q, round: 1, typed: "", start: null, end: null, errors: 0, q: null, qe: null, timerH: null };
+    stage = "race"; pushMe({ stage: "r1" });
+    setupRound();
+  }
+  function startRound2(){
+    Object.assign(race, { text: TEXT_D, round: 2, typed: "", start: null, end: null, errors: 0 });
+    stage = "race"; pushMe({ stage: "r2" });
+    setupRound();
+  }
+  function setupRound(){
+    const r2 = race.round === 2;
+    $("raceTitle").innerHTML = r2 ? `Round 2 · Dvorak<small>Same keys, new letters, shorter sentence.</small>` : `Round 1 · QWERTY<small>The layout you already know.</small>`;
+    $("raceLabel").textContent = r2 ? "Type the sentence exactly. The clock starts on your first keystroke." : "Type the paragraph exactly. The clock starts on your first keystroke.";
+    $("r2Notice").classList.toggle("hidden", !r2);
+    $("kbWrap").classList.toggle("hidden", !r2);
+    const inp = $("raceInput");
+    inp.classList.toggle("r2", r2); inp.value = ""; inp.disabled = false;
+    inp.placeholder = r2 ? "Your keys are remapped now…" : "Start typing here…";
+    $("raceTimer").innerHTML = `0.0 <small>s</small>`;
+    show("viewRace"); renderRace(); inp.focus();
+  }
+  function elapsed(){ return race && race.start ? ((race.end || performance.now()) - race.start) / 1000 : 0; }
+  function renderRace(){
+    const t = race.text, typed = race.typed;
+    let h = "";
+    for (let i = 0; i < t.length; i++){
+      const cls = i < typed.length ? (typed[i] === t[i] ? "ok" : "bad") : (i === typed.length ? "cur" : "");
+      h += cls ? `<span class="${cls}">${esc(t[i])}</span>` : esc(t[i]);
+    }
+    if (typed.length > t.length) h += `<span class="extra">${esc(typed.slice(t.length))}</span>`;
+    $("racePrompt").innerHTML = h;
+    const inp = $("raceInput");
+    if (inp.value !== typed) inp.value = typed;
+    inp.setSelectionRange(typed.length, typed.length);
+    renderStats();
+  }
+  function renderStats(){
+    const s = elapsed();
+    $("raceTimer").innerHTML = `${s.toFixed(1)} <small>s</small>`;
+    const correct = [...race.typed].filter((c, i) => c === race.text[i]).length;
+    $("raceWpm").textContent = s > 1 ? Math.round((correct / 5) / (s / 60)) : 0;
+    $("raceErr").textContent = race.errors;
+    $("raceProg").textContent = Math.min(100, Math.round(100 * correct / race.text.length)) + "%";
+  }
+  function typeChar(ch){
+    if (!race || race.end || stage !== "race") return;
+    if (race.typed.length >= race.text.length + 12) return;
+    if (!race.start){ race.start = performance.now(); race.timerH = setInterval(renderStats, 100); }
+    const i = race.typed.length;
+    if (ch !== race.text[i]) race.errors++;
+    race.typed += ch;
+    renderRace();
+    if (race.typed === race.text) finishRound();
+  }
+  function backspace(){
+    if (!race || race.end || stage !== "race" || !race.typed) return;
+    race.typed = race.typed.slice(0, -1);
+    renderRace();
+  }
+  function flashKey(codeName){
+    const k = document.querySelector(`#kb [data-code="${codeName}"]`); if (!k) return;
+    k.classList.add("hit"); setTimeout(() => k.classList.remove("hit"), 110);
+  }
+  function finishRound(){
+    race.end = performance.now(); clearInterval(race.timerH); renderStats();
+    $("raceInput").disabled = true;
+    const t = elapsed();
+    if (race.round === 1){
+      race.q = t; race.qe = race.errors;
+      stage = "break";
+      $("breakTitle").textContent = `QWERTY: ${t.toFixed(1)} seconds, ${race.errors} mistake${race.errors === 1 ? "" : "s"}`;
+      show("viewBreak"); $("breakBtn").focus();
+      return;
+    }
+    const a = { q: +race.q.toFixed(2), qe: race.qe, d: +t.toFixed(2), de: race.errors, at: Date.now() };
+    attempts = attempts.concat([a]);
+    stage = "done";
+    if (solo){
+      try { localStorage.setItem("typ_solo", JSON.stringify(attempts.slice(-50))); } catch(e){}
+    } else pushMe({ stage: "done", attempts });
+    renderDone();
+  }
+  function raceAgain(){
+    if (!solo && state && state.phase !== "open"){ toast("The host has closed the race."); return; }
+    startRace();
+  }
+
+  // All text goes through typeChar/backspace so the caret stays at the end and every keystroke is counted.
+  function wireInput(){
+    const inp = $("raceInput");
+    inp.addEventListener("keydown", e => {
+      if (!race || stage !== "race") return;
+      if (e.metaKey || e.ctrlKey || e.altKey){ if (e.key.length === 1) e.preventDefault(); return; }   // no paste, undo, select-all
+      if (e.key === "Tab" || e.key === "Shift" || e.key === "CapsLock") return;
+      if (e.key === "Backspace"){ e.preventDefault(); backspace(); return; }
+      if (race.round === 2){
+        const pair = DV[e.code];
+        if (pair){
+          e.preventDefault();
+          const letter = /^[a-z]$/.test(pair[0]);
+          const up = letter ? (e.shiftKey !== e.getModifierState("CapsLock")) : e.shiftKey;
+          typeChar(letter ? (up ? pair[1] : pair[0]) : pair[up ? 1 : 0]);
+          flashKey(e.code);
+          return;
+        }
+        if (e.key.length === 1){ e.preventDefault(); return; }     // numpad and other keys Dvorak doesn't move: ignore
+      } else if (e.key.length === 1){ e.preventDefault(); typeChar(e.key); return; }
+      if (e.key !== "Unidentified" && e.key !== "Process") e.preventDefault();   // arrows, Enter, Delete, Home/End
+    });
+    // Phone and tablet keyboards don't report physical keys; catch their text here and remap by character.
+    inp.addEventListener("beforeinput", e => {
+      if (!race || stage !== "race"){ e.preventDefault(); return; }
+      if (e.inputType === "insertCompositionText") return;          // not cancelable; the input handler resyncs
+      e.preventDefault();
+      if (e.inputType.startsWith("delete")){ backspace(); return; }
+      if (e.inputType === "insertText" || e.inputType === "insertReplacementText"){
+        for (const c of (e.data || "")) { const out = race.round === 2 ? Q2D[c] : c; if (out != null) typeChar(out); }
+      }
+    });
+    inp.addEventListener("input", () => { if (race && inp.value !== race.typed) renderRace(); });
+    ["paste","drop","cut"].forEach(ev => inp.addEventListener(ev, e => e.preventDefault()));
+    ["click","focus","select"].forEach(ev => inp.addEventListener(ev, () => { if (race) inp.setSelectionRange(race.typed.length, race.typed.length); }));
+    $("racePrompt").addEventListener("click", () => inp.focus());
+    $("joinCode").addEventListener("input", e => e.target.value = e.target.value.toUpperCase());
+    $("joinName").addEventListener("keydown", e => { if (e.key === "Enter") join(); });
+  }
+  function buildKeyboard(){
+    $("kb").innerHTML = KB_ROWS.map(row => `<div class="kbrow">${row.map(c => {
+      if (c === "Space") return `<div class="key space" data-code="Space">space</div>`;
+      const dv = /^[a-z]$/.test(DV[c][0]) ? DV[c][0].toUpperCase() : DV[c][0];
+      const qw = /^[a-z]$/.test(QW[c][0]) ? QW[c][0].toUpperCase() : QW[c][0];
+      return `<div class="key" data-code="${c}">${esc(dv)}${dv !== qw ? `<small>${esc(qw)}</small>` : ""}</div>`;
+    }).join("")}</div>`).join("") + `<div class="legend">Big letter = what the key types now · small letter = what's printed on your keycap</div>`;
+  }
+
+  /* ---------- done screen ---------- */
+  function renderDone(){
+    if (!attempts.length){ route(); return; }
+    show("viewDone");
+    const me = summarize({ name: myName, attempts }), last = attempts[attempts.length - 1];
+    const ratio = slowdown(last.q, last.d), extra = scaleD(last.d) - last.q;
+    $("doneEyebrow").textContent = attempts.length > 1 ? `Race ${attempts.length}` : "Your race";
+    $("doneTitle").textContent = `${myName}: Dvorak took ${times(ratio)} as long, per character`;
+    $("doneKv").innerHTML =
+      `<div class="k">QWERTY · ${LQ} characters</div><div class="v">${sec(last.q)} · ${last.qe} mistake${last.qe === 1 ? "" : "s"}</div>` +
+      `<div class="k">Dvorak · ${LD} characters</div><div class="v">${sec(last.d)} · ${last.de} mistake${last.de === 1 ? "" : "s"}</div>` +
+      `<div class="k">Round 1's paragraph at your Dvorak pace</div><div class="v">${sec(scaleD(last.d))}</div>` +
+      `<div class="k tot">Switching cost, that paragraph</div><div class="v tot">${signed(extra)}</div>` +
+      (attempts.length > 1 ? `<div class="k">Best times, all ${attempts.length} races</div><div class="v">${sec(me.bestQ)} / ${sec(me.bestD)}</div>` +
+        `<div class="k">Dvorak, first race → this race</div><div class="v">${sec(attempts[0].d)} → ${sec(last.d)}</div>` : "");
+    $("doneLine").textContent = attempts.length > 1 && last.d < attempts[0].d
+      ? `Practice cut ${(attempts[0].d - last.d).toFixed(1)} seconds off your Dvorak time. Switching costs fall as you learn, but you pay them up front.`
+      : `At that pace, Round 1's paragraph would have cost you ${extra.toFixed(1)} extra seconds. The keyboard didn't change. Only what you know about it.`;
+    let rank = "";
+    const boardOpen = !solo && state && state.phase !== "done";
+    if (!solo){
+      const list = Object.values(players).map(summarize).filter(p => p.n);
+      const rq = list.filter(p => p.bestQ < me.bestQ).length + 1, rd = list.filter(p => p.bestD < me.bestD).length + 1;
+      rank = list.length ? `Your best times rank #${rq} on QWERTY and #${rd} on Dvorak, out of ${list.length} who have finished.` : "";
+      renderStudentBoards();
+    } else $("doneBoards").classList.add("hidden");
+    $("doneRank").textContent = rank;
+    $("doneBtns").innerHTML = (solo || boardOpen)
+      ? `<button class="btn btn-primary" onclick="App.raceAgain()">Race again</button><span class="small">Your best times count on the scoreboard. Your first race counts as your switching cost.</span>`
+      : (!solo ? `<span class="small">The race is closed. Look up at the screen for the class results.</span>` : "");
+  }
+  function boardTable(list, key, errKey, n){
+    const rows = list.slice().sort((a, b) => a[key] - b[key]).slice(0, n);
+    if (!rows.length) return `<p class="small">No finishers yet.</p>`;
+    return `<div style="overflow-x:auto"><table class="res"><tr><th>#</th><th>Name</th><th class="num">Time</th><th class="num">Mistakes</th></tr>` +
+      rows.map((r, i) => `<tr class="${r._me ? "me" : i === 0 ? "top" : ""}"><td>${i + 1}</td><td><b>${esc(r.name)}</b>${r._me ? ' <span class="small">(you)</span>' : ""}</td><td class="num">${sec(r[key])}</td><td class="num">${r[errKey]}</td></tr>`).join("") + `</table></div>`;
+  }
+  function renderStudentBoards(){
+    const list = Object.entries(players).map(([id, p]) => Object.assign(summarize(p), { _me: id === uid })).filter(p => p.n);
+    $("doneBoards").classList.toggle("hidden", !list.length);
+    $("doneBoardsN").textContent = `${list.length} finished · top 5`;
+    $("doneBoardsBody").innerHTML = `<div><h3>Fastest on QWERTY</h3>${boardTable(list, "bestQ", "bestQe", 5)}</div><div><h3>Fastest on Dvorak</h3>${boardTable(list, "bestD", "bestDe", 5)}</div>`;
+  }
+
+  /* =====================================================================
+     HOST
+     ===================================================================== */
+  async function createGame(){
+    $("hostErr").textContent = "";
+    isHost = true; solo = false;
+    code = Array.from({ length: 4 }, () => "ABCDEFGHJKLMNPQRSTUVWXYZ"[Math.floor(Math.random() * 24)]).join("");
+    try {
+      await db.ref(path()).set({ meta: { createdAt: Date.now() }, state: { phase: "lobby", createdAt: Date.now() } });
+    } catch(e){ console.warn(e); $("hostErr").textContent = "Couldn't reach the class database. Check your connection and try again."; return; }
+    $("hostCode").textContent = code;
+    const web = /^https?:/.test(location.protocol);
+    const base = web ? location.origin + location.pathname : SITE_URL;
+    $("hostUrlHint").innerHTML = `Students open <b>${esc(base.replace(/^https?:\/\//, ""))}</b> and enter the code, or use the link <span class="mono">${esc(base + "?g=" + code)}</span>`;
+    $("hostTextShow").innerHTML = `Round 1: <span class="mono">${esc(TEXT_Q)}</span><br>Round 2: <span class="mono">${esc(TEXT_D)}</span>`;
+    $("topTag").innerHTML = `Hosting race <b>${code}</b>`;
+    listenGame();
+    show("viewHost");
+  }
+  async function setPhase(p){ try { await db.ref(path("state")).update({ phase: p, changedAt: Date.now() }); } catch(e){ toast("Couldn't update the race. Check the connection."); } }
+  function renderHost(){
+    if (!state) return;
+    const phase = state.phase || "lobby";
+    const list = Object.entries(players);
+    $("hostCount").textContent = list.length;
+    $("hostPhaseNote").textContent = { lobby: "waiting to start", open: "racing", done: "closed" }[phase] || "";
+    const label = p => { const n = asArray(p.attempts).length; if (p.stage === "r1") return "QWERTY…"; if (p.stage === "r2") return "Dvorak…"; return n ? `✓${n > 1 ? " ×" + n : ""}` : "ready"; };
+    $("hostRoster").innerHTML = list.map(([id, p]) => `<span class="p ${p.stage === "r1" || p.stage === "r2" ? "in" : asArray(p.attempts).length ? "done" : ""}">${esc(p.name)} · ${label(p)}</span>`).join("");
+    $("btnOpen").classList.toggle("hidden", phase !== "lobby");
+    $("btnClose").classList.toggle("hidden", phase !== "open");
+    $("btnReopen").classList.toggle("hidden", phase !== "done");
+    renderResults();
+  }
+  function tab(id){ resTab = id; renderResults(); }
+  function setGain(v){ gain = Number(v); renderResults(); }
+  function renderResults(){
+    const tabs = [["lead", "Scoreboard"], ["cost", "The switching cost"]];
+    $("resTabs").innerHTML = tabs.map(t => `<button class="${t[0] === resTab ? "sel" : ""}" onclick="App.tab('${t[0]}')">${t[1]}</button>`).join("");
+    const all = Object.values(players).map(summarize), fin = all.filter(p => p.n);
+    $("resN").textContent = `${all.length} player${all.length === 1 ? "" : "s"} · ${fin.length} finished`;
+    (resTab === "lead" ? renderLead : renderCost)(fin);
+  }
+  function renderLead(fin){
+    if (!fin.length){ $("resBody").innerHTML = `<p class="sub">No finishers yet. Times appear here as students complete both rounds.</p>`; return; }
+    const byRatio = fin.slice().sort((a, b) => a.ratio - b.ratio);
+    $("resBody").innerHTML = `<div class="grid2" style="margin-top:6px">
+        <div><h3>Fastest on QWERTY</h3>${boardTable(fin, "bestQ", "bestQe", 10)}</div>
+        <div><h3>Fastest on Dvorak</h3>${boardTable(fin, "bestD", "bestDe", 10)}</div>
+      </div>
+      <h3 style="margin-top:18px">Everyone's first race</h3>
+      <div style="overflow-x:auto"><table class="res"><tr><th>Name</th><th class="num">QWERTY</th><th class="num">Dvorak</th><th class="num">Extra time</th><th class="num">Slowdown</th><th class="num">Races</th></tr>` +
+      byRatio.map(p => `<tr><td><b>${esc(p.name)}</b></td><td class="num">${sec(p.first.q)}</td><td class="num">${sec(p.first.d)}</td><td class="num">${signed(p.extra)}</td><td class="num">${times(p.ratio)}</td><td class="num">${p.n}</td></tr>`).join("") +
+      `</table></div><p class="small" style="margin-top:8px">Round 1 is ${LQ} characters, Round 2 is ${LD}, so slowdown compares seconds per character. "Extra time" is what Round 1's paragraph would have cost at that student's Dvorak pace. Sorted by slowdown, smallest first — a slow QWERTY round makes the slowdown look smaller, so the scoreboards rank raw times.</p>`;
+  }
+  function renderCost(fin){
+    if (!fin.length){ $("resBody").innerHTML = `<p class="sub">No finishers yet.</p>`; return; }
+    const mq = median(fin.map(p => p.first.q)), md = median(fin.map(p => p.first.d)), mr = median(fin.map(p => p.ratio));
+    const mExtra = median(fin.map(p => p.extra)), extraMin = fin.reduce((s, p) => s + p.extra, 0) / 60;
+    const buckets = [[1, 2, "under 2×"], [2, 3, "2–3×"], [3, 4, "3–4×"], [4, 6, "4–6×"], [6, Infinity, "6× or more"]];
+    const counts = buckets.map(([lo, hi, label]) => ({ label, n: fin.filter(p => p.ratio >= lo && p.ratio < hi).length }));
+    counts[0].n += fin.filter(p => p.ratio < 1).length;
+    const maxN = Math.max(1, ...counts.map(c => c.n));
+    // learning: median Dvorak time on race 1, 2, 3... among players who ran that many
+    const maxRaces = Math.min(5, Math.max(...fin.map(p => p.n)));
+    const learn = [];
+    for (let k = 0; k < maxRaces; k++){ const ps = fin.filter(p => p.n > k); learn.push({ k: k + 1, n: ps.length, d: median(ps.map(p => p.attempts[k].d)), q: median(ps.map(p => p.attempts[k].q)) }); }
+    // break-even: paragraphs of fluent Dvorak typing needed to earn back today's median extra time
+    const saving = mq * gain / 100, breakEven = saving > 0 ? mExtra / saving : null;
+    $("resBody").innerHTML = `<div class="callouts">
+        ${callout("Median QWERTY time", sec(mq), `first race · ${LQ} characters`)}
+        ${callout("Median Dvorak time", sec(md), `same keyboard · ${LD} characters`)}
+        ${callout("Median slowdown", times(mr), "seconds per character, Dvorak ÷ QWERTY")}
+        ${callout("Class time lost", extraMin.toFixed(1) + " min", `on Round 1's paragraph, at ${fin.length} first-race Dvorak paces`)}
+      </div>
+      <div class="grid2" style="margin-top:14px">
+        <div><h3>How much slower, first race</h3><div class="hist">${counts.map(c => `<div class="hrow"><div>${c.label}</div><div class="bar"><span style="width:${(100 * c.n / maxN).toFixed(0)}%"></span></div><div class="n">${c.n}</div></div>`).join("")}</div></div>
+        <div><h3>Does practice help?</h3>${maxRaces > 1 ? `<div style="overflow-x:auto"><table class="res"><tr><th>Race</th><th class="num">Players</th><th class="num">Median QWERTY</th><th class="num">Median Dvorak</th></tr>${learn.map(l => `<tr><td>${l.k}</td><td class="num">${l.n}</td><td class="num">${sec(l.q)}</td><td class="num">${sec(l.d)}</td></tr>`).join("")}</table></div><p class="small">Only players who raced that many times are counted in each row.</p>` : `<p class="small">Nobody has raced twice yet. Ask a few students to hit “Race again” and watch their Dvorak time fall.</p>`}</div>
+      </div>
+      <h3 style="margin-top:16px">Would switching ever pay?</h3>
+      <div class="slider"><label for="gainIn">Suppose Dvorak, once learned, makes you this much faster</label><input type="range" id="gainIn" min="1" max="40" value="${gain}" oninput="App.setGain(this.value)"><div class="v">${gain}%</div></div>
+      <p class="small">At ${gain}% faster, a fluent typist saves ${saving.toFixed(1)} s on a paragraph like Round 1's. Earning back just today's median ${mExtra.toFixed(1)} s of lost time would take <b>${breakEven == null ? "—" : Math.ceil(breakEven)} paragraphs</b>. And one paragraph of practice doesn't make anyone fluent: the real learning cost is weeks, not seconds.</p>
+      <ul class="discuss">
+        <li>Nobody in the room would switch today, even if Dvorak were better. The gap on the screen is the switching cost, and each user pays it up front, alone.</li>
+        <li>Who cut their Dvorak time the most on a second race? Switching costs fall with practice. That's why firms subsidise the first months: free trials, import tools, "switch and we'll pay your termination fee."</li>
+        <li>Would you switch if everyone else did? Shared computers, typing classes, and shortcuts built around QWERTY make this a network effect as well as a switching cost.</li>
+        <li>Economists still argue about whether Dvorak is actually faster (Paul David's 1985 "Clio and the Economics of QWERTY" vs. Liebowitz and Margolis's 1990 "The Fable of the Keys"). Does the lock-in argument depend on the answer?</li>
+      </ul>`;
+  }
+  function callout(k, v, d){ return `<div class="callout"><div class="k">${k}</div><div class="v">${v}</div><div class="d">${d}</div></div>`; }
+
+  async function seedDemo(){
+    const names = ["Demo Ava","Demo Ben","Demo Cai","Demo Dee","Demo Eli","Demo Fay","Demo Gus","Demo Hal"];
+    const upd = {};
+    names.forEach((n, k) => {
+      const q = [18.4, 24.9, 21.2, 31.5, 16.8, 27.3, 22.6, 35.1][k], r = [3.2, 2.6, 4.1, 2.2, 5.3, 3.0, 3.7, 2.4][k];
+      const dv = q * r * LD / LQ;                                   // same pace, shorter sentence
+      const at = [{ q, qe: k % 3, d: +dv.toFixed(2), de: 4 + k, at: Date.now() }];
+      if (k % 2 === 0) at.push({ q: +(q * 0.95).toFixed(2), qe: 1, d: +(dv * 0.72).toFixed(2), de: 3 + k, at: Date.now() });
+      upd[`players/demo${k}`] = { name: n, joinedAt: Date.now(), stage: "done", updatedAt: Date.now(), attempts: at };
+    });
+    try { await db.ref(path()).update(upd); toast("Demo players added (names start with Demo)."); } catch(e){ toast("Couldn't add demo players."); }
+  }
+
+  document.addEventListener("DOMContentLoaded", boot);
+  return { showLanding, showJoin, showSolo, showHost, join, startSolo, createGame, setPhase, seedDemo, tab, setGain, startRound2, raceAgain };
+})();
+</script>
+</body>
+</html>
