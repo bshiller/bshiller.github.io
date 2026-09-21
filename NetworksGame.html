@@ -1,0 +1,1378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Racing to the Bottom</title>
+<meta name="description" content="A four-round classroom pricing game on network effects, below-cost pricing, and what a ban on it does to consumers.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bitter:wght@600;700&family=Source+Sans+3:wght@400;600&display=swap">
+<style>
+:root{
+  --ground:#F1F3F1; --surface:#FCFCFB; --surface-2:#F6F7F5;
+  --ink:#16191A; --ink-2:#4C5553; --muted:#6B7472;
+  --line:#DCE0DD; --line-strong:#C3C9C5;
+  --accent:#00897B; --accent-ink:#00695F;
+  --consumer:#B4671A; --loss:#A63A22; --gain:#00897B;
+  --chip:#E7EBE8;
+  --shadow:0 1px 2px rgba(20,30,28,.06), 0 8px 24px rgba(20,30,28,.05);
+  --r:10px;
+  color-scheme:light dark;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#0F1211; --surface:#191C1B; --surface-2:#1F2322;
+    --ink:#E9ECEA; --ink-2:#B6BEBB; --muted:#8E9793;
+    --line:#2B302E; --line-strong:#3A403D;
+    --accent:#14A18D; --accent-ink:#37BBA7;
+    --consumer:#C87B24; --loss:#D06A4E; --gain:#14A18D;
+    --chip:#252A28;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px rgba(0,0,0,.28);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0F1211; --surface:#191C1B; --surface-2:#1F2322;
+  --ink:#E9ECEA; --ink-2:#B6BEBB; --muted:#8E9793;
+  --line:#2B302E; --line-strong:#3A403D;
+  --accent:#14A18D; --accent-ink:#37BBA7;
+  --consumer:#C87B24; --loss:#D06A4E; --gain:#14A18D;
+  --chip:#252A28;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px rgba(0,0,0,.28);
+}
+*{box-sizing:border-box}
+body{
+  background:var(--ground); color:var(--ink); margin:0;
+  font-family:"Source Sans 3", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size:16px; line-height:1.5;
+}
+img{max-width:100%}
+[hidden]{display:none !important}
+.hidden{display:none !important}
+.wrap{max-width:1060px; margin:0 auto; padding-inline:16px; padding-block:24px 64px}
+.wrap.wide{max-width:1240px}
+h1,h2,h3,.display{font-family:Bitter, Georgia, "Times New Roman", serif; font-weight:700; text-wrap:balance; margin:0}
+h1{font-size:clamp(24px,3.4vw,34px); letter-spacing:-.01em}
+h2{font-size:clamp(19px,2.4vw,24px)}
+h3{font-size:17px}
+p{margin:0}
+.num{font-variant-numeric:tabular-nums}
+.eyebrow{font-size:12px; letter-spacing:.09em; text-transform:uppercase; color:var(--muted); font-weight:600}
+.stack{display:flex; flex-direction:column; gap:16px}
+.stack-s{display:flex; flex-direction:column; gap:8px}
+.row{display:flex; flex-wrap:wrap; gap:12px; align-items:center}
+.card{background:var(--surface); border:1px solid var(--line); border-radius:var(--r); padding:18px; box-shadow:var(--shadow)}
+.muted{color:var(--muted)} .ink2{color:var(--ink-2)}
+.small{font-size:14px} .tiny{font-size:13px}
+header.top{display:flex; flex-wrap:wrap; gap:12px; align-items:flex-end; justify-content:space-between; margin-bottom:18px}
+
+.steps{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:16px}
+.step{font-size:13px; font-weight:600; color:var(--muted); background:var(--chip); padding:5px 11px; border-radius:999px; border:1px solid transparent}
+.step.done{color:var(--accent-ink); border-color:var(--accent); background:transparent}
+.step.now{background:var(--accent); color:#fff; border-color:var(--accent)}
+
+.grid2{display:grid; grid-template-columns:1.15fr .85fr; gap:16px; align-items:start}
+.grid-host{display:grid; grid-template-columns:300px 1fr; gap:16px; align-items:start}
+@media (max-width:880px){ .grid2, .grid-host{grid-template-columns:1fr} }
+
+.rules dl{display:grid; grid-template-columns:auto 1fr; gap:6px 12px; margin:0}
+.rules dt{font-weight:600; color:var(--ink)}
+.rules dd{margin:0; color:var(--ink-2)}
+details.rules-toggle summary{cursor:pointer; font-weight:600; color:var(--accent-ink); font-size:14px}
+details.rules-toggle summary:focus-visible{outline:2px solid var(--accent); outline-offset:3px}
+
+.pricebox{display:flex; align-items:baseline; gap:10px; margin-block:4px}
+.pricebox .val{font-family:Bitter, Georgia, serif; font-size:44px; font-weight:700; font-variant-numeric:tabular-nums; line-height:1.1}
+input[type=range]{width:100%; accent-color:var(--accent); height:28px}
+input[type=range]:focus-visible{outline:2px solid var(--accent); outline-offset:4px}
+input[type=text], input[type=number]{
+  font:inherit; background:var(--surface-2); color:var(--ink); border:1px solid var(--line);
+  border-radius:8px; padding:9px 11px; width:100%;
+}
+input:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
+.sliderwrap{position:relative; padding-top:30px}
+.bubble{position:absolute; top:0; transform:translateX(-50%); background:var(--accent); color:#fff;
+  font-weight:700; font-size:14px; font-variant-numeric:tabular-nums; padding:2px 8px; border-radius:6px; white-space:nowrap; pointer-events:none}
+.bubble::after{content:""; position:absolute; left:50%; bottom:-5px; transform:translateX(-50%);
+  border:5px solid transparent; border-bottom:0; border-top-color:var(--accent)}
+.bubble.below{background:var(--loss)} .bubble.below::after{border-top-color:var(--loss)}
+.scale{position:relative; height:22px; margin-top:-2px}
+.scale .tick{position:absolute; transform:translateX(-50%); font-size:12px; color:var(--muted); white-space:nowrap}
+.scale .tick.cost{color:var(--loss); font-weight:600}
+.nudge{display:flex; gap:8px}
+button.btn{font:inherit; font-weight:600; font-size:15px; cursor:pointer; background:var(--accent); color:#fff;
+  border:1px solid var(--accent); padding:10px 18px; border-radius:8px}
+button.btn.ghost{background:transparent; color:var(--accent-ink)}
+button.btn.quiet{background:transparent; color:var(--ink-2); border-color:var(--line-strong)}
+button.btn.small{padding:6px 12px; font-size:14px}
+button.btn:focus-visible{outline:2px solid var(--accent); outline-offset:3px}
+button.btn:hover{filter:brightness(1.06)}
+button.btn:disabled{opacity:.45; cursor:not-allowed; filter:none}
+
+.panel-line{display:flex; justify-content:space-between; gap:12px; padding:9px 0; border-bottom:1px solid var(--line)}
+.panel-line:last-child{border-bottom:0}
+.panel-line .lab{color:var(--ink-2); font-size:14px}
+.panel-line .fig{font-weight:600; font-variant-numeric:tabular-nums}
+.fig.neg{color:var(--loss)} .fig.pos{color:var(--gain)}
+.total-line{border-top:2px solid var(--line-strong); margin-top:4px; padding-top:10px; display:flex; justify-content:space-between; align-items:baseline}
+.total-line .fig{font-family:Bitter, Georgia, serif; font-size:24px}
+
+.badge{display:inline-flex; align-items:center; gap:6px; font-size:12.5px; font-weight:600; padding:4px 9px; border-radius:6px; background:var(--chip); color:var(--ink-2)}
+.badge.warn{background:color-mix(in srgb, var(--loss) 14%, transparent); color:var(--loss)}
+.badge.on{background:color-mix(in srgb, var(--accent) 16%, transparent); color:var(--accent-ink)}
+
+table{border-collapse:collapse; width:100%; font-size:14.5px}
+th,td{text-align:right; padding:8px 10px; border-bottom:1px solid var(--line); font-variant-numeric:tabular-nums}
+th:first-child, td:first-child{text-align:left; font-variant-numeric:normal}
+thead th{font-size:12.5px; letter-spacing:.05em; text-transform:uppercase; color:var(--muted); font-weight:600}
+tbody tr.highlight td{background:var(--surface-2)}
+.tablewrap{overflow-x:auto}
+
+.narr{border-left:3px solid var(--accent); padding-left:14px; color:var(--ink-2)}
+.qbox{background:var(--surface-2); border:1px solid var(--line); border-radius:var(--r); padding:14px 16px}
+.qbox ul{margin:8px 0 0; padding-left:20px}
+.qbox li{margin-bottom:6px}
+.diagbox{background:color-mix(in srgb, var(--loss) 10%, transparent); border:1px solid color-mix(in srgb, var(--loss) 35%, transparent);
+  color:var(--ink); border-radius:var(--r); padding:14px 16px}
+
+label.fieldlab{font-size:13px; font-weight:600; color:var(--ink-2); display:block; margin-bottom:4px}
+
+figure{margin:0}
+figcaption{font-size:13px; color:var(--muted); margin-top:6px}
+svg{display:block; max-width:100%}
+.legend{display:flex; gap:14px; flex-wrap:wrap; font-size:13px; color:var(--ink-2); margin-bottom:8px}
+.legend .key{display:inline-flex; align-items:center; gap:6px}
+.swatch{width:11px; height:11px; border-radius:3px; display:inline-block}
+.tip{position:absolute; pointer-events:none; background:var(--surface); border:1px solid var(--line-strong);
+  border-radius:7px; padding:6px 9px; font-size:13px; box-shadow:var(--shadow); white-space:nowrap; z-index:5}
+.chartwrap{position:relative}
+.copyline{font-family:ui-monospace, SFMono-Regular, Menlo, monospace; font-size:13px; background:var(--surface-2);
+  border:1px solid var(--line); border-radius:7px; padding:8px 10px; overflow-x:auto; white-space:nowrap}
+
+.code-big{font-family:Bitter, Georgia, serif; font-size:clamp(40px,7vw,68px); font-weight:700; letter-spacing:.14em; line-height:1}
+.roster{display:flex; flex-wrap:wrap; gap:6px}
+.pill{font-size:13px; background:var(--chip); border-radius:999px; padding:4px 10px; color:var(--ink-2)}
+.pill.in{background:color-mix(in srgb, var(--accent) 18%, transparent); color:var(--accent-ink); font-weight:600}
+.bigstat{display:flex; gap:22px; flex-wrap:wrap}
+.bigstat .s{min-width:110px}
+.bigstat .v{font-family:Bitter, Georgia, serif; font-size:30px; font-variant-numeric:tabular-nums}
+.bigstat .k{font-size:13px; color:var(--muted)}
+.toast{position:fixed; left:50%; bottom:22px; transform:translateX(-50%); background:var(--ink); color:var(--ground);
+  padding:10px 16px; border-radius:8px; font-size:14px; z-index:40; box-shadow:var(--shadow)}
+@media (prefers-reduced-motion: no-preference){
+  .fade{animation:fade .18s ease-out}
+  @keyframes fade{from{opacity:0; transform:translateY(3px)}to{opacity:1; transform:none}}
+}
+</style>
+</head>
+<body>
+
+<div id="diag"></div>
+
+<!-- ===================== setup (no Firebase config) ===================== -->
+<div id="viewSetup" class="wrap hidden">
+  <div class="stack">
+    <div><p class="eyebrow">Setup needed</p><h1>Racing to the Bottom</h1></div>
+    <div class="card stack-s">
+      <p class="ink2">This page needs a Firebase Realtime Database so teams can bid from their own devices.</p>
+      <ol class="ink2 small" style="margin:0; padding-left:20px">
+        <li>Open this file in a text editor and find <code>FIREBASE_CONFIG</code> near the top of the script.</li>
+        <li>Paste your project's config from the Firebase console (Project settings &rarr; Your apps), including <code>databaseURL</code>.</li>
+        <li>In Realtime Database &rarr; Rules, allow read and write under <code>games/$code</code>.</li>
+      </ol>
+      <p class="ink2 small">Everything still works without it &mdash; students can play the whole game against a computer rival.</p>
+      <div class="row"><button class="btn" onclick="App.startSolo(0)">Play against the computer</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== landing ===================== -->
+<div id="viewLanding" class="wrap hidden">
+  <header class="top">
+    <div>
+      <p class="eyebrow">Big Tech Under Fire &middot; in-class game</p>
+      <h1>Racing to the Bottom</h1>
+      <p class="muted small" style="margin-top:4px">Two periods, one market, 100 customers. Win period 1 and you own period 2.</p>
+    </div>
+  </header>
+  <div class="grid2">
+    <div class="card stack-s">
+      <p class="eyebrow">For students</p>
+      <h2>Join the class game</h2>
+      <p class="ink2 small">Your instructor will show a four-letter code on the screen.</p>
+      <div class="row"><button class="btn" onclick="App.goJoin()">Enter a code</button>
+        <button class="btn quiet" onclick="App.startSolo(0)">Play against the computer</button></div>
+    </div>
+    <div class="card stack-s">
+      <p class="eyebrow">For the instructor</p>
+      <h2>Run a session</h2>
+      <p class="ink2 small">Opens a projector view with the code, live bid counts and the class charts.</p>
+      <div class="row"><button class="btn ghost" onclick="App.createSession()">Start a session</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== join ===================== -->
+<div id="viewJoin" class="wrap hidden">
+  <div class="stack" style="max-width:460px">
+    <div><p class="eyebrow">Join</p><h1>Enter your code</h1></div>
+    <div class="card stack-s">
+      <div><label class="fieldlab" for="joinCode">Session code</label>
+        <input type="text" id="joinCode" maxlength="4" autocomplete="off" autocapitalize="characters" placeholder="ABCD" style="text-transform:uppercase; letter-spacing:.2em; font-size:22px"></div>
+      <div><label class="fieldlab" for="joinName">Team name</label>
+        <input type="text" id="joinName" maxlength="24" autocomplete="off" placeholder="e.g. Ana &amp; Devon"></div>
+      <div class="row"><button class="btn" onclick="App.joinGame()">Join</button>
+        <button class="btn quiet" onclick="App.show('viewLanding')">Back</button></div>
+      <p class="tiny muted">Trouble joining? You can <a href="#" onclick="App.startSolo(0);return false">play against the computer</a> instead.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== student ===================== -->
+<div id="viewStudent" class="wrap"></div>
+
+<!-- ===================== host ===================== -->
+<div id="viewHost" class="wrap wide hidden"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
+/* =====================================================================
+   FIREBASE CONFIG
+   Pre-filled with the same project as the Obfuscation Game and The Drone
+   Dilemma: sessions live under games/<code>, so the existing rules work.
+   Either name is fine: FIREBASE_CONFIG or firebaseConfig.
+   ===================================================================== */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyDQ8gn5w_Jj4OzcXFBz2lY2SKuaKEo2wbk",
+  authDomain: "obfuscationgame.firebaseapp.com",
+  databaseURL: "https://obfuscationgame-default-rtdb.firebaseio.com",
+  projectId: "obfuscationgame",
+  storageBucket: "obfuscationgame.firebasestorage.app",
+  messagingSenderId: "443679460937",
+  appId: "1:443679460937:web:d6b2806717894b3c923998"
+};
+/* ===================================================================== */
+
+/* =====================================================================
+   ENGINE — the market, in pure functions
+   ===================================================================== */
+const Engine = (() => {
+  const CUSTOMERS = 100, COST = 10, WTP1 = 20, BASE = 10, ALPHA = 0.20;
+  const WTP_WIN = BASE + ALPHA * CUSTOMERS;   // 30
+  const WTP_LOSE = BASE;                      // 10
+  const PMIN = -10, PMAX = 30, P2MIN = 0, P2MAX = 40;
+  // conservative period-2 figure shown in the calculator: rival gives it away at $0
+  const WORST_P2_PRICE = WTP_WIN - (WTP_LOSE - 0);             // 20
+  const WORST_P2_PROFIT = (WORST_P2_PRICE - COST) * CUSTOMERS; // 1000
+
+  const ROUNDS = [
+    { n:1, opponent:"bot", botP1:() => 5, reveal:true, hints:"p1", floor:null,
+      name:"Your rival has already posted a price",
+      setup:"A competitor has entered the market and committed to a price of <strong>$5</strong> in period 1. You can see it. You now choose your own period 1 price.",
+      calcNote:"The calculator shows period 1 only." },
+    { n:2, opponent:"pair", botP1:() => 1 + Math.floor(Math.random()*4), reveal:false, hints:"full", floor:null,
+      name:"A real rival, and the full calculator",
+      setup:"This time you face another team, and you <strong>cannot</strong> see their price before you choose. The calculator now also shows what winning period 1 is worth to you later.",
+      calcNote:"The calculator shows both periods." },
+    { n:3, opponent:"pair", botP1:() => Math.floor(Math.random()*3), reveal:false, hints:"full", floor:null,
+      name:"The real market — no rules",
+      setup:"A new rival, price hidden, and no restrictions on what either of you may charge.",
+      calcNote:"Remember this round. It is the comparison for round 4." },
+    { n:4, opponent:"pair", botP1:() => 10, reveal:false, hints:"full", floor:COST,
+      name:"The same market, with a law against pricing below cost",
+      setup:"Regulators worry that below-cost pricing drives small firms out of business. A new rule takes effect: <strong>no price below $10 (your cost) in either period</strong>. Everything else is unchanged.",
+      calcNote:"Same market as round 3, one new rule." }
+  ];
+  const roundOf = n => ROUNDS[n-1];
+  const floorP1 = r => r.floor === null ? PMIN : r.floor;
+  const floorP2 = r => r.floor === null ? P2MIN : r.floor;
+
+  // period 1: the lower price takes all 100; ties settled by a coin flip
+  function winP1(myP1, oppP1, flip){
+    if (myP1 < oppP1) return { me:true, tie:false };
+    if (myP1 > oppP1) return { me:false, tie:false };
+    return { me: flip, tie:true };
+  }
+  // period 2: customers go where surplus is higher; a tie keeps them where they are
+  function p2Outcome(iWon, myP2, oppP2){
+    const myWtp = iWon ? WTP_WIN : WTP_LOSE, oppWtp = iWon ? WTP_LOSE : WTP_WIN;
+    const ms = myWtp - myP2, os = oppWtp - oppP2;
+    let buyer = "none";
+    if (ms >= 0 || os >= 0) buyer = ms > os ? "me" : os > ms ? "opp" : (iWon ? "me" : "opp");
+    return { buyer,
+      myProfit: buyer === "me" ? (myP2 - COST) * CUSTOMERS : 0,
+      oppProfit: buyer === "opp" ? (oppP2 - COST) * CUSTOMERS : 0,
+      pricePaid: buyer === "me" ? myP2 : buyer === "opp" ? oppP2 : 0 };
+  }
+  // a computer rival charges what the market bears when it owns the customers,
+  // and its cost otherwise, which is the best a platform with no users can do
+  const botP2 = (botWon, r) => Math.max(botWon ? WTP_WIN : COST, floorP2(r));
+  // a winner who never submitted a period-2 price charges what the market bears
+  const defaultP2 = (iWon, r) => iWon ? Math.max(WTP_WIN, floorP2(r)) : Math.max(COST, floorP2(r));
+
+  function resolve({ r, myP1, oppP1, iWon, tie, myP2, oppP2, oppName }){
+    const out = p2Outcome(iWon, myP2, oppP2);
+    const myProfit1 = iWon ? (myP1 - COST) * CUSTOMERS : 0;
+    const oppProfit1 = iWon ? 0 : (oppP1 - COST) * CUSTOMERS;
+    const marketP1 = iWon ? myP1 : oppP1;
+    return {
+      n:r.n, floor:r.floor, oppName: oppName || "Computer rival",
+      myP1, oppP1, iWon, tie, myP2, oppP2,
+      buyer: out.buyer, marketP1, marketP2: out.pricePaid,
+      myProfit1, myProfit2: out.myProfit,
+      oppProfit1, oppProfit2: out.oppProfit,
+      myTotal: myProfit1 + out.myProfit,
+      consumerTotal: marketP1 + out.pricePaid
+    };
+  }
+  function stats(a){
+    if (!a || !a.length) return null;
+    const s = [...a].sort((x,y) => x-y), mid = Math.floor(s.length/2);
+    return { n:s.length, min:s[0], max:s[s.length-1],
+      median: s.length % 2 ? s[mid] : (s[mid-1]+s[mid])/2,
+      mean: s.reduce((t,v)=>t+v,0)/s.length,
+      belowCost: s.filter(v => v < COST).length };
+  }
+  return { CUSTOMERS, COST, WTP1, BASE, ALPHA, WTP_WIN, WTP_LOSE, PMIN, PMAX, P2MIN, P2MAX,
+    WORST_P2_PRICE, WORST_P2_PROFIT, ROUNDS, roundOf, floorP1, floorP2,
+    winP1, p2Outcome, botP2, defaultP2, resolve, stats };
+})();
+
+/* =====================================================================
+   APP
+   ===================================================================== */
+const App = (() => {
+  const E = Engine;
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const money = v => (v < 0 ? "−$" : "$") + Math.abs(Math.round(v)).toLocaleString();
+  const money2 = v => (v < 0 ? "−$" : "$") + Math.abs(v).toLocaleString();
+  const fmt1 = v => (v < 0 ? "−$" : "$") + (Math.round(Math.abs(v)*10)/10).toLocaleString();
+  const clamp = (v,a,b) => Math.max(a, Math.min(b,v));
+  const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  const el = h => { const t = document.createElement("template"); t.innerHTML = h.trim(); return t.content.firstElementChild; };
+  const VIEWS = ["viewSetup","viewLanding","viewJoin","viewStudent","viewHost"];
+  function show(v){ VIEWS.forEach(x => $(x).classList.toggle("hidden", x !== v)); window.scrollTo(0,0); }
+  function toast(msg){ const t = el(`<div class="toast">${esc(msg)}</div>`); document.body.appendChild(t); setTimeout(() => t.remove(), 2800); }
+  function diag(html){ $("diag").innerHTML = `<div class="wrap" style="padding-bottom:0"><div class="diagbox">${html}</div></div>`; }
+  const lsGet = k => { try { return localStorage.getItem(k); } catch(e){ return null; } };
+  const lsSet = (k,v) => { try { localStorage.setItem(k,v); } catch(e){} };
+  const lsDel = k => { try { localStorage.removeItem(k); } catch(e){} };
+  function getUid(){
+    let u = lsGet("pw_uid");
+    if (!u) { u = (crypto.randomUUID ? crypto.randomUUID() : "u" + Date.now() + Math.random().toString(36).slice(2)); lsSet("pw_uid", u); }
+    return u;
+  }
+
+  /* ---------------------- stores ---------------------- */
+  function firebaseStore(db){
+    const subs = [];
+    return { kind:"firebase",
+      set:(p,v) => db.ref(p).set(v),
+      update:(p,o) => db.ref(p).update(o),
+      get:p => db.ref(p).once("value").then(s => s.val()),
+      on:(p,cb) => { const ref = db.ref(p); const f = s => cb(s.val()); ref.on("value", f);
+        const un = () => ref.off("value", f); subs.push(un); return un; },
+      offAll:() => subs.splice(0).forEach(u => u()) };
+  }
+
+  /* ---------------------- state ---------------------- */
+  let store = null, cfg = null, uid = null, code = null, isHost = false;
+  let game = null, myName = null, unsub = null;
+  const solo = { on:false, ri:0, phase:"intro", r:null, oppP1:null, myP1:null, iWon:null, tie:false, results:[] };
+  const pathOf = (...p) => ["games", code, ...p].join("/");
+  const meta = () => (game && game.meta) || null;
+  const players = () => (game && game.players) || {};
+  const bidsFor = n => ((game && game.bids && game.bids["r"+n]) || {});
+  const bids2For = n => ((game && game.bids2 && game.bids2["r"+n]) || {});
+  const pairsFor = n => ((game && game.pairs && game.pairs["r"+n]) || {});
+  const resultsFor = n => ((game && game.results && game.results["r"+n]) || {});
+
+  /* ---------------------- boot ---------------------- */
+  function boot(){
+    uid = getUid();
+    cfg = (typeof FIREBASE_CONFIG !== "undefined") ? FIREBASE_CONFIG
+        : (typeof firebaseConfig !== "undefined" ? firebaseConfig : null);
+    const qs = new URLSearchParams(location.search);
+    if (qs.get("solo") !== null) { startSolo(0); return; }
+    if (!cfg || !cfg.apiKey || String(cfg.apiKey).startsWith("PASTE")) { show("viewSetup"); return; }
+    if (!/^https:\/\/.+(firebaseio\.com|firebasedatabase\.app)/.test(cfg.databaseURL || "")) {
+      diag("The config has no valid <b>databaseURL</b>. Open Realtime Database in the Firebase console and copy the URL at the top.");
+      show("viewSetup"); return;
+    }
+    try {
+      if (typeof firebase === "undefined") throw new Error("the Firebase library did not load");
+      firebase.initializeApp(cfg);
+      store = firebaseStore(firebase.database());
+    } catch (e) {
+      diag(`Couldn't reach the class database (<code>${esc(e.message)}</code>). You can still <a href="#" onclick="App.startSolo(0);return false">play against the computer</a>.`);
+      show("viewLanding"); return;
+    }
+    window.addEventListener("unhandledrejection", ev => {
+      const msg = (ev.reason && ev.reason.message) || String(ev.reason || "");
+      if (/permission[_ ]denied/i.test(msg))
+        diag("The database refused the request (<code>PERMISSION_DENIED</code>). In Realtime Database &rarr; Rules, allow read and write under <code>games/$code</code>.");
+    });
+    const hc = lsGet("pw_host"), sc = lsGet("pw_student");
+    if (qs.get("g")) { goJoin(); $("joinCode").value = qs.get("g").toUpperCase().slice(0,4); $("joinName").focus(); }
+    else if (hc) resumeHost(hc);
+    else if (sc) { try { resumeStudent(JSON.parse(sc)); } catch(e){ show("viewLanding"); } }
+    else show("viewLanding");
+  }
+
+  /* ---------------------- session lifecycle ---------------------- */
+  function newCode(){ const A = "ABCDEFGHJKLMNPQRSTUVWXYZ"; let c = ""; for (let i=0;i<4;i++) c += A[Math.floor(Math.random()*A.length)]; return c; }
+
+  async function createSession(){
+    if (!store) return startSolo(0);
+    code = newCode(); isHost = true;
+    await store.set(pathOf(), { meta:{ code, game:"pricewar", createdAt:Date.now(), hostUid:uid, status:"lobby", round:0 } });
+    lsSet("pw_host", code);
+    watch(renderHost); show("viewHost");
+  }
+  async function resumeHost(c){
+    code = c; isHost = true;
+    const m = await store.get(["games", c, "meta"].join("/"));
+    if (!m) { lsDel("pw_host"); show("viewLanding"); return; }
+    watch(renderHost); show("viewHost");
+  }
+  function goJoin(){ show("viewJoin"); $("joinCode").focus(); }
+  async function joinGame(){
+    const c = ($("joinCode").value || "").toUpperCase().trim().slice(0,4);
+    const nm = ($("joinName").value || "").trim().slice(0,24);
+    if (c.length !== 4) return toast("Enter the four-letter code.");
+    if (!nm) return toast("Enter a team name.");
+    const m = await store.get(["games", c, "meta"].join("/"));
+    if (!m) return toast("No session with that code.");
+    code = c; myName = nm; isHost = false;
+    await store.set(pathOf("players", uid), { name:nm, joinedAt:Date.now() });
+    lsSet("pw_student", JSON.stringify({ code:c, name:nm }));
+    watch(renderStudent); show("viewStudent");
+  }
+  async function resumeStudent(s){
+    const m = await store.get(["games", s.code, "meta"].join("/"));
+    if (!m || m.status === "over") { lsDel("pw_student"); show("viewLanding"); return; }
+    code = s.code; myName = s.name; isHost = false;
+    await store.set(pathOf("players", uid), { name:myName, joinedAt:Date.now() });
+    watch(renderStudent); show("viewStudent");
+  }
+  function watch(render){
+    if (unsub) unsub();
+    unsub = store.on(pathOf(), v => { game = v || {}; render(); });
+  }
+  function leave(){
+    if (unsub) { unsub(); unsub = null; }
+    lsDel("pw_student"); lsDel("pw_host");
+    code = null; game = null; isHost = false; show("viewLanding");
+  }
+
+  /* ---------------------- host actions ---------------------- */
+  async function openRound(n){
+    await store.update(pathOf("meta"), { status:"bid1", round:n, roundStartedAt:Date.now() });
+  }
+  async function addBotTeams(k){
+    const names = ["Bot Alpha","Bot Bravo","Bot Cosmo","Bot Delta","Bot Echo","Bot Foxtrot"];
+    const p = players();
+    for (let i=0;i<k;i++){
+      const bu = "bot_" + Math.random().toString(36).slice(2,8);
+      await store.set(pathOf("players", bu),
+        { name: names[(Object.keys(p).length + i) % names.length] + " (computer)", joinedAt: Date.now()+i, bot:true });
+    }
+  }
+  // close bidding: fill in any missing bids, pair teams up, settle period 1
+  async function matchUp(){
+    const m = meta(), r = E.roundOf(m.round);
+    const ps = players(), bids = {};
+    const raw = bidsFor(m.round);
+    const ids = Object.keys(ps);
+    ids.forEach(id => {
+      bids[id] = raw[id] ? { p1: raw[id].p1 }
+        : { p1: ps[id].bot ? r.botP1() : Math.max(E.COST, E.floorP1(r)), auto:true };
+    });
+    const pairs = {};
+    if (r.opponent === "bot"){
+      ids.forEach(id => { pairs[id] = { oppP1: r.botP1(), oppName:"Computer rival", bot:true }; });
+    } else {
+      const shuffled = ids.slice().sort(() => Math.random() - 0.5);
+      for (let i=0; i<shuffled.length; i+=2){
+        const a = shuffled[i], b = shuffled[i+1];
+        if (b === undefined) pairs[a] = { oppP1: r.botP1(), oppName:"Computer rival", bot:true };
+        else {
+          pairs[a] = { opp:b, oppP1: bids[b].p1, oppName: ps[b].name };
+          pairs[b] = { opp:a, oppP1: bids[a].p1, oppName: ps[a].name };
+        }
+      }
+    }
+    const flips = {};
+    ids.forEach(id => {
+      const pr = pairs[id];
+      if (!pr) return;
+      const key = pr.opp ? [id, pr.opp].sort().join("|") : id;
+      if (flips[key] === undefined) flips[key] = Math.random() < 0.5;
+      const first = pr.opp ? [id, pr.opp].sort()[0] === id : true;
+      const flip = first ? flips[key] : !flips[key];
+      const w = E.winP1(bids[id].p1, pr.oppP1, flip);
+      pr.iWon = w.me; pr.tie = w.tie; pr.myP1 = bids[id].p1;
+    });
+    await store.update(pathOf(), {
+      ["bids/r"+m.round]: bids,
+      ["pairs/r"+m.round]: pairs,
+      "meta/status":"bid2"
+    });
+  }
+  // settle period 2 and write each team's result
+  async function resolveRound(){
+    const m = meta(), r = E.roundOf(m.round);
+    const ps = players(), pairs = pairsFor(m.round), b2 = bids2For(m.round);
+    const out = {};
+    Object.keys(pairs).forEach(id => {
+      const pr = pairs[id];
+      const isBot = ps[id] && ps[id].bot;
+      const myP2 = (b2[id] && b2[id].p2 != null) ? b2[id].p2
+        : isBot ? E.botP2(pr.iWon, r) : E.defaultP2(pr.iWon, r);
+      let oppP2;
+      if (pr.bot) oppP2 = E.botP2(!pr.iWon, r);
+      else {
+        const ob = b2[pr.opp], oppIsBot = ps[pr.opp] && ps[pr.opp].bot;
+        oppP2 = (ob && ob.p2 != null) ? ob.p2
+          : oppIsBot ? E.botP2(!pr.iWon, r) : E.defaultP2(!pr.iWon, r);
+      }
+      out[id] = E.resolve({ r, myP1:pr.myP1, oppP1:pr.oppP1, iWon:pr.iWon, tie:pr.tie, myP2, oppP2, oppName:pr.oppName });
+    });
+    await store.update(pathOf(), { ["results/r"+m.round]: out, "meta/status":"results" });
+  }
+  async function finishSession(){ await store.update(pathOf("meta"), { status:"over" }); }
+  async function endAndClear(){
+    if (!confirm("End this session and delete its data?")) return;
+    await store.set(pathOf(), null); leave();
+  }
+
+  /* ---------------------- student actions ---------------------- */
+  async function submitP1(p){
+    if (solo.on) return soloLockP1(p);
+    await store.set(pathOf("bids", "r" + meta().round, uid), { p1:p, at:Date.now() });
+  }
+  async function submitP2(p){
+    if (solo.on) return soloLockP2(p);
+    await store.set(pathOf("bids2", "r" + meta().round, uid), { p2:p, at:Date.now() });
+  }
+
+  /* =====================================================================
+     SHARED UI PIECES
+     ===================================================================== */
+  function rulesCard(open){
+    return el(`
+    <div class="card rules stack-s">
+      <details class="rules-toggle" ${open ? "open" : ""}>
+        <summary>The rules, and what every term means</summary>
+        <div class="stack-s" style="margin-top:12px">
+          <dl>
+            <dt>Customers</dt><dd>100 of them. Each buys one unit in period 1 and one unit in period 2.</dd>
+            <dt>Your cost</dt><dd><strong>$10</strong> for every customer you serve. You pay it whatever you charge.</dd>
+            <dt>Willingness to pay</dt><dd>The <strong>most</strong> a customer would pay for a platform before walking away. It is a ceiling, not a promise: pricing below it does <strong>not</strong> mean they buy from you. In <strong>period 1</strong> it is <strong>$20</strong> for either platform.</dd>
+            <dt>Surplus</dt><dd>What the customer keeps: <strong>willingness to pay &minus; price</strong>. Every customer buys from the platform that leaves them the most surplus, and buys nothing if both would leave them with less than $0.</dd>
+            <dt>Period 2 is different</dt><dd>A platform is more useful when more people are on it. In period 2, willingness to pay for a platform is<br><strong>$10 + $0.20 &times; (its number of period 1 customers)</strong>.</dd>
+            <dt>Ties</dt><dd>In period 1, a tie is settled by a coin flip. In period 2, if both platforms leave the customer the same surplus, they stay with the platform they used in period 1.</dd>
+            <dt>Profit</dt><dd>(your price &minus; $10) &times; the customers you serve, added over both periods. You may price below cost. You will lose money on those sales.</dd>
+          </dl>
+          <div class="qbox small">
+            <strong>A quick example.</strong> Both platforms are worth $20 to a customer. You charge $15; your rival charges $12.
+            Your price is below $20, so the customer <em>would</em> pay it &mdash; but with you they keep $20 &minus; $15 = <strong>$5</strong>,
+            and with your rival they keep $20 &minus; $12 = <strong>$8</strong>. They buy from your rival. Being under the customer's
+            willingness to pay only gets you considered; leaving them more than your rival does is what wins the sale.
+          </div>
+        </div>
+      </details>
+    </div>`);
+  }
+  const line = (lab, fig, cls="") => `<div class="panel-line"><span class="lab">${lab}</span><span class="fig ${cls} num">${fig}</span></div>`;
+
+  // plain-language position of a price relative to cost, with the actual numbers
+  function costNote(p){
+    if (p < 0) return `you pay each customer ${money2(-p)} to join &mdash; $${E.COST - p} below your $10 cost`;
+    if (p < E.COST) return `$${E.COST - p} below your $10 cost`;
+    if (p === E.COST) return "exactly your $10 cost";
+    return `$${p - E.COST} above your $10 cost`;
+  }
+  // keep the price label riding on the slider thumb (16px thumb)
+  function placeBubble(bubble, slider, p){
+    const min = +slider.min, max = +slider.max, pct = (p - min) / (max - min);
+    bubble.textContent = money2(p);
+    bubble.style.left = `calc(${pct * 100}% + ${(0.5 - pct) * 16}px)`;
+    bubble.classList.toggle("below", p < E.COST);
+  }
+
+  function surplusBlock(p, oppP1){
+    const mine = E.WTP1 - p;
+    let h = `<p class="eyebrow" style="margin-top:2px">Which platform does a customer choose?</p>` +
+      line("Surplus with you <span class='muted'>($20 &minus; your price)</span>", money2(mine));
+    if (oppP1 != null){
+      const theirs = E.WTP1 - oppP1;
+      const verdict = mine > theirs ? `<span class="fig pos">They buy from you</span>`
+        : mine < theirs ? `<span class="fig neg">They buy from your rival</span>` : `<span class="fig">Equal &mdash; coin flip</span>`;
+      h += line(`Surplus with your rival <span class='muted'>($20 &minus; ${money2(oppP1)})</span>`, money2(theirs)) +
+        `<div class="panel-line"><span class="lab">Result</span>${verdict}</div>`;
+    } else {
+      h += `<p class="tiny muted" style="padding:6px 0 4px">Your rival's price is hidden, so you can't see their surplus. Whoever leaves customers more surplus &mdash; the lower price &mdash; takes all 100.</p>`;
+    }
+    return h + `<div style="height:10px"></div><p class="eyebrow">If you win period 1</p>`;
+  }
+
+  function calcLines(p, r, oppP1){
+    const p1 = (p - E.COST) * E.CUSTOMERS;
+    let h = surplusBlock(p, oppP1) + line("Price you charge", money2(p)) +
+            line("Customers served", String(E.CUSTOMERS)) +
+            line("Profit per customer", money2(p - E.COST), p < E.COST ? "neg" : "pos") +
+            line("Period 1 profit", money(p1), p1 < 0 ? "neg" : "pos");
+    if (r.hints === "full"){
+      h += line("Period 2, worst case <span class='muted'>(rival gives it away free)</span>", money(E.WORST_P2_PROFIT), "pos");
+      h += `<div class="total-line"><span class="lab">Total, worst case</span><span class="fig ${p1+E.WORST_P2_PROFIT<0?"neg":"pos"} num">${money(p1 + E.WORST_P2_PROFIT)}</span></div>`;
+    } else {
+      h += `<div class="total-line"><span class="lab">Period 1 total</span><span class="fig ${p1<0?"neg":"pos"} num">${money(p1)}</span></div>`;
+    }
+    return h + `<p class="tiny muted" style="margin-top:10px">If you lose period 1: you serve nobody and earn $0 that period.</p>`;
+  }
+
+  function bidCard(r, oppP1){
+    const fl = E.floorP1(r), start = clamp(12, fl, E.PMAX);
+    const wrap = el('<div class="grid2 fade"></div>');
+    const left = el(`
+      <div class="stack">
+        <div class="card stack-s">
+          <div class="row" style="justify-content:space-between">
+            <p class="eyebrow">Round ${r.n} &middot; Period 1</p>
+            <span class="badge ${r.floor!==null?"warn":""}">${r.floor!==null?"Price floor: $10":"No price rules"}</span>
+          </div>
+          <h2>${r.name}</h2>
+          <p class="ink2">${r.setup}</p>
+          ${r.reveal && oppP1 != null
+            ? `<div class="qbox small"><strong>Your rival's period 1 price: ${money2(oppP1)}</strong><br><span class="ink2">That is below their cost of $10. They lose $5 on every customer they serve.</span></div>`
+            : `<p class="small muted">Your rival is choosing at the same time as you. You will not see their price until bidding closes.</p>`}
+        </div>
+        <div class="card stack-s">
+          <p class="eyebrow">Your period 1 price</p>
+          <div class="pricebox"><span class="val num" id="p1val">${money2(start)}</span><span class="muted small" id="p1note"></span></div>
+          <div class="sliderwrap"><span class="bubble" id="b1"></span>
+          <input type="range" id="p1" min="${fl}" max="${E.PMAX}" step="1" value="${start}" aria-label="Your period 1 price"></div>
+          <div class="scale" id="scale1"></div>
+          <div class="nudge"><button class="btn ghost small" id="down">&minus;$1</button><button class="btn ghost small" id="up">+$1</button></div>
+          <div class="row" style="margin-top:6px"><button class="btn" id="lock">Lock in this price</button></div>
+        </div>
+      </div>`);
+    const right = el(`<div class="stack"><div class="card stack-s"><div id="calclines"></div><p class="tiny muted">${r.calcNote}</p></div></div>`);
+    right.append(rulesCard(false));
+    const shownOpp = (r.reveal && oppP1 != null) ? oppP1 : null;
+    wrap.append(left, right);
+
+    const scale = left.querySelector("#scale1");
+    [{v:E.COST,t:"cost $10",c:"cost"},{v:fl,t:money2(fl)},{v:0,t:"$0"},{v:E.WTP1,t:"$20"},{v:E.PMAX,t:money2(E.PMAX)}]
+      .filter((t,i,a) => a.findIndex(u => u.v === t.v) === i)   // one label per position; cost wins
+      .forEach(t => {
+      if (t.v < fl) return;
+      const pct = ((t.v - fl) / (E.PMAX - fl)) * 100;
+      scale.append(el(`<span class="tick ${t.c||""}" style="left:${clamp(pct,4,96)}%">${t.t}</span>`));
+    });
+    const slider = left.querySelector("#p1");
+    const update = () => {
+      const p = Number(slider.value);
+      left.querySelector("#p1val").textContent = money2(p);
+      left.querySelector("#p1note").innerHTML = costNote(p);
+      placeBubble(left.querySelector("#b1"), slider, p);
+      right.querySelector("#calclines").innerHTML = calcLines(p, r, shownOpp);
+    };
+    slider.addEventListener("input", update);
+    left.querySelector("#down").addEventListener("click", () => { slider.value = clamp(Number(slider.value)-1, fl, E.PMAX); update(); });
+    left.querySelector("#up").addEventListener("click", () => { slider.value = clamp(Number(slider.value)+1, fl, E.PMAX); update(); });
+    left.querySelector("#lock").addEventListener("click", ev => { ev.currentTarget.disabled = true; submitP1(Number(slider.value)); });
+    update();
+    return wrap;
+  }
+
+  function bid2Card(r, tie){
+    const fl = E.floorP2(r), start = clamp(20, fl, E.P2MAX);
+    const wrap = el('<div class="grid2 fade"></div>');
+    const left = el(`
+      <div class="stack">
+        <div class="card stack-s">
+          <p class="eyebrow">Round ${r.n} &middot; Period 2</p>
+          <h2>You won period 1${tie ? " on the coin flip" : ""}. All 100 customers are yours.</h2>
+          <p class="ink2">Both platforms now set a period 2 price at the same time. Willingness to pay has changed, because it depends on how many customers each platform had in period 1:</p>
+          <div class="qbox small">
+            <div class="panel-line"><span class="lab"><strong>Your platform</strong> &mdash; 100 period 1 customers</span><span class="fig num">$10 + $0.20 &times; 100 = <strong>${money2(E.WTP_WIN)}</strong></span></div>
+            <div class="panel-line"><span class="lab"><strong>Your rival</strong> &mdash; 0 period 1 customers</span><span class="fig num">$10 + $0.20 &times; 0 = <strong>${money2(E.WTP_LOSE)}</strong></span></div>
+          </div>
+          <p class="small muted">Your rival's cost is $10, the same as yours.</p>
+        </div>
+        <div class="card stack-s">
+          <p class="eyebrow">Your period 2 price</p>
+          <div class="pricebox"><span class="val num" id="p2val">${money2(start)}</span><span class="muted small" id="p2note"></span></div>
+          <div class="sliderwrap"><span class="bubble" id="b2"></span>
+          <input type="range" id="p2" min="${fl}" max="${E.P2MAX}" step="1" value="${start}" aria-label="Your period 2 price"></div>
+          <div class="scale" id="scale2"></div>
+          <div class="row" style="margin-top:6px"><button class="btn" id="lock2">Lock in this price</button></div>
+        </div>
+      </div>`);
+    const right = el(`<div class="stack"><div class="card stack-s"><p class="eyebrow">Will your customers stay?</p><div id="calc2"></div></div></div>`);
+    wrap.append(left, right);
+    const scale = left.querySelector("#scale2");
+    [{v:E.COST,t:"cost $10",c:"cost"},{v:fl,t:money2(fl)},{v:E.WTP_WIN,t:"max WTP $30"}]
+      .filter((t,i,a) => a.findIndex(u => u.v === t.v) === i)
+      .forEach(t => {
+      if (t.v < fl) return;
+      const pct = ((t.v - fl) / (E.P2MAX - fl)) * 100;
+      scale.append(el(`<span class="tick ${t.c||""}" style="left:${clamp(pct,5,90)}%">${t.t}</span>`));
+    });
+    const slider = left.querySelector("#p2");
+    const update = () => {
+      const p = Number(slider.value), prof = (p - E.COST) * E.CUSTOMERS;
+      left.querySelector("#p2val").textContent = money2(p);
+      left.querySelector("#p2note").innerHTML = costNote(p) + (p > E.WTP_WIN ? " &mdash; more than customers will pay" : "");
+      placeBubble(left.querySelector("#b2"), slider, p);
+      const mineS = E.WTP_WIN - p;
+      const scen = [{ label:"If your rival charges its cost ($10)", rp:Math.max(E.COST, fl) }];
+      if (fl < E.COST) scen.push({ label:"If your rival gives it away ($0)", rp:Math.max(0, fl) });
+      const verdictFor = rs => mineS < 0 ? `<span class="fig neg">Nobody buys &mdash; above $30</span>`
+        : mineS >= rs ? `<span class="fig pos">They stay with you</span>` : `<span class="fig neg">They switch to your rival</span>`;
+      right.querySelector("#calc2").innerHTML =
+        line(`Surplus with you <span class='muted'>($30 &minus; ${money2(p)})</span>`, money2(mineS), mineS < 0 ? "neg" : "") +
+        scen.map(s => {
+          const rs = E.WTP_LOSE - s.rp;
+          return `<div class="qbox small" style="margin-top:8px"><strong>${s.label}</strong>` +
+            line(`Surplus with your rival <span class='muted'>($10 &minus; ${money2(s.rp)})</span>`, money2(rs)) +
+            `<div class="panel-line"><span class="lab">Result</span>${verdictFor(rs)}</div></div>`;
+        }).join("") +
+        `<div style="height:8px"></div>` +
+        line("Profit per customer", money2(p - E.COST), p < E.COST ? "neg" : "pos") +
+        `<div class="total-line"><span class="lab">Period 2 profit if they stay</span><span class="fig ${prof<0?"neg":"pos"} num">${money(prof)}</span></div>` +
+        `<p class="tiny muted" style="margin-top:10px">Staying under $30 means customers would <em>accept</em> your price. They only stay if you also leave them at least as much surplus as your rival does.</p>`;
+    };
+    slider.addEventListener("input", update);
+    left.querySelector("#lock2").addEventListener("click", ev => { ev.currentTarget.disabled = true; submitP2(Number(slider.value)); });
+    update();
+    return wrap;
+  }
+
+  function narration(res){
+    const iWon = res.iWon;
+    const winner = iWon ? "You" : esc(res.oppName);
+    const seller = res.buyer === "me" ? "you" : res.buyer === "opp" ? "they" : "nobody";
+    let s = `${winner} charged ${money2(iWon ? res.myP1 : res.oppP1)} in period 1, which was lower, so ${iWon ? "you" : "they"} took all 100 customers`;
+    s += res.tie ? " after the coin flip. " : ". ";
+    s += `That left ${iWon ? "your" : "their"} platform with 100 users going into period 2, so customers valued it at ${money2(E.WTP_WIN)} &mdash; while the other platform, with no users, was worth only ${money2(E.WTP_LOSE)} to them, exactly its cost. `;
+    if (res.buyer === "none") s += "Both period 2 prices were above what customers would pay, so nobody sold anything.";
+    else {
+      const stayed = (res.buyer === "me") === iWon;
+      if (stayed) {
+        const keep = E.WTP_WIN - res.marketP2;
+        s += `In period 2, ${seller} charged ${money2(res.marketP2)}, leaving each customer ${money2(keep)} of surplus &mdash; at least as much as the other platform could offer without selling below cost &mdash; so everyone stayed. `;
+      } else {
+        s += `In period 2, the period 1 winner priced above what its customers would pay, so they switched and ${seller} served everyone at ${money2(res.marketP2)}. `;
+      }
+      s += iWon
+        ? (stayed
+            ? `The ${money(Math.abs(res.myProfit1))} ${res.myProfit1 < 0 ? "you lost" : "you made"} in period 1 bought you a market nobody could compete for.`
+            : "Winning period 1 put you in the stronger position; pricing above your customers' willingness to pay gave it away.")
+        : "With no customers from period 1, there was no price you could charge in period 2 that would both attract customers and cover your $10 cost.";
+    }
+    return s;
+  }
+
+  function resultCard(res){
+    const wrap = el('<div class="stack fade"></div>');
+    wrap.append(el(`
+      <div class="card stack-s">
+        <p class="eyebrow">Round ${res.n} &middot; result &middot; you played ${esc(res.oppName)}</p>
+        <h2>${res.iWon ? "You won period 1" : "Your rival won period 1"} &mdash; you made ${money(res.myTotal)}</h2>
+        <p class="narr">${narration(res)}</p>
+      </div>`));
+    const myW2 = res.iWon ? E.WTP_WIN : E.WTP_LOSE, oppW2 = res.iWon ? E.WTP_LOSE : E.WTP_WIN;
+    const s1me = E.WTP1 - res.myP1, s1opp = E.WTP1 - res.oppP1;
+    const s2me = myW2 - res.myP2, s2opp = oppW2 - res.oppP2;
+    const chose1 = res.iWon ? "You" : "Your rival";
+    const chose2 = res.buyer === "me" ? "You" : res.buyer === "opp" ? "Your rival" : "Nobody";
+    const tie2 = res.buyer !== "none" && s2me === s2opp;
+    const mark = (cond) => cond ? " <span class='fig pos'>&#10003;</span>" : "";
+    wrap.append(el(`
+      <div class="card stack-s"><div class="tablewrap"><table>
+        <thead><tr><th>Round ${res.n}</th><th>Period 1</th><th>Period 2</th><th>Total</th></tr></thead>
+        <tbody>
+          <tr><td>Your price</td><td>${money2(res.myP1)}</td><td>${money2(res.myP2)}${res.iWon ? "" : " <span class='muted tiny'>(best you could offer: your cost)</span>"}</td><td>&mdash;</td></tr>
+          <tr><td>Rival's price</td><td>${money2(res.oppP1)}</td><td>${money2(res.oppP2)}</td><td>&mdash;</td></tr>
+          <tr><td>Customer's willingness to pay for <strong>you</strong></td><td>${money2(E.WTP1)}</td><td>${money2(myW2)}</td><td>&mdash;</td></tr>
+          <tr><td>Customer's willingness to pay for <strong>your rival</strong></td><td>${money2(E.WTP1)}</td><td>${money2(oppW2)}</td><td>&mdash;</td></tr>
+          <tr class="highlight"><td>Surplus if they buy from <strong>you</strong> <span class="muted tiny">(WTP &minus; price)</span></td><td>${money2(s1me)}${mark(res.iWon)}</td><td>${money2(s2me)}${mark(res.buyer==="me")}</td><td>&mdash;</td></tr>
+          <tr class="highlight"><td>Surplus if they buy from <strong>your rival</strong></td><td>${money2(s1opp)}${mark(!res.iWon)}</td><td>${money2(s2opp)}${mark(res.buyer==="opp")}</td><td>&mdash;</td></tr>
+          <tr><td>Customers bought from</td><td>${chose1}${res.tie ? " <span class='muted tiny'>(coin flip)</span>" : ""}</td><td>${chose2}${tie2 ? " <span class='muted tiny'>(tie: they stay put)</span>" : ""}</td><td>&mdash;</td></tr>
+          <tr class="highlight"><td><strong>Your profit</strong></td><td>${money(res.myProfit1)}</td><td>${money(res.myProfit2)}</td><td><strong>${money(res.myTotal)}</strong></td></tr>
+          <tr><td>Rival's profit</td><td>${money(res.oppProfit1)}</td><td>${money(res.oppProfit2)}</td><td>${money(res.oppProfit1+res.oppProfit2)}</td></tr>
+          <tr><td>What one customer paid</td><td>${money2(res.marketP1)}</td><td>${money2(res.marketP2)}</td><td>${money2(res.consumerTotal)}</td></tr>
+        </tbody></table></div>
+        <p class="tiny muted">&#10003; marks the platform customers chose: the one leaving them the most surplus. Notice that in period 2 both prices can sit below willingness to pay, yet only one platform gets the customers.</p>
+      </div>`));
+    const r = E.roundOf(res.n);
+    if (r.hints === "full") wrap.append(payoffCard(res));
+    if (res.n === 1) wrap.append(el(`<div class="qbox"><strong>Before you go on, think about two things.</strong>
+      <ul><li>Why would a rival deliberately charge $5 when it costs $10 to serve a customer?</li>
+      <li>Did losing money in period 1 turn out to be a mistake &mdash; or the point?</li></ul></div>`));
+    return wrap;
+  }
+
+  function myRoundsTable(R){
+    return el(`
+      <div class="card stack-s">
+        <h3>Your rounds</h3>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Round</th><th>Your P1</th><th>Rival's P1</th><th>Won P1?</th><th>P2 price paid</th><th>Profit, period 1</th><th>Profit, period 2</th><th>Your total</th><th>Customer paid</th></tr></thead>
+          <tbody>${R.map(x => `<tr><td>${x.n}${x.floor!==null?" <span class='badge warn' style='margin-left:6px'>floor</span>":""}</td>
+            <td>${money2(x.myP1)}</td><td>${money2(x.oppP1)}</td><td>${x.iWon?"yes":"no"}</td><td>${money2(x.marketP2)}</td>
+            <td class="${x.myProfit1<0?"fig neg":""}">${money(x.myProfit1)}</td>
+            <td class="${x.myProfit2>0?"fig pos":""}">${money(x.myProfit2)}</td>
+            <td><strong>${money(x.myTotal)}</strong></td><td>${money2(x.consumerTotal)}</td></tr>`).join("")}</tbody>
+        </table></div>
+        <p class="tiny muted">Period 1 profit is the money you spent buying the market; period 2 profit is what that purchase was worth.</p>
+      </div>`);
+  }
+
+  const discussionBox = () => el(`<div class="qbox">
+    <strong>Questions to take back to the room</strong>
+    <ul>
+      <li>When you priced below cost, were you trying to destroy your rival, or trying to win customers?</li>
+      <li>The ban on below-cost pricing was written to protect small firms. Which round made the winning firm richer?</li>
+      <li>The period 2 price never fell. Why not? What would have had to change to bring it down?</li>
+      <li>If you had already won period 1, would you lobby for the rule or against it?</li>
+    </ul></div>`);
+
+  /* ---------------------- charts ---------------------- */
+  function svgEl(W,H,label){
+    const ns = "http://www.w3.org/2000/svg";
+    const s = document.createElementNS(ns, "svg");
+    s.setAttribute("viewBox", `0 0 ${W} ${H}`); s.setAttribute("width","100%");
+    s.setAttribute("role","img"); s.setAttribute("aria-label", label);
+    s.add = (tag, attrs, text) => { const n = document.createElementNS(ns, tag);
+      for (const k in attrs) n.setAttribute(k, attrs[k]); if (text !== undefined) n.textContent = text; s.appendChild(n); return n; };
+    return s;
+  }
+  function payoffCard(res){
+    const fl = res.floor === null ? E.PMIN : res.floor;
+    const best2 = (E.WTP_WIN - E.COST) * E.CUSTOMERS;
+    const pts = [];
+    for (let p = fl; p <= E.PMAX; p++){
+      const w1 = (p - E.COST) * E.CUSTOMERS;
+      pts.push({ p, total: p < res.oppP1 ? w1 + best2 : p === res.oppP1 ? (w1 + best2)/2 : 0 });
+    }
+    const card = el(`<div class="card stack-s">
+      <p class="eyebrow">What every other price would have earned you</p>
+      <h3>Given your rival's ${money2(res.oppP1)}, played well in period 2</h3>
+      <div class="chartwrap" id="pw"></div>
+      <figcaption>Your total profit across both periods, by the period 1 price you could have chosen. The dot marks your actual choice of ${money2(res.myP1)}.</figcaption>
+    </div>`);
+    card.querySelector("#pw").append(payoffChart(pts, res));
+    return card;
+  }
+  function payoffChart(pts, res){
+    const W = 620, H = 260, m = {t:14,r:16,b:34,l:66}, iw = W-m.l-m.r, ih = H-m.t-m.b;
+    const xs = pts.map(d=>d.p), ys = pts.map(d=>d.total);
+    const xmin = Math.min(...xs), xmax = Math.max(...xs);
+    const ymin = Math.min(0, ...ys), ymax = Math.max(...ys, 100);
+    const X = p => m.l + ((p-xmin)/(xmax-xmin))*iw, Y = v => m.t + ih - ((v-ymin)/(ymax-ymin))*ih;
+    const svg = svgEl(W,H,`Total profit by period 1 price; it jumps at the rival's price of ${money2(res.oppP1)} and is zero above it.`);
+    const muted = css("--muted"), lineC = css("--line"), accent = css("--accent"), lossc = css("--loss"), surface = css("--surface"), ink = css("--ink");
+    const step = Math.max(500, Math.ceil((ymax-ymin)/4/500)*500);
+    const grid = []; for (let v = Math.ceil(ymin/step)*step; v <= ymax; v += step) grid.push(v);
+    if (!grid.includes(0)) grid.push(0);
+    grid.forEach(v => { svg.add("line",{x1:m.l,x2:m.l+iw,y1:Y(v),y2:Y(v),stroke:lineC,"stroke-width":v===0?1.5:1});
+      svg.add("text",{x:m.l-10,y:Y(v)+4,"text-anchor":"end","font-size":12,fill:muted}, money(v)); });
+    [xmin,0,E.COST,xmax].filter(v => v>=xmin && v<=xmax).forEach(v =>
+      svg.add("text",{x:X(v),y:m.t+ih+22,"text-anchor":"middle","font-size":12,fill:v===E.COST?lossc:muted}, v===E.COST?"cost $10":money2(v)));
+    svg.add("line",{x1:X(res.oppP1),x2:X(res.oppP1),y1:m.t,y2:m.t+ih,stroke:muted,"stroke-width":1,"stroke-dasharray":"4 4"});
+    svg.add("text",{x:clamp(X(res.oppP1),m.l+30,m.l+iw-30),y:m.t+11,"text-anchor":"middle","font-size":12,fill:muted}, `rival ${money2(res.oppP1)}`);
+    let d=""; pts.forEach((pt,i)=>{ d += (i?"L":"M") + X(pt.p) + " " + Y(pt.total); });
+    svg.add("path",{d,fill:"none",stroke:accent,"stroke-width":2,"stroke-linejoin":"round"});
+    const mine = pts.find(pt => pt.p === res.myP1);
+    if (mine){
+      svg.add("circle",{cx:X(mine.p),cy:Y(mine.total),r:6,fill:accent,stroke:surface,"stroke-width":2});
+      // keep the label clear of the rival marker's caption along the top edge
+      const ly = Y(mine.total) < m.t + 32 ? Y(mine.total) + 20 : Y(mine.total) - 13;
+      svg.add("text",{x:clamp(X(mine.p),m.l+34,m.l+iw-34),y:ly,"text-anchor":"middle","font-size":12.5,fill:ink,"font-weight":600},"you");
+    }
+    const hov = svg.add("line",{x1:0,x2:0,y1:m.t,y2:m.t+ih,stroke:muted,"stroke-width":1,opacity:0});
+    const tip = document.createElement("div"); tip.className = "tip"; tip.hidden = true;
+    svg.addEventListener("mousemove", e => {
+      const r0 = svg.getBoundingClientRect(), px = (e.clientX - r0.left)/r0.width*W;
+      const p = Math.round(xmin + clamp((px-m.l)/iw,0,1)*(xmax-xmin));
+      const pt = pts.find(q => q.p === p); if (!pt) return;
+      hov.setAttribute("x1",X(p)); hov.setAttribute("x2",X(p)); hov.setAttribute("opacity",1);
+      tip.hidden = false; tip.innerHTML = `<strong>${money2(p)}</strong> &rarr; ${money(pt.total)}`;
+      tip.style.left = clamp((X(p)/W)*r0.width - 40, 0, r0.width - 120) + "px"; tip.style.top = "4px";
+    });
+    svg.addEventListener("mouseleave", () => { hov.setAttribute("opacity",0); tip.hidden = true; });
+    const div = document.createElement("div"); div.style.position = "relative"; div.append(svg, tip);
+    return div;
+  }
+  function histogram(values, label){
+    const lo = Math.min(-10, Math.floor(Math.min(...values))), hi = Math.max(20, Math.ceil(Math.max(...values)));
+    const binW = 2, bins = [];
+    for (let b = Math.floor(lo/binW)*binW; b < hi + binW; b += binW) bins.push({lo:b, hi:b+binW, c:0});
+    values.forEach(v => { const b = bins.find(x => v >= x.lo && v < x.hi); if (b) b.c++; else bins[bins.length-1].c++; });
+    const maxc = Math.max(1, ...bins.map(b=>b.c));
+    const W = 620, H = 140, m = {t:26,r:12,b:28,l:34}, iw = W-m.l-m.r, ih = H-m.t-m.b;
+    const svg = svgEl(W,H,label + " price distribution");
+    const muted = css("--muted"), ink = css("--ink"), lineC = css("--line");
+    const X = v => m.l + ((v - bins[0].lo)/(bins[bins.length-1].hi - bins[0].lo))*iw;
+    svg.add("text",{x:m.l,y:15,"font-size":12.5,"font-weight":600,fill:ink}, label);
+    svg.add("line",{x1:m.l,x2:m.l+iw,y1:m.t+ih,y2:m.t+ih,stroke:lineC,"stroke-width":1.5});
+    const bw = iw / bins.length;
+    bins.forEach(b => {
+      if (!b.c) return;
+      const h = (b.c/maxc)*ih;
+      const bar = svg.add("rect",{x:X(b.lo)+1,y:m.t+ih-h,width:Math.max(2,bw-2),height:h,
+        fill: b.lo < E.COST ? css("--consumer") : css("--accent"), rx:3, ry:3});
+      const t = document.createElementNS("http://www.w3.org/2000/svg","title");
+      t.textContent = `$${b.lo} to $${b.hi}: ${b.c} team${b.c===1?"":"s"}`; bar.appendChild(t);
+      if (b.c >= Math.max(2, maxc*0.5)) svg.add("text",{x:X(b.lo)+bw/2,y:m.t+ih-h-4,"text-anchor":"middle","font-size":11.5,fill:muted}, b.c);
+    });
+    svg.add("line",{x1:X(E.COST),x2:X(E.COST),y1:m.t-2,y2:m.t+ih,stroke:css("--loss"),"stroke-width":1.5,"stroke-dasharray":"4 3"});
+    svg.add("text",{x:X(E.COST),y:m.t+ih+18,"text-anchor":"middle","font-size":11.5,fill:css("--loss")},"cost $10");
+    [bins[0].lo, bins[bins.length-1].hi].forEach(v =>
+      svg.add("text",{x:clamp(X(v),m.l+10,m.l+iw-10),y:m.t+ih+18,"text-anchor":"middle","font-size":11.5,fill:muted}, money2(v)));
+    const fig = document.createElement("figure"); fig.append(svg); return fig;
+  }
+  function compareChart(rows){
+    const W = 620, H = 250, m = {t:18,r:16,b:48,l:58}, iw = W-m.l-m.r, ih = H-m.t-m.b;
+    const maxv = Math.max(10, ...rows.flatMap(d => [d.consumer, d.firm])) * 1.15;
+    const svg = svgEl(W,H, `A customer paid ${fmt1(rows[0].consumer)} with no rule and ${fmt1(rows[1].consumer)} with the ban.`);
+    const muted = css("--muted"), lineC = css("--line"), ink = css("--ink");
+    const Y = v => m.t + ih - (v/maxv)*ih;
+    const stepv = Math.max(10, Math.round(maxv/4/10)*10);
+    for (let v = 0; v <= maxv; v += stepv){
+      svg.add("line",{x1:m.l,x2:m.l+iw,y1:Y(v),y2:Y(v),stroke:lineC,"stroke-width":v===0?1.5:1});
+      svg.add("text",{x:m.l-10,y:Y(v)+4,"text-anchor":"end","font-size":12,fill:muted}, "$"+v);
+    }
+    const gw = iw/rows.length, bw = Math.min(64, gw/3);
+    rows.forEach((d,i) => {
+      const gx = m.l + gw*i + gw/2;
+      [{v:d.consumer,color:css("--consumer"),x:gx-bw-3},{v:d.firm,color:css("--accent"),x:gx+3}].forEach(b => {
+        const h = Math.max(2,(b.v/maxv)*ih);
+        svg.add("rect",{x:b.x,y:Y(b.v),width:bw,height:h,fill:b.color,rx:4,ry:4});
+        svg.add("text",{x:b.x+bw/2,y:Y(b.v)-7,"text-anchor":"middle","font-size":13,"font-weight":600,fill:ink}, fmt1(b.v));
+      });
+      d.label.split("\n").forEach((ln,k) => svg.add("text",{x:gx,y:m.t+ih+20+k*15,"text-anchor":"middle","font-size":12.5,fill:muted}, ln));
+    });
+    const fig = document.createElement("figure"); fig.append(svg);
+    fig.append(el(`<figcaption>Per customer, across both periods. Taller amber means customers paid more.</figcaption>`));
+    return fig;
+  }
+  function deltaCell(d){
+    if (Math.abs(d) < 0.005) return `<span class="muted">no change</span>`;
+    return `<span class="fig ${d>0?"neg":"pos"}">${d>0?"+":"−"}$${(Math.round(Math.abs(d)*10)/10).toLocaleString()}</span>`;
+  }
+  function verdict(c3,c4){
+    const dC = c4.consumer - c3.consumer, dF = c4.firm - c3.firm;
+    if (dC > 0) return `With the rule in place, customers paid ${fmt1(Math.abs(dC))} <strong>more</strong> per person${dF >= 0 ? ` and the winning firm kept ${fmt1(Math.abs(dF))} <strong>more</strong> per customer` : ""}. The period 2 price is set by how useful the platform has become, and the rule never touched that.`;
+    return "In these results the rule did not raise what customers paid. Check whether period 2 prices were set the same way in both rounds before drawing a conclusion.";
+  }
+  function comparisonCard(c3, c4){
+    const card = el(`<div class="card stack-s">
+      <h3>What the rule did</h3>
+      <div class="legend">
+        <span class="key"><span class="swatch" style="background:var(--consumer)"></span>What one customer paid, both periods</span>
+        <span class="key"><span class="swatch" style="background:var(--accent)"></span>Winning firm's profit per customer</span>
+      </div>
+      <div id="cmp"></div>
+      <div class="tablewrap"><table>
+        <thead><tr><th></th><th>Round 3 &mdash; no rule</th><th>Round 4 &mdash; below-cost banned</th><th>Change</th></tr></thead>
+        <tbody>
+          <tr><td>Period 1 price paid</td><td>${fmt1(c3.p1)}</td><td>${fmt1(c4.p1)}</td><td>${deltaCell(c4.p1-c3.p1)}</td></tr>
+          <tr><td>Period 2 price paid</td><td>${fmt1(c3.p2)}</td><td>${fmt1(c4.p2)}</td><td>${deltaCell(c4.p2-c3.p2)}</td></tr>
+          <tr class="highlight"><td><strong>Total a customer paid</strong></td><td><strong>${fmt1(c3.consumer)}</strong></td><td><strong>${fmt1(c4.consumer)}</strong></td><td>${deltaCell(c4.consumer-c3.consumer)}</td></tr>
+          <tr><td>Winning firm's profit per customer</td><td>${fmt1(c3.firm)}</td><td>${fmt1(c4.firm)}</td><td>${deltaCell(c4.firm-c3.firm)}</td></tr>
+        </tbody>
+      </table></div>
+      <p class="narr small">${verdict(c3,c4)}</p>
+    </div>`);
+    card.querySelector("#cmp").append(compareChart([
+      {label:"Round 3\nno rule", consumer:c3.consumer, firm:c3.firm},
+      {label:"Round 4\nban", consumer:c4.consumer, firm:c4.firm}
+    ]));
+    return card;
+  }
+  function summarize(resObj){
+    const arr = Object.values(resObj || {});
+    if (!arr.length) return null;
+    const med = a => E.stats(a).median;
+    return { p1: med(arr.map(x=>x.marketP1)), p2: med(arr.map(x=>x.marketP2)),
+      consumer: med(arr.map(x=>x.consumerTotal)),
+      firm: med(arr.map(x => (x.myProfit1 + x.myProfit2 + x.oppProfit1 + x.oppProfit2) / E.CUSTOMERS)) };
+  }
+  const soloSummary = x => ({ p1:x.marketP1, p2:x.marketP2, consumer:x.consumerTotal,
+    firm:(x.myProfit1 + x.myProfit2 + x.oppProfit1 + x.oppProfit2) / E.CUSTOMERS });
+
+  /* =====================================================================
+     STUDENT VIEW (live session)
+     ===================================================================== */
+  function renderStudent(){
+    if (solo.on) return renderSolo();
+    const host = $("viewStudent");
+    const m = meta();
+    host.innerHTML = "";
+    if (!m) { host.append(el(`<div class="card">This session has ended. <a href="#" onclick="App.leave();return false">Back to the start</a>.</div>`)); return; }
+    const n = m.round || 0, r = n ? E.roundOf(n) : null;
+    host.append(el(`<header class="top"><div>
+      <p class="eyebrow">${esc(myName || "Your team")} &middot; session ${esc(m.code)}</p>
+      <h1>Racing to the Bottom</h1></div></header>`));
+    const steps = el('<div class="steps"></div>');
+    E.ROUNDS.forEach(rr => {
+      const done = !!(game.results && game.results["r"+rr.n] && game.results["r"+rr.n][uid]);
+      steps.append(el(`<span class="step ${n===rr.n && m.status!=="over" ? "now" : done ? "done" : ""}">Round ${rr.n}</span>`));
+    });
+    steps.append(el(`<span class="step ${m.status==="over"?"now":""}">Wrap-up</span>`));
+    host.append(steps);
+
+    const myBid = bidsFor(n)[uid], myPair = pairsFor(n)[uid], myRes = resultsFor(n)[uid];
+
+    if (m.status === "lobby"){
+      host.append(el(`<div class="card stack-s fade"><h2>You're in. Waiting for the class to start.</h2>
+        <p class="ink2">Read the rules while you wait &mdash; everything you need is in them.</p></div>`));
+      host.append(rulesCard(true));
+    } else if (m.status === "bid1"){
+      if (myBid) host.append(waitCard("Price locked in at " + money2(myBid.p1), "Waiting for the other teams. Your rival is choosing at the same time."));
+      else host.append(bidCard(r, r.opponent === "bot" ? 5 : null));
+    } else if (m.status === "bid2"){
+      const b2 = bids2For(n)[uid];
+      if (!myPair) host.append(waitCard("Bidding closed", "Waiting for the next step."));
+      else if (!myPair.iWon) host.append(lostP1Card(r, myPair));
+      else if (b2) host.append(waitCard("Period 2 price locked in at " + money2(b2.p2), "Waiting for the class."));
+      else host.append(bid2Card(r, myPair.tie));
+    } else if (m.status === "results"){
+      if (myRes) host.append(resultCard(myRes));
+      else host.append(waitCard("Round " + n + " is done", "You weren't matched this round. Watch the screen."));
+      host.append(el(`<p class="small muted" style="margin-top:12px">Waiting for your instructor to open the next round.</p>`));
+    } else if (m.status === "over"){
+      const mine = [1,2,3,4].map(k => (game.results && game.results["r"+k] && game.results["r"+k][uid])).filter(Boolean);
+      host.append(el(`<div class="card stack-s fade"><h2>That's the game</h2>
+        <p class="ink2">Rounds 3 and 4 were the same market. The only difference was the law against pricing below cost.</p></div>`));
+      const r3 = mine.find(x=>x.n===3), r4 = mine.find(x=>x.n===4);
+      if (r3 && r4) host.append(comparisonCard(soloSummary(r3), soloSummary(r4)));
+      if (mine.length) host.append(myRoundsTable(mine));
+      host.append(discussionBox());
+    }
+    host.append(fallbackFooter(n));
+  }
+  const waitCard = (title, sub) => el(`<div class="card stack-s fade"><h2>${esc(title)}</h2><p class="ink2">${esc(sub)}</p></div>`);
+  function lostP1Card(r, pair){
+    return el(`<div class="card stack-s fade">
+      <p class="eyebrow">Round ${r.n} &middot; Period 2</p>
+      <h2>Your rival won period 1 with ${money2(pair.oppP1)}.</h2>
+      <p class="ink2">They have all 100 customers, so in period 2 their platform is worth ${money2(E.WTP_WIN)} to a customer. Yours, with nobody on it, is worth ${money2(E.WTP_LOSE)} &mdash; exactly what it costs you to serve someone.</p>
+      <div class="qbox small">
+        <strong>Try your best offer.</strong> Price at your cost, $10, and a customer keeps $10 &minus; $10 = <strong>$0</strong> with you.
+        Your rival can charge the full $30 and still leave them $30 &minus; $30 = <strong>$0</strong>. It's a tie, so they stay where they are.
+        To pull anyone away you'd have to price <em>below</em> $10 and lose money on every customer you win.
+      </div>
+      <p class="ink2">So you sit period 2 out. Watch what your rival charges.</p>
+    </div>`);
+  }
+  function fallbackFooter(n){
+    const f = el(`<div class="row" style="margin-top:22px; justify-content:space-between">
+      <span class="tiny muted">Session ${esc(code || "")}</span>
+      <span class="row" style="gap:8px">
+        <button class="btn quiet small" id="fb">Having trouble? Play the rest against the computer</button>
+        <button class="btn quiet small" id="lv">Leave</button>
+      </span></div>`);
+    f.querySelector("#fb").addEventListener("click", () => startSolo(Math.max(0, (n || 1) - 1)));
+    f.querySelector("#lv").addEventListener("click", leave);
+    return f;
+  }
+
+  /* =====================================================================
+     SOLO MODE — the whole game against a computer rival, no network
+     ===================================================================== */
+  function startSolo(startIndex){
+    if (unsub) { unsub(); unsub = null; }
+    solo.on = true;
+    solo.ri = startIndex || 0;
+    solo.phase = startIndex ? "bid1" : "intro";
+    solo.r = E.ROUNDS[solo.ri];
+    solo.oppP1 = solo.r.botP1();
+    solo.myP1 = null; solo.iWon = null; solo.tie = false;
+    show("viewStudent"); renderSolo();
+  }
+  function soloBegin(i){
+    solo.ri = i; solo.r = E.ROUNDS[i]; solo.oppP1 = solo.r.botP1();
+    solo.myP1 = null; solo.iWon = null; solo.tie = false; solo.phase = "bid1";
+    renderSolo(); window.scrollTo(0,0);
+  }
+  function soloLockP1(p){
+    solo.myP1 = p;
+    const w = E.winP1(p, solo.oppP1, Math.random() < 0.5);
+    solo.iWon = w.me; solo.tie = w.tie;
+    if (w.me) { solo.phase = "bid2"; renderSolo(); window.scrollTo(0,0); }
+    else soloFinish(null);
+  }
+  const soloLockP2 = p => soloFinish(p);
+  function soloFinish(myP2){
+    const r = solo.r;
+    const res = E.resolve({ r, myP1:solo.myP1, oppP1:solo.oppP1, iWon:solo.iWon, tie:solo.tie,
+      myP2: myP2 === null ? E.defaultP2(false, r) : myP2,
+      oppP2: E.botP2(!solo.iWon, r), oppName:"Computer rival" });
+    solo.results = solo.results.filter(x => x.n !== r.n).concat(res).sort((a,b) => a.n - b.n);
+    solo.phase = "result"; renderSolo(); window.scrollTo(0,0);
+  }
+  function renderSolo(){
+    const host = $("viewStudent"); host.innerHTML = "";
+    host.append(el(`<header class="top"><div>
+      <p class="eyebrow">Playing against the computer</p>
+      <h1>Racing to the Bottom</h1>
+      <p class="muted small" style="margin-top:4px">Two periods, one market, 100 customers. Win period 1 and you own period 2.</p>
+    </div></header>`));
+    if (solo.phase !== "intro"){
+      const steps = el('<div class="steps"></div>');
+      E.ROUNDS.forEach((rr,i) => {
+        const done = solo.results.some(x => x.n === rr.n);
+        steps.append(el(`<span class="step ${solo.phase!=="wrap" && i===solo.ri ? "now" : done ? "done" : ""}">Round ${rr.n}</span>`));
+      });
+      steps.append(el(`<span class="step ${solo.phase==="wrap"?"now":""}">Wrap-up</span>`));
+      host.append(steps);
+    }
+    if (solo.phase === "intro"){
+      const w = el(`<div class="stack fade">
+        <div class="card stack-s">
+          <p class="eyebrow">Before you start</p>
+          <h2>You run a platform. So does someone else.</h2>
+          <p class="ink2">Four short rounds. Each has two periods: you set a price, your rival sets a price, and customers buy from whoever gives them the better deal. Your goal is to <strong>make as much total profit as you can</strong> across both periods.</p>
+        </div></div>`);
+      w.append(rulesCard(true));
+      const go = el(`<div class="row"><button class="btn" id="go">Start round ${solo.r.n}</button><span class="muted small">About 10 minutes.</span></div>`);
+      go.querySelector("#go").addEventListener("click", () => soloBegin(solo.ri));
+      w.append(go); host.append(w);
+    } else if (solo.phase === "bid1"){
+      host.append(bidCard(solo.r, solo.r.reveal ? solo.oppP1 : null));
+    } else if (solo.phase === "bid2"){
+      host.append(bid2Card(solo.r, solo.tie));
+    } else if (solo.phase === "result"){
+      const res = solo.results.find(x => x.n === solo.r.n);
+      host.append(resultCard(res));
+      const last = solo.ri === E.ROUNDS.length - 1;
+      const btn = el(`<div class="row" style="margin-top:16px"><button class="btn" id="next">${last ? "See the wrap-up" : "Start round " + (solo.r.n + 1)}</button></div>`);
+      btn.querySelector("#next").addEventListener("click", () => {
+        if (last) { solo.phase = "wrap"; renderSolo(); window.scrollTo(0,0); } else soloBegin(solo.ri + 1);
+      });
+      host.append(btn);
+    } else if (solo.phase === "wrap"){
+      const R = solo.results;
+      const r3 = R.find(x=>x.n===3), r4 = R.find(x=>x.n===4);
+      host.append(el(`<div class="card stack-s fade"><p class="eyebrow">Wrap-up</p>
+        <h2>Four rounds, and one rule that changed everything</h2>
+        <p class="ink2">Rounds 3 and 4 were the same market. The only difference was the law against pricing below cost.</p></div>`));
+      if (r3 && r4) host.append(comparisonCard(soloSummary(r3), soloSummary(r4)));
+      if (R.length) host.append(myRoundsTable(R));
+      const codeLine = R.map(x => `R${x.n}:${x.myP1}`).join("  ");
+      const sub = el(`<div class="card stack-s"><h3>Report your prices</h3>
+        <p class="ink2 small">If your instructor asks for them, this is your line.</p>
+        <div class="copyline" id="cl">${codeLine}</div>
+        <div class="row"><button class="btn small" id="cp">Copy</button><span class="tiny muted" id="cd"></span></div></div>`);
+      sub.querySelector("#cp").addEventListener("click", async () => {
+        try { await navigator.clipboard.writeText(codeLine); sub.querySelector("#cd").textContent = "Copied."; }
+        catch { sub.querySelector("#cd").textContent = "Select the line and press Ctrl/Cmd+C."; }
+      });
+      host.append(sub);
+      host.append(discussionBox());
+      const again = el(`<div class="row"><button class="btn ghost" id="ag">Play again</button><button class="btn quiet" id="bk">Back to the start</button></div>`);
+      again.querySelector("#ag").addEventListener("click", () => { solo.results = []; startSolo(0); });
+      again.querySelector("#bk").addEventListener("click", () => { solo.on = false; solo.results = []; show("viewLanding"); });
+      host.append(again);
+    }
+  }
+
+  /* =====================================================================
+     HOST VIEW
+     ===================================================================== */
+  function renderHost(){
+    const host = $("viewHost"); host.innerHTML = "";
+    const m = meta();
+    if (!m) { host.append(el(`<div class="card">This session is gone. <a href="#" onclick="App.leave();return false">Start another</a>.</div>`)); return; }
+    const n = m.round || 0, r = n ? E.roundOf(n) : null;
+    const ps = players(), ids = Object.keys(ps);
+    const joinURL = location.origin + location.pathname + "?g=" + m.code;
+
+    host.append(el(`<header class="top">
+      <div><p class="eyebrow">Instructor view &middot; ${ids.length} team${ids.length===1?"":"s"} joined</p>
+      <h1>Racing to the Bottom</h1></div>
+      <div class="row"><span class="badge ${m.status==="lobby"?"":"on"}">${statusLabel(m)}</span></div>
+    </header>`));
+
+    const grid = el('<div class="grid-host"></div>');
+    const rail = el(`<div class="stack">
+      <div class="card stack-s">
+        <p class="eyebrow">Join code</p>
+        <div class="code-big">${esc(m.code)}</div>
+        <p class="tiny muted" style="word-break:break-all">${esc(joinURL)}</p>
+      </div>
+      <div class="card stack-s">
+        <p class="eyebrow">Teams</p>
+        <div class="roster" id="roster"></div>
+        <div class="row" style="margin-top:6px"><button class="btn quiet small" id="addbots">Add 2 computer teams</button></div>
+      </div>
+      <div class="card stack-s"><p class="eyebrow">Controls</p><div id="controls"></div></div>
+      <div class="row"><button class="btn quiet small" id="end">End &amp; delete session</button></div>
+    </div>`);
+    const roster = rail.querySelector("#roster");
+    if (!ids.length) roster.append(el(`<span class="tiny muted">Nobody yet. Read out the code.</span>`));
+    ids.sort((a,b) => (ps[a].joinedAt||0) - (ps[b].joinedAt||0)).forEach(id => {
+      const submitted = m.status === "bid1" ? !!bidsFor(n)[id] : m.status === "bid2" ? !!bids2For(n)[id] : false;
+      roster.append(el(`<span class="pill ${submitted?"in":""}">${esc(ps[id].name)}${submitted?" ✓":""}</span>`));
+    });
+    rail.querySelector("#addbots").addEventListener("click", () => addBotTeams(2));
+    rail.querySelector("#end").addEventListener("click", endAndClear);
+    rail.querySelector("#controls").append(hostControls(m, n, r));
+
+    const main = el('<div class="stack"></div>');
+    if (m.status === "lobby"){
+      main.append(el(`<div class="card stack-s">
+        <h2>Round 1 &mdash; a rival who prices below cost</h2>
+        <p class="ink2">Everyone plays the same computer rival, which has posted <strong>$5</strong>. The calculator on their screens shows period 1 only, so the round is a puzzle: why would anyone price below cost, and should they follow?</p>
+        <p class="ink2 small">Rounds 2 to 4 pair teams against each other, and round 4 adds the price floor. An odd team out is paired with a computer rival.</p></div>`));
+      main.append(rulesCard(true));
+    } else if (m.status === "bid1"){
+      const subs = Object.keys(bidsFor(n)).length;
+      main.append(el(`<div class="card stack-s">
+        <h2>Round ${n} &mdash; bidding is open</h2>
+        <div class="bigstat">
+          <div class="s"><div class="v num">${subs} / ${ids.length}</div><div class="k">prices locked in</div></div>
+          <div class="s"><div class="v num">${r.floor!==null?"$10":"none"}</div><div class="k">price floor</div></div>
+        </div>
+        <p class="ink2 small">Prices stay hidden until you close bidding, so nobody can copy from the screen.</p></div>`));
+    } else if (m.status === "bid2"){
+      const prs = pairsFor(n);
+      const winners = Object.keys(prs).filter(id => prs[id].iWon && ps[id] && !ps[id].bot);
+      const done = winners.filter(id => bids2For(n)[id]).length;
+      main.append(el(`<div class="card stack-s">
+        <h2>Round ${n} &mdash; period 1 is settled</h2>
+        <div class="bigstat"><div class="s"><div class="v num">${done} / ${winners.length}</div><div class="k">winners have set a period 2 price</div></div></div>
+        <p class="ink2 small">Teams that lost period 1 are reading why no price works for them.</p></div>`));
+      main.append(distributionCard(n, "Period 1 prices this round"));
+      main.append(pairsTable(n, ps, false));
+    } else if (m.status === "results"){
+      main.append(roundSummary(n));
+      main.append(distributionCard(n, "Period 1 prices, round " + n));
+      main.append(pairsTable(n, ps, true));
+    } else if (m.status === "over"){
+      main.append(wrapUpPanel());
+    }
+    grid.append(rail, main);
+    host.append(grid);
+  }
+  function statusLabel(m){
+    return m.status === "lobby" ? "Lobby" : m.status === "bid1" ? `Round ${m.round}: bidding`
+      : m.status === "bid2" ? `Round ${m.round}: period 2`
+      : m.status === "results" ? `Round ${m.round}: results` : "Finished";
+  }
+  function hostControls(m, n, r){
+    const box = el('<div class="stack-s"></div>');
+    const add = (label, fn, cls="btn") => { const b = el(`<button class="${cls}">${label}</button>`); b.addEventListener("click", fn); box.append(b); return b; };
+    if (m.status === "lobby") add("Open round 1", () => openRound(1));
+    else if (m.status === "bid1"){
+      add("Close bidding &amp; match up", matchUp);
+      box.append(el(`<p class="tiny muted">Teams that haven't submitted are entered at cost ($10).</p>`));
+    } else if (m.status === "bid2"){
+      add("Resolve the round", resolveRound);
+      box.append(el(`<p class="tiny muted">Winners who haven't priced yet charge what the market bears ($30).</p>`));
+    } else if (m.status === "results"){
+      if (n < E.ROUNDS.length) add(`Open round ${n+1}`, () => openRound(n+1));
+      else add("Finish &amp; show the wrap-up", finishSession);
+      add("Re-open this round's bidding", () => openRound(n), "btn quiet small");
+    } else if (m.status === "over"){
+      add("Back to lobby", () => store.update(pathOf("meta"), { status:"lobby", round:0 }), "btn quiet small");
+    }
+    return box;
+  }
+  function distributionCard(n, title){
+    const vals = Object.values(bidsFor(n)).map(b => b.p1);
+    if (!vals.length) return el(`<div class="card muted small">No prices submitted.</div>`);
+    const s = E.stats(vals);
+    const card = el(`<div class="card stack-s">
+      <h3>${esc(title)}</h3>
+      <div class="bigstat">
+        <div class="s"><div class="v num">${fmt1(s.median)}</div><div class="k">median price</div></div>
+        <div class="s"><div class="v num">${fmt1(s.min)}</div><div class="k">lowest</div></div>
+        <div class="s"><div class="v num">${s.belowCost}/${s.n}</div><div class="k">below cost</div></div>
+      </div>
+      <div id="h"></div>
+      <figcaption>Each bar counts teams. The dashed line is cost, $10.</figcaption>
+    </div>`);
+    card.querySelector("#h").append(histogram(vals, `Round ${n}`));
+    return card;
+  }
+  function pairsTable(n, ps, withResults){
+    const prs = pairsFor(n), res = resultsFor(n), ids = Object.keys(prs);
+    if (!ids.length) return el(`<div class="card muted small">No pairings yet.</div>`);
+    const seen = new Set(), rows = [];
+    ids.forEach(id => {
+      if (seen.has(id)) return;
+      seen.add(id); if (prs[id].opp) seen.add(prs[id].opp);
+      const myName2 = ps[id] ? ps[id].name : "Team";
+      const ra = res[id];
+      rows.push(`<tr>
+        <td>${esc(myName2)} <span class="muted">vs</span> ${esc(prs[id].oppName)}</td>
+        <td>${money2(prs[id].myP1)}</td>
+        <td>${money2(prs[id].oppP1)}</td>
+        <td>${esc(prs[id].iWon ? myName2 : prs[id].oppName)}</td>
+        ${withResults ? `<td>${ra ? money2(ra.marketP2) : "&mdash;"}</td><td>${ra ? money2(ra.consumerTotal) : "&mdash;"}</td>` : ""}
+      </tr>`);
+    });
+    return el(`<div class="card stack-s"><h3>Markets this round</h3><div class="tablewrap"><table>
+      <thead><tr><th>Market</th><th>P1 price</th><th>Rival's P1</th><th>Won period 1</th>${withResults?"<th>P2 price</th><th>Customer paid</th>":""}</tr></thead>
+      <tbody>${rows.join("")}</tbody></table></div></div>`);
+  }
+  function roundSummary(n){
+    const res = resultsFor(n);
+    if (!Object.keys(res).length) return el(`<div class="card muted small">No results yet.</div>`);
+    const s = summarize(res), r = E.roundOf(n);
+    return el(`<div class="card stack-s">
+      <p class="eyebrow">Round ${n} &middot; ${r.floor !== null ? "price floor in force" : "no price rules"}</p>
+      <h2>Median customer paid ${fmt1(s.consumer)} across both periods</h2>
+      <div class="bigstat">
+        <div class="s"><div class="v num">${fmt1(s.p1)}</div><div class="k">period 1 price</div></div>
+        <div class="s"><div class="v num">${fmt1(s.p2)}</div><div class="k">period 2 price</div></div>
+        <div class="s"><div class="v num">${fmt1(s.firm)}</div><div class="k">firm profit per customer</div></div>
+      </div>
+      <p class="ink2 small">${n === 4 ? "Compare this with round 3 on the wrap-up screen." : "Medians across the markets in the room."}</p>
+    </div>`);
+  }
+  function wrapUpPanel(){
+    const box = el('<div class="stack"></div>');
+    const all = [1,2,3,4].map(n => ({ n, res: resultsFor(n), bids: Object.values(bidsFor(n)).map(b => b.p1) }));
+    const s3 = summarize(all[2].res), s4 = summarize(all[3].res);
+    box.append(el(`<div class="card stack-s"><h2>Four rounds, and one rule that changed everything</h2>
+      <p class="ink2">Rounds 3 and 4 were the same market. The only difference was the law against pricing below cost.</p></div>`));
+    if (s3 && s4) box.append(comparisonCard(s3, s4));
+
+    const labels = ["Round 1 — rival visible at $5","Round 2 — full calculator","Round 3 — no rule","Round 4 — below-cost banned"];
+    const rows = all.map((a,i) => {
+      const st = E.stats(a.bids); if (!st) return "";
+      const sm = summarize(a.res);
+      return `<tr${i===3?' class="highlight"':''}><td>${labels[i]}</td><td>${st.n}</td><td>${fmt1(st.min)}</td><td>${fmt1(st.median)}</td><td>${fmt1(st.mean)}</td><td>${fmt1(st.max)}</td>
+        <td>${st.belowCost} of ${st.n} (${Math.round(100*st.belowCost/st.n)}%)</td><td>${sm ? fmt1(sm.consumer) : "&mdash;"}</td></tr>`;
+    }).join("");
+    box.append(el(`<div class="card stack-s"><h3>Distribution of period 1 prices</h3>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Round</th><th>Teams</th><th>Lowest</th><th>Median</th><th>Mean</th><th>Highest</th><th>Priced below cost</th><th>Customer paid</th></tr></thead>
+        <tbody>${rows}</tbody></table></div></div>`));
+
+    const hc = el(`<div class="card stack-s"><h3>Where the prices landed</h3><div id="hs" class="stack"></div>
+      <figcaption>Each bar counts teams. The dashed line is cost, $10. Bars to its left are prices below cost.</figcaption></div>`);
+    all.forEach((a,i) => { if (a.bids.length) hc.querySelector("#hs").append(histogram(a.bids, labels[i])); });
+    box.append(hc);
+    box.append(discussionBox());
+    return box;
+  }
+
+  /* ---------------------- exports ---------------------- */
+  return { boot, show, goJoin, joinGame, createSession, startSolo, leave,
+    openRound, matchUp, resolveRound, finishSession, addBotTeams };
+})();
+App.boot();
+</script>
+</body>
+</html>
