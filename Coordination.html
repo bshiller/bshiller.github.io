@@ -136,7 +136,7 @@ ul.disc li{margin-bottom:8px}
   <div class="land-hero">
     <div class="eyebrow">A live classroom game</div>
     <h1>Everyone is on Platform A. Platform B is better — if enough of you are on it.</h1>
-    <p class="sub">Ten days. Each day, half the class gets a chance to reconsider: stay, switch, or switch back. Your score each day depends on how many classmates are on the same platform as you — and being early on B pays almost nothing. Who goes first?</p>
+    <p class="sub">Ten days. Each day, half the class gets a chance to reconsider: stay, switch, or switch back. Your score each day depends on how many of the others are on the same platform as you — and being alone on B pays nothing. Who goes first?</p>
   </div>
   <div class="role-grid">
     <button class="role-card" onclick="App.showJoin()"><h3>Join the class session</h3><p>Enter the 4-letter code on the screen and play from your phone.</p><div class="go">Join →</div></button>
@@ -180,7 +180,7 @@ ul.disc li{margin-bottom:8px}
         <div>
           <div class="stat"><span>Your score so far</span><b id="myScore">0</b></div>
           <div class="stat"><span>Yesterday you earned</span><b id="myLast">—</b></div>
-          <div class="stat"><span>Your rank</span><b id="myRank">—</b></div>
+          <div class="stat"><span>Your rank <span class="small">(1 = highest score)</span></span><b id="myRank">—</b></div>
           <div class="stat"><span id="shareLab">Class on B right now</span><b id="shareB">0%</b></div>
         </div>
       </div>
@@ -193,8 +193,9 @@ ul.disc li{margin-bottom:8px}
     </div>
     <div class="card">
       <h3>What a day is worth <span class="small">(points per day, for this class)</span></h3>
-      <p class="small">Your score depends on the share of the class on the <b>same</b> platform as you. B's network is much stronger — but only once it's big.</p>
-      <table class="pay" id="payTable"></table>
+      <p class="small">Your score depends on how many of the <b>other</b> people are on the same platform as you. B pays less than A until half the others are there — and far more once nearly everyone is.</p>
+      <div class="chartbox" id="payChart"></div>
+      <div id="payNow" class="turn on" style="margin-top:10px"></div>
     </div>
   </div>
   <div id="stuDone" class="card hidden">
@@ -310,20 +311,28 @@ const FIREBASE_CONFIG = {
   };
 
 /* =====================================================================
-   PAYOFFS. s = share of the class on the same platform as you (0..1),
-   after interoperability credit. Per day:
+   PAYOFFS. s = share of the OTHER players (everyone but you) who are on the
+   same platform as you (0..1), after interoperability credit. Per day:
      A: 6 + 6 * s^k       (a modest network; worth 6 even if you're alone)
-     B: 24 * s^k          (a much stronger network; worth ~0 if you're alone)
-   With k = 3, B beats A only once about two-thirds of the class is there.
+     B: A(1/2) / (1/2)^k * s^k   (worth 0 if you're alone; scaled so that B and A
+                                  pay the same when exactly half of the others are on B)
+   So B is worth LESS than A until half the others are there, and far more than A
+   could ever pay when nearly everyone is: with k = 3, B pays 54 a day at 100% vs. A's 12.
    ===================================================================== */
 const PAY = {
   A: (s, k) => 6 + 6 * Math.pow(s, k),
-  B: (s, k) => 24 * Math.pow(s, k),
+  B: (s, k) => (6 + 6 * Math.pow(0.5, k)) / Math.pow(0.5, k) * Math.pow(s, k),
 };
 function effShare(mine, other, interop){ return Math.min(1, mine + interop * other); }
+/* what one person earns on `plat` when `othersB` of the other `others` players are on B */
+function payFor(plat, othersB, others, S){
+  const sB = others ? othersB / others : 0, sA = 1 - sB;
+  return plat === "B" ? PAY.B(effShare(sB, sA, S.interop), S.exp) : PAY.A(effShare(sA, sB, S.interop), S.exp);
+}
+/* class-level view: nB of N on B. A person on B sees nB-1 others on B; a person on A sees nB. */
 function dayScores(nB, N, S){
-  const sB = N ? nB / N : 0, sA = 1 - sB;
-  return { A: PAY.A(effShare(sA, sB, S.interop), S.exp), B: PAY.B(effShare(sB, sA, S.interop), S.exp), sB };
+  const others = Math.max(N - 1, 0);
+  return { A: payFor("A", nB, others, S), B: payFor("B", Math.max(nB - 1, 0), others, S), sB: N ? nB / N : 0 };
 }
 const DEFAULTS = { days: 10, exp: 3, timer: 25, lag: 0, interop: 0, cost: 0, pledge: false, pledgeThr: 40 };
 
@@ -420,7 +429,7 @@ const App = (() => {
       $("myScore").textContent = f1(tot);
       $("myLast").innerHTML = last == null ? "—" : `<span class="${last < 3 ? "neg" : last > 10 ? "pos" : ""}">${f1(last)}</span>`;
       const ranks = Object.entries(r.totals || {}).sort((a, b) => b[1] - a[1]).map(x => x[0]);
-      $("myRank").textContent = ranks.length ? `${ranks.indexOf(uid) + 1} of ${ranks.length}` : "—";
+      $("myRank").textContent = ranks.includes(uid) ? `${ordinal(ranks.indexOf(uid) + 1)} of ${ranks.length}` : "—";
       // information rule: live, lagged, or none
       let shownDay = day - 1 - (settings.lag === 99 ? 999 : settings.lag);
       if (settings.lag === 99){ $("shareLab").textContent = "Class on B"; $("shareB").textContent = "not shown"; }
@@ -436,8 +445,8 @@ const App = (() => {
       $("btnSwitch").textContent = me === "A" ? "Switch to B" : "Switch back to A";
       $("btnSwitch").className = "btn btn-block btn-big " + (me === "A" ? "btn-teal" : "btn-ghost");
       $("btnSwitch").onclick = () => choose(me === "A" ? "B" : "A");
-      $("actNote").textContent = me === "A" ? "Remember: B alone is worth almost nothing. It pays once the crowd is there." : "Going back to A is allowed. A is worth 6 even if you're alone there.";
-      renderPayTable();
+      $("actNote").textContent = me === "A" ? "Remember: B alone is worth nothing, and it beats A only once half the others are there." : "Going back to A is allowed. A is worth 6 even if you're alone there.";
+      renderPayChart(me, shownDay >= 0 && settings.lag !== 99 ? Object.values(positionsAt(r, shownDay)).filter(x => x === "B").length : null);
       return;
     }
     if (phase === "done"){
@@ -449,13 +458,40 @@ const App = (() => {
       $("doneBody").innerHTML = `<p class="sub">${moves.length ? "Your moves: " + moves.join(", ") + "." : "You never moved."} Look at the screen: who paid for the tip, and who cashed in?</p>`;
     }
   }
-  function renderPayTable(){
-    const n = N(); const rows = [];
-    const r = curRound(), day = state.day, pos = positionsAt(r, day - 1);
-    const nowB = Object.values(pos).filter(x => x === "B").length;
-    const steps = [...new Set([0, 1, 2, Math.round(n * .2), Math.round(n * .4), Math.round(n * .6), Math.round(n * .8), n].filter(x => x >= 0 && x <= n))].sort((a, b) => a - b);
-    steps.forEach(nB => { const sc = dayScores(nB, n, settings); rows.push(`<tr class="${nB === nowB && settings.lag === 0 ? "now" : ""}"><td>${nB} on B (${pct(nB / n)})</td><td>${f1(sc.A)}</td><td>${f1(sc.B)}</td></tr>`); });
-    $("payTable").innerHTML = `<tr><th>If this many are on B</th><th>A pays</th><th>B pays</th></tr>` + rows.join("");
+  const ordinal = k => k + (k % 100 >= 11 && k % 100 <= 13 ? "th" : ["th", "st", "nd", "rd"][k % 10] || "th");
+  /* Payoff curves: x = number of OTHER people on B (everyone but you), two lines (what a
+     day pays you on A / on B). Your own choice doesn't move x, so STAY and SWITCH are two
+     dots on the same vertical line. nowB = class count on B the student can see (null = none). */
+  function renderPayChart(me, nowB){
+    const n = N(), S = settings, others = Math.max(n - 1, 1);
+    const W = 640, H = 250, L = 42, R = 16, T = 18, B = 40;
+    const ymax = Math.max(12, PAY.B(1, S.exp)) + 1;
+    const x = k => L + (W - L - R) * k / others, y = v => T + (H - T - B) * (1 - v / ymax);
+    let g = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Points per day on A and on B as a function of how many other people are on B">`;
+    const step = ymax > 40 ? 12 : 6; Array.from({length: Math.floor(ymax / step) + 1}, (_, i) => i * step).forEach(v => { g += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="#EEEBE2"/><text x="${L - 6}" y="${y(v) + 4}" font-size="11" text-anchor="end" fill="#5A6A79" font-family="IBM Plex Mono">${v}</text>`; });
+    const ticks = [...new Set([0, Math.round(others / 4), Math.round(others / 2), Math.round(3 * others / 4), others])];
+    ticks.forEach(k => { g += `<text x="${x(k)}" y="${H - B + 16}" font-size="11" text-anchor="middle" fill="#5A6A79" font-family="IBM Plex Mono">${k}</text>`; });
+    g += `<text x="${(L + W - R) / 2}" y="${H - 6}" font-size="11" text-anchor="middle" fill="#5A6A79" font-family="Inter">how many of the OTHER ${others} people are on B (the rest are on A)</text>`;
+    const pa = [], pb = [];
+    for (let k = 0; k <= others; k++){ pa.push(`${x(k)},${y(payFor("A", k, others, S))}`); pb.push(`${x(k)},${y(payFor("B", k, others, S))}`); }
+    g += `<polyline points="${pa.join(" ")}" fill="none" stroke="#8E9AA8" stroke-width="3"/><polyline points="${pb.join(" ")}" fill="none" stroke="#3F7E7D" stroke-width="3"/>`;
+    g += `<text x="${x(0) + 6}" y="${y(PAY.A(1, S.exp)) - 6}" font-size="12" font-weight="700" fill="#8E9AA8" font-family="Inter">your points if you're on A</text>`;
+    g += `<text x="${x(others) - 6}" y="${y(PAY.B(1, S.exp)) + 16}" font-size="12" font-weight="700" fill="#3F7E7D" font-family="Inter" text-anchor="end">your points if you're on B</text>`;
+    let note = "";
+    if (nowB != null){
+      const oB = Math.max(0, nowB - (me === "B" ? 1 : 0));          // others on B, whatever I do
+      const stayPay = payFor(me, oB, others, S), switchPay = payFor(me === "A" ? "B" : "A", oB, others, S) - (S.cost || 0);
+      g += `<line x1="${x(oB)}" x2="${x(oB)}" y1="${T}" y2="${H - B}" stroke="#F1C40F" stroke-width="2" stroke-dasharray="5 4"/>`;
+      g += `<text x="${x(oB) + (oB > others / 2 ? -6 : 6)}" y="${T + 10}" font-size="11" font-weight="700" fill="#7A5A00" font-family="Inter" text-anchor="${oB > others / 2 ? "end" : "start"}">now: ${oB} of the others on B, ${others - oB} on A</text>`;
+      g += `<circle cx="${x(oB)}" cy="${y(stayPay)}" r="8" fill="#F1C40F" stroke="#7A5A00" stroke-width="2"/>`;
+      g += `<circle cx="${x(oB)}" cy="${y(Math.max(0, switchPay))}" r="8" fill="#C0574F" stroke="#7A2A25" stroke-width="2"/>`;
+      note = `<b>If nobody else moves tomorrow:</b> stay on ${me} → <b style="color:#7A5A00">${f1(stayPay)} points</b> (yellow dot) · switch to ${me === "A" ? "B" : "A"} → <b style="color:#C0574F">${f1(switchPay)} points</b> (red dot${S.cost ? ", after the switching cost" : ""}). Your own move doesn't change the count of others — switching only pays if enough of them follow.`;
+    } else {
+      note = `<b>You can't see today's count.</b> Read the curves: B is worth less than A until half the others are there, and far more once nearly everyone is.`;
+    }
+    g += `</svg>`;
+    $("payChart").innerHTML = g;
+    $("payNow").innerHTML = note;
   }
   async function choose(what){
     const r = curRound(), day = state.day;
@@ -619,10 +655,10 @@ const App = (() => {
   function chart(r, upto, S){
     const W = 900, H = 260, L = 50, R = 20, T = 16, B = 34, days = S.days;
     const x = d => L + (W - L - R) * (d - 0.5) / days;
-    const ymax = Math.max(24, PAY.B(1, S.exp)) + 1;
+    const ymax = Math.max(12, PAY.B(1, S.exp)) + 1;
     const y = v => T + (H - T - B) * (1 - v / ymax);
     let g = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Scores by day">`;
-    [0, 6, 12, 18, 24].filter(v => v <= ymax).forEach(v => { g += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="#EEEBE2"/><text x="${L - 6}" y="${y(v) + 4}" font-size="11" text-anchor="end" fill="#5A6A79" font-family="IBM Plex Mono">${v}</text>`; });
+    const step = ymax > 40 ? 12 : 6; Array.from({length: Math.floor(ymax / step) + 1}, (_, i) => i * step).forEach(v => { g += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="#EEEBE2"/><text x="${L - 6}" y="${y(v) + 4}" font-size="11" text-anchor="end" fill="#5A6A79" font-family="IBM Plex Mono">${v}</text>`; });
     for (let d = 1; d <= days; d++){
       const dd = r.days && r.days[d];
       if (dd && d <= upto){ const h = (H - T - B) * dd.nB / Math.max(dd.N, 1); g += `<rect x="${x(d) - 14}" y="${H - B - h}" width="28" height="${h}" fill="#E4F1F0" stroke="#5EA8A7"/>`; }
