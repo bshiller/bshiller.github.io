@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#2C3E50">
+<title>Network Effects — Where do they show up?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2C3E50; --navy-deep:#22303F; --gold:#F1C40F; --gold-soft:#F9E79F; --teal:#5EA8A7; --teal-deep:#3F7E7D;
+  --paper:#F5F4EF; --card:#FFFFFF; --ink:#1E2A36; --ink-soft:#5A6A79; --line:#DDD9CE; --red:#C0574F; --green:#3E8E5A;
+  --cD:#5EA8A7; --cI:#D4A574; --cN:#8E9AA8; --cD-soft:#E4F1F0; --cI-soft:#F7ECDD; --cN-soft:#E9ECEF;
+  --radius:12px;
+  --font-display:'Space Grotesk',sans-serif; --font-body:'Inter',system-ui,sans-serif; --font-mono:'IBM Plex Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--paper);color:var(--ink);font-family:var(--font-body);font-size:16px;line-height:1.5;min-height:100vh}
+button{font-family:var(--font-body);cursor:pointer}
+input{font-family:var(--font-body)}
+.hidden{display:none!important}
+.shell{max-width:1080px;margin:0 auto;padding:20px 16px 64px}
+.shell.narrow{max-width:460px}
+.shell.mid{max-width:680px}
+.shell.wide{max-width:1240px}
+header.top{background:var(--navy);color:#fff;padding:12px 0;position:sticky;top:0;z-index:20}
+header.top .shell{padding:0 16px;display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:4px}
+.brand{font-family:var(--font-display);font-weight:700;font-size:20px}
+.brand .accent{color:var(--gold)}
+.session-tag{font-family:var(--font-mono);font-size:13px;color:#CBD6E0}
+.session-tag b{color:var(--gold);letter-spacing:2px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px;margin-top:18px}
+h1{font-family:var(--font-display);font-size:clamp(26px,5vw,40px);line-height:1.12;color:var(--navy)}
+h2{font-family:var(--font-display);font-size:21px;color:var(--navy);margin-bottom:10px}
+h3{font-family:var(--font-display);font-size:16px;color:var(--navy)}
+p.sub{color:var(--ink-soft);margin-top:8px;max-width:62ch}
+.eyebrow{font-family:var(--font-mono);font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--teal-deep);margin-bottom:6px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;border-radius:10px;padding:13px 22px;font-size:16px;font-weight:600;transition:transform .06s ease,box-shadow .12s ease}
+.btn:active{transform:translateY(1px)}
+.btn:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.btn-primary{background:var(--navy);color:#fff}
+.btn-gold{background:var(--gold);color:var(--navy-deep)}
+.btn-teal{background:var(--teal);color:#fff}
+.btn-ghost{background:transparent;color:var(--navy);border:1.5px solid var(--navy)}
+.btn-block{width:100%}
+.btn[disabled]{opacity:.45;cursor:not-allowed;box-shadow:none}
+.btn-sm{padding:8px 14px;font-size:14px;border-radius:8px}
+label.f{display:block;font-size:13px;font-weight:600;color:var(--ink-soft);margin:14px 0 5px;text-transform:uppercase;letter-spacing:.6px}
+input.f{width:100%;padding:12px 14px;font-size:17px;border:1.5px solid var(--line);border-radius:10px;background:#fff;color:var(--ink)}
+input.f:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(94,168,167,.18)}
+.f-err{color:var(--red);font-size:13px;margin-top:6px;min-height:18px}
+.code-input{font-family:var(--font-mono);letter-spacing:8px;text-transform:uppercase;text-align:center;font-size:24px!important}
+.land-hero{padding:40px 0 8px}
+.role-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:22px}
+@media(max-width:640px){.role-grid{grid-template-columns:1fr}}
+.role-card{background:var(--card);border:1.5px solid var(--line);border-radius:var(--radius);padding:22px;text-align:left;transition:border-color .12s,box-shadow .12s}
+.role-card:hover{border-color:var(--teal);box-shadow:0 6px 20px rgba(44,62,80,.10)}
+.role-card h3{font-size:19px;margin-bottom:6px}
+.role-card p{font-size:14px;color:var(--ink-soft)}
+.role-card .go{margin-top:14px;font-weight:700;color:var(--teal-deep);font-size:14px}
+.pulse-dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--teal);margin-right:8px;animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.35}50%{opacity:1}}
+@media(prefers-reduced-motion:reduce){.pulse-dot{animation:none}.tile{animation:none}}
+.big-count{font-family:var(--font-display);font-size:56px;color:var(--navy);line-height:1}
+.big-count small{font-size:20px;color:var(--ink-soft);font-family:var(--font-body)}
+.join-code{font-family:var(--font-mono);font-size:64px;letter-spacing:14px;color:var(--navy);font-weight:600;line-height:1;margin:6px 0 2px}
+.roster{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.roster .p{font-size:13px;background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:4px 10px}
+.roster .p.in{border-color:var(--teal);background:#E8F4F4}
+.host-bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:16px}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--navy);color:#fff;padding:10px 18px;border-radius:10px;font-weight:600;z-index:50;max-width:90vw}
+.small{font-size:13px;color:var(--ink-soft)}
+.mono{font-family:var(--font-mono)}
+.stagebar{display:flex;gap:6px;margin-top:10px}
+.stagebar span{flex:1;padding:6px 8px;border-radius:8px;font-size:12.5px;font-weight:600;text-align:center;background:var(--line);color:var(--ink-soft)}
+.stagebar span.on{background:var(--navy);color:#fff}
+.stagebar span.done{background:#E8F4F4;color:var(--teal-deep)}
+/* ---------- stage 1: tiles ---------- */
+.addrow{display:flex;gap:8px;margin-top:8px}
+.addrow input.f{flex:1}
+.tiles{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;min-height:80px}
+.tile{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1.5px solid var(--line);border-radius:999px;padding:9px 14px 9px 16px;font-size:clamp(15px,1.6vw,22px);font-weight:600;color:var(--navy);animation:pop .35s cubic-bezier(.2,.9,.3,1.3)}
+.tile.big{font-size:clamp(18px,2.1vw,28px);padding:11px 18px 11px 20px}
+.tile .n{font-family:var(--font-mono);font-size:.7em;background:var(--gold-soft);color:var(--navy-deep);border-radius:999px;padding:2px 8px}
+.tile .x{border:none;background:transparent;color:#B6B0A2;font-size:1.05em;line-height:1;padding:0 2px;margin-left:2px}
+.tile .x:hover{color:var(--red)}
+.tile.mine{border-color:var(--teal);background:#F2F9F9}
+@keyframes pop{0%{transform:scale(.6);opacity:0}100%{transform:scale(1);opacity:1}}
+.hint-match{font-size:13px;color:var(--teal-deep);min-height:18px;margin-top:6px}
+/* ---------- stage 2: sorting ---------- */
+.zones{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+@media(max-width:700px){.zones{grid-template-columns:1fr}}
+.zone{border:2px dashed var(--line);border-radius:var(--radius);padding:10px;min-height:110px;background:#fff;transition:background .12s,border-color .12s}
+.zone h4{font-family:var(--font-display);font-size:14.5px;color:var(--navy);display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.zone h4 .dot{width:12px;height:12px;border-radius:50%;flex:none}
+.zone h4 .cnt{margin-left:auto;font-family:var(--font-mono);font-size:12px;color:var(--ink-soft);font-weight:400}
+.zone p.def{font-size:12px;color:var(--ink-soft);margin-bottom:8px;line-height:1.35}
+.zone.over{background:#FFFBE6;border-color:var(--gold)}
+.zone[data-c="D"]{border-color:var(--cD)} .zone[data-c="I"]{border-color:var(--cI)} .zone[data-c="N"]{border-color:var(--cN)}
+.zone[data-c="D"].over{background:var(--cD-soft)} .zone[data-c="I"].over{background:var(--cI-soft)} .zone[data-c="N"].over{background:var(--cN-soft)}
+.pile{border:2px dashed var(--line);border-radius:var(--radius);padding:10px;min-height:70px;background:var(--paper);margin-top:10px}
+.pile h4{font-family:var(--font-display);font-size:14.5px;color:var(--navy);margin-bottom:6px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:4px;background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:7px 8px 7px 12px;font-size:14.5px;font-weight:600;color:var(--navy);user-select:none;-webkit-user-select:none;touch-action:none;cursor:grab}
+.chip.sel{border-color:var(--gold);box-shadow:0 0 0 3px rgba(241,196,15,.35)}
+.chip.drag{position:fixed;z-index:60;pointer-events:none;box-shadow:0 10px 26px rgba(44,62,80,.25);opacity:.95;transform:translate(-50%,-50%) scale(1.04)}
+.chip .cb{display:flex;gap:3px;margin-left:6px}
+.chip .cb button{border:1px solid var(--line);background:var(--paper);border-radius:6px;width:26px;height:24px;font-size:11.5px;font-weight:700;color:var(--ink-soft);display:flex;align-items:center;justify-content:center;padding:0}
+.chip .cb button[data-c="D"]:hover{background:var(--cD-soft);border-color:var(--cD)}
+.chip .cb button[data-c="I"]:hover{background:var(--cI-soft);border-color:var(--cI)}
+.chip .cb button[data-c="N"]:hover{background:var(--cN-soft);border-color:var(--cN)}
+.chip .back{border:none;background:transparent;color:#B6B0A2;font-size:15px;padding:0 2px;margin-left:4px}
+.chip .back:hover{color:var(--red)}
+.sticky-ok{position:sticky;bottom:10px;margin-top:16px}
+.tapnote{font-size:13px;color:var(--ink-soft);margin-top:8px}
+/* ---------- stage 3: results ---------- */
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px}
+.tabs button{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:7px 14px;font-size:14px;font-weight:600;color:var(--ink-soft)}
+.tabs button.sel{background:var(--navy);color:#fff;border-color:var(--navy)}
+.rrow{display:grid;grid-template-columns:minmax(150px,240px) 1fr auto;gap:12px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
+.rrow .nm{font-weight:700;color:var(--navy);font-size:clamp(15px,1.5vw,19px);line-height:1.2}
+.rrow .nm small{display:block;font-weight:500;color:var(--ink-soft);font-size:12px;font-family:var(--font-mono)}
+.rrow .bar{display:flex;height:30px;border-radius:7px;overflow:hidden;background:#EEEBE2}
+.rrow .bar span{display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:12.5px;font-weight:600;color:#fff;min-width:0;overflow:hidden;white-space:nowrap}
+.rrow .bar span.D{background:var(--cD)} .rrow .bar span.I{background:var(--cI)} .rrow .bar span.N{background:var(--cN)}
+.rrow .bar span.u{background:transparent;color:var(--ink-soft)}
+.badge{font-family:var(--font-mono);font-size:11.5px;letter-spacing:1px;text-transform:uppercase;padding:5px 9px;border-radius:6px;white-space:nowrap}
+.badge.split{background:#FBE3E0;color:#8E2F28} .badge.lean{background:#FFF3C4;color:#7A5A00} .badge.agree{background:#E4F1F0;color:var(--teal-deep)}
+.rrow.split .nm{color:#8E2F28}
+.legendrow{display:flex;gap:16px;flex-wrap:wrap;margin-top:12px;font-size:13px;color:var(--ink-soft)}
+.legendrow .sw{display:inline-block;width:14px;height:14px;border-radius:4px;vertical-align:-2px;margin-right:5px}
+.cols3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
+@media(max-width:760px){.cols3{grid-template-columns:1fr}}
+.col{border-radius:var(--radius);padding:12px;border:1.5px solid var(--line)}
+.col h4{font-family:var(--font-display);font-size:15px;color:var(--navy);display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.col h4 .dot{width:12px;height:12px;border-radius:50%}
+.col .it{display:flex;justify-content:space-between;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:9px;padding:7px 10px;margin-bottom:6px;font-weight:600;color:var(--navy);font-size:15px}
+.col .it .pct{font-family:var(--font-mono);font-size:12px;color:var(--ink-soft)}
+.col .it.split{border-color:#E3A7A1;background:#FFF6F5}
+.col .it.split .pct{color:#8E2F28}
+ul.disc{margin:10px 0 0 18px;font-size:15px}
+ul.disc li{margin-bottom:8px}
+.mine-row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--line);font-size:15px}
+.mine-row .lab{font-weight:600;color:var(--navy)}
+.mine-row .cmp{font-family:var(--font-mono);font-size:12.5px;color:var(--ink-soft);white-space:nowrap}
+.mine-row.diff .cmp{color:#8E2F28;font-weight:600}
+.pill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:700;color:#fff}
+.pill.D{background:var(--cD)} .pill.I{background:var(--cI)} .pill.N{background:var(--cN)}
+.setup ol{margin:12px 0 0 20px}
+code{font-family:var(--font-mono);font-size:.92em;background:var(--paper);padding:1px 5px;border-radius:4px}
+</style>
+</head>
+<body>
+<header class="top"><div class="shell">
+  <div class="brand">NETWORK EFFECTS <span class="accent">/</span> Where do they show up?</div>
+  <div class="session-tag" id="topTag">FYS 7b · classroom sort</div>
+</div></header>
+
+<!-- ============ SETUP ============ -->
+<div id="viewSetup" class="shell mid hidden">
+  <div class="card setup">
+    <div class="eyebrow">One-time setup</div>
+    <h2>Connect a Firebase database</h2>
+    <p class="sub">This page uses the same free Firebase Realtime Database as the other classroom games. Paste the project's config into <code>FIREBASE_CONFIG</code> near the top of the script and reload.</p>
+  </div>
+</div>
+
+<!-- ============ LANDING ============ -->
+<div id="viewLanding" class="shell hidden">
+  <div class="land-hero">
+    <div class="eyebrow">A live classroom exercise</div>
+    <h1>Where do network effects show up?</h1>
+    <p class="sub">Three stages. First, everyone names products that are better for you because other people use them; the board fills up live. Second, you sort the list into <b>direct</b>, <b>indirect / two-sided</b>, and <b>not really a network effect</b>. Third, the class sees where it disagreed — and argues it out.</p>
+  </div>
+  <div class="role-grid">
+    <button class="role-card" onclick="App.showJoin()">
+      <h3>Join the class session</h3>
+      <p>Enter the 4-letter code on the screen and take part from your phone.</p>
+      <div class="go">Join →</div>
+    </button>
+    <button class="role-card" onclick="App.showHost()">
+      <h3>Host a session</h3>
+      <p>Create a code, watch the board fill, open the sort, then reveal the disagreements.</p>
+      <div class="go">Host a session →</div>
+    </button>
+  </div>
+  <button class="btn btn-ghost btn-sm hidden" id="resumeBtn" style="margin-top:14px" onclick="App.resumeHost()">Resume hosting</button>
+</div>
+
+<!-- ============ JOIN ============ -->
+<div id="viewJoin" class="shell narrow hidden">
+  <div class="card">
+    <div class="eyebrow">Join</div>
+    <h2>Enter the session code</h2>
+    <label class="f" for="joinCode">Code</label>
+    <input class="f code-input" id="joinCode" maxlength="4" autocomplete="off" autocapitalize="characters" placeholder="ABCD">
+    <label class="f" for="joinName">Your name or initials</label>
+    <input class="f" id="joinName" maxlength="24" placeholder="e.g., Sam K.">
+    <div class="f-err" id="joinErr"></div>
+    <button class="btn btn-gold btn-block" onclick="App.join()">Join</button>
+  </div>
+</div>
+
+<!-- ============ STUDENT: WAIT ============ -->
+<div id="viewStudentWait" class="shell narrow hidden">
+  <div class="card" style="text-align:center;padding:36px 22px">
+    <div class="eyebrow" id="swEyebrow">You're in</div>
+    <h2 id="swTitle">Waiting for the host to start…</h2>
+    <p class="sub" style="margin:8px auto 0"><span class="pulse-dot"></span>Keep this page open.</p>
+  </div>
+</div>
+
+<!-- ============ STUDENT: STAGE 1 (ADD) ============ -->
+<div id="viewAdd" class="shell mid hidden">
+  <div class="card">
+    <div class="eyebrow">Stage 1 of 3 · Brainstorm</div>
+    <h2>Name a product or service that's better for you because other people use it.</h2>
+    <p class="sub">Add as many as you can think of. Apps, devices, games, payment methods, marketplaces, standards… One at a time.</p>
+    <div class="addrow">
+      <input class="f" id="addInput" maxlength="40" placeholder="e.g., Venmo" autocomplete="off">
+      <button class="btn btn-gold" onclick="App.addItem()">Add</button>
+    </div>
+    <div class="hint-match" id="addHint"></div>
+  </div>
+  <div class="card">
+    <h3>On the board: <span id="stuBoardCount">0</span> <span class="small">unique items · yours are outlined in teal</span></h3>
+    <div class="tiles" id="stuTiles"></div>
+  </div>
+</div>
+
+<!-- ============ STUDENT: STAGE 2 (SORT) ============ -->
+<div id="viewSort" class="shell mid hidden">
+  <div class="card">
+    <div class="eyebrow">Stage 2 of 3 · Sort</div>
+    <h2>Put each item into a category.</h2>
+    <p class="sub">Drag a chip into a box, or tap one of its buttons: <b>D</b> direct, <b>I</b> indirect / two-sided, <b>N</b> not really. Your choices save as you go; the class sees them only in aggregate.</p>
+    <div class="stagebar"><span id="sortProg">0 sorted</span></div>
+  </div>
+  <div class="card">
+    <div class="pile" id="pile"><h4>Unsorted (<span id="pileCount">0</span>)</h4><div class="chips" id="pileChips"></div></div>
+    <div class="zones">
+      <div class="zone" data-c="D"><h4><span class="dot" style="background:var(--cD)"></span>Direct<span class="cnt" id="cntD">0</span></h4><p class="def">Each user benefits from more users on the <b>same</b> side.</p><div class="chips" id="zoneD"></div></div>
+      <div class="zone" data-c="I"><h4><span class="dot" style="background:var(--cI)"></span>Indirect / two-sided<span class="cnt" id="cntI">0</span></h4><p class="def">Users benefit from more users on the <b>other</b> side.</p><div class="chips" id="zoneI"></div></div>
+      <div class="zone" data-c="N"><h4><span class="dot" style="background:var(--cN)"></span>Not really<span class="cnt" id="cntN">0</span></h4><p class="def">Grows better with size for another reason — or not at all.</p><div class="chips" id="zoneN"></div></div>
+    </div>
+    <p class="tapnote">Changed your mind? Tap a chip's × to send it back to the pile.</p>
+  </div>
+  <div class="sticky-ok">
+    <button class="btn btn-gold btn-block" id="sortBtn" onclick="App.submitSort()">I'm done sorting</button>
+  </div>
+</div>
+
+<!-- ============ STUDENT: STAGE 3 (MY ANSWERS) ============ -->
+<div id="viewMine" class="shell mid hidden">
+  <div class="card">
+    <div class="eyebrow">Stage 3 of 3 · Where the room split</div>
+    <h2>Look at the screen. Here's you vs. the class.</h2>
+    <p class="sub">Rows in red are where you and the class majority disagree — be ready to say why.</p>
+    <div id="mineList"></div>
+  </div>
+</div>
+
+<!-- ============ HOST: CREATE ============ -->
+<div id="viewHostCreate" class="shell narrow hidden">
+  <div class="card">
+    <div class="eyebrow">Host</div>
+    <h2>Create a session</h2>
+    <p class="sub">Stage 1: students submit examples and the board fills live (duplicates merge into one tile). Stage 2: they sort the list into three categories. Stage 3: the class sees where it split.</p>
+    <button class="btn btn-primary btn-block" style="margin-top:18px" onclick="App.createGame()">Create session</button>
+  </div>
+</div>
+
+<!-- ============ HOST: DASHBOARD ============ -->
+<div id="viewHost" class="shell wide hidden">
+  <div class="card" id="hostLobbyCard">
+    <div class="eyebrow">Students join with this code</div>
+    <div class="join-code" id="hostCode">····</div>
+    <p class="sub" id="hostUrlHint"></p>
+    <h3 style="margin-top:18px">In the room: <span id="hostCount">0</span> &nbsp;·&nbsp; <span id="hostDoneNote" class="small"></span></h3>
+    <div class="roster" id="hostRoster"></div>
+  </div>
+  <div class="host-bar">
+    <button class="btn btn-gold" id="btnCollect" onclick="App.setPhase('collect')">Stage 1: open the board</button>
+    <button class="btn btn-primary hidden" id="btnSort" onclick="App.openSort()">Stage 2: freeze the list &amp; open sorting</button>
+    <button class="btn btn-primary hidden" id="btnResults" onclick="App.setPhase('results')">Stage 3: show the disagreements</button>
+    <button class="btn btn-ghost btn-sm hidden" id="btnBackCollect" onclick="App.setPhase('collect')">Back to the board</button>
+    <button class="btn btn-ghost btn-sm hidden" id="btnBackSort" onclick="App.setPhase('sort')">Reopen sorting</button>
+    <button class="btn btn-ghost btn-sm" onclick="App.seedDemo()" title="Adds fake students, submissions and sorts so you can preview every stage">Seed demo data</button>
+    <span id="hostPhaseNote" class="small"></span>
+  </div>
+  <div class="stagebar" id="hostStages"><span data-p="collect">1 · Brainstorm</span><span data-p="sort">2 · Sort</span><span data-p="results">3 · Discuss</span></div>
+
+  <!-- stage 1 board -->
+  <div class="card hidden" id="hostBoard">
+    <div class="eyebrow">Stage 1 · The board</div>
+    <h2><span id="boardUnique">0</span> unique items <span class="small">from <span id="boardSubs">0</span> submissions · the number on a tile is how many students named it · × removes a tile</span></h2>
+    <div class="addrow" style="max-width:420px"><input class="f" id="hostAddInput" maxlength="40" placeholder="Add an item yourself" autocomplete="off"><button class="btn btn-ghost btn-sm" onclick="App.hostAdd()">Add</button></div>
+    <div class="tiles" id="hostTiles"></div>
+  </div>
+
+  <!-- stage 2 progress -->
+  <div class="card hidden" id="hostSortCard" style="text-align:center">
+    <div class="eyebrow">Stage 2 · Sorting</div>
+    <div class="big-count"><span id="hostSortDone">0</span><small> of <span id="hostSortTotal">0</span> finished</small></div>
+    <p class="sub" style="margin:10px auto 0" id="hostSortDetail"></p>
+    <p class="small" style="margin-top:14px"><span id="hostSortItems">0</span> items on the list. Reopen the board if you need to add or remove one; sorting will re-freeze the list when you reopen it.</p>
+  </div>
+
+  <!-- stage 3 results -->
+  <div id="hostResults" class="hidden">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px"><div><div class="eyebrow">Stage 3 · Discuss</div><h2 id="resTitle">Where the room split</h2></div><div class="small" id="resN"></div></div>
+      <div class="tabs" id="resTabs">
+        <button class="sel" data-t="split" onclick="App.tab('split')">Ranked by disagreement</button>
+        <button data-t="cols" onclick="App.tab('cols')">The class's three columns</button>
+      </div>
+      <div class="legendrow"><span><span class="sw" style="background:var(--cD)"></span>Direct</span><span><span class="sw" style="background:var(--cI)"></span>Indirect / two-sided</span><span><span class="sw" style="background:var(--cN)"></span>Not really</span><span><span class="badge split">split</span> no category above 60%</span><span><span class="badge lean">leaning</span> 60–80%</span><span><span class="badge agree">agreed</span> 80%+</span></div>
+      <div id="resBody"></div>
+    </div>
+    <div class="card">
+      <h2>For discussion</h2>
+      <ul class="disc" id="resDiscuss"></ul>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast hidden"></div>
+
+<!-- Firebase compat SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
+/* =====================================================================
+   FIREBASE CONFIG — same project as Game.html / Drones.html / Labor.html
+   ===================================================================== */
+const FIREBASE_CONFIG = {
+    apiKey: "AIzaSyDQ8gn5w_Jj4OzcXFBz2lY2SKuaKEo2wbk",
+    authDomain: "obfuscationgame.firebaseapp.com",
+    databaseURL: "https://obfuscationgame-default-rtdb.firebaseio.com",
+    projectId: "obfuscationgame",
+    storageBucket: "obfuscationgame.firebasestorage.app",
+    messagingSenderId: "443679460937",
+    appId: "1:443679460937:web:d6b2806717894b3c923998"
+  };
+
+const CATS = { D: "Direct", I: "Indirect / two-sided", N: "Not really" };
+const CAT_KEYS = ["D", "I", "N"];
+/* Spellings that should collapse onto one tile. Keys and values are already normalized. */
+const ALIASES = {
+  "insta": "instagram", "ig": "instagram", "fb": "facebook", "face book": "facebook", "meta": "facebook",
+  "twitter": "x twitter", "x": "x twitter", "x twitter": "x twitter", "twitter x": "x twitter", "x formerly twitter": "x twitter",
+  "i message": "imessage", "imessages": "imessage", "snap": "snapchat", "yt": "youtube", "tik tok": "tiktok",
+  "google": "google search", "chat gpt": "chatgpt", "air bnb": "airbnb", "linked in": "linkedin",
+  "ps5": "playstation", "ps4": "playstation", "playstation 5": "playstation", "play station": "playstation", "xbox series x": "xbox",
+  "nintendo switch": "switch", "e mail": "email", "e-mail": "email", "gmail": "email", "cell phone": "phone", "cellphone": "phone",
+  "telephone": "phone", "phones": "phone", "the phone": "phone", "iphones": "iphone", "whats app": "whatsapp", "face time": "facetime",
+  "pay pal": "paypal", "zelle": "zelle", "cash app": "cashapp", "credit card": "credit cards", "visa": "credit cards",
+  "uber eats": "ubereats", "door dash": "doordash", "amazon prime": "amazon", "ebay": "ebay", "netflix": "netflix",
+  "microsoft word": "word", "ms word": "word", "google docs": "google docs", "gdocs": "google docs", "zoom": "zoom",
+  "discord": "discord", "reddit": "reddit", "be real": "bereal", "spotify": "spotify", "apple music": "apple music",
+  "fortnite": "fortnite", "roblox": "roblox", "minecraft": "minecraft", "bitcoin": "bitcoin", "crypto": "bitcoin",
+  "fax": "fax machines", "fax machine": "fax machines", "dating apps": "dating apps", "tinder": "tinder", "hinge": "hinge",
+  "the internet": "internet", "wifi": "internet", "english": "english language", "language": "english language"
+};
+function normalize(s){
+  let t = String(s || "").toLowerCase().trim()
+    .replace(/[’']/g, "").replace(/[^a-z0-9&+ ]+/g, " ").replace(/\s+/g, " ").trim()
+    .replace(/^(the|an|a) /, "").replace(/ (app|apps|application)$/, "").replace(/\.com$/, "");
+  if (ALIASES[t]) t = ALIASES[t];
+  return t;
+}
+/* Firebase keys cannot contain . # $ [ ] / */
+const keyOf = norm => norm.replace(/[.#$\[\]\/]/g, "_") || "_";
+function titleCase(s){ return s.replace(/\b[a-z]/g, c => c.toUpperCase()); }
+/* Tile labels come from the normalized key, so every spelling of an item shows the same way. */
+const DISPLAY = { "x twitter": "X (Twitter)", "imessage": "iMessage", "ubereats": "Uber Eats", "cashapp": "Cash App", "tiktok": "TikTok", "whatsapp": "WhatsApp", "youtube": "YouTube", "paypal": "PayPal", "linkedin": "LinkedIn", "chatgpt": "ChatGPT", "doordash": "DoorDash", "playstation": "PlayStation", "iphone": "iPhone", "facetime": "FaceTime", "bereal": "BeReal", "ebay": "eBay", "google docs": "Google Docs", "email": "Email", "internet": "The Internet", "english language": "English (the language)" };
+const pretty = key => DISPLAY[key] || titleCase(key);
+
+const App = (() => {
+  let db = null, code = null, uid = null, myName = null, isHost = false;
+  let state = null, players = {}, subs = {}, hidden = {}, items = null, sorts = {}, listeners = [];
+  let mySort = {}, resTab = "split", lastStudentPhase = null;
+
+  /* ---------- utilities ---------- */
+  const $ = id => document.getElementById(id);
+  const views = ["viewSetup","viewLanding","viewJoin","viewStudentWait","viewAdd","viewSort","viewMine","viewHostCreate","viewHost"];
+  function show(v){ views.forEach(x => $(x).classList.toggle("hidden", x !== v)); }
+  function toast(msg){ const t=$("toast"); t.textContent=msg; t.classList.remove("hidden"); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.add("hidden"),2600); }
+  function getUid(){ let u = null; try { u = localStorage.getItem("netfx_uid"); } catch(e){} if(!u){ u = (crypto.randomUUID ? crypto.randomUUID() : "u"+Date.now()+Math.random().toString(36).slice(2)); try { localStorage.setItem("netfx_uid", u); } catch(e){} } return u; }
+  function clearListeners(){ listeners.forEach(([ref,ev,cb]) => ref.off(ev,cb)); listeners = []; }
+  function on(ref,ev,cb){ ref.on(ev,cb); listeners.push([ref,ev,cb]); }
+  function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+  // The shared database only permits writes under games/, so these sessions live at games/netfx-CODE.
+  const path = (...p) => ["games", "netfx-" + code, ...p].join("/");
+
+  /* ---------- boot ---------- */
+  function boot(){
+    if (!FIREBASE_CONFIG || !FIREBASE_CONFIG.apiKey || FIREBASE_CONFIG.apiKey.startsWith("PASTE")){ show("viewSetup"); return; }
+    firebase.initializeApp(FIREBASE_CONFIG);
+    db = firebase.database();
+    uid = getUid();
+    const qs = new URLSearchParams(location.search);
+    if (qs.get("g")) { show("viewJoin"); $("joinCode").value = qs.get("g").toUpperCase(); $("joinName").focus(); }
+    else show("viewLanding");
+    // If the projector browser gets refreshed mid-class, let the host pick the session back up.
+    let last = null; try { last = localStorage.getItem("netfx_host"); } catch(e){}
+    if (last){ $("resumeBtn").textContent = `Resume hosting ${last}`; $("resumeBtn").classList.remove("hidden"); }
+  }
+  async function resumeHost(){
+    let c = null; try { c = localStorage.getItem("netfx_host"); } catch(e){}
+    if (!c) return;
+    const snap = await db.ref(`games/netfx-${c}/state`).get();
+    if (!snap.exists()){ toast("That session is gone."); try { localStorage.removeItem("netfx_host"); } catch(e){} $("resumeBtn").classList.add("hidden"); return; }
+    isHost = true; code = c; showHostDash();
+  }
+  function showHostDash(){
+    $("hostCode").textContent = code;
+    const url = location.origin + location.pathname + "?g=" + code;
+    $("hostUrlHint").innerHTML = `Students open <b>${escapeHtml(location.host + location.pathname)}</b> and enter the code, or use the direct link: <span class="mono">${escapeHtml(url)}</span>`;
+    $("topTag").innerHTML = `Hosting session <b>${code}</b>`;
+    try { localStorage.setItem("netfx_host", code); } catch(e){}
+    listenGame();
+    show("viewHost");
+  }
+
+  /* ---------- the board: dedupe submissions into tiles ----------
+     Each submission is {text, key, uid, name, at}. A tile is one key; its label is the
+     first spelling anyone used, its count is how many DIFFERENT students named it. */
+  function board(){
+    const map = {};
+    Object.values(subs).sort((a, b) => (a.at || 0) - (b.at || 0)).forEach(s => {
+      if (!s || !s.key || hidden[s.key]) return;
+      if (!map[s.key]) map[s.key] = { key: s.key, label: pretty(s.key), who: new Set(), first: s.at || 0 };
+      map[s.key].who.add(s.uid);
+    });
+    return Object.values(map).map(t => ({ key: t.key, label: t.label, n: t.who.size, mine: t.who.has(uid), first: t.first }))
+      .sort((a, b) => a.first - b.first);
+  }
+
+  /* =====================================================================
+     STUDENT SIDE
+     ===================================================================== */
+  function showJoin(){ show("viewJoin"); }
+
+  async function join(){
+    const c = $("joinCode").value.trim().toUpperCase();
+    const n = $("joinName").value.trim();
+    const err = $("joinErr");
+    if (c.length !== 4){ err.textContent = "Enter the 4-letter code on the screen."; return; }
+    if (!n){ err.textContent = "Add your name or initials."; return; }
+    err.textContent = "";
+    const snap = await db.ref(`games/netfx-${c}/state`).get();
+    if (!snap.exists()){ err.textContent = "No session with that code — check the projector."; return; }
+    code = c; myName = n; isHost = false;
+    await db.ref(path("players", uid)).update({ name: n, joinedAt: Date.now() });
+    $("topTag").innerHTML = `Session <b>${code}</b> · ${escapeHtml(n)}`;
+    listenGame();
+  }
+
+  function listenGame(){
+    clearListeners();
+    on(db.ref(path("players")), "value", s => { players = s.val() || {}; if (isHost) renderHostCounts(); });
+    on(db.ref(path("subs")), "value", s => { subs = s.val() || {}; if (isHost) renderBoard(); else renderStudentBoard(); });
+    on(db.ref(path("hidden")), "value", s => { hidden = s.val() || {}; if (isHost) renderBoard(); else renderStudentBoard(); });
+    on(db.ref(path("items")), "value", s => { items = s.val() || null; if (!isHost && state && state.phase === "sort") renderSortView(); if (isHost) renderHost(); });
+    on(db.ref(path("sorts")), "value", s => { sorts = s.val() || {}; if (isHost){ renderHostCounts(); if (state && state.phase === "results") renderResults(); } else if (state && state.phase === "results") renderMine(); });
+    on(db.ref(path("state")), "value", s => { state = s.val(); if (!state) return; if (isHost) renderHost(); else renderStudent(); });
+  }
+
+  function renderStudent(){
+    const { phase } = state;
+    const fresh = phase !== lastStudentPhase; lastStudentPhase = phase;
+    if (phase === "lobby"){ wait("You're in", "Waiting for the host to open the board…"); return; }
+    if (phase === "collect"){ show("viewAdd"); renderStudentBoard(); if (fresh) setTimeout(() => $("addInput").focus(), 50); return; }
+    if (phase === "sort"){ if (fresh) mySort = (sorts && sorts[uid] && sorts[uid].c) || {}; loadMineThenSort(); return; }
+    if (phase === "results"){ renderMine(); show("viewMine"); return; }
+  }
+  async function loadMineThenSort(){
+    const mine = (await db.ref(path("sorts", uid)).get()).val();
+    mySort = (mine && mine.c) || {};
+    if (mine && mine.done){ wait("Sort submitted ✓", "Watch the screen. The host will reveal where the room split."); return; }
+    renderSortView(); show("viewSort");
+  }
+  function wait(eyebrow, title){ $("swEyebrow").textContent = eyebrow; $("swTitle").textContent = title; show("viewStudentWait"); }
+
+  /* ----- stage 1 ----- */
+  function renderStudentBoard(){
+    if (!state || state.phase !== "collect") return;
+    const tiles = board();
+    $("stuBoardCount").textContent = tiles.length;
+    $("stuTiles").innerHTML = tiles.map(t => `<span class="tile ${t.mine ? "mine" : ""}" data-key="${escapeHtml(t.key)}">${escapeHtml(t.label)}${t.n > 1 ? `<span class="n">×${t.n}</span>` : ""}</span>`).join("");
+  }
+  function hintMatch(){
+    const v = $("addInput").value; const k = keyOf(normalize(v));
+    if (!v.trim()){ $("addHint").textContent = ""; return; }
+    const t = board().find(x => x.key === k);
+    $("addHint").textContent = t ? (t.mine ? `You already added "${t.label}".` : `"${t.label}" is already on the board — adding it counts as a +1.`) : "";
+  }
+  async function addItem(){
+    const raw = $("addInput").value.trim();
+    if (!raw) return;
+    const norm = normalize(raw);
+    if (!norm){ toast("Try a real name."); return; }
+    const key = keyOf(norm);
+    const already = Object.values(subs).some(s => s && s.uid === uid && s.key === key);
+    if (already){ toast("You already added that one."); $("addInput").value = ""; $("addHint").textContent = ""; return; }
+    await db.ref(path("subs")).push({ text: raw.slice(0, 40), key, uid, name: myName, at: Date.now() });
+    $("addInput").value = ""; $("addHint").textContent = ""; $("addInput").focus();
+  }
+
+  /* ----- stage 2 ----- */
+  function itemList(){ return Array.isArray(items) ? items : Object.values(items || {}); }
+  function renderSortView(){
+    const list = itemList();
+    const chip = it => {
+      const c = mySort[it.key];
+      return `<span class="chip" data-key="${escapeHtml(it.key)}">${escapeHtml(it.label)}${c ? `<button class="back" type="button" aria-label="Send back" onclick="App.assign('${escapeHtml(it.key)}', null)">×</button>` :
+        `<span class="cb">${CAT_KEYS.map(k => `<button type="button" data-c="${k}" title="${CATS[k]}" onclick="App.assign('${escapeHtml(it.key)}','${k}')">${k}</button>`).join("")}</span>`}</span>`;
+    };
+    const pile = list.filter(it => !mySort[it.key]);
+    $("pileChips").innerHTML = pile.map(chip).join("") || `<span class="small">All sorted — hit "I'm done sorting".</span>`;
+    $("pileCount").textContent = pile.length;
+    CAT_KEYS.forEach(k => { const z = list.filter(it => mySort[it.key] === k); $("zone" + k).innerHTML = z.map(chip).join(""); $("cnt" + k).textContent = z.length; });
+    const done = list.length - pile.length;
+    $("sortProg").textContent = `${done} of ${list.length} sorted`;
+    $("sortProg").classList.toggle("done", done === list.length && list.length > 0);
+    $("sortBtn").disabled = list.length === 0;
+    $("sortBtn").textContent = pile.length ? `I'm done sorting (${pile.length} left unsorted)` : "I'm done sorting";
+    wireChipDrag();
+  }
+  let saveTimer = null;
+  function assign(key, cat){
+    if (cat) mySort[key] = cat; else delete mySort[key];
+    renderSortView();
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => db.ref(path("sorts", uid)).update({ c: mySort, name: myName, at: Date.now() }), 250);
+  }
+  async function submitSort(){
+    const list = itemList(); const left = list.filter(it => !mySort[it.key]).length;
+    if (left && !confirm(`${left} item${left > 1 ? "s are" : " is"} still unsorted. Submit anyway? Unsorted items just won't count for you.`)) return;
+    await db.ref(path("sorts", uid)).update({ c: mySort, name: myName, at: Date.now(), done: true });
+    wait("Sort submitted ✓", "Watch the screen. The host will reveal where the room split.");
+  }
+  /* pointer drag from the pile / a zone into a zone. Listeners live on document (see Labor.html). */
+  function wireChipDrag(){
+    document.querySelectorAll("#viewSort .chip").forEach(ch => {
+      ch.addEventListener("pointerdown", ev => {
+        if (ev.target.closest("button")) return;
+        if (ev.button && ev.button !== 0) return;
+        ev.preventDefault();
+        const key = ch.dataset.key, sx = ev.clientX, sy = ev.clientY;
+        let ghost = null, over = null;
+        const zones = Array.from(document.querySelectorAll("#viewSort .zone"));
+        const onMove = e => {
+          if (!ghost){ if (Math.hypot(e.clientX - sx, e.clientY - sy) < 6) return; ghost = ch.cloneNode(true); ghost.classList.add("drag"); ghost.querySelectorAll("button,.cb").forEach(b => b.remove()); document.body.appendChild(ghost); ch.classList.add("sel"); }
+          ghost.style.left = e.clientX + "px"; ghost.style.top = e.clientY + "px";
+          let hit = null;
+          for (const z of zones){ const r = z.getBoundingClientRect(); if (e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom){ hit = z; break; } }
+          if (hit !== over){ over && over.classList.remove("over"); hit && hit.classList.add("over"); over = hit; }
+        };
+        const onUp = () => {
+          document.removeEventListener("pointermove", onMove); document.removeEventListener("pointerup", onUp); document.removeEventListener("pointercancel", onUp);
+          if (ghost){ ghost.remove(); ch.classList.remove("sel"); }
+          if (over){ const c = over.dataset.c; over.classList.remove("over"); if (mySort[key] !== c) assign(key, c); }
+        };
+        document.addEventListener("pointermove", onMove);
+        document.addEventListener("pointerup", onUp);
+        document.addEventListener("pointercancel", onUp);
+      });
+    });
+  }
+
+  /* ----- stage 3 (student) ----- */
+  function renderMine(){
+    const list = itemList(); const st = tally();
+    const mine = (sorts[uid] && sorts[uid].c) || mySort || {};
+    $("mineList").innerHTML = list.map(it => {
+      const t = st[it.key]; const me = mine[it.key]; const top = t && t.top;
+      const diff = me && top && me !== top;
+      return `<div class="mine-row ${diff ? "diff" : ""}"><span class="lab">${escapeHtml(it.label)}</span><span class="cmp">you <span class="pill ${me || ""}">${me || "—"}</span> · class <span class="pill ${top || ""}">${top || "—"}</span> ${t ? Math.round(100 * t.share) + "%" : ""}</span></div>`;
+    }).join("") || `<p class="small">No items.</p>`;
+  }
+
+  /* =====================================================================
+     HOST SIDE
+     ===================================================================== */
+  function showHost(){ show("viewHostCreate"); }
+
+  async function createGame(){
+    isHost = true;
+    code = Array.from({length:4},()=> "ABCDEFGHJKLMNPQRSTUVWXYZ"[Math.floor(Math.random()*24)]).join("");
+    await db.ref(path()).set({ meta: { createdAt: Date.now() }, state: { phase: "lobby", createdAt: Date.now() } });
+    showHostDash();
+  }
+
+  function renderRoster(){
+    const list = Object.entries(players);
+    $("hostCount").textContent = list.length;
+    const phase = state && state.phase;
+    $("hostRoster").innerHTML = list.map(([id,p]) => {
+      const active = phase === "collect" ? Object.values(subs).some(s => s && s.uid === id) : phase === "sort" ? !!(sorts[id] && sorts[id].done) : false;
+      return `<span class="p ${active ? "in" : ""}">${escapeHtml(p.name)}</span>`; }).join("");
+  }
+  function renderHostCounts(){
+    if (!isHost || !state) return;
+    const ids = Object.keys(players);
+    const done = ids.filter(id => sorts[id] && sorts[id].done).length;
+    const started = ids.filter(id => sorts[id] && sorts[id].c && Object.keys(sorts[id].c).length).length;
+    $("hostSortDone").textContent = done; $("hostSortTotal").textContent = ids.length;
+    $("hostSortDetail").textContent = `${started} started · ${done} submitted`;
+    $("hostSortItems").textContent = itemList().length;
+    $("hostDoneNote").textContent = state.phase === "sort" ? `${done} finished sorting` : state.phase === "collect" ? `${Object.keys(subs).length} submissions` : "";
+    renderRoster();
+  }
+  function renderBoard(){
+    if (!isHost) return;
+    const tiles = board();
+    $("boardUnique").textContent = tiles.length; $("boardSubs").textContent = Object.keys(subs).length;
+    $("hostTiles").innerHTML = tiles.map(t => `<span class="tile big" data-key="${escapeHtml(t.key)}">${escapeHtml(t.label)}${t.n > 1 ? `<span class="n">×${t.n}</span>` : ""}<button class="x" title="Remove from the board" onclick="App.hideItem('${escapeHtml(t.key)}')">×</button></span>`).join("") || `<p class="small">Nothing yet — tiles appear here as students submit.</p>`;
+    renderHostCounts();
+  }
+  async function hideItem(key){ await db.ref(path("hidden", key)).set(true); }
+  async function hostAdd(){
+    const raw = $("hostAddInput").value.trim(); if (!raw) return;
+    const key = keyOf(normalize(raw)); if (!key || key === "_") return;
+    if (hidden[key]) await db.ref(path("hidden", key)).remove();
+    await db.ref(path("subs")).push({ text: raw.slice(0, 40), key, uid: "host", name: "host", at: Date.now() });
+    $("hostAddInput").value = "";
+  }
+
+  function renderHost(){
+    if (!state) return;
+    const { phase } = state;
+    const vis = (id, on) => $(id).classList.toggle("hidden", !on);
+    vis("btnCollect", phase === "lobby");
+    vis("btnSort", phase === "collect");
+    vis("btnResults", phase === "sort");
+    vis("btnBackCollect", phase === "sort" || phase === "results");
+    vis("btnBackSort", phase === "results");
+    vis("hostLobbyCard", phase === "lobby" || phase === "collect" || phase === "sort");
+    vis("hostBoard", phase === "collect");
+    vis("hostSortCard", phase === "sort");
+    vis("hostResults", phase === "results");
+    document.querySelectorAll("#hostStages span").forEach(sp => { const order = ["collect","sort","results"]; const i = order.indexOf(sp.dataset.p), j = order.indexOf(phase); sp.classList.toggle("on", i === j); sp.classList.toggle("done", j > i); });
+    $("hostPhaseNote").textContent = { lobby: "Waiting for students to join.", collect: "Students are submitting. Remove junk tiles with ×. When the board settles, freeze it and open sorting.", sort: "Students are sorting. Reveal when the count settles.", results: "" }[phase] || "";
+    if (phase === "collect") renderBoard();
+    if (phase === "sort") renderHostCounts();
+    if (phase === "results") renderResults();
+  }
+
+  async function setPhase(p){
+    if (p === "results" && !Object.keys(sorts).length){ toast("Nobody has sorted anything yet."); return; }
+    await db.ref(path("state")).update({ phase: p, changedAt: Date.now() });
+  }
+  /* Freeze the current board into an ordered item list, then open sorting. Reopening
+     the board and freezing again keeps students' existing choices for unchanged keys. */
+  async function openSort(){
+    const tiles = board();
+    if (!tiles.length){ toast("The board is empty."); return; }
+    const list = tiles.map(t => ({ key: t.key, label: t.label }));
+    await db.ref(path()).update({ items: list, "state/phase": "sort", "state/changedAt": Date.now() });
+  }
+
+  /* ---------- results ----------
+     For each item: counts per category among students who placed it, the leading share,
+     and a disagreement score = 1 - leading share (0 = unanimous, 0.67 = a three-way tie). */
+  function tally(){
+    const out = {};
+    itemList().forEach(it => { out[it.key] = { D: 0, I: 0, N: 0, n: 0 }; });
+    Object.values(sorts).forEach(s => { if (!s || !s.c) return; Object.entries(s.c).forEach(([k, c]) => { if (out[k] && out[k][c] != null){ out[k][c]++; out[k].n++; } }); });
+    Object.values(out).forEach(t => { const top = CAT_KEYS.slice().sort((a, b) => t[b] - t[a])[0]; t.top = t.n ? top : null; t.share = t.n ? t[top] / t.n : 0; t.dis = t.n ? 1 - t.share : 0; });
+    return out;
+  }
+  const bandOf = t => !t.n ? "" : t.share < 0.6 ? "split" : t.share < 0.8 ? "lean" : "agree";
+  function renderResults(){
+    const list = itemList(); const st = tally();
+    const nStu = Object.values(sorts).filter(s => s && s.c && Object.keys(s.c).length).length;
+    $("resN").textContent = `${nStu} student${nStu === 1 ? "" : "s"} sorted · ${list.length} items`;
+    document.querySelectorAll("#resTabs button").forEach(b => b.classList.toggle("sel", b.dataset.t === resTab));
+    const rows = list.map(it => ({ it, t: st[it.key] })).filter(r => r.t.n > 0);
+    if (resTab === "split"){
+      rows.sort((a, b) => b.t.dis - a.t.dis || b.t.n - a.t.n);
+      $("resTitle").textContent = "Where the room split";
+      $("resBody").innerHTML = rows.map(({ it, t }) => {
+        const band = bandOf(t);
+        const seg = k => t[k] ? `<span class="${k}" style="flex:${t[k]}" title="${CATS[k]}: ${t[k]}">${t[k]}</span>` : "";
+        return `<div class="rrow ${band}"><div class="nm">${escapeHtml(it.label)}<small>${t.n} sorted</small></div><div class="bar">${CAT_KEYS.map(seg).join("")}</div><span class="badge ${band}">${band === "split" ? "split" : band === "lean" ? "leaning " + t.top : "agreed " + t.top}</span></div>`;
+      }).join("") || `<p class="small">No sorts yet.</p>`;
+    } else {
+      $("resTitle").textContent = "The class's three columns (majority vote)";
+      const col = k => rows.filter(r => r.t.top === k).sort((a, b) => b.t.share - a.t.share).map(({ it, t }) => `<div class="it ${bandOf(t) === "split" ? "split" : ""}"><span>${escapeHtml(it.label)}</span><span class="pct">${Math.round(100 * t.share)}%</span></div>`).join("") || `<p class="small">None.</p>`;
+      $("resBody").innerHTML = `<div class="cols3">${CAT_KEYS.map(k => `<div class="col" style="background:var(--c${k}-soft)"><h4><span class="dot" style="background:var(--c${k})"></span>${CATS[k]}</h4>${col(k)}</div>`).join("")}</div>`;
+    }
+    const splits = rows.filter(r => bandOf(r.t) === "split").slice(0, 3);
+    const agreed = rows.filter(r => bandOf(r.t) === "agree");
+    const tips = [];
+    splits.forEach(({ it, t }) => {
+      const second = CAT_KEYS.slice().sort((a, b) => t[b] - t[a])[1];
+      tips.push(`<li><b>${escapeHtml(it.label)}</b>: ${t[t.top]} said ${CATS[t.top]}, ${t[second]} said ${CATS[second]}. Ask each side: <i>who exactly benefits when one more person joins — and are they on the same side as you?</i></li>`);
+    });
+    if (agreed.length) tips.push(`<li>The room agreed on ${agreed.length} item${agreed.length > 1 ? "s" : ""} (e.g., <b>${escapeHtml(agreed[0].it.label)}</b>). Pick one and ask for the autarky value vs. the synchronization value — does the agreement survive?</li>`);
+    tips.push(`<li>Anything filed under "Not really" that still gets better with size? Name the mechanism: scale economies, data feedback, or reputation — the look-alikes.</li>`);
+    $("resDiscuss").innerHTML = tips.join("");
+  }
+  function tab(t){ resTab = t; renderResults(); }
+
+  /* ---------- demo data ---------- */
+  async function seedDemo(){
+    const names = ["Demo Ava","Demo Ben","Demo Cai","Demo Dee","Demo Eli","Demo Fay","Demo Gus","Demo Hal"];
+    const ideas = [["Venmo","D"],["WhatsApp","D"],["Instagram","D"],["Uber","I"],["Netflix","N"],["Xbox","I"],["Google Search","N"],["iMessage","D"],["Amazon","I"],["Spotify","N"],["Airbnb","I"],["Fortnite","D"]];
+    // how contested each item is: 0 = everyone agrees with the "right" answer, 1 = coin flip
+    const heat = { Venmo:.05, WhatsApp:.1, Instagram:.15, Uber:.55, Netflix:.6, Xbox:.4, "Google Search":.7, iMessage:.1, Amazon:.5, Spotify:.65, Airbnb:.3, Fortnite:.35 };
+    const upd = {}; const now = Date.now();
+    names.forEach((n, k) => { upd[`players/demo${k}`] = { name: n, joinedAt: now }; });
+    ideas.forEach(([label, ans], i) => {
+      const who = names.map((_, k) => k).filter(k => (k + i) % 3 !== 0 || k === i % 8);   // several students name each item
+      who.forEach(k => { upd[`subs/demo_${i}_${k}`] = { text: k % 2 ? label : label.toLowerCase(), key: keyOf(normalize(label)), uid: "demo" + k, name: names[k], at: now - 60000 + i * 3000 + k * 200 }; });
+    });
+    if (state.phase === "sort" || state.phase === "results"){
+      const list = itemList();
+      names.forEach((n, k) => {
+        const c = {};
+        list.forEach(it => {
+          const idea = ideas.find(([l]) => keyOf(normalize(l)) === it.key); const ans = idea ? idea[1] : "N"; const h = idea ? heat[idea[0]] : .5;
+          c[it.key] = Math.random() < h ? CAT_KEYS[Math.floor(Math.random() * 3)] : ans;
+        });
+        upd[`sorts/demo${k}`] = { c, name: n, at: now, done: true };
+      });
+    }
+    await db.ref(path()).update(upd);
+    toast(state.phase === "collect" || state.phase === "lobby" ? "Demo submissions added. Freeze the list, then seed again for demo sorts." : "Demo sorts added.");
+  }
+
+  /* ---------- wire up ---------- */
+  document.addEventListener("DOMContentLoaded", () => {
+    boot();
+    $("joinCode")?.addEventListener("input", e => e.target.value = e.target.value.toUpperCase());
+    $("addInput")?.addEventListener("keydown", e => { if (e.key === "Enter") addItem(); });
+    $("addInput")?.addEventListener("input", hintMatch);
+    $("hostAddInput")?.addEventListener("keydown", e => { if (e.key === "Enter") hostAdd(); });
+  });
+
+  return { showJoin, showHost, join, createGame, resumeHost, setPhase, openSort, seedDemo, tab, addItem, assign, submitSort, hideItem, hostAdd };
+})();
+</script>
+</body>
+</html>
