@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#2C3E50">
+<title>Who Goes First? — a coordination game</title>
+<meta name="description" content="A classroom game on network effects and excess inertia: everyone starts on Platform A, Platform B is better only if enough people switch, and only half the class can reconsider on any given day.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2C3E50; --navy-deep:#22303F; --gold:#F1C40F; --gold-soft:#F9E79F; --teal:#5EA8A7; --teal-deep:#3F7E7D;
+  --paper:#F5F4EF; --card:#FFFFFF; --ink:#1E2A36; --ink-soft:#5A6A79; --line:#DDD9CE; --red:#C0574F; --green:#3E8E5A;
+  --A:#8E9AA8; --A-soft:#E9ECEF; --B:#5EA8A7; --B-soft:#E4F1F0; --radius:12px;
+  --font-display:'Space Grotesk',sans-serif; --font-body:'Inter',system-ui,sans-serif; --font-mono:'IBM Plex Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--paper);color:var(--ink);font-family:var(--font-body);font-size:16px;line-height:1.5;min-height:100vh}
+button{font-family:var(--font-body);cursor:pointer}
+input,select{font-family:var(--font-body)}
+.hidden{display:none!important}
+.shell{max-width:1080px;margin:0 auto;padding:20px 16px 64px}
+.shell.narrow{max-width:460px}
+.shell.mid{max-width:640px}
+.shell.wide{max-width:1240px}
+header.top{background:var(--navy);color:#fff;padding:12px 0;position:sticky;top:0;z-index:20}
+header.top .shell{padding:0 16px;display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:4px}
+.brand{font-family:var(--font-display);font-weight:700;font-size:20px}
+.brand .accent{color:var(--gold)}
+.session-tag{font-family:var(--font-mono);font-size:13px;color:#CBD6E0}
+.session-tag b{color:var(--gold);letter-spacing:2px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px;margin-top:18px}
+h1{font-family:var(--font-display);font-size:clamp(26px,5vw,40px);line-height:1.12;color:var(--navy)}
+h2{font-family:var(--font-display);font-size:21px;color:var(--navy);margin-bottom:10px}
+h3{font-family:var(--font-display);font-size:16px;color:var(--navy)}
+p.sub{color:var(--ink-soft);margin-top:8px;max-width:62ch}
+.eyebrow{font-family:var(--font-mono);font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--teal-deep);margin-bottom:6px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;border-radius:10px;padding:13px 22px;font-size:16px;font-weight:600;transition:transform .06s ease}
+.btn:active{transform:translateY(1px)}
+.btn:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.btn-primary{background:var(--navy);color:#fff}
+.btn-gold{background:var(--gold);color:var(--navy-deep)}
+.btn-teal{background:var(--teal);color:#fff}
+.btn-ghost{background:transparent;color:var(--navy);border:1.5px solid var(--navy)}
+.btn-block{width:100%}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.btn-sm{padding:8px 14px;font-size:14px;border-radius:8px}
+.btn-big{padding:20px 22px;font-size:20px;border-radius:14px}
+label.f{display:block;font-size:13px;font-weight:600;color:var(--ink-soft);margin:14px 0 5px;text-transform:uppercase;letter-spacing:.6px}
+input.f,select.f{width:100%;padding:12px 14px;font-size:17px;border:1.5px solid var(--line);border-radius:10px;background:#fff;color:var(--ink)}
+input.f:focus,select.f:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(94,168,167,.18)}
+.f-err{color:var(--red);font-size:13px;margin-top:6px;min-height:18px}
+.code-input{font-family:var(--font-mono);letter-spacing:8px;text-transform:uppercase;text-align:center;font-size:24px!important}
+.land-hero{padding:40px 0 8px}
+.role-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:22px}
+@media(max-width:640px){.role-grid{grid-template-columns:1fr}}
+.role-card{background:var(--card);border:1.5px solid var(--line);border-radius:var(--radius);padding:22px;text-align:left}
+.role-card:hover{border-color:var(--teal);box-shadow:0 6px 20px rgba(44,62,80,.10)}
+.role-card h3{font-size:19px;margin-bottom:6px}
+.role-card p{font-size:14px;color:var(--ink-soft)}
+.role-card .go{margin-top:14px;font-weight:700;color:var(--teal-deep);font-size:14px}
+.pulse-dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--teal);margin-right:8px;animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.35}50%{opacity:1}}
+.big-count{font-family:var(--font-display);font-size:56px;color:var(--navy);line-height:1}
+.big-count small{font-size:20px;color:var(--ink-soft);font-family:var(--font-body)}
+.join-code{font-family:var(--font-mono);font-size:64px;letter-spacing:14px;color:var(--navy);font-weight:600;line-height:1;margin:6px 0 2px}
+.roster{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.roster .p{font-size:13px;background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:4px 10px}
+.roster .p.g1{border-color:var(--teal)} .roster .p.g2{border-color:var(--gold)}
+.host-bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:16px}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--navy);color:#fff;padding:10px 18px;border-radius:10px;font-weight:600;z-index:50;max-width:90vw}
+.small{font-size:13px;color:var(--ink-soft)}
+.mono{font-family:var(--font-mono)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:760px){.grid2{grid-template-columns:1fr}}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media(max-width:760px){.grid3{grid-template-columns:1fr}}
+.settings label.f{margin-top:10px}
+.settings .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.chk{display:flex;align-items:center;gap:8px;font-size:14px;margin-top:10px}
+/* ---------- student ---------- */
+.platform{border-radius:var(--radius);padding:18px;text-align:center;border:2px solid var(--line)}
+.platform.A{background:var(--A-soft);border-color:var(--A)} .platform.B{background:var(--B-soft);border-color:var(--B)}
+.platform .lab{font-family:var(--font-mono);font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--ink-soft)}
+.platform .nm{font-family:var(--font-display);font-size:34px;color:var(--navy);line-height:1.1}
+.stat{display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;border-bottom:1px solid var(--line);font-size:15px}
+.stat b{font-family:var(--font-mono);font-size:17px;color:var(--navy)}
+.stat .neg{color:var(--red)} .stat .pos{color:var(--green)}
+.turn{border-radius:var(--radius);padding:14px 16px;margin-top:14px;font-size:15px}
+.turn.on{background:#FFF8D6;border:1.5px solid var(--gold)} .turn.off{background:var(--paper);border:1.5px dashed var(--line);color:var(--ink-soft)}
+table.pay{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:8px}
+table.pay th{font-family:var(--font-mono);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--ink-soft);text-align:right;padding:5px 6px;border-bottom:1.5px solid var(--line)}
+table.pay th:first-child,table.pay td:first-child{text-align:left}
+table.pay td{padding:5px 6px;border-bottom:1px solid var(--line);text-align:right;font-family:var(--font-mono)}
+table.pay tr.now td{background:#FFF8D6;font-weight:600}
+.pledgebox{background:#FFF8D6;border:1.5px solid var(--gold);border-radius:var(--radius);padding:14px 16px;margin-top:14px}
+/* ---------- host ---------- */
+.daybar{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.daynum{font-family:var(--font-display);font-size:48px;color:var(--navy);line-height:1}
+.daynum small{font-size:16px;color:var(--ink-soft);font-family:var(--font-body)}
+.sharebar{height:34px;border-radius:9px;overflow:hidden;display:flex;background:var(--A-soft);margin-top:10px;font-family:var(--font-mono);font-size:13px;font-weight:600}
+.sharebar .b{background:var(--B);color:#fff;display:flex;align-items:center;justify-content:center;transition:width .5s ease;min-width:0;overflow:hidden;white-space:nowrap}
+.sharebar .a{flex:1;display:flex;align-items:center;justify-content:center;color:var(--navy)}
+.movers{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;min-height:30px}
+.movers .m{font-size:13px;border-radius:999px;padding:4px 10px;background:#fff;border:1.5px solid var(--line)}
+.movers .m.toB{border-color:var(--B);background:var(--B-soft)} .movers .m.toA{border-color:var(--A);background:var(--A-soft)}
+.movers .m .sc{font-family:var(--font-mono);color:var(--ink-soft);margin-left:6px}
+.movers .m.zero .sc{color:var(--red);font-weight:700}
+.chartbox{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:8px;margin-top:10px}
+table.res{width:100%;border-collapse:collapse;margin-top:10px;font-size:14px}
+table.res th{font-family:var(--font-mono);font-size:11.5px;letter-spacing:1px;text-transform:uppercase;color:var(--ink-soft);text-align:left;padding:6px 8px;border-bottom:1.5px solid var(--line)}
+table.res td{padding:7px 8px;border-bottom:1px solid var(--line)}
+table.res td.num{font-family:var(--font-mono);text-align:right;white-space:nowrap}
+table.res tr.me td{background:#FFF8D6}
+.timer{font-family:var(--font-mono);font-size:22px;color:var(--navy);min-width:60px;text-align:center}
+.tag{display:inline-block;font-family:var(--font-mono);font-size:11px;letter-spacing:1px;text-transform:uppercase;padding:3px 8px;border-radius:6px;background:var(--paper);border:1px solid var(--line);color:var(--ink-soft);margin-left:6px}
+ul.disc{margin:10px 0 0 18px;font-size:15px}
+ul.disc li{margin-bottom:8px}
+.rounds-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.rounds-tabs button{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600;color:var(--ink-soft)}
+.rounds-tabs button.sel{background:var(--navy);color:#fff;border-color:var(--navy)}
+</style>
+</head>
+<body>
+<header class="top"><div class="shell">
+  <div class="brand">WHO GOES FIRST? <span class="accent">/</span> a coordination game</div>
+  <div class="session-tag" id="topTag">FYS 7b · network effects</div>
+</div></header>
+
+<div id="viewSetup" class="shell mid hidden"><div class="card"><div class="eyebrow">One-time setup</div><h2>Connect a Firebase database</h2><p class="sub">Paste the project's config into <code>FIREBASE_CONFIG</code> near the top of the script and reload.</p></div></div>
+
+<!-- ============ LANDING ============ -->
+<div id="viewLanding" class="shell hidden">
+  <div class="land-hero">
+    <div class="eyebrow">A live classroom game</div>
+    <h1>Everyone is on Platform A. Platform B is better — if enough of you are on it.</h1>
+    <p class="sub">Ten days. Each day, half the class gets a chance to reconsider: stay, switch, or switch back. Your score each day depends on how many classmates are on the same platform as you — and being early on B pays almost nothing. Who goes first?</p>
+  </div>
+  <div class="role-grid">
+    <button class="role-card" onclick="App.showJoin()"><h3>Join the class session</h3><p>Enter the 4-letter code on the screen and play from your phone.</p><div class="go">Join →</div></button>
+    <button class="role-card" onclick="App.showHost()"><h3>Host a session</h3><p>Create a code, set the rules, run the days from the projector, and show the class what happened.</p><div class="go">Host a session →</div></button>
+  </div>
+  <button class="btn btn-ghost btn-sm hidden" id="resumeBtn" style="margin-top:14px" onclick="App.resumeHost()">Resume hosting</button>
+</div>
+
+<!-- ============ JOIN ============ -->
+<div id="viewJoin" class="shell narrow hidden">
+  <div class="card">
+    <div class="eyebrow">Join</div><h2>Enter the session code</h2>
+    <label class="f" for="joinCode">Code</label>
+    <input class="f code-input" id="joinCode" maxlength="4" autocomplete="off" autocapitalize="characters" placeholder="ABCD">
+    <label class="f" for="joinName">Your name or initials</label>
+    <input class="f" id="joinName" maxlength="24" placeholder="e.g., Sam K.">
+    <div class="f-err" id="joinErr"></div>
+    <button class="btn btn-gold btn-block" onclick="App.join()">Join</button>
+  </div>
+</div>
+
+<!-- ============ STUDENT ============ -->
+<div id="viewStudent" class="shell mid hidden">
+  <div class="card" id="stuWait" style="text-align:center;padding:36px 22px">
+    <div class="eyebrow" id="swEyebrow">You're in</div>
+    <h2 id="swTitle">Waiting for the host to start…</h2>
+    <p class="sub" style="margin:8px auto 0"><span class="pulse-dot"></span>Keep this page open.</p>
+  </div>
+  <div id="stuPledge" class="card hidden">
+    <div class="eyebrow">Before day 1 · Pledge</div>
+    <h2>Will you switch to B on day 1 — if enough others promise too?</h2>
+    <p class="sub">If at least <b id="pledgeNeed">40%</b> of the class pledges, every pledger moves to B together on day 1, whichever group they're in. If the threshold isn't reached, nobody moves and the pledge costs you nothing.</p>
+    <div class="pledgebox"><b id="pledgeCount">0 pledged so far</b></div>
+    <button class="btn btn-teal btn-block" id="pledgeBtn" style="margin-top:12px" onclick="App.pledge()">I pledge to switch on day 1</button>
+  </div>
+  <div id="stuPlay" class="hidden">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px"><div class="eyebrow" id="stDay">Day 1 of 10</div><div class="small" id="stGroup">Group 1</div></div>
+      <div class="grid2" style="margin-top:6px">
+        <div class="platform" id="myPlat"><div class="lab">You are on</div><div class="nm" id="myPlatName">Platform A</div></div>
+        <div>
+          <div class="stat"><span>Your score so far</span><b id="myScore">0</b></div>
+          <div class="stat"><span>Yesterday you earned</span><b id="myLast">—</b></div>
+          <div class="stat"><span>Your rank</span><b id="myRank">—</b></div>
+          <div class="stat"><span id="shareLab">Class on B right now</span><b id="shareB">0%</b></div>
+        </div>
+      </div>
+      <div class="turn" id="turnBox"></div>
+      <div id="actBox" class="hidden" style="margin-top:12px">
+        <button class="btn btn-teal btn-block btn-big" id="btnSwitch" onclick="App.choose('B')">Switch to B</button>
+        <button class="btn btn-ghost btn-block" id="btnStay" style="margin-top:8px" onclick="App.choose('stay')">Stay where I am</button>
+        <p class="small" id="actNote" style="margin-top:8px"></p>
+      </div>
+    </div>
+    <div class="card">
+      <h3>What a day is worth <span class="small">(points per day, for this class)</span></h3>
+      <p class="small">Your score depends on the share of the class on the <b>same</b> platform as you. B's network is much stronger — but only once it's big.</p>
+      <table class="pay" id="payTable"></table>
+    </div>
+  </div>
+  <div id="stuDone" class="card hidden">
+    <div class="eyebrow">Round over</div>
+    <h2 id="doneTitle">Look at the screen.</h2>
+    <div id="doneBody"></div>
+  </div>
+</div>
+
+<!-- ============ HOST: CREATE ============ -->
+<div id="viewHostCreate" class="shell mid hidden">
+  <div class="card settings">
+    <div class="eyebrow">Host</div><h2>Create a session</h2>
+    <p class="sub">Students start on A. Each day only one of two groups may act (limited attention: not everyone reconsiders on the same day). You can change the rules between rounds.</p>
+    <div class="row">
+      <div><label class="f" for="setDays">Days per round</label><input class="f" id="setDays" type="number" value="10" min="3" max="30"></div>
+      <div><label class="f" for="setExp">Network effect strength (exponent)</label><select class="f" id="setExp"><option value="2">2 — convex</option><option value="3" selected>3 — very convex</option><option value="4">4 — extreme</option></select></div>
+    </div>
+    <div class="row">
+      <div><label class="f" for="setTimer">Seconds per day (0 = manual)</label><input class="f" id="setTimer" type="number" value="25" min="0" max="120"></div>
+      <div><label class="f" for="setLag">Information shown to students</label><select class="f" id="setLag"><option value="0" selected>Live count on B</option><option value="2">Count from 2 days ago</option><option value="99">No count at all</option></select></div>
+    </div>
+    <div class="row">
+      <div><label class="f" for="setInterop">Interoperability (share of the other platform's network you keep)</label><select class="f" id="setInterop"><option value="0" selected>0% — walled gardens</option><option value="0.5">50% — partial</option><option value="1">100% — fully open</option></select></div>
+      <div><label class="f" for="setCost">Cost to switch (points)</label><input class="f" id="setCost" type="number" value="0" min="0" max="20"></div>
+    </div>
+    <label class="chk"><input type="checkbox" id="setPledge"> Pledge round: before day 1, students can promise to switch together if enough others do</label>
+    <div class="row"><div><label class="f" for="setPledgeThr">Pledge threshold (% of class)</label><input class="f" id="setPledgeThr" type="number" value="40" min="10" max="100"></div><div></div></div>
+    <button class="btn btn-primary btn-block" style="margin-top:18px" onclick="App.createGame()">Create session</button>
+  </div>
+</div>
+
+<!-- ============ HOST ============ -->
+<div id="viewHost" class="shell wide hidden">
+  <div class="card" id="hostLobbyCard">
+    <div class="eyebrow">Students join with this code</div>
+    <div class="join-code" id="hostCode">····</div>
+    <p class="sub" id="hostUrlHint"></p>
+    <h3 style="margin-top:14px">In the room: <span id="hostCount">0</span> <span class="small">· group 1 acts on odd days, group 2 on even days</span></h3>
+    <div class="roster" id="hostRoster"></div>
+  </div>
+  <div class="host-bar">
+    <button class="btn btn-gold hidden" id="btnStart" onclick="App.startRound()">Start round <span id="btnStartN"></span></button>
+    <button class="btn btn-teal hidden" id="btnClosePledge" onclick="App.closePledge()">Close pledges &amp; start day 1</button>
+    <button class="btn btn-primary hidden" id="btnCloseDay" onclick="App.closeDay()">Close day <span id="btnCloseN"></span></button>
+    <button class="btn btn-ghost btn-sm hidden" id="btnEnd" onclick="App.endRound()">End round early</button>
+    <button class="btn btn-ghost btn-sm hidden" id="btnSettings" onclick="App.showSettings()">Change rules for next round</button>
+    <button class="btn btn-ghost btn-sm" onclick="App.seedBots()" title="Adds computer players that switch when the count on B passes their private threshold">Add 12 bots</button>
+    <span class="timer hidden" id="timer"></span>
+    <span id="hostPhaseNote" class="small"></span>
+  </div>
+  <div class="card settings hidden" id="hostSettings">
+    <h3>Rules for the next round</h3>
+    <div class="row">
+      <div><label class="f">Days</label><input class="f" id="hsDays" type="number" min="3" max="30"></div>
+      <div><label class="f">Network effect exponent</label><select class="f" id="hsExp"><option value="2">2</option><option value="3">3</option><option value="4">4</option></select></div>
+    </div>
+    <div class="row">
+      <div><label class="f">Seconds per day (0 = manual)</label><input class="f" id="hsTimer" type="number" min="0" max="120"></div>
+      <div><label class="f">Information</label><select class="f" id="hsLag"><option value="0">Live count</option><option value="2">2-day lag</option><option value="99">No count</option></select></div>
+    </div>
+    <div class="row">
+      <div><label class="f">Interoperability</label><select class="f" id="hsInterop"><option value="0">0%</option><option value="0.5">50%</option><option value="1">100%</option></select></div>
+      <div><label class="f">Cost to switch</label><input class="f" id="hsCost" type="number" min="0" max="20"></div>
+    </div>
+    <label class="chk"><input type="checkbox" id="hsPledge"> Pledge round before day 1</label>
+    <div class="row"><div><label class="f">Pledge threshold (%)</label><input class="f" id="hsPledgeThr" type="number" min="10" max="100"></div><div></div></div>
+    <button class="btn btn-primary btn-sm" style="margin-top:12px" onclick="App.saveSettings()">Save rules</button>
+  </div>
+  <div class="card hidden" id="hostPledgeCard" style="text-align:center">
+    <div class="eyebrow">Pledge stage</div>
+    <div class="big-count"><span id="hostPledgeN">0</span><small> pledged · need <span id="hostPledgeNeed">0</span></small></div>
+    <p class="sub" style="margin:8px auto 0">If the threshold is met when you close pledges, all pledgers move to B on day 1 together.</p>
+  </div>
+  <div class="card hidden" id="hostPlayCard">
+    <div class="daybar">
+      <div class="daynum"><span id="hostDay">1</span><small> of <span id="hostDays">10</span></small></div>
+      <div><div class="eyebrow" id="hostTurn">Group 1 may act today</div><div class="small" id="hostActed">0 acted</div></div>
+      <div style="margin-left:auto" class="small" id="hostRuleTags"></div>
+    </div>
+    <div class="sharebar" id="hostShare"><div class="b" style="width:0%"></div><div class="a">everyone on A</div></div>
+    <div class="grid2" style="margin-top:12px">
+      <div><h3>Moved today</h3><div class="movers" id="hostMovers"><span class="small">Day still open.</span></div></div>
+      <div><h3>Yesterday's score per person</h3><div class="stat"><span>On A</span><b id="hostScoreA">—</b></div><div class="stat"><span>On B</span><b id="hostScoreB">—</b></div></div>
+    </div>
+    <div class="chartbox" id="hostChart"></div>
+  </div>
+  <div id="hostResults" class="hidden">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px"><div><div class="eyebrow">Round over</div><h2 id="resTitle">What happened</h2></div><div class="rounds-tabs" id="roundTabs"></div></div>
+      <div class="grid3" id="resStats"></div>
+      <div class="chartbox" id="resChart"></div>
+      <h3 style="margin-top:14px">Who moved when</h3>
+      <table class="res" id="resTable"></table>
+    </div>
+    <div class="card"><h2>For discussion</h2><ul class="disc" id="resDiscuss"></ul></div>
+  </div>
+</div>
+
+<div id="toast" class="toast hidden"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
+const FIREBASE_CONFIG = {
+    apiKey: "AIzaSyDQ8gn5w_Jj4OzcXFBz2lY2SKuaKEo2wbk",
+    authDomain: "obfuscationgame.firebaseapp.com",
+    databaseURL: "https://obfuscationgame-default-rtdb.firebaseio.com",
+    projectId: "obfuscationgame",
+    storageBucket: "obfuscationgame.firebasestorage.app",
+    messagingSenderId: "443679460937",
+    appId: "1:443679460937:web:d6b2806717894b3c923998"
+  };
+
+/* =====================================================================
+   PAYOFFS. s = share of the class on the same platform as you (0..1),
+   after interoperability credit. Per day:
+     A: 6 + 6 * s^k       (a modest network; worth 6 even if you're alone)
+     B: 24 * s^k          (a much stronger network; worth ~0 if you're alone)
+   With k = 3, B beats A only once about two-thirds of the class is there.
+   ===================================================================== */
+const PAY = {
+  A: (s, k) => 6 + 6 * Math.pow(s, k),
+  B: (s, k) => 24 * Math.pow(s, k),
+};
+function effShare(mine, other, interop){ return Math.min(1, mine + interop * other); }
+function dayScores(nB, N, S){
+  const sB = N ? nB / N : 0, sA = 1 - sB;
+  return { A: PAY.A(effShare(sA, sB, S.interop), S.exp), B: PAY.B(effShare(sB, sA, S.interop), S.exp), sB };
+}
+const DEFAULTS = { days: 10, exp: 3, timer: 25, lag: 0, interop: 0, cost: 0, pledge: false, pledgeThr: 40 };
+
+const App = (() => {
+  let db = null, code = null, uid = null, myName = null, isHost = false;
+  let meta = {}, settings = { ...DEFAULTS }, state = null, players = {}, rounds = {}, listeners = [];
+  let timerH = null, resRound = null, lastPhaseKey = null, lastDoneRound = null;
+
+  const $ = id => document.getElementById(id);
+  const views = ["viewSetup","viewLanding","viewJoin","viewStudent","viewHostCreate","viewHost"];
+  function show(v){ views.forEach(x => $(x).classList.toggle("hidden", x !== v)); }
+  function toast(msg){ const t=$("toast"); t.textContent=msg; t.classList.remove("hidden"); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.add("hidden"),2600); }
+  function getUid(){ let u=null; try{u=localStorage.getItem("coord_uid");}catch(e){} if(!u){u=(crypto.randomUUID?crypto.randomUUID():"u"+Date.now()+Math.random().toString(36).slice(2)); try{localStorage.setItem("coord_uid",u);}catch(e){}} return u; }
+  function clearListeners(){ listeners.forEach(([r,e,c]) => r.off(e,c)); listeners = []; }
+  function on(ref,ev,cb){ ref.on(ev,cb); listeners.push([ref,ev,cb]); }
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const path = (...p) => ["games", "coord-" + code, ...p].join("/");
+  const f1 = n => (Math.round(n * 10) / 10).toFixed(1);
+  const pct = s => Math.round(100 * s) + "%";
+
+  function boot(){
+    if (!FIREBASE_CONFIG || !FIREBASE_CONFIG.apiKey || FIREBASE_CONFIG.apiKey.startsWith("PASTE")){ show("viewSetup"); return; }
+    firebase.initializeApp(FIREBASE_CONFIG); db = firebase.database(); uid = getUid();
+    const qs = new URLSearchParams(location.search);
+    if (qs.get("g")){ show("viewJoin"); $("joinCode").value = qs.get("g").toUpperCase(); $("joinName").focus(); } else show("viewLanding");
+    let last=null; try{last=localStorage.getItem("coord_host");}catch(e){}
+    if (last){ $("resumeBtn").textContent = `Resume hosting ${last}`; $("resumeBtn").classList.remove("hidden"); }
+  }
+
+  /* ---------- round data helpers ---------- */
+  const curRound = () => (state && state.round) ? (rounds[state.round] || {}) : {};
+  function positionsAt(r, day){          // platform of every player after `day` closed (day 0 = start)
+    const pos = {}; Object.keys(players).forEach(id => pos[id] = "A");
+    if (r.start) Object.keys(r.start).forEach(id => pos[id] = r.start[id]);
+    for (let d = 1; d <= day; d++){ const dd = r.days && r.days[d]; if (dd && dd.pos) Object.assign(pos, dd.pos); }
+    return pos;
+  }
+  const N = () => Object.keys(players).length;
+  const groupOf = id => (players[id] && players[id].group) || 1;
+  const turnGroup = day => (day % 2 === 1) ? 1 : 2;
+
+  /* =====================================================================
+     STUDENT
+     ===================================================================== */
+  function showJoin(){ show("viewJoin"); }
+  async function join(){
+    const c = $("joinCode").value.trim().toUpperCase(), n = $("joinName").value.trim(), err = $("joinErr");
+    if (c.length !== 4){ err.textContent = "Enter the 4-letter code on the screen."; return; }
+    if (!n){ err.textContent = "Add your name or initials."; return; }
+    err.textContent = "";
+    const snap = await db.ref(`games/coord-${c}/state`).get();
+    if (!snap.exists()){ err.textContent = "No session with that code — check the projector."; return; }
+    code = c; myName = n; isHost = false;
+    const ps = (await db.ref(path("players")).get()).val() || {};
+    const me = ps[uid];
+    const g1 = Object.values(ps).filter(p => p.group === 1).length, g2 = Object.values(ps).filter(p => p.group === 2).length;
+    await db.ref(path("players", uid)).update({ name: n, joinedAt: Date.now(), group: me ? me.group : (g1 <= g2 ? 1 : 2) });
+    $("topTag").innerHTML = `Session <b>${code}</b> · ${esc(n)}`;
+    listen(); show("viewStudent");
+  }
+  function listen(){
+    clearListeners();
+    on(db.ref(path("settings")), "value", s => { settings = { ...DEFAULTS, ...(s.val() || {}) }; render(); });
+    on(db.ref(path("players")), "value", s => { players = s.val() || {}; render(); });
+    on(db.ref(path("rounds")), "value", s => { rounds = s.val() || {}; render(); });
+    on(db.ref(path("state")), "value", s => { state = s.val(); render(); });
+  }
+  function render(){ if (!state) return; if (isHost) renderHost(); else renderStudent(); }
+
+  function renderStudent(){
+    const { phase, day, round } = state;
+    const vis = (id, on) => $(id).classList.toggle("hidden", !on);
+    vis("stuWait", phase === "lobby" || phase === "between");
+    vis("stuPledge", phase === "pledge"); vis("stuPlay", phase === "play"); vis("stuDone", phase === "done");
+    const r = curRound();
+    if (phase === "lobby"){ $("swEyebrow").textContent = "You're in"; $("swTitle").textContent = `Waiting for the host to start. You're in group ${groupOf(uid)}.`; return; }
+    if (phase === "between"){ $("swEyebrow").textContent = "Between rounds"; $("swTitle").textContent = "The host is changing the rules. Hang on."; return; }
+    if (phase === "pledge"){
+      const n = Object.keys(r.pledges || {}).length, need = Math.ceil(settings.pledgeThr / 100 * N());
+      $("pledgeNeed").textContent = `${settings.pledgeThr}% (${need} people)`;
+      $("pledgeCount").textContent = `${n} pledged so far`;
+      const mine = r.pledges && r.pledges[uid];
+      $("pledgeBtn").disabled = !!mine; $("pledgeBtn").textContent = mine ? "Pledged ✓ — waiting for the host" : "I pledge to switch on day 1";
+      return;
+    }
+    if (phase === "play"){
+      const pos = positionsAt(r, day - 1), me = pos[uid] || "A";
+      const tot = (r.totals && r.totals[uid]) || 0;
+      const yday = r.days && r.days[day - 1];
+      const last = yday && yday.score ? yday.score[uid] : null;
+      $("stDay").textContent = `Day ${day} of ${settings.days}`;
+      $("stGroup").textContent = `You're in group ${groupOf(uid)}`;
+      $("myPlat").className = "platform " + me; $("myPlatName").textContent = "Platform " + me;
+      $("myScore").textContent = f1(tot);
+      $("myLast").innerHTML = last == null ? "—" : `<span class="${last < 3 ? "neg" : last > 10 ? "pos" : ""}">${f1(last)}</span>`;
+      const ranks = Object.entries(r.totals || {}).sort((a, b) => b[1] - a[1]).map(x => x[0]);
+      $("myRank").textContent = ranks.length ? `${ranks.indexOf(uid) + 1} of ${ranks.length}` : "—";
+      // information rule: live, lagged, or none
+      let shownDay = day - 1 - (settings.lag === 99 ? 999 : settings.lag);
+      if (settings.lag === 99){ $("shareLab").textContent = "Class on B"; $("shareB").textContent = "not shown"; }
+      else if (shownDay < 0){ $("shareLab").textContent = `Class on B (as of day ${Math.max(0, day - 1 - settings.lag)})`; $("shareB").textContent = settings.lag ? "no data yet" : "0%"; }
+      else { const p = positionsAt(r, shownDay); const nB = Object.values(p).filter(x => x === "B").length; $("shareLab").textContent = settings.lag ? `Class on B (as of day ${shownDay})` : "Class on B right now"; $("shareB").textContent = `${pct(nB / N())} (${nB} of ${N()})`; }
+      const myTurn = groupOf(uid) === turnGroup(day);
+      const acted = r.intents && r.intents[day] && r.intents[day][uid];
+      $("turnBox").className = "turn " + (myTurn ? "on" : "off");
+      if (!myTurn) $("turnBox").innerHTML = `<b>Not your turn today.</b> You're busy — you don't reconsider your app every day. Group ${turnGroup(day)} decides today; you decide tomorrow.`;
+      else if (acted) $("turnBox").innerHTML = `<b>Decision locked for day ${day}:</b> ${acted === "stay" ? "stay on " + me : "switch to " + acted}. Watch the screen for the count.`;
+      else $("turnBox").innerHTML = `<b>Your turn.</b> Stay on ${me}, or switch to ${me === "A" ? "B" : "A"}${settings.cost ? ` (costs ${settings.cost} points)` : ""}. If you don't choose, you stay.`;
+      vis("actBox", myTurn && !acted);
+      $("btnSwitch").textContent = me === "A" ? "Switch to B" : "Switch back to A";
+      $("btnSwitch").className = "btn btn-block btn-big " + (me === "A" ? "btn-teal" : "btn-ghost");
+      $("btnSwitch").onclick = () => choose(me === "A" ? "B" : "A");
+      $("actNote").textContent = me === "A" ? "Remember: B alone is worth almost nothing. It pays once the crowd is there." : "Going back to A is allowed. A is worth 6 even if you're alone there.";
+      renderPayTable();
+      return;
+    }
+    if (phase === "done"){
+      const tot = (r.totals && r.totals[uid]) || 0;
+      const ranks = Object.entries(r.totals || {}).sort((a, b) => b[1] - a[1]).map(x => x[0]);
+      const moves = [];
+      for (let d = 1; d <= (r.lastDay || 0); d++){ const dd = r.days && r.days[d]; if (dd && dd.movers && dd.movers[uid]) moves.push(`day ${d} → ${dd.movers[uid]}`); }
+      $("doneTitle").textContent = `You scored ${f1(tot)} — rank ${ranks.indexOf(uid) + 1} of ${ranks.length}.`;
+      $("doneBody").innerHTML = `<p class="sub">${moves.length ? "Your moves: " + moves.join(", ") + "." : "You never moved."} Look at the screen: who paid for the tip, and who cashed in?</p>`;
+    }
+  }
+  function renderPayTable(){
+    const n = N(); const rows = [];
+    const r = curRound(), day = state.day, pos = positionsAt(r, day - 1);
+    const nowB = Object.values(pos).filter(x => x === "B").length;
+    const steps = [...new Set([0, 1, 2, Math.round(n * .2), Math.round(n * .4), Math.round(n * .6), Math.round(n * .8), n].filter(x => x >= 0 && x <= n))].sort((a, b) => a - b);
+    steps.forEach(nB => { const sc = dayScores(nB, n, settings); rows.push(`<tr class="${nB === nowB && settings.lag === 0 ? "now" : ""}"><td>${nB} on B (${pct(nB / n)})</td><td>${f1(sc.A)}</td><td>${f1(sc.B)}</td></tr>`); });
+    $("payTable").innerHTML = `<tr><th>If this many are on B</th><th>A pays</th><th>B pays</th></tr>` + rows.join("");
+  }
+  async function choose(what){
+    const r = curRound(), day = state.day;
+    await db.ref(path("rounds", state.round, "intents", day, uid)).set(what);
+    toast(what === "stay" ? "Staying." : "Switching to " + what + ".");
+  }
+  async function pledge(){ await db.ref(path("rounds", state.round, "pledges", uid)).set(true); }
+
+  /* =====================================================================
+     HOST
+     ===================================================================== */
+  function showHost(){ show("viewHostCreate"); }
+  function readSettings(prefix){
+    const g = id => $(prefix + id);
+    return { days: +g("Days").value || 10, exp: +g("Exp").value, timer: +g("Timer").value || 0, lag: +g("Lag").value, interop: +g("Interop").value, cost: +g("Cost").value || 0, pledge: g("Pledge").checked, pledgeThr: +g("PledgeThr").value || 40 };
+  }
+  async function createGame(){
+    isHost = true;
+    code = Array.from({length:4},()=> "ABCDEFGHJKLMNPQRSTUVWXYZ"[Math.floor(Math.random()*24)]).join("");
+    settings = readSettings("set");
+    await db.ref(path()).set({ meta: { createdAt: Date.now() }, settings, state: { phase: "lobby", round: 0, day: 0 } });
+    hostDash();
+  }
+  async function resumeHost(){
+    let c=null; try{c=localStorage.getItem("coord_host");}catch(e){}
+    if (!c) return;
+    const snap = await db.ref(`games/coord-${c}/state`).get();
+    if (!snap.exists()){ toast("That session is gone."); try{localStorage.removeItem("coord_host");}catch(e){} $("resumeBtn").classList.add("hidden"); return; }
+    isHost = true; code = c; hostDash();
+  }
+  function hostDash(){
+    $("hostCode").textContent = code;
+    const url = location.origin + location.pathname + "?g=" + code;
+    $("hostUrlHint").innerHTML = `Students open <b>${esc(location.host + location.pathname)}</b> and enter the code, or use: <span class="mono">${esc(url)}</span>`;
+    $("topTag").innerHTML = `Hosting session <b>${code}</b>`;
+    try{localStorage.setItem("coord_host", code);}catch(e){}
+    listen(); show("viewHost");
+  }
+  function showSettings(){
+    const g = id => $("hs" + id);
+    g("Days").value = settings.days; g("Exp").value = settings.exp; g("Timer").value = settings.timer; g("Lag").value = settings.lag; g("Interop").value = settings.interop; g("Cost").value = settings.cost; g("Pledge").checked = !!settings.pledge; g("PledgeThr").value = settings.pledgeThr;
+    $("hostSettings").classList.toggle("hidden");
+  }
+  async function saveSettings(){ settings = readSettings("hs"); await db.ref(path("settings")).set(settings); $("hostSettings").classList.add("hidden"); toast("Rules saved for the next round."); }
+
+  async function startRound(){
+    if (!N()){ toast("Nobody has joined."); return; }
+    const round = (state.round || 0) + 1;
+    await db.ref(path("rounds", round)).set({ startedAt: Date.now(), settings });
+    if (settings.pledge) await db.ref(path("state")).set({ phase: "pledge", round, day: 0 });
+    else await openDay(round, 1);
+  }
+  async function closePledge(){
+    const r = curRound(), pl = Object.keys(r.pledges || {}), need = Math.ceil(settings.pledgeThr / 100 * N());
+    const start = {};
+    if (pl.length >= need) pl.forEach(id => start[id] = "B");
+    await db.ref(path("rounds", state.round)).update({ start, pledgeMet: pl.length >= need, pledgeN: pl.length, pledgeNeed: need });
+    toast(pl.length >= need ? `${pl.length} pledgers move to B on day 1.` : `Only ${pl.length} of ${need} pledged — nobody moves.`);
+    await openDay(state.round, 1);
+  }
+  async function openDay(round, day){
+    await db.ref(path("state")).set({ phase: "play", round, day, openedAt: Date.now() });
+    startTimer();
+  }
+  function startTimer(){
+    clearInterval(timerH); $("timer").classList.toggle("hidden", !settings.timer);
+    if (!settings.timer) return;
+    let left = settings.timer; $("timer").textContent = left + "s";
+    timerH = setInterval(() => { left--; $("timer").textContent = left + "s"; if (left <= 0){ clearInterval(timerH); closeDay(); } }, 1000);
+  }
+  /* Close the day: apply intents (bots decide here), compute positions, scores, totals. */
+  async function closeDay(){
+    if (!state || state.phase !== "play") return;
+    clearInterval(timerH);
+    const round = state.round, day = state.day, r = curRound();
+    const before = positionsAt(r, day - 1);
+    const nBbefore = Object.values(before).filter(x => x === "B").length;
+    const intents = (r.intents && r.intents[day]) || {};
+    const pos = {}, movers = {};
+    Object.keys(players).forEach(id => {
+      let p = before[id] || "A";
+      if (groupOf(id) === turnGroup(day)){
+        let want = intents[id];
+        if (players[id].bot){ // bots: go to B once the visible share passes their private threshold; come back if it collapses well below it
+          const sB = nBbefore / N(), t = players[id].thr;
+          want = (p === "A" && sB >= t) ? "B" : (p === "B" && sB < t - 0.2) ? "A" : "stay";
+        }
+        if (want && want !== "stay" && want !== p){ p = want; movers[id] = want; }
+      }
+      pos[id] = p;
+    });
+    const nB = Object.values(pos).filter(x => x === "B").length;
+    const sc = dayScores(nB, N(), settings);
+    const score = {}, totals = { ...(r.totals || {}) };
+    Object.keys(players).forEach(id => { let s = sc[pos[id]]; if (movers[id]) s -= settings.cost; score[id] = Math.round(s * 10) / 10; totals[id] = Math.round(((totals[id] || 0) + score[id]) * 10) / 10; });
+    const upd = {}; upd[`days/${day}`] = { pos, movers, score, nB, N: N(), scoreA: sc.A, scoreB: sc.B, acted: Object.keys(intents).length }; upd["totals"] = totals; upd["lastDay"] = day;
+    await db.ref(path("rounds", round)).update(upd);
+    if (day >= settings.days) await db.ref(path("state")).set({ phase: "done", round, day });
+    else await openDay(round, day + 1);
+  }
+  async function endRound(){ clearInterval(timerH); await db.ref(path("state")).set({ phase: "done", round: state.round, day: state.day }); }
+
+  async function seedBots(){
+    const names = ["Bot Ada","Bot Bo","Bot Cy","Bot Di","Bot Ed","Bot Flo","Bot Gus","Bot Hal","Bot Ivy","Bot Jo","Bot Kit","Bot Lu"];
+    const upd = {}; const g1 = Object.values(players).filter(p => p.group === 1).length, g2 = Object.values(players).filter(p => p.group === 2).length;
+    names.forEach((n, k) => { upd[`bot${k}`] = { name: n, joinedAt: Date.now(), bot: true, thr: Math.round((0.05 + 0.6 * k / 11) * 100) / 100, group: (g1 + k) <= (g2 + (k - (k % 2))) ? 1 : 2 }; });
+    // alternate groups evenly
+    names.forEach((n, k) => { upd[`bot${k}`].group = ((g1 > g2 ? 1 : 0) + k) % 2 + 1; });
+    await db.ref(path("players")).update(upd);
+    toast("12 bots added. Their private thresholds range from 5% to 65% on B.");
+  }
+
+  function renderHost(){
+    const { phase, day, round } = state;
+    const vis = (id, on) => $(id).classList.toggle("hidden", !on);
+    vis("btnStart", phase === "lobby" || phase === "done" || phase === "between");
+    $("btnStartN").textContent = (round || 0) + 1;
+    vis("btnClosePledge", phase === "pledge");
+    vis("btnCloseDay", phase === "play"); $("btnCloseN").textContent = day || "";
+    vis("btnEnd", phase === "play"); vis("btnSettings", phase !== "play" && phase !== "pledge");
+    vis("hostLobbyCard", phase === "lobby"); vis("hostPledgeCard", phase === "pledge"); vis("hostPlayCard", phase === "play"); vis("hostResults", phase === "done");
+    if (phase === "play" && settings.timer && lastPhaseKey !== phase + ":" + day) startTimer();
+    if (phase !== "play"){ clearInterval(timerH); $("timer").classList.add("hidden"); }
+    lastPhaseKey = phase + ":" + day;
+    $("hostPhaseNote").textContent = { lobby: "Waiting for students. Start the round when the room has settled.", pledge: "Pledges open.", play: settings.timer ? "Days close automatically." : "Close each day by hand.", done: "Round over. Change the rules and start another round, or discuss.", between: "" }[phase] || "";
+    renderRoster();
+    if (phase === "pledge"){ const r = curRound(); $("hostPledgeN").textContent = Object.keys(r.pledges || {}).length; $("hostPledgeNeed").textContent = Math.ceil(settings.pledgeThr / 100 * N()); }
+    if (phase === "play") renderPlay();
+    if (phase === "done"){ if (lastDoneRound !== round){ resRound = round; lastDoneRound = round; } renderResults(); }
+  }
+  function renderRoster(){
+    const list = Object.entries(players);
+    $("hostCount").textContent = list.length;
+    $("hostRoster").innerHTML = list.map(([id, p]) => `<span class="p g${p.group}">${esc(p.name)} <span class="small">g${p.group}</span></span>`).join("");
+  }
+  function ruleTags(S){
+    const t = [`k=${S.exp}`, S.lag === 99 ? "no count" : S.lag ? `${S.lag}-day lag` : "live count", S.interop ? `interop ${Math.round(S.interop * 100)}%` : "walled gardens", S.cost ? `switch cost ${S.cost}` : "free switching", S.pledge ? `pledge ${S.pledgeThr}%` : ""].filter(Boolean);
+    return t.map(x => `<span class="tag">${x}</span>`).join("");
+  }
+  function renderPlay(){
+    const r = curRound(), day = state.day;
+    $("hostDay").textContent = day; $("hostDays").textContent = settings.days;
+    $("hostTurn").textContent = `Group ${turnGroup(day)} may act today`;
+    const intents = (r.intents && r.intents[day]) || {};
+    const eligible = Object.keys(players).filter(id => groupOf(id) === turnGroup(day) && !players[id].bot).length;
+    $("hostActed").textContent = `${Object.keys(intents).length} of ${eligible} students have decided`;
+    $("hostRuleTags").innerHTML = ruleTags(settings);
+    const pos = positionsAt(r, day - 1), nB = Object.values(pos).filter(x => x === "B").length, n = N();
+    $("hostShare").innerHTML = `<div class="b" style="width:${100 * nB / Math.max(n, 1)}%">${nB ? `${nB} on B (${pct(nB / n)})` : ""}</div><div class="a">${n - nB} on A</div>`;
+    const y = r.days && r.days[day - 1];
+    if (y){
+      $("hostScoreA").textContent = f1(y.scoreA); $("hostScoreB").textContent = f1(y.scoreB);
+      const mv = Object.entries(y.movers || {});
+      $("hostMovers").innerHTML = mv.length ? mv.map(([id, to]) => `<span class="m to${to} ${y.score[id] < 2 ? "zero" : ""}">${esc(players[id] ? players[id].name : id)} → ${to}<span class="sc">${f1(y.score[id])} pts</span></span>`).join("") : `<span class="small">Nobody moved yesterday.</span>`;
+      document.querySelector("#hostPlayCard h3").textContent = `Moved on day ${day - 1}`;
+    } else { $("hostMovers").innerHTML = `<span class="small">Day 1 is open.</span>`; $("hostScoreA").textContent = "—"; $("hostScoreB").textContent = "—"; }
+    $("hostChart").innerHTML = chart(r, day - 1, settings);
+  }
+
+  /* line chart: share on B (bar) and score per person on A / B by day */
+  function chart(r, upto, S){
+    const W = 900, H = 260, L = 50, R = 20, T = 16, B = 34, days = S.days;
+    const x = d => L + (W - L - R) * (d - 0.5) / days;
+    const ymax = Math.max(24, PAY.B(1, S.exp)) + 1;
+    const y = v => T + (H - T - B) * (1 - v / ymax);
+    let g = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Scores by day">`;
+    [0, 6, 12, 18, 24].filter(v => v <= ymax).forEach(v => { g += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="#EEEBE2"/><text x="${L - 6}" y="${y(v) + 4}" font-size="11" text-anchor="end" fill="#5A6A79" font-family="IBM Plex Mono">${v}</text>`; });
+    for (let d = 1; d <= days; d++){
+      const dd = r.days && r.days[d];
+      if (dd && d <= upto){ const h = (H - T - B) * dd.nB / Math.max(dd.N, 1); g += `<rect x="${x(d) - 14}" y="${H - B - h}" width="28" height="${h}" fill="#E4F1F0" stroke="#5EA8A7"/>`; }
+      g += `<text x="${x(d)}" y="${H - B + 16}" font-size="11" text-anchor="middle" fill="#5A6A79" font-family="IBM Plex Mono">d${d}</text>`;
+      g += `<text x="${x(d)}" y="${H - B + 29}" font-size="9" text-anchor="middle" fill="#B6B0A2" font-family="IBM Plex Mono">g${turnGroup(d)}</text>`;
+    }
+    const pts = k => { const a = []; for (let d = 1; d <= upto; d++){ const dd = r.days && r.days[d]; if (dd) a.push(`${x(d)},${y(dd[k])}`); } return a; };
+    const pa = pts("scoreA"), pb = pts("scoreB");
+    if (pa.length) g += `<polyline points="${pa.join(" ")}" fill="none" stroke="#8E9AA8" stroke-width="3"/>`;
+    if (pb.length) g += `<polyline points="${pb.join(" ")}" fill="none" stroke="#3F7E7D" stroke-width="3"/>`;
+    pa.forEach(p => { const [cx, cy] = p.split(","); g += `<circle cx="${cx}" cy="${cy}" r="4" fill="#8E9AA8"/>`; });
+    pb.forEach(p => { const [cx, cy] = p.split(","); g += `<circle cx="${cx}" cy="${cy}" r="4" fill="#3F7E7D"/>`; });
+    g += `<text x="${W - R}" y="${T + 2}" font-size="11" text-anchor="end" fill="#5A6A79" font-family="Inter">bars: share on B · <tspan fill="#8E9AA8" font-weight="700">A</tspan> and <tspan fill="#3F7E7D" font-weight="700">B</tspan> lines: points per person that day</text></svg>`;
+    return g;
+  }
+
+  function renderResults(){
+    const rs = Object.keys(rounds).map(Number).sort((a, b) => a - b);
+    $("roundTabs").innerHTML = rs.map(k => `<button class="${k === resRound ? "sel" : ""}" onclick="App.tab(${k})">Round ${k}</button>`).join("");
+    const r = rounds[resRound] || {}, S = { ...DEFAULTS, ...(r.settings || settings) }, last = r.lastDay || 0;
+    const fin = positionsAt(r, last), nB = Object.values(fin).filter(x => x === "B").length, n = Object.keys(fin).length;
+    const tipDay = (() => { for (let d = 1; d <= last; d++){ const dd = r.days[d]; if (dd && dd.scoreB > dd.scoreA) return d; } return null; })();
+    const allA = last * PAY.A(1, S.exp), allB = last * PAY.B(1, S.exp);
+    const totals = r.totals || {}; const avg = Object.values(totals).reduce((s, v) => s + v, 0) / Math.max(Object.keys(totals).length, 1);
+    $("resTitle").textContent = tipDay ? `B took over on day ${tipDay}` : nB ? `B never caught up (${pct(nB / n)} there at the end)` : "Nobody ever left A";
+    $("resStats").innerHTML = [
+      ["Ended on B", `${nB} of ${n}`, pct(nB / n)],
+      ["Average score", f1(avg), `vs. ${f1(allA)} if everyone had stayed on A · ${f1(allB)} if everyone had moved on day 1`],
+      ["First to B", (() => { const st = Object.entries(r.start || {}).filter(([, p]) => p === "B"); if (st.length) return `${st.length} pledgers together on day 1 (${f1(r.days && r.days[1] ? r.days[1].score[st[0][0]] : 0)} pts each that day)`; for (let d = 1; d <= last; d++){ const dd = r.days[d]; const m = Object.entries(dd.movers || {}).filter(([, t]) => t === "B"); if (m.length) return m.map(([id]) => esc(players[id] ? players[id].name : id)).join(", ") + ` (day ${d}, ${f1(dd.score[m[0][0]])} pts that day)`; } return "nobody"; })(), ""],
+    ].map(([k, v, d]) => `<div class="card" style="margin-top:0;padding:14px 16px"><div class="eyebrow">${k}</div><div style="font-family:var(--font-display);font-size:22px;color:var(--navy)">${v}</div><div class="small">${d}</div></div>`).join("");
+    $("resChart").innerHTML = chart(r, last, S);
+    // who moved when
+    const rows = Object.keys(players).map(id => {
+      const mv = []; for (let d = 1; d <= last; d++){ const dd = r.days[d]; if (dd && dd.movers && dd.movers[id]) mv.push(`d${d}→${dd.movers[id]}`); }
+      const firstB = (() => { for (let d = 1; d <= last; d++){ const dd = r.days[d]; if (dd && dd.movers && dd.movers[id] === "B") return d; } return r.start && r.start[id] === "B" ? 0 : null; })();
+      return { id, name: players[id].name, g: players[id].group, mv: mv.join(", ") || (r.start && r.start[id] === "B" ? "pledged → B on day 1" : "never moved"), firstB, tot: totals[id] || 0 };
+    }).sort((a, b) => b.tot - a.tot);
+    $("resTable").innerHTML = `<tr><th>#</th><th>Player</th><th>Group</th><th>Moves</th><th>First on B</th><th>Total</th></tr>` + rows.map((x, i) => `<tr><td class="num">${i + 1}</td><td>${esc(x.name)}</td><td>g${x.g}</td><td>${x.mv}</td><td class="num">${x.firstB == null ? "—" : x.firstB === 0 ? "pledge" : "day " + x.firstB}</td><td class="num">${f1(x.tot)}</td></tr>`).join("");
+    const early = rows.filter(x => x.firstB != null && x.firstB <= (tipDay || 99) - 1);
+    const late = rows.filter(x => x.firstB != null && tipDay && x.firstB >= tipDay);
+    const tips = [];
+    if (!tipDay) tips.push(`<li>B was worth <b>${f1(PAY.B(1, S.exp))}</b> a day with everyone on it and A only <b>${f1(PAY.A(1, S.exp))}</b>, yet the class stayed. Ask: was staying a mistake? Each person who stayed was right <i>given what everyone else did</i>. That's excess inertia — a bad equilibrium, not bad decisions.</li>`);
+    if (tipDay){ tips.push(`<li>The tip happened on day ${tipDay}. ${early.length ? `The ${early.length} people who moved before it averaged <b>${f1(early.reduce((s, x) => s + x.tot, 0) / early.length)}</b>; the ${late.length} who moved at or after it averaged <b>${late.length ? f1(late.reduce((s, x) => s + x.tot, 0) / late.length) : "—"}</b>.` : ""} Who paid for the tip, and who cashed in? Why would anyone go first?</li>`); }
+    tips.push(`<li>Only half the class could act each day. What's the real-world version — and why does it stop a network from flipping overnight even when the better option is obvious?</li>`);
+    tips.push(`<li>What would have let this class move together? A pledge (Kickstarter, a group chat deciding at once), a big anchor user moving first, or interoperability so that early movers aren't alone. Which of those is a policy, and which is a business strategy?</li>`);
+    $("resDiscuss").innerHTML = tips.join("");
+  }
+  function tab(k){ resRound = k; renderResults(); }
+
+  document.addEventListener("DOMContentLoaded", () => { boot(); $("joinCode")?.addEventListener("input", e => e.target.value = e.target.value.toUpperCase()); });
+  return { showJoin, showHost, join, createGame, resumeHost, startRound, closePledge, closeDay, endRound, showSettings, saveSettings, seedBots, choose, pledge, tab };
+})();
+</script>
+</body>
+</html>
