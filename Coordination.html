@@ -121,6 +121,8 @@ ul.disc li{margin-bottom:8px}
 .rounds-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
 .rounds-tabs button{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600;color:var(--ink-soft)}
 .rounds-tabs button.sel{background:var(--navy);color:#fff;border-color:var(--navy)}
+.pill{display:inline-block;padding:1px 8px;border-radius:999px;font-size:12px;font-weight:700;color:#fff}
+.pill.A{background:var(--A)} .pill.B{background:var(--B)}
 </style>
 </head>
 <body>
@@ -449,14 +451,63 @@ const App = (() => {
       renderPayChart(me, shownDay >= 0 && settings.lag !== 99 ? Object.values(positionsAt(r, shownDay)).filter(x => x === "B").length : null);
       return;
     }
-    if (phase === "done"){
-      const tot = (r.totals && r.totals[uid]) || 0;
-      const ranks = Object.entries(r.totals || {}).sort((a, b) => b[1] - a[1]).map(x => x[0]);
-      const moves = [];
-      for (let d = 1; d <= (r.lastDay || 0); d++){ const dd = r.days && r.days[d]; if (dd && dd.movers && dd.movers[uid]) moves.push(`day ${d} → ${dd.movers[uid]}`); }
-      $("doneTitle").textContent = `You scored ${f1(tot)} — rank ${ranks.indexOf(uid) + 1} of ${ranks.length}.`;
-      $("doneBody").innerHTML = `<p class="sub">${moves.length ? "Your moves: " + moves.join(", ") + "." : "You never moved."} Look at the screen: who paid for the tip, and who cashed in?</p>`;
+    if (phase === "done"){ renderDone(r); }
+  }
+  /* ---------- student round-over screen: your path vs. the best you could have done ---------- */
+  function renderDone(r){
+    const S = { ...DEFAULTS, ...(r.settings || settings) }, last = r.lastDay || 0, n = N(), others = Math.max(n - 1, 1);
+    const tot = (r.totals && r.totals[uid]) || 0;
+    const ranks = Object.entries(r.totals || {}).sort((a, b) => b[1] - a[1]).map(x => x[0]);
+    const rank = ranks.includes(uid) ? `${ordinal(ranks.indexOf(uid) + 1)} of ${ranks.length}` : "—";
+    // per-day: my platform, my points, the better platform given what the OTHERS did, its points
+    const rows = []; let cumMe = 0, cumBest = 0;
+    const cumAll = {}; Object.keys(players).forEach(id => cumAll[id] = 0);
+    const leaders = [];
+    for (let d = 1; d <= last; d++){
+      const dd = r.days && r.days[d]; if (!dd) continue;
+      const me = (dd.pos && dd.pos[uid]) || "A";
+      const othersB = (dd.nB || 0) - (me === "B" ? 1 : 0);
+      const pA = payFor("A", othersB, others, S), pB = payFor("B", othersB, others, S);
+      const best = pB > pA ? "B" : "A", bestPay = Math.max(pA, pB);
+      const mine = dd.score && dd.score[uid] != null ? dd.score[uid] : (me === "B" ? pB : pA);
+      cumMe += mine; cumBest += bestPay;
+      const myTurn = groupOf(uid) === turnGroup(d);
+      rows.push({ d, me, mine, best, bestPay, cumMe, cumBest, myTurn, moved: dd.movers && dd.movers[uid] });
+      Object.keys(cumAll).forEach(id => { cumAll[id] += (dd.score && dd.score[id]) || 0; });
+      const top = Math.max(...Object.values(cumAll));
+      leaders.push({ d, top, who: Object.keys(cumAll).filter(id => Math.abs(cumAll[id] - top) < 0.05).map(id => players[id] ? players[id].name : id) });
     }
+    // chart: cumulative points, mine vs. best-possible
+    const W = 640, H = 240, L = 44, R = 16, T = 18, B = 34;
+    const ymax = Math.max(cumBest, cumMe, 1) * 1.05;
+    const x = d => L + (W - L - R) * (d - 0.5) / Math.max(last, 1), y = v => T + (H - T - B) * (1 - v / ymax);
+    let g = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Your cumulative points versus the best possible">`;
+    const step = ymax > 300 ? 100 : ymax > 120 ? 50 : 20;
+    for (let v = 0; v <= ymax; v += step) g += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="#EEEBE2"/><text x="${L - 6}" y="${y(v) + 4}" font-size="11" text-anchor="end" fill="#5A6A79" font-family="IBM Plex Mono">${v}</text>`;
+    rows.forEach(rw => { g += `<text x="${x(rw.d)}" y="${H - B + 16}" font-size="11" text-anchor="middle" fill="#5A6A79" font-family="IBM Plex Mono">d${rw.d}</text>`; if (rw.moved) g += `<text x="${x(rw.d)}" y="${H - B + 29}" font-size="9" text-anchor="middle" fill="#C0574F" font-family="Inter">→${rw.moved}</text>`; });
+    const pb = rows.map(rw => `${x(rw.d)},${y(rw.cumBest)}`), pm = rows.map(rw => `${x(rw.d)},${y(rw.cumMe)}`);
+    if (pb.length) g += `<polyline points="${pb.join(" ")}" fill="none" stroke="#F1C40F" stroke-width="3" stroke-dasharray="6 4"/>`;
+    if (pm.length) g += `<polyline points="${pm.join(" ")}" fill="none" stroke="#2C3E50" stroke-width="3"/>`;
+    rows.forEach(rw => { g += `<circle cx="${x(rw.d)}" cy="${y(rw.cumMe)}" r="4" fill="${rw.me === "B" ? "#3F7E7D" : "#8E9AA8"}"/>`; });
+    g += `<text x="${W - R}" y="${T + 2}" font-size="11" text-anchor="end" fill="#5A6A79" font-family="Inter"><tspan fill="#2C3E50" font-weight="700">you</tspan> · <tspan fill="#B8860B" font-weight="700">best possible</tspan> (right platform every day, given what the others did) · dots: grey = on A, teal = on B</text></svg>`;
+    const gap = cumBest - cumMe;
+    $("doneTitle").textContent = `You scored ${f1(tot)} — ${rank}.`;
+    $("doneBody").innerHTML = `
+      <p class="sub">The best you could have done, given what the others actually did, was <b>${f1(cumBest)}</b>. You left <b>${f1(gap)}</b> on the table${gap < 1 ? " — almost nothing." : "."}</p>
+      <div class="chartbox" style="margin-top:12px">${g}</div>
+      <h3 style="margin-top:18px">Day by day: what you did vs. the best choice</h3>
+      <p class="small">"Best" means the platform that paid more that day given where the others were. On days marked —, it wasn't your turn, so you couldn't have changed anything.</p>
+      <div style="overflow-x:auto"><table class="res">
+        <tr><th>Day</th><th>Your turn?</th><th>You were on</th><th>You earned</th><th>Best choice</th><th>It paid</th><th>Missed</th></tr>
+        ${rows.map(rw => `<tr class="${rw.best !== rw.me ? "me" : ""}"><td class="num">${rw.d}</td><td>${rw.myTurn ? "yes" : "—"}</td><td><span class="pill ${rw.me}">${rw.me}</span>${rw.moved ? ` <span class="small">moved</span>` : ""}</td><td class="num">${f1(rw.mine)}</td><td><span class="pill ${rw.best}">${rw.best}</span></td><td class="num">${f1(rw.bestPay)}</td><td class="num">${rw.bestPay - rw.mine > 0.05 ? f1(rw.bestPay - rw.mine) : "—"}</td></tr>`).join("")}
+      </table></div>
+      <h3 style="margin-top:18px">Who was in front</h3>
+      <p class="small">Highest cumulative score after each day (ties share the lead).</p>
+      <div style="overflow-x:auto"><table class="res">
+        <tr><th>After day</th><th>Leading score</th><th>In front</th></tr>
+        ${leaders.map(l => `<tr class="${l.who.includes(myName) ? "me" : ""}"><td class="num">${l.d}</td><td class="num">${f1(l.top)}</td><td>${l.who.map(esc).join(", ")}</td></tr>`).join("")}
+      </table></div>
+      <p class="sub" style="margin-top:12px">Now look at the screen: who paid for the tip, and who cashed in?</p>`;
   }
   const ordinal = k => k + (k % 100 >= 11 && k % 100 <= 13 ? "th" : ["th", "st", "nd", "rd"][k % 10] || "th");
   /* Payoff curves: x = number of OTHER people on B (everyone but you), two lines (what a
