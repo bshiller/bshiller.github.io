@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#2C3E50">
+<title>Built to Last? — a phone-maker game</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2C3E50; --navy-deep:#22303F; --gold:#F1C40F; --gold-soft:#F9E79F; --teal:#5EA8A7; --teal-deep:#3F7E7D;
+  --paper:#F5F4EF; --card:#FFFFFF; --ink:#1E2A36; --ink-soft:#5A6A79; --line:#DDD9CE; --red:#C0574F; --red-soft:#F6E0DE; --green:#3E8E5A; --green-soft:#E1F0E6;
+  --radius:12px;
+  --font-display:'Space Grotesk',sans-serif; --font-body:'Inter',system-ui,sans-serif; --font-mono:'IBM Plex Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--paper);color:var(--ink);font-family:var(--font-body);font-size:16px;line-height:1.5;min-height:100vh}
+button{font-family:var(--font-body);cursor:pointer}
+input,select{font-family:var(--font-body)}
+.hidden{display:none!important}
+.shell{max-width:1080px;margin:0 auto;padding:20px 16px 64px}
+.shell.narrow{max-width:520px}
+.shell.mid{max-width:720px}
+header.top{background:var(--navy);color:#fff;padding:12px 0;position:sticky;top:0;z-index:20}
+header.top .shell{padding:0 16px;display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:4px}
+.brand{font-family:var(--font-display);font-weight:700;font-size:20px}
+.brand .accent{color:var(--gold)}
+.session-tag{font-family:var(--font-mono);font-size:13px;color:#CBD6E0}
+.session-tag b{color:var(--gold);letter-spacing:2px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px;margin-top:18px}
+.card.tint{background:#EEF6F6;border-color:#CDE3E3}
+.card.warn{background:var(--red-soft);border-color:#E6BDB9}
+.card.good{background:var(--green-soft);border-color:#BFDCC8}
+h1{font-family:var(--font-display);font-size:clamp(26px,5vw,40px);line-height:1.12;color:var(--navy)}
+h2{font-family:var(--font-display);font-size:21px;color:var(--navy);margin-bottom:10px}
+h3{font-family:var(--font-display);font-size:16px;color:var(--navy)}
+p{margin:6px 0}
+p.sub{color:var(--ink-soft);margin-top:8px;max-width:64ch}
+.eyebrow{font-family:var(--font-mono);font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--teal-deep);margin-bottom:6px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;border-radius:10px;padding:13px 22px;font-size:16px;font-weight:600;transition:transform .06s ease,box-shadow .12s ease}
+.btn:active{transform:translateY(1px)}
+.btn:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.btn-primary{background:var(--navy);color:#fff}
+.btn-gold{background:var(--gold);color:var(--navy-deep)}
+.btn-teal{background:var(--teal);color:#fff}
+.btn-ghost{background:transparent;color:var(--navy);border:1.5px solid var(--navy)}
+.btn-block{width:100%}
+.btn[disabled]{opacity:.45;cursor:not-allowed;box-shadow:none}
+.btn-sm{padding:8px 14px;font-size:14px;border-radius:8px}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+label.f{display:block;font-size:13px;font-weight:600;color:var(--ink-soft);margin:14px 0 5px;text-transform:uppercase;letter-spacing:.6px}
+input.f{width:100%;padding:12px 14px;font-size:17px;border:1.5px solid var(--line);border-radius:10px;background:#fff;color:var(--ink)}
+input.f:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(94,168,167,.18)}
+.f-err{color:var(--red);font-size:13px;margin-top:6px;min-height:18px}
+.code-input{font-family:var(--font-mono);letter-spacing:8px;text-transform:uppercase;text-align:center;font-size:24px!important}
+.land-hero{padding:36px 0 8px}
+.role-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:22px}
+@media(max-width:720px){.role-grid{grid-template-columns:1fr}}
+.role-card{background:var(--card);border:1.5px solid var(--line);border-radius:var(--radius);padding:22px;text-align:left;transition:border-color .12s,box-shadow .12s}
+.role-card:hover{border-color:var(--teal);box-shadow:0 6px 20px rgba(44,62,80,.10)}
+.role-card h3{font-size:19px;margin-bottom:6px}
+.role-card p{font-size:14px;color:var(--ink-soft)}
+.role-card .go{margin-top:14px;font-weight:700;color:var(--teal-deep);font-size:14px}
+.pulse-dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--teal);margin-right:8px;animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.35}50%{opacity:1}}
+@media(prefers-reduced-motion:reduce){.pulse-dot{animation:none}}
+.big-count{font-family:var(--font-display);font-size:56px;color:var(--navy);line-height:1}
+.big-count small{font-size:20px;color:var(--ink-soft);font-family:var(--font-body)}
+.join-code{font-family:var(--font-mono);font-size:64px;letter-spacing:14px;color:var(--navy);font-weight:600;line-height:1;margin:6px 0 2px}
+.roster{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.roster .p{font-size:13px;background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:4px 10px}
+.roster .p.in{border-color:var(--teal);background:#E8F4F4}
+.host-bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:16px}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--navy);color:#fff;padding:10px 18px;border-radius:10px;font-weight:600;z-index:50;max-width:90vw}
+.mono{font-family:var(--font-mono)}
+.money{font-family:var(--font-mono);font-weight:600}
+.pos{color:var(--green)} .neg{color:var(--red)}
+/* ---------- round header ---------- */
+.rh{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.rh .big{font-family:var(--font-display);font-size:30px;color:var(--navy);line-height:1}
+.rh .big small{font-size:15px;color:var(--ink-soft);font-family:var(--font-body);font-weight:500}
+.prog{font-family:var(--font-mono);font-size:13px;color:var(--ink-soft)}
+.score-strip{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px}
+.score-strip .s{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:8px 12px;min-width:120px}
+.score-strip .k{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--ink-soft)}
+.score-strip .v{font-family:var(--font-mono);font-weight:600;font-size:18px;color:var(--navy)}
+/* ---------- design table ---------- */
+table.dt{width:100%;border-collapse:collapse;margin-top:10px;font-size:14px}
+table.dt th,table.dt td{padding:8px 6px;text-align:center;border-bottom:1px solid var(--line)}
+table.dt th{font-size:12px;text-transform:uppercase;letter-spacing:.6px;color:var(--ink-soft);font-weight:600}
+table.dt td:first-child,table.dt th:first-child{text-align:left}
+table.dt tr.pick td{background:var(--gold-soft)}
+table.dt tr.best td{font-weight:700}
+table.dt .tag{display:inline-block;font-size:11px;padding:2px 7px;border-radius:999px;background:var(--navy);color:#fff;margin-left:6px;vertical-align:middle}
+table.dt .tag.you{background:var(--gold);color:var(--navy-deep)}
+.dgrid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:12px}
+.dgrid button{border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:12px 4px;font-size:15px;font-weight:600;color:var(--navy)}
+.dgrid button.sel{border-color:var(--navy);background:var(--navy);color:#fff}
+.dgrid button small{display:block;font-size:11px;font-weight:500;color:inherit;opacity:.8}
+@media(max-width:480px){.dgrid{grid-template-columns:repeat(3,1fr)}}
+/* ---------- option cards (yearly choice) ---------- */
+.opts{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:14px}
+.opts.two{grid-template-columns:1fr 1fr}
+@media(max-width:720px){.opts,.opts.two{grid-template-columns:1fr}}
+.opt{background:#fff;border:1.5px solid var(--line);border-radius:var(--radius);padding:16px;text-align:left;display:flex;flex-direction:column;gap:6px;transition:border-color .12s,box-shadow .12s}
+.opt:hover{border-color:var(--teal);box-shadow:0 6px 20px rgba(44,62,80,.10)}
+.opt h3{font-size:17px}
+.opt .desc{font-size:13px;color:var(--ink-soft)}
+.opt .math{font-family:var(--font-mono);font-size:12.5px;color:var(--ink);background:var(--paper);border-radius:8px;padding:8px 10px;line-height:1.55}
+.opt .profit{font-family:var(--font-display);font-size:22px;color:var(--navy)}
+.opt .risk{font-size:12.5px;color:var(--red);font-weight:600}
+.opt[disabled]{opacity:.5;cursor:not-allowed}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--paper);border:1px solid var(--line);color:var(--ink-soft)}
+.pill.S{background:var(--green-soft);color:var(--green);border-color:#BFDCC8}
+.pill.N{background:#FFF4D6;color:#8A6D00;border-color:#EAD48A}
+.pill.T{background:var(--red-soft);color:var(--red);border-color:#E6BDB9}
+.log{margin-top:12px;font-size:13.5px}
+.log .row{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px dashed var(--line)}
+.log .row:last-child{border-bottom:none}
+.pledge{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.pledge button{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:8px 14px;font-weight:600;color:var(--navy);font-size:14px}
+.pledge button.sel{background:var(--teal);border-color:var(--teal);color:#fff}
+.dev-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:14px}
+@media(max-width:720px){.dev-grid{grid-template-columns:1fr}}
+.callout-line{background:var(--navy);color:#fff;border-radius:10px;padding:12px 16px;margin-top:14px;font-weight:600}
+.callout-line.gold{background:var(--gold);color:var(--navy-deep)}
+.kv{display:grid;grid-template-columns:1fr auto;gap:6px 14px;font-size:14px;margin-top:8px}
+.kv .k{color:var(--ink-soft)} .kv .v{font-family:var(--font-mono);font-weight:600;text-align:right}
+.kv .tot{border-top:2px solid var(--navy);padding-top:6px;font-weight:700}
+/* ---------- host results ---------- */
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.tabs button{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:7px 14px;font-weight:600;color:var(--navy);font-size:13.5px}
+.tabs button.sel{background:var(--navy);border-color:var(--navy);color:#fff}
+table.res{width:100%;border-collapse:collapse;font-size:14px;margin-top:10px}
+table.res th,table.res td{padding:7px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
+table.res th{font-size:12px;text-transform:uppercase;letter-spacing:.6px;color:var(--ink-soft)}
+table.res td.num,table.res th.num{text-align:right;font-family:var(--font-mono)}
+table.res tr.top td{background:var(--gold-soft)}
+.hist{margin-top:10px}
+.hist .hrow{display:grid;grid-template-columns:110px 1fr 60px;gap:10px;align-items:center;font-size:14px;margin:5px 0}
+.hist .bar{height:18px;background:var(--paper);border-radius:6px;overflow:hidden;border:1px solid var(--line)}
+.hist .bar span{display:block;height:100%;background:var(--teal)}
+.hist .bar span.gold{background:var(--gold)} .hist .bar span.red{background:var(--red)} .hist .bar span.green{background:var(--green)} .hist .bar span.navy{background:var(--navy)}
+.hist .n{font-family:var(--font-mono);font-size:13px;text-align:right}
+.stack{display:flex;height:22px;border-radius:6px;overflow:hidden;border:1px solid var(--line)}
+.stack span{display:block;height:100%}
+.stack .S{background:var(--green)} .stack .N{background:#E1B93A} .stack .T{background:var(--red)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:720px){.grid2{grid-template-columns:1fr}}
+.callouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-top:10px}
+.callout{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.callout .k{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--ink-soft)}
+.callout .v{font-family:var(--font-display);font-size:22px;color:var(--navy)}
+.callout .d{font-size:12.5px;color:var(--ink-soft)}
+ul.discuss{padding-left:20px;margin-top:8px;font-size:14.5px}
+ul.discuss li{margin:6px 0}
+.slider{display:grid;grid-template-columns:170px 1fr 70px;gap:10px;align-items:center;margin:8px 0;font-size:14px}
+.slider input{width:100%}
+.slider .v{font-family:var(--font-mono);text-align:right}
+.small{font-size:13px;color:var(--ink-soft)}
+</style>
+</head>
+<body>
+<header class="top"><div class="shell">
+  <div class="brand">BUILT TO LAST? <span class="accent">/ phone maker</span></div>
+  <div class="session-tag" id="topTag">FYS 7b · classroom game</div>
+</div></header>
+
+<!-- ============ SETUP (shown until Firebase config pasted) ============ -->
+<div id="viewSetup" class="shell mid hidden">
+  <div class="card">
+    <div class="eyebrow">One-time setup</div>
+    <h2>Connect a Firebase database</h2>
+    <p class="sub">Solo play works without it. Sessions with a code use the same free Firebase Realtime Database as the other classroom games. Paste the project's config into <code>FIREBASE_CONFIG</code> near the top of the script and reload.</p>
+    <div class="btn-row"><button class="btn btn-ghost" onclick="App.showSolo()">Play solo anyway</button></div>
+  </div>
+</div>
+
+<!-- ============ LANDING ============ -->
+<div id="viewLanding" class="shell hidden">
+  <div class="land-hero">
+    <div class="eyebrow">A classroom game in four rounds</div>
+    <h1>You run a phone company. Do you build it to last?</h1>
+    <p class="sub">Design a phone, then decide each year what to do with the phones already sold. First your customers trust you. Then they don't. Then you try to buy their trust back. Everyone plays their own game; the class compares scores.</p>
+  </div>
+  <div class="role-grid">
+    <button class="role-card" onclick="App.showJoin()">
+      <h3>Join the class session</h3>
+      <p>Enter the 4-letter code on the screen. Your name goes on the scoreboard.</p>
+      <div class="go">Join →</div>
+    </button>
+    <button class="role-card" onclick="App.showSolo()">
+      <h3>Play on your own</h3>
+      <p>No code needed. Same game, no scoreboard.</p>
+      <div class="go">Play solo →</div>
+    </button>
+    <button class="role-card" onclick="App.showHost()">
+      <h3>Host a session</h3>
+      <p>Create a code, open the rounds one at a time, and show the class's choices and scores.</p>
+      <div class="go">Host a session →</div>
+    </button>
+  </div>
+</div>
+
+<!-- ============ JOIN ============ -->
+<div id="viewJoin" class="shell narrow hidden">
+  <div class="card">
+    <div class="eyebrow">Join</div>
+    <h2>Enter the session code</h2>
+    <label class="f" for="joinCode">Code</label>
+    <input class="f code-input" id="joinCode" maxlength="4" autocomplete="off" autocapitalize="characters" inputmode="latin" placeholder="····">
+    <label class="f" for="joinName">Your name (goes on the scoreboard)</label>
+    <input class="f" id="joinName" maxlength="24" autocomplete="off" placeholder="First name and last initial">
+    <div class="f-err" id="joinErr"></div>
+    <button class="btn btn-primary btn-block" onclick="App.join()">Join</button>
+    <div class="btn-row"><button class="btn btn-ghost btn-sm" onclick="App.showLanding()">Back</button></div>
+  </div>
+</div>
+
+<!-- ============ SOLO ============ -->
+<div id="viewSolo" class="shell narrow hidden">
+  <div class="card">
+    <div class="eyebrow">Solo</div>
+    <h2>Name your company</h2>
+    <label class="f" for="soloName">Your name or company name</label>
+    <input class="f" id="soloName" maxlength="24" autocomplete="off" placeholder="e.g. Pear Inc.">
+    <div class="f-err" id="soloErr"></div>
+    <button class="btn btn-primary btn-block" onclick="App.startSolo()">Start</button>
+    <div class="btn-row"><button class="btn btn-ghost btn-sm" onclick="App.showLanding()">Back</button></div>
+  </div>
+</div>
+
+<!-- ============ WAIT ============ -->
+<div id="viewWait" class="shell narrow hidden">
+  <div class="card">
+    <div class="eyebrow" id="waitEyebrow">You're in</div>
+    <h2 id="waitTitle">Waiting for the host to open Round 1…</h2>
+    <p class="sub"><span class="pulse-dot"></span>Keep this page open.</p>
+    <div id="waitScores"></div>
+  </div>
+</div>
+
+<!-- ============ ROUND 1: DESIGN ============ -->
+<div id="viewR1" class="shell mid hidden">
+  <div class="card">
+    <div class="rh"><div class="big">Round 1 <small>design the phone</small></div><div class="prog" id="r1Prog">step 1 of 3</div></div>
+    <div id="r1Intro" class="sub"></div>
+    <table class="dt" id="r1Table"></table>
+    <div class="eyebrow" style="margin-top:14px">Build it to last…</div>
+    <div class="dgrid" id="r1Pick"></div>
+    <div class="f-err" id="r1Err"></div>
+    <button class="btn btn-primary btn-block" id="r1Btn" onclick="App.r1Submit()">Lock in my design</button>
+  </div>
+  <div class="card tint hidden" id="r1Reveal">
+    <div class="eyebrow">The reveal</div>
+    <h2 id="r1RevealTitle"></h2>
+    <table class="dt" id="r1RevealTable"></table>
+    <p id="r1RevealText" style="margin-top:10px"></p>
+    <div class="btn-row"><button class="btn btn-gold" id="r1Next" onclick="App.r1Next()">Next →</button></div>
+  </div>
+</div>
+
+<!-- ============ ROUND 2: AFTER THE SALE (naive buyers) ============ -->
+<div id="viewR2" class="shell mid hidden">
+  <div class="card" id="r2IntroCard">
+    <div class="rh"><div class="big">Round 2 <small>after the sale</small></div></div>
+    <p class="sub" style="margin-top:10px">You built the 4-year phone. Your <b>100 customers</b> each own one. They paid <b>$620</b> and they trust you: they assume you'll keep it running.</p>
+    <p class="sub">Each year you decide what to do with the software on the phones already out there. When a customer's phone gives out, they buy a new one from you at $620. It costs $340 to build, so each sale puts <b>$320</b> in your pocket. Nobody switches to a rival.</p>
+    <p class="sub">If phones last 4 years, 25 customers replace theirs each year. If they last 2, it's 50. <b>Five years. Highest total wins.</b></p>
+    <div class="btn-row"><button class="btn btn-primary" onclick="App.r2Start()">Start year 1</button></div>
+  </div>
+  <div class="card hidden" id="r2Play">
+    <div class="rh"><div class="big">Year <span id="r2Year">1</span> <small>of 5</small></div><div class="prog" id="r2Prog"></div></div>
+    <div class="score-strip">
+      <div class="s"><div class="k">Total so far</div><div class="v" id="r2Total">$0</div></div>
+      <div class="s"><div class="k">Throttles so far</div><div class="v" id="r2Thr">0</div></div>
+      <div class="s"><div class="k">Risk if you throttle now</div><div class="v" id="r2Risk">15%</div></div>
+    </div>
+    <p class="sub" style="margin-top:12px">What do you do with the phones your customers already own this year?</p>
+    <div class="opts" id="r2Opts"></div>
+  </div>
+  <div class="card hidden" id="r2Result">
+    <div class="eyebrow">Year <span id="r2ResYear"></span> result</div>
+    <h2 id="r2ResTitle"></h2>
+    <p id="r2ResText"></p>
+    <div class="log" id="r2Log"></div>
+    <div class="btn-row"><button class="btn btn-gold" id="r2NextBtn" onclick="App.r2Next()">Next year →</button></div>
+  </div>
+  <div class="card good hidden" id="r2Done">
+    <div class="eyebrow">Round 2 complete</div>
+    <h2>Five-year total: <span class="money" id="r2Final"></span></h2>
+    <p id="r2DoneText"></p>
+    <div class="log" id="r2DoneLog"></div>
+    <div class="btn-row"><button class="btn btn-primary" onclick="App.afterRound(2)">Continue →</button></div>
+  </div>
+</div>
+
+<!-- ============ ROUND 3: WISER BUYERS ============ -->
+<div id="viewR3" class="shell mid hidden">
+  <div class="card" id="r3Design">
+    <div class="rh"><div class="big">Round 3 <small>new model, wiser buyers</small></div></div>
+    <p class="sub" style="margin-top:10px">Your customers have been through Round 2. They no longer take your word for it. When they price a phone they assume: <b>one year of real support</b> (the warranty), then a phone left on its own, which they value at <b>40 cents on the dollar</b>.</p>
+    <p class="sub">Design the new phone. You may also announce how many years of updates you promise. Below: what buyers will pay, what it costs to build, and how many you'd sell a year. <b>Profit isn't shown.</b></p>
+    <table class="dt" id="r3Table"></table>
+    <div class="eyebrow" style="margin-top:14px">Announce a support pledge (optional)</div>
+    <div class="pledge" id="r3Pledge"></div>
+    <div class="eyebrow" style="margin-top:14px">Build it to last…</div>
+    <div class="dgrid" id="r3Pick"></div>
+    <div class="f-err" id="r3Err"></div>
+    <button class="btn btn-primary btn-block" onclick="App.r3Submit()">Lock in my design</button>
+  </div>
+  <div class="card tint hidden" id="r3Reveal">
+    <div class="eyebrow">The reveal</div>
+    <h2 id="r3RevealTitle"></h2>
+    <p id="r3PledgeText"></p>
+    <table class="dt" id="r3RevealTable"></table>
+    <p id="r3RevealText" style="margin-top:10px"></p>
+    <div class="btn-row"><button class="btn btn-gold" onclick="App.r3StartYears()">Now sell them. Start year 1 →</button></div>
+  </div>
+  <div class="card hidden" id="r3Play">
+    <div class="rh"><div class="big">Year <span id="r3Year">1</span> <small>of 5</small></div><div class="prog" id="r3Prog"></div></div>
+    <div class="score-strip">
+      <div class="s"><div class="k">Total so far</div><div class="v" id="r3Total">$0</div></div>
+      <div class="s"><div class="k">Your phone</div><div class="v" id="r3Phone"></div></div>
+      <div class="s"><div class="k">Your pledge</div><div class="v" id="r3PledgeTag"></div></div>
+    </div>
+    <p class="sub" style="margin-top:12px">Regulators now watch for throttling, so that's off the table. Support the old phones, or leave them to rot?</p>
+    <div class="opts two" id="r3Opts"></div>
+  </div>
+  <div class="card hidden" id="r3Result">
+    <div class="eyebrow">Year <span id="r3ResYear"></span> result</div>
+    <h2 id="r3ResTitle"></h2>
+    <p id="r3ResText"></p>
+    <div class="btn-row"><button class="btn btn-gold" onclick="App.r3Next()">Next year →</button></div>
+  </div>
+  <div class="card good hidden" id="r3Done">
+    <div class="eyebrow">Round 3 complete</div>
+    <h2>Five-year total: <span class="money" id="r3Final"></span></h2>
+    <p id="r3DoneText"></p>
+    <div class="kv" id="r3Compare"></div>
+    <div class="btn-row"><button class="btn btn-primary" onclick="App.afterRound(3)">Continue →</button></div>
+  </div>
+</div>
+
+<!-- ============ ROUND 4: BUY CREDIBILITY ============ -->
+<div id="viewR4" class="shell mid hidden">
+  <div class="card" id="r4Device">
+    <div class="rh"><div class="big">Round 4 <small>buy credibility</small></div></div>
+    <p class="sub" style="margin-top:10px">Same wise buyers. This time you can pick a device that makes your support promise believable. Buyers pay full price for years they can count on.</p>
+    <div class="dev-grid" id="r4Devices"></div>
+  </div>
+  <div class="card hidden" id="r4Design">
+    <div class="eyebrow" id="r4DesignEyebrow">Design</div>
+    <h2 id="r4DesignTitle"></h2>
+    <p class="sub" id="r4DesignText"></p>
+    <div id="r4PenaltyWrap" class="hidden">
+      <div class="eyebrow" style="margin-top:14px">Penalty per phone, per year of support cut short</div>
+      <div class="pledge" id="r4Penalty"></div>
+    </div>
+    <table class="dt" id="r4Table"></table>
+    <div class="eyebrow" style="margin-top:14px">Build it to last…</div>
+    <div class="dgrid" id="r4Pick"></div>
+    <div class="f-err" id="r4Err"></div>
+    <button class="btn btn-primary btn-block" onclick="App.r4Submit()">Lock in my design</button>
+  </div>
+  <div class="card tint hidden" id="r4Reveal">
+    <div class="eyebrow">Buyers respond</div>
+    <h2 id="r4RevealTitle"></h2>
+    <p id="r4RevealText"></p>
+    <div class="btn-row"><button class="btn btn-gold" onclick="App.r4StartYears()">Start year 1 →</button></div>
+  </div>
+  <div class="card hidden" id="r4Play">
+    <div class="rh"><div class="big">Year <span id="r4Year">1</span> <small>of 5</small></div><div class="prog" id="r4Prog"></div></div>
+    <div class="score-strip">
+      <div class="s"><div class="k">Total so far</div><div class="v" id="r4Total">$0</div></div>
+      <div class="s"><div class="k">Your phone</div><div class="v" id="r4Phone"></div></div>
+      <div class="s"><div class="k">Device</div><div class="v" id="r4DevTag" style="font-size:14px"></div></div>
+    </div>
+    <p class="sub" style="margin-top:12px" id="r4PlayText"></p>
+    <div class="opts two" id="r4Opts"></div>
+  </div>
+  <div class="card hidden" id="r4Result">
+    <div class="eyebrow">Year <span id="r4ResYear"></span> result</div>
+    <h2 id="r4ResTitle"></h2>
+    <p id="r4ResText"></p>
+    <div class="btn-row"><button class="btn btn-gold" onclick="App.r4Next()">Next year →</button></div>
+  </div>
+  <div class="card good hidden" id="r4Done">
+    <div class="eyebrow">Round 4 complete</div>
+    <h2>Five-year total: <span class="money" id="r4Final"></span></h2>
+    <p id="r4DoneText"></p>
+    <div class="kv" id="r4Compare"></div>
+    <div class="btn-row"><button class="btn btn-primary" onclick="App.afterRound(4)">See my score →</button></div>
+  </div>
+</div>
+
+<!-- ============ DONE ============ -->
+<div id="viewDone" class="shell mid hidden">
+  <div class="card">
+    <div class="eyebrow">Your game</div>
+    <h2 id="doneTitle">Final score</h2>
+    <div class="kv" id="doneKv"></div>
+    <p class="sub" id="doneRank"></p>
+    <div class="callout-line gold" id="doneLine"></div>
+    <div class="btn-row" id="doneBtns"></div>
+  </div>
+</div>
+
+<!-- ============ HOST: CREATE ============ -->
+<div id="viewHostCreate" class="shell narrow hidden">
+  <div class="card">
+    <div class="eyebrow">Host</div>
+    <h2>Create a session</h2>
+    <p class="sub">Students join with a code, then you open the rounds one at a time. Everyone plays their own game; the host screen shows the class's choices and the scoreboard.</p>
+    <button class="btn btn-primary btn-block" style="margin-top:16px" onclick="App.createGame()">Create session</button>
+    <div class="btn-row"><button class="btn btn-ghost btn-sm" onclick="App.showLanding()">Back</button></div>
+  </div>
+</div>
+
+<!-- ============ HOST: RUN ============ -->
+<div id="viewHost" class="shell hidden">
+  <div class="card" id="hostLobbyCard">
+    <div class="grid2">
+      <div>
+        <div class="eyebrow">Students join with this code</div>
+        <div class="join-code" id="hostCode">····</div>
+        <p class="small" id="hostUrlHint"></p>
+      </div>
+      <div>
+        <div class="eyebrow">In the room</div>
+        <div class="big-count"><span id="hostCount">0</span> <small id="hostPhaseNote"></small></div>
+        <div class="roster" id="hostRoster"></div>
+      </div>
+    </div>
+    <div class="host-bar">
+      <button class="btn btn-gold" id="btnR1" onclick="App.setPhase('r1')">Open Round 1</button>
+      <button class="btn btn-gold" id="btnR2" onclick="App.setPhase('r2')">Open Round 2</button>
+      <button class="btn btn-gold" id="btnR3" onclick="App.setPhase('r3')">Open Round 3</button>
+      <button class="btn btn-gold" id="btnR4" onclick="App.setPhase('r4')">Open Round 4</button>
+      <button class="btn btn-teal" id="btnDone" onclick="App.setPhase('done')">Close &amp; show scoreboard</button>
+      <button class="btn btn-ghost btn-sm" onclick="App.seedDemo()">Seed 8 demo players</button>
+    </div>
+  </div>
+  <div class="card" id="hostResults">
+    <div class="rh"><h2 id="resTitle" style="margin:0">Class results</h2><div class="prog" id="resN"></div></div>
+    <div class="tabs" id="resTabs"></div>
+    <div id="resBody"></div>
+  </div>
+</div>
+
+<div id="toast" class="toast hidden"></div>
+
+<!-- Firebase compat SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
+/* =====================================================================
+   FIREBASE CONFIG — same project as Labor.html / Game.html / Drones.html
+   ===================================================================== */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyDQ8gn5w_Jj4OzcXFBz2lY2SKuaKEo2wbk",
+  authDomain: "obfuscationgame.firebaseapp.com",
+  databaseURL: "https://obfuscationgame-default-rtdb.firebaseio.com",
+  projectId: "obfuscationgame",
+  storageBucket: "obfuscationgame.firebasestorage.app",
+  messagingSenderId: "443679460937",
+  appId: "1:443679460937:web:d6b2806717894b3c923998"
+};
+
+/* =====================================================================
+   THE ECONOMICS (one place to tune)
+   ===================================================================== */
+const ECON = {
+  V: [200, 180, 150, 130, 70, 40],        // value to a buyer of year t of service (falls: newer phones keep getting better)
+  COST: [250, 270, 300, 340, 430, 540],   // cost to build a phone that lasts D years
+  N: 100,                                 // customers
+  SUP: 20,                                // support cost per phone per year
+  THR: 2,                                 // cost of pushing a throttling update, per phone
+  FINE: 25,                               // settlement per phone if caught throttling (the real Apple figure)
+  CATCH: [0.15, 0.30, 0.50, 0.70, 0.85],  // chance of getting caught, by how many times you've throttled before
+  DEG: 0.4,                               // what wise buyers pay for an unsupported year, as a share of its value
+  WARRANTY: 1,                            // years of support buyers can count on without any device
+  HOLD: 2,                                // Round 1 twist: buyers upgrade after this many years
+  RESALE: 0.8,                            // Round 1 twist: second owner pays this share of remaining value
+  LEASE_CANCEL: 0.4,                      // Round 4 lease: share of subscribers who quit if support ends
+  YEARS: 5,
+  PENALTIES: [25, 50, 100],
+};
+const cum = D => ECON.V.slice(0, D).reduce((a, b) => a + b, 0);
+const price = {
+  naive:   D => cum(D),
+  upgrade: D => cum(Math.min(D, ECON.HOLD)),
+  resale:  D => cum(Math.min(D, ECON.HOLD)) + (D > ECON.HOLD ? ECON.RESALE * (cum(D) - cum(ECON.HOLD)) : 0),
+  cheap:   D => cum(Math.min(D, ECON.WARRANTY)) + ECON.DEG * (cum(D) - cum(Math.min(D, ECON.WARRANTY))),
+  believed:(D, K) => cum(Math.min(D, K)) + ECON.DEG * (cum(D) - cum(Math.min(D, K))),
+};
+const life = (D, t) => t === "S" ? D : Math.max(1, D - (t === "N" ? 1 : 2));
+// one year of the installed-base game. t = S (support) | N (end support) | T (throttle). caught only matters for T.
+function yearOutcome(D, margin, t, caught) {
+  const N = ECON.N;
+  const L = caught ? D : life(D, t);
+  const sales = N / L;
+  const revenue = sales * margin;
+  let support = t === "S" ? N * ECON.SUP : 0;
+  let extra = t === "T" ? N * ECON.THR : 0;
+  let fine = caught ? N * ECON.FINE : 0;
+  return { L, sales, revenue, support, extra, fine, profit: revenue - support - extra - fine };
+}
+// temptation to break a support promise: per phone, per year (neglect profit minus support profit at the believed price)
+function temptation(D, margin) {
+  const s = yearOutcome(D, margin, "S", false).profit, n = yearOutcome(D, margin, "N", false).profit;
+  return (n - s) / ECON.N;
+}
+// lease accounting: subscribers pay the average yearly value; you buy their phones; you pay support
+function leaseYear(D, t) {
+  const subs = t === "S" ? ECON.N : ECON.N * (1 - ECON.LEASE_CANCEL);
+  const revenue = subs * cum(D) / D;
+  const phones = subs / D * ECON.COST[D - 1];
+  const support = t === "S" ? subs * ECON.SUP : 0;
+  return { subs, revenue, phones, support, profit: revenue - phones - support };
+}
+const bestOf = arr => arr.indexOf(Math.max(...arr));
+const $$ = n => "$" + Math.round(n).toLocaleString("en-US");
+const $$s = n => (n < 0 ? "−$" : "$") + Math.abs(Math.round(n)).toLocaleString("en-US");
+const pct = p => Math.round(p * 100) + "%";
+const n1 = x => Number.isInteger(x) ? String(x) : x.toFixed(1);
+
+/* =====================================================================
+   APP
+   ===================================================================== */
+const App = (() => {
+  let db = null, code = null, uid = null, myName = null, isHost = false, solo = false;
+  let state = null, players = {}, listeners = [];
+  let G = null;                 // my game record (persisted)
+  let resTab = "lead";
+  let sandbox = { lock: 100, sup: 20, fine: 25, catchMult: 1 };
+
+  const $ = id => document.getElementById(id);
+  const views = ["viewSetup","viewLanding","viewJoin","viewSolo","viewWait","viewR1","viewR2","viewR3","viewR4","viewDone","viewHostCreate","viewHost"];
+  function show(v){ views.forEach(x => $(x).classList.toggle("hidden", x !== v)); window.scrollTo(0,0); }
+  function toast(msg){ const t=$("toast"); t.textContent=msg; t.classList.remove("hidden"); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.add("hidden"),2800); }
+  function getUid(){ let u=null; try{u=localStorage.getItem("obs_uid");}catch(e){} if(!u){u=(crypto.randomUUID?crypto.randomUUID():"u"+Date.now()+Math.random().toString(36).slice(2)); try{localStorage.setItem("obs_uid",u);}catch(e){}} return u; }
+  function clearListeners(){ listeners.forEach(([r,e,c])=>r.off(e,c)); listeners=[]; }
+  function on(ref,ev,cb){ ref.on(ev,cb); listeners.push([ref,ev,cb]); }
+  function esc(s){ return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+  // The shared database only permits writes under games/, so sessions live at games/obs-CODE.
+  const path = (...p) => ["games", "obs-" + code, ...p].join("/");
+  const PHASES = ["lobby","r1","r2","r3","r4","done"];
+  const phaseIdx = p => Math.max(0, PHASES.indexOf(p));
+  const hasDb = () => !!(FIREBASE_CONFIG && FIREBASE_CONFIG.apiKey && !FIREBASE_CONFIG.apiKey.startsWith("PASTE"));
+
+  /* ---------- persistence ---------- */
+  function saveLocal(){ try{ localStorage.setItem("obs_game", JSON.stringify({ code, solo, myName, G })); }catch(e){} }
+  function loadLocal(){ try{ return JSON.parse(localStorage.getItem("obs_game")||"null"); }catch(e){ return null; } }
+  function clearLocal(){ try{ localStorage.removeItem("obs_game"); }catch(e){} }
+  async function pushProgress(){
+    if (solo || !db || !code) return;
+    const rec = { name: myName, stage: G.stage, updatedAt: Date.now() };
+    ["r1","r2","r3","r4"].forEach(k => { if (G[k]) rec[k] = G[k]; });
+    rec.total = (G.r2 && G.r2.total || 0) + (G.r3 && G.r3.total || 0) + (G.r4 && G.r4.total || 0);
+    try { await db.ref(path("players", uid)).update(rec); } catch(e){ console.warn(e); }
+  }
+
+  /* ---------- boot ---------- */
+  function boot(){
+    uid = getUid();
+    if (hasDb()){ firebase.initializeApp(FIREBASE_CONFIG); db = firebase.database(); }
+    const qs = new URLSearchParams(location.search);
+    const saved = loadLocal();
+    if (saved && saved.G && saved.G.stage !== "done"){
+      // resume a game in progress
+      G = saved.G; myName = saved.myName; solo = saved.solo; code = saved.code;
+      if (solo || !db){ solo = true; $("topTag").innerHTML = `Solo · ${esc(myName)}`; route(); return; }
+      db.ref(`games/obs-${code}/state`).get().then(s => {
+        if (!s.exists()){ clearLocal(); G = null; show(db ? "viewLanding" : "viewSetup"); return; }
+        $("topTag").innerHTML = `Session <b>${code}</b> · ${esc(myName)}`;
+        listenGame();
+      });
+      return;
+    }
+    if (!db){ show("viewSetup"); return; }
+    if (qs.get("g")){ show("viewJoin"); $("joinCode").value = qs.get("g").toUpperCase(); $("joinName").focus(); }
+    else if (qs.get("host") != null){ show("viewHostCreate"); }
+    else show("viewLanding");
+  }
+  function showLanding(){ show(db ? "viewLanding" : "viewSetup"); }
+  function showJoin(){ show("viewJoin"); }
+  function showSolo(){ show("viewSolo"); }
+  function showHost(){ show("viewHostCreate"); }
+
+  function newGame(){ return { stage: "r1", r1: null, r1step: 0, r2: null, r3: null, r4: null, cur: null }; }
+
+  /* =====================================================================
+     STUDENT: join / solo / routing
+     ===================================================================== */
+  async function join(){
+    const c = $("joinCode").value.trim().toUpperCase(), n = $("joinName").value.trim(), err = $("joinErr");
+    if (c.length !== 4){ err.textContent = "Enter the 4-letter code on the screen."; return; }
+    if (!n){ err.textContent = "Add your name."; return; }
+    err.textContent = "";
+    const snap = await db.ref(`games/obs-${c}/state`).get();
+    if (!snap.exists()){ err.textContent = "No session with that code — check the projector."; return; }
+    code = c; myName = n; isHost = false; solo = false;
+    G = newGame();
+    saveLocal();
+    await db.ref(path("players", uid)).update({ name: n, joinedAt: Date.now(), stage: "r1" });
+    $("topTag").innerHTML = `Session <b>${code}</b> · ${esc(n)}`;
+    listenGame();
+  }
+  function startSolo(){
+    const n = $("soloName").value.trim(); if (!n){ $("soloErr").textContent = "Give yourself a name."; return; }
+    solo = true; code = null; myName = n; G = newGame(); saveLocal();
+    $("topTag").innerHTML = `Solo · ${esc(n)}`;
+    route();
+  }
+  function listenGame(){
+    clearListeners();
+    on(db.ref(path("state")), "value", s => { state = s.val(); if (!state) return; if (isHost) renderHost(); else route(); });
+    if (isHost) on(db.ref(path("players")), "value", s => { players = s.val() || {}; renderHost(); });
+    else on(db.ref(path("players")), "value", s => { players = s.val() || {}; if (G && G.stage === "done") renderDone(); });
+  }
+  // decide which screen the student sees
+  function route(){
+    if (!G) return;
+    const stage = G.stage;
+    if (stage === "done"){ renderDone(); return; }
+    const opened = solo ? 5 : phaseIdx(state ? state.phase : "lobby");
+    const need = { r1: 1, r2: 2, r3: 3, r4: 4 }[stage];
+    if (!solo && opened < need){
+      $("waitEyebrow").textContent = need === 1 ? "You're in" : `Round ${need - 1} done`;
+      $("waitTitle").textContent = `Waiting for the host to open Round ${need}…`;
+      $("waitScores").innerHTML = scoreKv(false);
+      show("viewWait"); return;
+    }
+    if (!solo && state && state.phase === "done" && stage !== "done"){
+      // host closed the game; show what we have
+      $("waitEyebrow").textContent = "Session closed"; $("waitTitle").textContent = "The host has closed the game. Look up for the scoreboard."; $("waitScores").innerHTML = scoreKv(false); show("viewWait"); return;
+    }
+    ({ r1: renderR1, r2: renderR2, r3: renderR3, r4: renderR4 })[stage]();
+  }
+  function afterRound(n){
+    G.stage = n === 4 ? "done" : "r" + (n + 1); G.cur = null; saveLocal(); pushProgress(); route();
+  }
+  function scoreKv(withTitle){
+    const r2 = G.r2 ? G.r2.total : null, r3 = G.r3 ? G.r3.total : null, r4 = G.r4 ? G.r4.total : null;
+    if (r2 == null && r3 == null && r4 == null) return "";
+    const row = (k, v) => v == null ? "" : `<div class="k">${k}</div><div class="v">${$$s(v)}</div>`;
+    return `<div class="kv" style="margin-top:14px">${row("Round 2 (trusting buyers)", r2)}${row("Round 3 (wise buyers, cheap talk)", r3)}${row("Round 4 (with a commitment device)", r4)}<div class="k tot">Total</div><div class="v tot">${$$s((r2||0)+(r3||0)+(r4||0))}</div></div>`;
+  }
+
+  /* =====================================================================
+     ROUND 1 — design (three steps: base, upgrade twist, resale twist)
+     ===================================================================== */
+  const R1 = [
+    { key: "base", pf: price.naive, title: "Design the phone",
+      intro: `You're the CEO. Your 100 customers each buy one phone. Choose how many years it's built to last. The table shows what a buyer will pay for a phone that lasts that long, and what it costs you to build one. <b>Profit isn't shown. That's your job.</b>`,
+      revealTitle: D => `Best: build it to last ${D} years`,
+      revealText: `Making a phone last is cheap per year of use, so the design that makes the most money is also the one that wastes the least. It holds per year too: 25 four-year phones a year at $320 each beat 50 two-year phones at $110. Greed alone does not make phones die young. Remember this when Round 2 starts.` },
+    { key: "upgrade", pf: price.upgrade, title: "Twist 1: bored buyers",
+      intro: `Your buyers get restless. They replace their phone after <b>2 years</b> no matter how long it lasts, and there is no resale market, so the old phone goes in a drawer. What will they pay now? Same costs. Pick again.`,
+      revealTitle: D => `Now the best design lasts ${D} years`,
+      revealText: `A phone that outlives its owner's interest is waste, not virtue. When people upgrade for the camera, the profit-maximizing phone gets shorter-lived without anyone plotting anything.` },
+    { key: "resale", pf: price.resale, title: "Twist 2: a resale market opens",
+      intro: `Buyers still upgrade after 2 years, but now they can <b>sell the old phone</b> to someone who pays 80 cents on the dollar for the years left in it. That resale money raises what the first buyer will pay you up front. Pick again.`,
+      revealTitle: D => `Resale brings it back to ${D} years`,
+      revealText: `Resale hands the value of durability back to the first buyer, so the maker wants to build it again. Kill the used market and you kill the reason to build things that last. Keep that in mind for the "buy button" half of today.` },
+  ];
+  let r1sel = null;
+  function renderR1(){
+    const step = G.r1step, cfg = R1[step];
+    r1sel = null;
+    $("r1Prog").textContent = `step ${step + 1} of 3`;
+    $("r1Intro").innerHTML = `<h2 style="margin-top:10px">${cfg.title}</h2><p>${cfg.intro}</p>`;
+    $("r1Table").innerHTML = designTable(cfg.pf, false);
+    $("r1Pick").innerHTML = pickButtons("r1");
+    $("r1Err").textContent = ""; $("r1Btn").disabled = false;
+    $("r1Reveal").classList.add("hidden");
+    show("viewR1");
+  }
+  function designTable(pf, withProfit, pick, best, labels){
+    labels = labels || { p: "Buyers will pay", c: "Cost to build" };
+    let h = `<tr><th>Built to last</th><th>${labels.p}</th><th>${labels.c}</th>${withProfit ? "<th>Profit per phone</th>" : ""}</tr>`;
+    for (let D = 1; D <= 6; D++){
+      const p = pf(D), c = ECON.COST[D - 1], m = p - c;
+      const cls = (pick === D ? "pick " : "") + (best === D ? "best" : "");
+      h += `<tr class="${cls}"><td>${D} year${D > 1 ? "s" : ""}${pick === D ? '<span class="tag you">you</span>' : ""}${best === D ? '<span class="tag">best</span>' : ""}</td><td class="money">${$$(p)}</td><td class="money">${$$(c)}</td>${withProfit ? `<td class="money ${m < 0 ? "neg" : "pos"}">${$$s(m)}</td>` : ""}</tr>`;
+    }
+    return h;
+  }
+  function pickButtons(r){ return [1,2,3,4,5,6].map(D => `<button onclick="App.pickD('${r}',${D},this)">${D}<small>year${D>1?"s":""}</small></button>`).join(""); }
+  function pickD(r, D, btn){
+    btn.parentElement.querySelectorAll("button").forEach(b => b.classList.remove("sel")); btn.classList.add("sel");
+    if (r === "r1") r1sel = D; if (r === "r3") r3sel = D; if (r === "r4") r4sel = D;
+  }
+  function r1Submit(){
+    if (!r1sel){ $("r1Err").textContent = "Pick a number of years first."; return; }
+    const cfg = R1[G.r1step];
+    G.r1 = G.r1 || {}; G.r1[cfg.key] = r1sel; saveLocal(); pushProgress();
+    const profits = [1,2,3,4,5,6].map(D => cfg.pf(D) - ECON.COST[D - 1]);
+    const best = bestOf(profits) + 1;
+    $("r1Btn").disabled = true;
+    $("r1RevealTitle").textContent = cfg.revealTitle(best) + (r1sel === best ? " — you nailed it" : ` (you chose ${r1sel})`);
+    $("r1RevealTable").innerHTML = designTable(cfg.pf, true, r1sel, best);
+    $("r1RevealText").innerHTML = cfg.revealText;
+    $("r1Next").textContent = G.r1step < 2 ? "Next twist →" : "On to Round 2 →";
+    $("r1Reveal").classList.remove("hidden");
+    setTimeout(() => $("r1Reveal").scrollIntoView({ behavior: "smooth", block: "start" }), 50);
+  }
+  function r1Next(){
+    if (G.r1step < 2){ G.r1step++; saveLocal(); renderR1(); }
+    else afterRound(1);
+  }
+
+  /* =====================================================================
+     ROUND 2 — after the sale, trusting buyers (S / N / T with catch risk)
+     ===================================================================== */
+  const R2_D = 4;
+  const R2_MARGIN = price.naive(R2_D) - ECON.COST[R2_D - 1]; // 320
+  function renderR2(){
+    show("viewR2");
+    const c = G.cur;
+    if (!c){ $("r2IntroCard").classList.remove("hidden"); ["r2Play","r2Result","r2Done"].forEach(i => $(i).classList.add("hidden")); return; }
+    if (c.done){ r2ShowDone(); return; }
+    if (c.pendingResult){ r2ShowResult(c.pendingResult); return; }
+    r2ShowYear();
+  }
+  function r2Start(){ G.cur = { year: 1, total: 0, thr: 0, caught: 0, log: [] }; saveLocal(); r2ShowYear(); }
+  function r2ShowYear(){
+    const c = G.cur;
+    $("r2IntroCard").classList.add("hidden"); $("r2Result").classList.add("hidden"); $("r2Done").classList.add("hidden");
+    $("r2Play").classList.remove("hidden");
+    $("r2Year").textContent = c.year; $("r2Prog").textContent = c.log.map(l => l.t).join(" ");
+    $("r2Total").textContent = $$s(c.total); $("r2Thr").textContent = c.thr;
+    const risk = ECON.CATCH[Math.min(c.thr, ECON.CATCH.length - 1)];
+    $("r2Risk").textContent = pct(risk);
+    const S = yearOutcome(R2_D, R2_MARGIN, "S"), N = yearOutcome(R2_D, R2_MARGIN, "N"), T = yearOutcome(R2_D, R2_MARGIN, "T"), TC = yearOutcome(R2_D, R2_MARGIN, "T", true);
+    $("r2Opts").innerHTML = `
+      <button class="opt" onclick="App.r2Choose('S')">
+        <span class="pill S">Support</span><h3>Keep shipping updates</h3>
+        <div class="desc">Costs $${ECON.SUP} per phone. Old phones keep working well, so people keep them the full ${S.L} years.</div>
+        <div class="math">${n1(S.sales)} sales × $${R2_MARGIN} = ${$$(S.revenue)}<br>− support ${$$(S.support)}</div>
+        <div class="profit">${$$s(S.profit)}</div>
+      </button>
+      <button class="opt" onclick="App.r2Choose('N')">
+        <span class="pill N">End support</span><h3>Stop updating them</h3>
+        <div class="desc">Free. Old phones get buggy and lose apps, so people give up after ${N.L} years.</div>
+        <div class="math">${n1(N.sales)} sales × $${R2_MARGIN} = ${$$(N.revenue)}<br>− support $0</div>
+        <div class="profit">${$$s(N.profit)}</div>
+      </button>
+      <button class="opt" onclick="App.r2Choose('T')">
+        <span class="pill T">Throttle</span><h3>Push an update that slows old phones</h3>
+        <div class="desc">Costs $${ECON.THR} per phone. Old phones crawl, so people give up after ${T.L} years.</div>
+        <div class="math">${n1(T.sales)} sales × $${R2_MARGIN} = ${$$(T.revenue)}<br>− update ${$$(T.extra)}</div>
+        <div class="profit">${$$s(T.profit)}</div>
+        <div class="risk">${pct(risk)} chance a researcher notices. If caught: $${ECON.FINE}-a-phone settlement (${$$(TC.fine)}) and you must offer cheap fixes, so sales fall back to ${n1(TC.sales)}: ${$$s(TC.profit)}.</div>
+      </button>`;
+  }
+  function r2Choose(t){
+    const c = G.cur;
+    let caught = false;
+    if (t === "T"){ const risk = ECON.CATCH[Math.min(c.thr, ECON.CATCH.length - 1)]; caught = Math.random() < risk; c.thr++; if (caught) c.caught++; }
+    const o = yearOutcome(R2_D, R2_MARGIN, t, caught);
+    const entry = { year: c.year, t, caught, profit: Math.round(o.profit), sales: o.sales };
+    c.log.push(entry); c.total += entry.profit;
+    c.pendingResult = entry; saveLocal();
+    r2ShowResult(entry);
+  }
+  function r2ShowResult(e){
+    $("r2Play").classList.add("hidden"); $("r2Result").classList.remove("hidden");
+    $("r2ResYear").textContent = e.year;
+    const names = { S: "You supported the old phones.", N: "You ended support.", T: e.caught ? "You throttled, and got caught." : "You throttled. Nobody noticed." };
+    $("r2ResTitle").textContent = names[e.t] + " Profit " + $$s(e.profit) + ".";
+    $("r2ResText").innerHTML = e.caught ? `A battery researcher published benchmarks. Class actions followed. You paid $${ECON.FINE} per phone, offered discounted fixes, and the year's extra sales evaporated. The settlement per phone is a fraction of the $${R2_MARGIN} you make on a new one.` :
+      e.t === "T" ? `Old phones got slow, and ${n1(e.sales)} customers bought new ones. Your buyers still believe the next phone will be looked after.` :
+      e.t === "N" ? `Apps stopped working on older phones and ${n1(e.sales)} customers replaced theirs. No one blamed you.` :
+      `${n1(e.sales)} customers replaced worn-out phones. The rest are happy, and it cost you.`;
+    $("r2Log").innerHTML = G.cur.log.map(l => `<div class="row"><span>Year ${l.year} · <span class="pill ${l.t}">${{S:"Support",N:"End support",T:"Throttle"}[l.t]}${l.caught ? " · caught" : ""}</span></span><span class="money ${l.profit<0?"neg":""}">${$$s(l.profit)}</span></div>`).join("") + `<div class="row"><b>Total so far</b><b class="money">${$$s(G.cur.total)}</b></div>`;
+    $("r2NextBtn").textContent = e.year < ECON.YEARS ? "Next year →" : "See your five-year total →";
+  }
+  function r2Next(){
+    const c = G.cur; c.pendingResult = null;
+    if (c.year < ECON.YEARS){ c.year++; saveLocal(); r2ShowYear(); return; }
+    c.done = true;
+    G.r2 = { total: c.total, choices: c.log.map(l => l.t).join(""), caught: c.caught, thr: c.thr };
+    saveLocal(); pushProgress(); r2ShowDone();
+  }
+  function r2ShowDone(){
+    const c = G.cur;
+    ["r2IntroCard","r2Play","r2Result"].forEach(i => $(i).classList.add("hidden")); $("r2Done").classList.remove("hidden");
+    $("r2Final").textContent = $$s(c.total);
+    const allS = yearOutcome(R2_D, R2_MARGIN, "S").profit * ECON.YEARS, allN = yearOutcome(R2_D, R2_MARGIN, "N").profit * ECON.YEARS;
+    const nS = c.log.filter(l => l.t === "S").length;
+    $("r2DoneText").innerHTML = `Supporting your customers every year would have made ${$$(allS)}. Ending support every year, ${$$(allN)}. You supported ${nS} year${nS===1?"":"s"}, throttled ${c.thr}, and got caught ${c.caught} time${c.caught===1?"":"s"}. <b>Once the phones are sold, looking after them only costs you.</b> Your buyers never adjusted what they paid. That changes next round.`;
+    $("r2DoneLog").innerHTML = c.log.map(l => `<div class="row"><span>Year ${l.year} · <span class="pill ${l.t}">${{S:"Support",N:"End support",T:"Throttle"}[l.t]}${l.caught ? " · caught" : ""}</span></span><span class="money ${l.profit<0?"neg":""}">${$$s(l.profit)}</span></div>`).join("");
+  }
+
+  /* =====================================================================
+     ROUND 3 — wiser buyers, cheap talk (choose D + pledge, then S / N)
+     ===================================================================== */
+  let r3sel = null, r3pledge = 0;
+  function renderR3(){
+    show("viewR3");
+    const c = G.cur;
+    ["r3Design","r3Reveal","r3Play","r3Result","r3Done"].forEach(i => $(i).classList.add("hidden"));
+    if (!c){
+      r3sel = null; r3pledge = 0;
+      $("r3Table").innerHTML = r3Table(false);
+      $("r3Pledge").innerHTML = [0,1,2,3,4,5,6].map(k => `<button class="${k===0?"sel":""}" onclick="App.r3SetPledge(${k},this)">${k===0?"No pledge":k+" yr"+(k>1?"s":"")}</button>`).join("");
+      $("r3Pick").innerHTML = pickButtons("r3"); $("r3Err").textContent = "";
+      $("r3Design").classList.remove("hidden"); return;
+    }
+    if (c.done){ r3ShowDone(); return; }
+    if (!c.started){ r3ShowReveal(); return; }
+    if (c.pendingResult){ r3ShowResult(c.pendingResult); return; }
+    r3ShowYear();
+  }
+  // Round 3 table: per phone, plus phones sold per year. Profit is per year, since that is what the score counts.
+  function r3Table(withProfit, pick, best){
+    let h = `<tr><th>Built to last</th><th>Buyers will pay</th><th>Cost to build</th><th>Sold per year*</th>${withProfit ? "<th>Profit per year if you end support</th><th>…if you keep supporting</th>" : ""}</tr>`;
+    for (let D = 1; D <= 6; D++){
+      const p = price.cheap(D), c = ECON.COST[D - 1], m = p - c;
+      const N = yearOutcome(D, m, "N").profit, S = yearOutcome(D, m, "S").profit;
+      const cls = (pick === D ? "pick " : "") + (best === D ? "best" : "");
+      h += `<tr class="${cls}"><td>${D} year${D > 1 ? "s" : ""}${pick === D ? '<span class="tag you">you</span>' : ""}${best === D ? '<span class="tag">best</span>' : ""}</td><td class="money">${$$(p)}</td><td class="money">${$$(c)}</td><td class="mono">${n1(ECON.N / life(D, "N"))}</td>${withProfit ? `<td class="money ${N < 0 ? "neg" : "pos"}">${$$s(N)}</td><td class="money ${S < 0 ? "neg" : "pos"}">${$$s(S)}</td>` : ""}</tr>`;
+    }
+    h += `<tr><td colspan="${withProfit ? 6 : 4}" class="small" style="text-align:left">*Your 100 customers replace a phone when it stops being worth keeping. If you end support after the warranty year, as they expect, that is a year early.</td></tr>`;
+    return h;
+  }
+  function r3SetPledge(k, btn){ btn.parentElement.querySelectorAll("button").forEach(b => b.classList.remove("sel")); btn.classList.add("sel"); r3pledge = k; }
+  function r3Submit(){
+    if (!r3sel){ $("r3Err").textContent = "Pick a number of years first."; return; }
+    const D = r3sel, margin = price.cheap(D) - ECON.COST[D - 1];
+    G.cur = { D, pledge: r3pledge, margin, year: 1, total: 0, log: [], started: false };
+    saveLocal(); pushProgress(); r3ShowReveal();
+  }
+  function r3ShowReveal(){
+    const c = G.cur;
+    const yearly = [1,2,3,4,5,6].map(D => { const m = price.cheap(D) - ECON.COST[D - 1]; return Math.max(yearOutcome(D, m, "N").profit, yearOutcome(D, m, "S").profit); });
+    const best = bestOf(yearly) + 1, basebest = bestOf([1,2,3,4,5,6].map(D => price.naive(D) - ECON.COST[D - 1])) + 1;
+    const commitYr = yearOutcome(basebest, price.naive(basebest) - ECON.COST[basebest - 1], "S").profit;
+    ["r3Design","r3Play","r3Result","r3Done"].forEach(i => $(i).classList.add("hidden")); $("r3Reveal").classList.remove("hidden");
+    $("r3RevealTitle").textContent = `Best: ${best} years, then stop supporting it` + (c.D === best ? " — you nailed the design" : ` (you chose ${c.D})`);
+    $("r3PledgeText").innerHTML = c.pledge ? `You pledged <b>${c.pledge} year${c.pledge>1?"s":""}</b> of updates. Buyers' reply: <i>"That's what they all say."</i> Nothing you can say changes what they pay, because nothing stops you changing your mind after the sale.` : `You made no pledge. Buyers assume the worst either way.`;
+    $("r3RevealTable").innerHTML = r3Table(true, c.D, best);
+    $("r3RevealText").innerHTML = `Two things shrink the phone. Buyers won't pay for years they expect to be bad, so the later years stop covering their cost. And a phone that dies sooner sells more often. In Round 1 the best phone lasted ${basebest} years and, fully supported, earned ${$$(commitYr)} a year. Now the best is a ${best}-year phone you then abandon, for ${$$(yearly[best-1])} a year. <b>Nobody had to plan anything. Suspicion alone shortened the phone, and it cost you most of your profit.</b>`;
+  }
+  function r3StartYears(){ G.cur.started = true; saveLocal(); r3ShowYear(); }
+  function r3ShowYear(){
+    const c = G.cur;
+    ["r3Design","r3Reveal","r3Result","r3Done"].forEach(i => $(i).classList.add("hidden")); $("r3Play").classList.remove("hidden");
+    $("r3Year").textContent = c.year; $("r3Prog").textContent = c.log.map(l => l.t).join(" ");
+    $("r3Total").textContent = $$s(c.total); $("r3Phone").textContent = `${c.D}-yr · $${Math.round(c.margin)} margin`;
+    $("r3PledgeTag").textContent = c.pledge ? `${c.pledge} yrs` : "none";
+    const S = yearOutcome(c.D, c.margin, "S"), N = yearOutcome(c.D, c.margin, "N");
+    const broke = c.pledge && c.year <= c.pledge;
+    $("r3Opts").innerHTML = `
+      <button class="opt" onclick="App.r3Choose('S')">
+        <span class="pill S">Support</span><h3>Keep shipping updates${broke ? " (keep your word)" : ""}</h3>
+        <div class="desc">Costs $${ECON.SUP} per phone. People keep the phone ${S.L} year${S.L>1?"s":""}.</div>
+        <div class="math">${n1(S.sales)} sales × $${Math.round(c.margin)} = ${$$(S.revenue)}<br>− support ${$$(S.support)}</div>
+        <div class="profit">${$$s(S.profit)}</div>
+      </button>
+      <button class="opt" onclick="App.r3Choose('N')">
+        <span class="pill N">End support</span><h3>Stop updating them${broke ? " (break your word)" : ""}</h3>
+        <div class="desc">Free. People give up after ${N.L} year${N.L>1?"s":""}. Buyers already priced this in.</div>
+        <div class="math">${n1(N.sales)} sales × $${Math.round(c.margin)} = ${$$(N.revenue)}<br>− support $0</div>
+        <div class="profit">${$$s(N.profit)}</div>
+      </button>`;
+  }
+  function r3Choose(t){
+    const c = G.cur, o = yearOutcome(c.D, c.margin, t);
+    const e = { year: c.year, t, profit: Math.round(o.profit), sales: o.sales };
+    c.log.push(e); c.total += e.profit; c.pendingResult = e; saveLocal(); r3ShowResult(e);
+  }
+  function r3ShowResult(e){
+    const c = G.cur;
+    ["r3Play","r3Done"].forEach(i => $(i).classList.add("hidden")); $("r3Result").classList.remove("hidden");
+    $("r3ResYear").textContent = e.year;
+    $("r3ResTitle").textContent = (e.t === "S" ? "You supported them. " : "You ended support. ") + "Profit " + $$s(e.profit) + ".";
+    const broke = c.pledge && e.year <= c.pledge;
+    $("r3ResText").innerHTML = e.t === "S" ? (broke ? `You kept your pledge. It cost you, and buyers had already paid the low price, so nobody rewarded you for it.` : `You looked after phones nobody paid you to look after.`)
+      : (broke ? `You broke your pledge. Nobody was surprised. That's the point: a promise that costs nothing to break is worth nothing to buyers.` : `Exactly what buyers expected.`);
+  }
+  function r3Next(){
+    const c = G.cur; c.pendingResult = null;
+    if (c.year < ECON.YEARS){ c.year++; saveLocal(); r3ShowYear(); return; }
+    c.done = true;
+    G.r3 = { total: c.total, D: c.D, pledge: c.pledge, choices: c.log.map(l => l.t).join("") };
+    saveLocal(); pushProgress(); r3ShowDone();
+  }
+  function r3ShowDone(){
+    const c = G.cur;
+    ["r3Design","r3Reveal","r3Play","r3Result"].forEach(i => $(i).classList.add("hidden")); $("r3Done").classList.remove("hidden");
+    $("r3Final").textContent = $$s(c.total);
+    const commit = yearOutcome(R2_D, R2_MARGIN, "S").profit * ECON.YEARS;
+    $("r3DoneText").innerHTML = `Same company, same customers, same technology as Round 2. The only thing that changed is what buyers <i>expect</i>. Compare:`;
+    $("r3Compare").innerHTML = `<div class="k">Round 2: trusting buyers, you did as you pleased</div><div class="v">${$$s(G.r2 ? G.r2.total : 0)}</div>
+      <div class="k">Round 3: wise buyers, cheap talk</div><div class="v">${$$s(c.total)}</div>
+      <div class="k">If wise buyers had <b>believed</b> a 4-year promise and you kept it</div><div class="v">${$$s(commit)}</div>`;
+  }
+
+  /* =====================================================================
+     ROUND 4 — buy credibility (guarantee / lease / regulation), choose D, then S / N
+     ===================================================================== */
+  const DEVICES = {
+    guarantee: { name: "Binding guarantee", short: "Guarantee",
+      blurb: "Put the promise in the contract: if you end support before the phone's built life is up, you pay every customer a penalty for each year cut short. You choose the size of the penalty.",
+      hidden: "Buyers will believe you only if breaking the promise would cost you more than keeping it." },
+    lease: { name: "Lease, don't sell", short: "Lease",
+      blurb: "Customers pay by the year for as long as the phone works well, and can walk away when it doesn't. You own the phones; they rent them.",
+      hidden: "Your revenue now depends on the phone staying good. It also means the customer never owns anything." },
+    regulation: { name: "Regulation", short: "Regulation",
+      blurb: "A law requires every phone maker to keep supporting phones for their built life. You didn't choose it, but buyers believe it.",
+      hidden: "It binds your rivals too. It also forces support onto the cheapest phones, whose buyers may not have wanted to pay for it." },
+  };
+  let r4sel = null, r4dev = null, r4pen = null;
+  function renderR4(){
+    show("viewR4");
+    const c = G.cur;
+    ["r4Device","r4Design","r4Reveal","r4Play","r4Result","r4Done"].forEach(i => $(i).classList.add("hidden"));
+    if (!c){
+      $("r4Devices").innerHTML = Object.entries(DEVICES).map(([k, d]) => `<button class="opt" onclick="App.r4PickDevice('${k}')"><h3>${d.name}</h3><div class="desc">${d.blurb}</div><div class="go" style="font-weight:700;color:var(--teal-deep);font-size:14px;margin-top:6px">Choose →</div></button>`).join("");
+      $("r4Device").classList.remove("hidden"); return;
+    }
+    if (c.done){ r4ShowDone(); return; }
+    if (!c.D){ r4ShowDesign(); return; }
+    if (!c.started){ r4ShowReveal(); return; }
+    if (c.pendingResult){ r4ShowResult(c.pendingResult); return; }
+    r4ShowYear();
+  }
+  function r4PickDevice(k){ G.cur = { device: k, penalty: null, D: null, year: 1, total: 0, log: [], started: false }; saveLocal(); r4ShowDesign(); }
+  function r4ShowDesign(){
+    const c = G.cur, d = DEVICES[c.device];
+    r4sel = null; r4pen = c.penalty;
+    ["r4Device","r4Reveal","r4Play","r4Result","r4Done"].forEach(i => $(i).classList.add("hidden")); $("r4Design").classList.remove("hidden");
+    $("r4DesignEyebrow").textContent = d.name;
+    $("r4DesignTitle").textContent = c.device === "lease" ? "Design the phone you'll lease" : "Design the phone";
+    $("r4DesignText").innerHTML = (c.device === "guarantee" ? `You guarantee updates for the phone's whole built life. Buyers assume you'll keep the promise <b>if the penalty is big enough to make keeping it cheaper than breaking it</b>. The table shows what they'll pay if they believe you.` :
+      c.device === "lease" ? `Subscribers pay each year what that year of the phone is worth to them (the average over the phone's life), for as long as you keep it working. You buy the phones. If you end support, ${pct(ECON.LEASE_CANCEL)} of subscribers cancel. The table shows the yearly fee and the cost of each phone.` :
+      `The law makes support mandatory, so buyers pay full price for every built year. The table shows what they'll pay.`) + ` <span class="small">${d.hidden}</span>`;
+    $("r4PenaltyWrap").classList.toggle("hidden", c.device !== "guarantee");
+    if (c.device === "guarantee") $("r4Penalty").innerHTML = ECON.PENALTIES.map(p => `<button class="${r4pen===p?"sel":""}" onclick="App.r4SetPenalty(${p},this)">$${p}</button>`).join("");
+    if (c.device === "lease") $("r4Table").innerHTML = leaseTable();
+    else $("r4Table").innerHTML = designTable(price.naive, false, null, null, { p: "Buyers will pay (if they believe you)", c: "Cost to build" });
+    $("r4Pick").innerHTML = pickButtons("r4"); $("r4Err").textContent = "";
+  }
+  function leaseTable(){
+    let h = `<tr><th>Built to last</th><th>Yearly fee per subscriber</th><th>Cost to build</th></tr>`;
+    for (let D = 1; D <= 6; D++) h += `<tr><td>${D} year${D>1?"s":""}</td><td class="money">${$$(cum(D)/D)}</td><td class="money">${$$(ECON.COST[D-1])}</td></tr>`;
+    return h;
+  }
+  function r4SetPenalty(p, btn){ btn.parentElement.querySelectorAll("button").forEach(b => b.classList.remove("sel")); btn.classList.add("sel"); r4pen = p; }
+  function r4Submit(){
+    const c = G.cur;
+    if (!r4sel){ $("r4Err").textContent = "Pick a number of years first."; return; }
+    if (c.device === "guarantee" && !r4pen){ $("r4Err").textContent = "Choose a penalty too."; return; }
+    c.D = r4sel; c.penalty = r4pen;
+    const believedMargin = price.naive(c.D) - ECON.COST[c.D - 1];
+    if (c.device === "guarantee"){
+      c.tempt = temptation(c.D, believedMargin);
+      c.credible = c.penalty >= c.tempt;
+      c.margin = c.credible ? believedMargin : price.cheap(c.D) - ECON.COST[c.D - 1];
+    } else { c.credible = true; c.margin = believedMargin; }
+    saveLocal(); pushProgress(); r4ShowReveal();
+  }
+  function r4ShowReveal(){
+    const c = G.cur;
+    ["r4Device","r4Design","r4Play","r4Result","r4Done"].forEach(i => $(i).classList.add("hidden")); $("r4Reveal").classList.remove("hidden");
+    if (c.device === "guarantee"){
+      if (c.credible){
+        $("r4RevealTitle").textContent = `Believed. Buyers pay ${$$(price.naive(c.D))}.`;
+        $("r4RevealText").innerHTML = `Buyers did the math. Breaking your ${c.D}-year promise would gain you about <b>$${Math.round(c.tempt)} per phone per year</b>; your penalty is $${c.penalty}. Keeping the promise is now your best move even after the sale, so they trust it. Notice that the promise is worth ${$$(price.naive(c.D) - price.cheap(c.D))} per phone to you, and it costs nothing unless you break it.`;
+      } else {
+        $("r4RevealTitle").textContent = `Not believed. Buyers pay ${$$(price.cheap(c.D))}.`;
+        $("r4RevealText").innerHTML = `Buyers did the math. Breaking your ${c.D}-year promise would gain you about <b>$${Math.round(c.tempt)} per phone per year</b>; your penalty is only $${c.penalty}. A promise you'd profit from breaking is no promise, so they pay the Round 3 price. <b>And the penalty still applies if you break it.</b> A weak penalty is worse than none. (For reference, Apple's iPhone settlement came to about $25 per phone.)`;
+      }
+    } else if (c.device === "lease"){
+      const L = leaseYear(c.D, "S");
+      $("r4RevealTitle").textContent = `Subscribers sign up at ${$$(cum(c.D)/c.D)} a year.`;
+      $("r4RevealText").innerHTML = `${ECON.N} subscribers × ${$$(cum(c.D)/c.D)} = ${$$(L.revenue)} a year, as long as the phones work well. You supply ${n1(ECON.N / c.D)} new phones a year at ${$$(ECON.COST[c.D-1])} each. If you let the phones rot, ${pct(ECON.LEASE_CANCEL)} of subscribers walk. Your income now rises and falls with how good the phone is.`;
+    } else {
+      $("r4RevealTitle").textContent = `The law speaks for you. Buyers pay ${$$(price.naive(c.D))}.`;
+      $("r4RevealText").innerHTML = `Support is mandatory, so ending it is not an option; the game will show you each year's numbers anyway. Note who else this binds: every rival, and every budget phone.`;
+    }
+  }
+  function r4StartYears(){ G.cur.started = true; saveLocal(); r4ShowYear(); }
+  function r4Year(t){
+    const c = G.cur;
+    if (c.device === "lease"){ const o = leaseYear(c.D, t); return { profit: o.profit, detail: `${n1(o.subs)} subscribers × ${$$(cum(c.D)/c.D)} = ${$$(o.revenue)}<br>− phones ${$$(o.phones)}${t==="S"?`<br>− support ${$$(o.support)}`:""}`, L: c.D }; }
+    const o = yearOutcome(c.D, c.margin, t);
+    let pen = 0;
+    if (c.device === "guarantee" && t === "N") pen = ECON.N * c.penalty;
+    return { profit: o.profit - pen, detail: `${n1(o.sales)} sales × $${Math.round(c.margin)} = ${$$(o.revenue)}<br>− support ${$$(o.support)}${pen ? `<br>− penalty ${$$(pen)}` : ""}`, L: o.L };
+  }
+  function r4ShowYear(){
+    const c = G.cur, d = DEVICES[c.device];
+    ["r4Device","r4Design","r4Reveal","r4Result","r4Done"].forEach(i => $(i).classList.add("hidden")); $("r4Play").classList.remove("hidden");
+    $("r4Year").textContent = c.year; $("r4Prog").textContent = c.log.map(l => l.t).join(" ");
+    $("r4Total").textContent = $$s(c.total); $("r4Phone").textContent = `${c.D}-yr`;
+    $("r4DevTag").textContent = d.short + (c.device === "guarantee" ? ` · $${c.penalty}${c.credible ? "" : " (not believed)"}` : "");
+    const S = r4Year("S"), N = r4Year("N");
+    $("r4PlayText").textContent = c.device === "regulation" ? "The law requires support. Here is what the alternative would have looked like." : c.device === "lease" ? "Keep the phones good, or let them rot?" : "Keep your guaranteed promise, or break it and pay the penalty?";
+    $("r4Opts").innerHTML = `
+      <button class="opt" onclick="App.r4Choose('S')">
+        <span class="pill S">Support</span><h3>Keep shipping updates</h3>
+        <div class="math">${S.detail}</div><div class="profit">${$$s(S.profit)}</div>
+      </button>
+      <button class="opt" ${c.device === "regulation" ? "disabled" : ""} onclick="App.r4Choose('N')">
+        <span class="pill N">End support</span><h3>${c.device === "regulation" ? "Illegal" : c.device === "lease" ? "Let them rot" : "Break the promise"}</h3>
+        <div class="math">${N.detail}</div><div class="profit">${$$s(N.profit)}</div>
+      </button>`;
+  }
+  function r4Choose(t){
+    const c = G.cur; if (c.device === "regulation" && t === "N") return;
+    const o = r4Year(t);
+    const e = { year: c.year, t, profit: Math.round(o.profit) };
+    c.log.push(e); c.total += e.profit; c.pendingResult = e; saveLocal(); r4ShowResult(e);
+  }
+  function r4ShowResult(e){
+    const c = G.cur;
+    ["r4Play","r4Done"].forEach(i => $(i).classList.add("hidden")); $("r4Result").classList.remove("hidden");
+    $("r4ResYear").textContent = e.year;
+    $("r4ResTitle").textContent = (e.t === "S" ? "You supported them. " : "You ended support. ") + "Profit " + $$s(e.profit) + ".";
+    $("r4ResText").innerHTML = e.t === "S" ? (c.device === "lease" ? "Subscribers stayed and kept paying." : c.credible ? "You kept the promise buyers paid for. Everybody got what they paid for." : "You kept a promise buyers didn't pay for. Honorable, and unrewarded.")
+      : (c.device === "lease" ? `${pct(ECON.LEASE_CANCEL)} of subscribers cancelled. Under a lease, a bad phone costs you directly.` : c.credible ? `You paid ${$$(ECON.N * c.penalty)} in penalties. The device did its job: breaking the promise didn't pay.` : `You paid ${$$(ECON.N * c.penalty)} in penalties for a promise nobody believed. The worst of both worlds.`);
+  }
+  function r4Next(){
+    const c = G.cur; c.pendingResult = null;
+    if (c.year < ECON.YEARS){ c.year++; saveLocal(); r4ShowYear(); return; }
+    c.done = true;
+    G.r4 = { total: c.total, device: c.device, penalty: c.penalty, D: c.D, credible: !!c.credible, choices: c.log.map(l => l.t).join("") };
+    saveLocal(); pushProgress(); r4ShowDone();
+  }
+  function r4ShowDone(){
+    const c = G.cur;
+    ["r4Device","r4Design","r4Reveal","r4Play","r4Result"].forEach(i => $(i).classList.add("hidden")); $("r4Done").classList.remove("hidden");
+    $("r4Final").textContent = $$s(c.total);
+    const better = G.r3 && c.total > G.r3.total;
+    $("r4DoneText").innerHTML = better ? `<b>Credibility paid.</b> Same wise buyers as Round 3, but this time they could count on you, so they paid for the whole phone, and you built a better one. Both sides gained. That is what the inability to commit was costing you.` : `Your device didn't lift you above Round 3. ${c.device === "guarantee" && !c.credible ? "A penalty too small to bite bought no trust and still had to be paid." : "Check which years you ended support."}`;
+    $("r4Compare").innerHTML = `<div class="k">Round 2: trusting buyers</div><div class="v">${$$s(G.r2 ? G.r2.total : 0)}</div>
+      <div class="k">Round 3: wise buyers, cheap talk</div><div class="v">${$$s(G.r3 ? G.r3.total : 0)}</div>
+      <div class="k">Round 4: wise buyers, ${DEVICES[c.device].name.toLowerCase()}</div><div class="v">${$$s(c.total)}</div>`;
+  }
+
+  /* =====================================================================
+     DONE
+     ===================================================================== */
+  function renderDone(){
+    show("viewDone");
+    const total = (G.r2 ? G.r2.total : 0) + (G.r3 ? G.r3.total : 0) + (G.r4 ? G.r4.total : 0);
+    $("doneTitle").textContent = `${myName}: ${$$s(total)}`;
+    $("doneKv").innerHTML = scoreKv(true);
+    let rank = "";
+    if (!solo && players && Object.keys(players).length){
+      const list = Object.values(players).filter(p => p.r4).map(p => p.total || 0).sort((a, b) => b - a);
+      const pos = list.findIndex(v => v <= total) + 1;
+      rank = list.length ? `You're ${pos ? "#" + pos : "in"} of ${list.length} who finished so far. The scoreboard is on the host screen.` : "";
+    }
+    $("doneRank").textContent = rank;
+    $("doneLine").textContent = "Round 2 was the money round. Ask yourself what had to be true for that to work.";
+    $("doneBtns").innerHTML = solo ? `<button class="btn btn-ghost btn-sm" onclick="App.restart()">Play again</button>` : "";
+  }
+  function restart(){ clearLocal(); G = newGame(); saveLocal(); route(); }
+
+  /* =====================================================================
+     HOST
+     ===================================================================== */
+  async function createGame(){
+    isHost = true; solo = false;
+    code = Array.from({length:4}, () => "ABCDEFGHJKLMNPQRSTUVWXYZ"[Math.floor(Math.random()*24)]).join("");
+    await db.ref(path()).set({ meta: { createdAt: Date.now() }, state: { phase: "lobby", createdAt: Date.now() } });
+    $("hostCode").textContent = code;
+    const web = /^https?:/.test(location.protocol);
+    const base = web ? location.host + location.pathname : "benjaminshiller.com/Obsolescence";
+    const url = (web ? location.origin + location.pathname : "https://benjaminshiller.com/Obsolescence") + "?g=" + code;
+    $("hostUrlHint").innerHTML = `Students open <b>${esc(base)}</b> and enter the code, or use the link <span class="mono">${esc(url)}</span>`;
+    $("topTag").innerHTML = `Hosting session <b>${code}</b>`;
+    listenGame();
+    show("viewHost");
+  }
+  async function setPhase(p){ await db.ref(path("state")).update({ phase: p, changedAt: Date.now() }); }
+  function renderHost(){
+    if (!state) return;
+    const phase = state.phase, idx = phaseIdx(phase);
+    const list = Object.entries(players);
+    $("hostCount").textContent = list.length;
+    $("hostPhaseNote").textContent = { lobby: "waiting", r1: "Round 1 open", r2: "Round 2 open", r3: "Round 3 open", r4: "Round 4 open", done: "closed" }[phase] || "";
+    const stageN = p => ({ r1: 1, r2: 2, r3: 3, r4: 4, done: 5 })[p.stage] || 1;
+    $("hostRoster").innerHTML = list.map(([id, p]) => `<span class="p ${stageN(p) > idx ? "in" : ""}">${esc(p.name)} · ${p.stage === "done" ? "✓" : "R" + stageN(p)}</span>`).join("");
+    ["r1","r2","r3","r4","done"].forEach((p, i) => { const b = $("btn" + (p === "done" ? "Done" : "R" + (i + 1))); b.classList.toggle("hidden", idx !== i); });
+    renderResults();
+  }
+  function tab(id){ resTab = id; renderResults(); }
+  function renderResults(){
+    const tabs = [["lead","Scoreboard"],["r1","Round 1: designs"],["r2","Round 2: after the sale"],["r3","Round 3: cheap talk"],["r4","Round 4: devices"],["box","What-if sandbox"]];
+    $("resTabs").innerHTML = tabs.map(t => `<button class="${t[0]===resTab?"sel":""}" onclick="App.tab('${t[0]}')">${t[1]}</button>`).join("");
+    const list = Object.values(players);
+    $("resN").textContent = `${list.length} player${list.length===1?"":"s"} · ${list.filter(p => p.stage === "done").length} finished`;
+    ({ lead: renderLead, r1: renderR1Res, r2: renderR2Res, r3: renderR3Res, r4: renderR4Res, box: renderSandbox })[resTab]();
+  }
+  function hist(items, colorFn){
+    const total = items.reduce((s, x) => s + x.n, 0) || 1;
+    return `<div class="hist">${items.map(x => `<div class="hrow"><div>${x.label}</div><div class="bar"><span class="${colorFn ? colorFn(x) : ""}" style="width:${(100*x.n/total).toFixed(0)}%"></span></div><div class="n">${x.n}</div></div>`).join("")}</div>`;
+  }
+  const countBy = (arr, key) => { const m = {}; arr.forEach(v => { const k = key(v); if (k == null) return; m[k] = (m[k] || 0) + 1; }); return m; };
+  function callout(k, v, d){ return `<div class="callout"><div class="k">${k}</div><div class="v">${v}</div><div class="d">${d}</div></div>`; }
+
+  function renderLead(){
+    const rows = Object.values(players).map(p => ({ name: p.name, r2: p.r2 ? p.r2.total : null, r3: p.r3 ? p.r3.total : null, r4: p.r4 ? p.r4.total : null, total: p.total || 0, stage: p.stage,
+      note: [p.r2 ? `R2 ${p.r2.choices}${p.r2.caught ? " (caught ×" + p.r2.caught + ")" : ""}` : "", p.r3 ? `R3 ${p.r3.D}yr${p.r3.pledge ? " pledge " + p.r3.pledge : ""} ${p.r3.choices}` : "", p.r4 ? `R4 ${DEVICES[p.r4.device].short}${p.r4.device === "guarantee" ? " $" + p.r4.penalty + (p.r4.credible ? "" : " ✗") : ""} ${p.r4.D}yr ${p.r4.choices}` : ""].filter(Boolean).join(" · ") }))
+      .sort((a, b) => b.total - a.total);
+    $("resBody").innerHTML = rows.length ? `<div style="overflow-x:auto"><table class="res"><tr><th>#</th><th>Player</th><th class="num">Round 2</th><th class="num">Round 3</th><th class="num">Round 4</th><th class="num">Total</th><th>What they did</th></tr>` +
+      rows.map((r, i) => `<tr class="${i === 0 && r.stage === "done" ? "top" : ""}"><td>${i + 1}</td><td><b>${esc(r.name)}</b>${r.stage !== "done" ? ` <span class="small">(${r.stage === "r1" ? "designing" : "on " + r.stage.toUpperCase()})</span>` : ""}</td><td class="num">${r.r2 == null ? "—" : $$s(r.r2)}</td><td class="num">${r.r3 == null ? "—" : $$s(r.r3)}</td><td class="num">${r.r4 == null ? "—" : $$s(r.r4)}</td><td class="num"><b>${$$s(r.total)}</b></td><td class="small mono">${esc(r.note)}</td></tr>`).join("") + `</table></div>
+      <ul class="discuss"><li>The top of the board was earned in Round 2, against buyers who never adjusted. Ask the leader what they assumed about their customers.</li><li>Round 3 totals are a fraction of Round 2 for everyone. Nothing about the technology changed. What did?</li><li>Whose Round 4 beat their Round 3? What did the device have to be, to work?</li></ul>` : `<p class="sub">No players yet.</p>`;
+  }
+  function renderR1Res(){
+    const ps = Object.values(players).filter(p => p.r1);
+    const block = (key, title, best, note) => { const c = countBy(ps, p => p.r1[key]); return `<div><h3>${title}</h3>${hist([1,2,3,4,5,6].map(D => ({ label: `${D} yr${D>1?"s":""}${D===best?" ★":""}`, n: c[D] || 0 })), x => x.label.includes("★") ? "gold" : "")}<p class="small">${note}</p></div>`; };
+    const bestBase = bestOf([1,2,3,4,5,6].map(D => price.naive(D) - ECON.COST[D-1])) + 1;
+    const bestUp = bestOf([1,2,3,4,5,6].map(D => price.upgrade(D) - ECON.COST[D-1])) + 1;
+    const bestRe = bestOf([1,2,3,4,5,6].map(D => price.resale(D) - ECON.COST[D-1])) + 1;
+    $("resBody").innerHTML = `<div class="callouts">${callout("Picked the efficient design first try", ps.filter(p => p.r1.base === bestBase).length + " / " + ps.length, "★ = profit-maximizing")}</div>
+      <div class="grid2" style="margin-top:12px">${block("base","Base design", bestBase, "Profit per phone peaks where the next year of durability costs more than buyers will pay for it. The efficient phone.")}${block("upgrade","Twist 1: buyers upgrade after 2 years", bestUp, "Durability nobody uses is waste. The optimal phone got shorter with no villain.")}${block("resale","Twist 2: resale market", bestRe, "Resale restores the first buyer's willingness to pay for later years, so durability is worth building again.")}</div>
+      <ul class="discuss"><li>Who built a 6-year phone in the base case, and why? (Usually: "durability is good." Good for whom, at what cost?)</li><li>Twist 1 is the Economist's fashion story. Twist 2 is Chapter 10's resale story. Put them together: what happens to durability when the used market disappears, as it has for digital goods?</li></ul>`;
+  }
+  function renderR2Res(){
+    const ps = Object.values(players).filter(p => p.r2);
+    if (!ps.length){ $("resBody").innerHTML = `<p class="sub">No Round 2 results yet.</p>`; return; }
+    const years = [0,1,2,3,4].map(y => { const c = { S: 0, N: 0, T: 0 }; ps.forEach(p => { const ch = p.r2.choices[y]; if (ch) c[ch]++; }); return c; });
+    const avg = ps.reduce((s, p) => s + p.r2.total, 0) / ps.length;
+    const allS = yearOutcome(R2_D, R2_MARGIN, "S").profit * ECON.YEARS, allN = yearOutcome(R2_D, R2_MARGIN, "N").profit * ECON.YEARS;
+    const nSup = ps.filter(p => /S/.test(p.r2.choices)).length, nThr = ps.filter(p => p.r2.thr > 0).length, nCaught = ps.filter(p => p.r2.caught > 0).length;
+    $("resBody").innerHTML = `<div class="callouts">${callout("Average five-year total", $$s(avg), `all-support would be ${$$(allS)}; all-neglect ${$$(allN)}`)}${callout("Ever supported", `${nSup} / ${ps.length}`, "chose Support in at least one year")}${callout("Ever throttled", `${nThr} / ${ps.length}`, `${nCaught} got caught at least once`)}</div>
+      <h3 style="margin-top:14px">What the class did, year by year</h3>
+      ${years.map((c, y) => { const t = c.S + c.N + c.T || 1; return `<div class="hrow" style="display:grid;grid-template-columns:70px 1fr 200px;gap:10px;align-items:center;margin:6px 0"><div>Year ${y+1}</div><div class="stack"><span class="S" style="width:${100*c.S/t}%"></span><span class="N" style="width:${100*c.N/t}%"></span><span class="T" style="width:${100*c.T/t}%"></span></div><div class="small mono">S ${c.S} · N ${c.N} · T ${c.T}</div></div>`; }).join("")}
+      <p class="small"><span class="pill S">Support</span> <span class="pill N">End support</span> <span class="pill T">Throttle</span></p>
+      <ul class="discuss"><li>Ask anyone who supported: why? What were you buying with that $2,000 a year? (In this round: nothing. Buyers never noticed.)</li><li>The throttling settlement was $25 a phone against a $320 margin on a replacement. Was the fine a deterrent or a cost of doing business?</li><li>List what had to be true for this round's winners to win: buyers who don't adjust, customers who can't leave, a penalty that doesn't bite, no promise anyone can hold you to, and a product you can still reach after the sale.</li></ul>`;
+  }
+  function renderR3Res(){
+    const ps = Object.values(players).filter(p => p.r3);
+    if (!ps.length){ $("resBody").innerHTML = `<p class="sub">No Round 3 results yet.</p>`; return; }
+    const cD = countBy(ps, p => p.r3.D), cP = countBy(ps, p => p.r3.pledge);
+    const best = bestOf([1,2,3,4,5,6].map(D => price.cheap(D) - ECON.COST[D-1])) + 1;
+    const avg = ps.reduce((s, p) => s + p.r3.total, 0) / ps.length;
+    const avg2 = ps.filter(p => p.r2).reduce((s, p) => s + p.r2.total, 0) / (ps.filter(p => p.r2).length || 1);
+    const kept = ps.filter(p => p.r3.pledge > 0 && p.r3.choices.slice(0, p.r3.pledge).indexOf("N") < 0).length, pledged = ps.filter(p => p.r3.pledge > 0).length;
+    const supportYears = ps.reduce((s, p) => s + (p.r3.choices.match(/S/g) || []).length, 0);
+    $("resBody").innerHTML = `<div class="callouts">${callout("Average five-year total", $$s(avg), `Round 2 average was ${$$s(avg2)}`)}${callout("Made a pledge", `${pledged} / ${ps.length}`, `${kept} kept it for the pledged years`)}${callout("Support-years chosen", supportYears, `of ${ps.length * ECON.YEARS} possible`)}</div>
+      <div class="grid2" style="margin-top:12px"><div><h3>Built to last</h3>${hist([1,2,3,4,5,6].map(D => ({ label: `${D} yr${D>1?"s":""}${D===best?" ★":""}`, n: cD[D] || 0 })), x => x.label.includes("★") ? "gold" : "")}</div><div><h3>Pledge announced</h3>${hist([0,1,2,3,4,5,6].map(k => ({ label: k ? `${k} yr${k>1?"s":""}` : "none", n: cP[k] || 0 })))}</div></div>
+      <ul class="discuss"><li>The efficient phone lasted 4 years in Round 1. Wise buyers made 3 years the money-maker. Nobody planned obsolescence; suspicion did it.</li><li>Ask the pledgers: what did you think the pledge would do? Ask the pledge-keepers: what did keeping it buy you?</li><li>Round 3 profits are a fraction of Round 2's. Who lost the difference, the firm or the buyers? (Both. That's the tell that this is a commitment problem, not a greed problem.)</li></ul>`;
+  }
+  function renderR4Res(){
+    const ps = Object.values(players).filter(p => p.r4);
+    if (!ps.length){ $("resBody").innerHTML = `<p class="sub">No Round 4 results yet.</p>`; return; }
+    const cDev = countBy(ps, p => p.r4.device), cPen = countBy(ps.filter(p => p.r4.device === "guarantee"), p => p.r4.penalty);
+    const notCred = ps.filter(p => p.r4.device === "guarantee" && !p.r4.credible).length;
+    const beat = ps.filter(p => p.r3 && p.r4.total > p.r3.total).length;
+    const avgBy = k => { const s = ps.filter(p => p.r4.device === k); return s.length ? s.reduce((a, p) => a + p.r4.total, 0) / s.length : null; };
+    $("resBody").innerHTML = `<div class="callouts">${callout("Beat their own Round 3", `${beat} / ${ps.length}`, "credibility restored the lost profit")}${callout("Guarantees nobody believed", notCred, `penalty below the ~$${Math.round(temptation(4, R2_MARGIN))}/phone temptation`)}${Object.keys(DEVICES).map(k => avgBy(k) == null ? "" : callout("Avg with " + DEVICES[k].short.toLowerCase(), $$s(avgBy(k)), `${cDev[k] || 0} chose it`)).join("")}</div>
+      <div class="grid2" style="margin-top:12px"><div><h3>Device chosen</h3>${hist(Object.keys(DEVICES).map(k => ({ label: DEVICES[k].short, n: cDev[k] || 0 })), () => "navy")}</div><div><h3>Penalty picked (guarantees)</h3>${hist(ECON.PENALTIES.map(p => ({ label: "$" + p, n: cPen[p] || 0 })), x => Number(x.label.slice(1)) < temptation(4, R2_MARGIN) ? "red" : "green")}</div></div>
+      <ul class="discuss"><li>A $25 penalty, the real Apple settlement, buys no trust: breaking the promise pays about $${Math.round(temptation(4, R2_MARGIN))} a phone a year. What size of penalty makes a promise credible, and who could impose it?</li><li>The lease made support pay for itself. It also made the customer a renter. Which of today's two readings is that: the cure, or the disease?</li><li>Regulation worked for everyone at once, including your rivals. Why might a phone maker quietly welcome a rule it publicly opposes?</li></ul>`;
+  }
+  function renderSandbox(){
+    const s = sandbox;
+    const row = (t, worldMargin, lockShare) => {
+      const N = ECON.N; const out = {};
+      ["S","N","T"].forEach(k => { const L = life(4, k); const sales = N / L * lockShare; const rev = sales * worldMargin; const sup = k === "S" ? N * s.sup : 0; const ex = k === "T" ? N * ECON.THR : 0; const risk = Math.min(1, ECON.CATCH[0] * s.catchMult); const caughtProfit = (N / 4 * lockShare) * worldMargin - ex - N * s.fine; out[k] = { p: rev - sup - ex, e: k === "T" ? (1 - risk) * (rev - sup - ex) + risk * caughtProfit : rev - sup - ex, risk }; });
+      return out;
+    };
+    const naive = row("naive", R2_MARGIN, s.lock / 100), wise = row("wise", price.cheap(3) - ECON.COST[2], s.lock / 100);
+    $("resBody").innerHTML = `<p class="sub">Change an assumption and watch the Round 2 year-by-year payoffs (4-year phone) move. Use it to answer "what if" questions in the debrief.</p>
+      <div class="slider"><div>Buyers who come back to you</div><input type="range" min="20" max="100" step="5" value="${s.lock}" oninput="App.sb('lock',this.value)"><div class="v">${s.lock}%</div></div>
+      <div class="slider"><div>Support cost per phone</div><input type="range" min="0" max="80" step="5" value="${s.sup}" oninput="App.sb('sup',this.value)"><div class="v">$${s.sup}</div></div>
+      <div class="slider"><div>Settlement per phone if caught</div><input type="range" min="0" max="400" step="25" value="${s.fine}" oninput="App.sb('fine',this.value)"><div class="v">$${s.fine}</div></div>
+      <div class="slider"><div>Chance of getting caught (×)</div><input type="range" min="0" max="6" step="0.5" value="${s.catchMult}" oninput="App.sb('catchMult',this.value)"><div class="v">${pct(Math.min(1, ECON.CATCH[0] * s.catchMult))}</div></div>
+      <div class="grid2" style="margin-top:12px">
+        <div><h3>Trusting buyers (pay $620)</h3><table class="res"><tr><th>Choice</th><th class="num">Profit this year</th></tr><tr><td><span class="pill S">Support</span></td><td class="num">${$$s(naive.S.p)}</td></tr><tr><td><span class="pill N">End support</span></td><td class="num">${$$s(naive.N.p)}</td></tr><tr><td><span class="pill T">Throttle</span> <span class="small">(first time)</span></td><td class="num">${$$s(naive.T.p)} <span class="small">· expected ${$$s(naive.T.e)}</span></td></tr></table></div>
+        <div><h3>Wise buyers (pay $${Math.round(price.cheap(3))} for a 3-yr phone)</h3><table class="res"><tr><th>Choice</th><th class="num">Profit this year</th></tr><tr><td><span class="pill S">Support</span></td><td class="num">${$$s(wise.S.p)}</td></tr><tr><td><span class="pill N">End support</span></td><td class="num">${$$s(wise.N.p)}</td></tr><tr><td><span class="pill T">Throttle</span></td><td class="num">${$$s(wise.T.p)} <span class="small">· expected ${$$s(wise.T.e)}</span></td></tr></table></div>
+      </div>
+      <p class="small" style="margin-top:10px">Credible 4-year support with trusting-level prices: ${$$s(yearOutcome(4, R2_MARGIN, "S").profit)} a year. When does ending support stop paying? When the buyers who leave don't come back, when the penalty is big enough, or when the price already assumes the worst.</p>`;
+  }
+  function sb(k, v){ sandbox[k] = Number(v); renderSandbox(); }
+
+  async function seedDemo(){
+    const names = ["Demo Ava","Demo Ben","Demo Cai","Demo Dee","Demo Eli","Demo Fay","Demo Gus","Demo Hal"];
+    const upd = {};
+    names.forEach((n, k) => {
+      const id = "demo" + k;
+      const r1 = { base: [4,4,6,3,4,5,4,2][k], upgrade: [2,2,3,2,2,4,2,2][k], resale: [4,4,5,3,4,4,4,3][k] };
+      const ch2 = ["TTNNN","NNNNN","SSSSS","TNTNN","NTTNN","SNNNN","TTTTT","NNTNN"][k];
+      let thr = 0, caught = 0, t2 = 0;
+      ch2.split("").forEach(t => { let c = false; if (t === "T"){ c = Math.random() < ECON.CATCH[Math.min(thr, 4)]; thr++; if (c) caught++; } t2 += Math.round(yearOutcome(4, R2_MARGIN, t, c).profit); });
+      const D3 = [3,3,4,2,3,4,3,3][k], pl = [0,4,2,0,3,0,1,5][k], ch3 = ["NNNNN","SSNNN","NNNNN","NNNNN","SNNNN","SSSSS","NNNNN","NNNNN"][k];
+      const m3 = price.cheap(D3) - ECON.COST[D3-1];
+      const t3 = ch3.split("").reduce((s, t) => s + Math.round(yearOutcome(D3, m3, t).profit), 0);
+      const dev = ["guarantee","lease","regulation","guarantee","guarantee","lease","regulation","guarantee"][k], pen = [100,null,null,25,50,null,null,100][k], D4 = [4,4,4,3,4,3,5,4][k];
+      const bm = price.naive(D4) - ECON.COST[D4-1]; let cred = true, m4 = bm;
+      if (dev === "guarantee"){ cred = pen >= temptation(D4, bm); m4 = cred ? bm : price.cheap(D4) - ECON.COST[D4-1]; }
+      const ch4 = ["SSSSS","SSSSS","SSSSS","NNNNN","SSSSS","SSNSS","SSSSS","SSSSS"][k];
+      const t4 = ch4.split("").reduce((s, t) => { if (dev === "lease") return s + Math.round(leaseYear(D4, t).profit); const o = yearOutcome(D4, m4, t); return s + Math.round(o.profit - (dev === "guarantee" && t === "N" ? ECON.N * pen : 0)); }, 0);
+      upd[`players/${id}`] = { name: n, joinedAt: Date.now(), stage: "done", updatedAt: Date.now(), r1, r2: { total: t2, choices: ch2, caught, thr }, r3: { total: t3, D: D3, pledge: pl, choices: ch3 }, r4: { total: t4, device: dev, penalty: pen, D: D4, credible: cred, choices: ch4 }, total: t2 + t3 + t4 };
+    });
+    await db.ref(path()).update(upd);
+    toast("Demo players added (names start with Demo).");
+  }
+
+  /* ---------- wire up ---------- */
+  document.addEventListener("DOMContentLoaded", () => {
+    boot();
+    const jc = $("joinCode"); if (jc) jc.addEventListener("input", e => e.target.value = e.target.value.toUpperCase());
+  });
+
+  return { showLanding, showJoin, showSolo, showHost, join, startSolo, createGame, setPhase, seedDemo, tab, sb,
+    pickD, r1Submit, r1Next, r2Start, r2Choose, r2Next, r3SetPledge, r3Submit, r3StartYears, r3Choose, r3Next,
+    r4PickDevice, r4SetPenalty, r4Submit, r4StartYears, r4Choose, r4Next, afterRound, restart };
+})();
+</script>
+</body>
+</html>
