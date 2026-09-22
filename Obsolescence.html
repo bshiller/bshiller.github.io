@@ -266,9 +266,7 @@ ul.discuss li{margin:6px 0}
 <div id="viewR2" class="shell mid hidden">
   <div class="card" id="r2IntroCard">
     <div class="rh"><div class="big">Round 2 <small>after the sale</small></div></div>
-    <p class="sub" style="margin-top:10px">You built the 4-year phone. Your <b>100 customers</b> each own one. They paid <b>$620</b> and they trust you: they assume you'll keep it running.</p>
-    <p class="sub">Each year you decide what to do with the software on the phones already out there. When a customer's phone gives out, they buy a new one from you at $620. It costs $340 to build, so each sale puts <b>$320</b> in your pocket. Nobody switches to a rival.</p>
-    <p class="sub">If phones last 4 years, 25 customers replace theirs each year. If they last 2, it's 50. <b>Five years. Highest total wins.</b></p>
+    <div id="r2IntroText" style="margin-top:10px"></div>
     <div class="btn-row"><button class="btn btn-primary" onclick="App.r2Start()">Start year 1</button></div>
   </div>
   <div class="card hidden" id="r2Play">
@@ -302,7 +300,8 @@ ul.discuss li{margin:6px 0}
   <div class="card" id="r3Design">
     <div class="rh"><div class="big">Round 3 <small>new model, wiser buyers</small></div></div>
     <p class="sub" style="margin-top:10px">Your customers have been through Round 2. They no longer take your word for it. When they price a phone they assume: <b>one year of real support</b> (the warranty), then a phone left on its own, which they value at <b>40 cents on the dollar</b>.</p>
-    <p class="sub">Design the new phone. You may also announce how many years of updates you promise. Below: what buyers will pay, what it costs to build, and how many you'd sell a year. <b>Profit isn't shown.</b></p>
+    <p class="sub">Design the new phone. As in Round 2, <b>how many you sell each year depends on how long the phone lasts</b>: 100 customers ÷ the years they keep it. A shorter phone means more sales a year, each at a lower price; a longer one, fewer sales at a higher price. Your score is five years of yearly profit, so the replacement cycle is already counted.</p>
+    <p class="sub">You may also announce how many years of updates you promise. Below: what buyers will pay, what it costs to build, and how many you'd sell a year with and without support. <b>Profit isn't shown.</b></p>
     <table class="dt" id="r3Table"></table>
     <div class="eyebrow" style="margin-top:14px">Announce a support pledge (optional)</div>
     <div class="pledge" id="r3Pledge"></div>
@@ -718,10 +717,21 @@ const App = (() => {
      ===================================================================== */
   const R2_D = 4;
   const R2_MARGIN = price.naive(R2_D) - ECON.COST[R2_D - 1]; // 320
+  // chance of being caught this year: rises with each throttle; once caught, regulators watch and detection is certain
+  const catchRisk = c => c.caught > 0 ? 1 : ECON.CATCH[Math.min(c.thr, ECON.CATCH.length - 1)];
   function renderR2(){
     show("viewR2");
     const c = G.cur;
-    if (!c){ $("r2IntroCard").classList.remove("hidden"); ["r2Play","r2Result","r2Done"].forEach(i => $(i).classList.add("hidden")); return; }
+    if (!c){
+      const P = price.naive(R2_D), K = ECON.COST[R2_D - 1], risks = ECON.CATCH.map(pct).join(", then ");
+      $("r2IntroText").innerHTML = `
+        <p class="sub">You built the ${R2_D}-year phone. Your <b>${ECON.N} customers</b> each own one. They paid <b>${$$(P)}</b> and they trust you: they assume you'll keep it running.</p>
+        <p class="sub">They didn't all buy on the same day, so at any moment some have a new phone and some an old one. When a phone gives out, its owner buys a new one from you at ${$$(P)}. It costs ${$$(K)} to build, so each sale puts <b>${$$(P - K)}</b> in your pocket. Nobody switches to a rival.</p>
+        <p class="sub">So the number you sell each year is <b>${ECON.N} ÷ the years a phone lasts</b>: phones that last 4 years mean 25 sales a year; 3 years, about 33; 2 years, 50.</p>
+        <p class="sub">Each year you decide what to do with the software on the phones already out there. Throttling can get you caught: the chance rises each time you do it (${risks}), and <b>once you've been caught, regulators watch you, so any further throttling is certain to be detected</b>.</p>
+        <p class="sub"><b>Five years. Highest total wins.</b></p>`;
+      $("r2IntroCard").classList.remove("hidden"); ["r2Play","r2Result","r2Done"].forEach(i => $(i).classList.add("hidden")); return;
+    }
     if (c.done){ r2ShowDone(); return; }
     if (c.pendingResult){ r2ShowResult(c.pendingResult); return; }
     r2ShowYear();
@@ -733,8 +743,8 @@ const App = (() => {
     $("r2Play").classList.remove("hidden");
     $("r2Year").textContent = c.year; $("r2Prog").textContent = c.log.map(l => l.t).join(" ");
     $("r2Total").textContent = $$s(c.total); $("r2Thr").textContent = c.thr;
-    const risk = ECON.CATCH[Math.min(c.thr, ECON.CATCH.length - 1)];
-    $("r2Risk").textContent = pct(risk);
+    const risk = catchRisk(c);
+    $("r2Risk").textContent = pct(risk) + (c.caught ? " (watched)" : "");
     const S = yearOutcome(R2_D, R2_MARGIN, "S"), N = yearOutcome(R2_D, R2_MARGIN, "N"), T = yearOutcome(R2_D, R2_MARGIN, "T"), TC = yearOutcome(R2_D, R2_MARGIN, "T", true);
     $("r2Opts").innerHTML = `
       <button class="opt" onclick="App.r2Choose('S')">
@@ -754,13 +764,13 @@ const App = (() => {
         <div class="desc">Costs $${ECON.THR} per phone. Old phones crawl, so people give up after ${T.L} years.</div>
         <div class="math">${n1(T.sales)} sales × $${R2_MARGIN} = ${$$(T.revenue)}<br>− update ${$$(T.extra)}</div>
         <div class="profit">${$$s(T.profit)}</div>
-        <div class="risk">${pct(risk)} chance a researcher notices. If caught: $${ECON.FINE}-a-phone settlement (${$$(TC.fine)}) and you must offer cheap fixes, so sales fall back to ${n1(TC.sales)}: ${$$s(TC.profit)}.</div>
+        <div class="risk">${c.caught ? "You've been caught before, so regulators are watching: throttling again is certain to be detected." : `${pct(risk)} chance a researcher notices (it rises each time you throttle; once caught, you're watched and always detected).`} If caught: $${ECON.FINE}-a-phone settlement (${$$(TC.fine)}) and you must offer cheap fixes, so sales fall back to ${n1(TC.sales)}: ${$$s(TC.profit)}.</div>
       </button>`;
   }
   function r2Choose(t){
     const c = G.cur;
     let caught = false;
-    if (t === "T"){ const risk = ECON.CATCH[Math.min(c.thr, ECON.CATCH.length - 1)]; caught = Math.random() < risk; c.thr++; if (caught) c.caught++; }
+    if (t === "T"){ const risk = catchRisk(c); caught = Math.random() < risk; c.thr++; if (caught) c.caught++; }
     const o = yearOutcome(R2_D, R2_MARGIN, t, caught);
     const entry = { year: c.year, t, caught, profit: Math.round(o.profit), sales: o.sales };
     c.log.push(entry); c.total += entry.profit;
@@ -772,7 +782,7 @@ const App = (() => {
     $("r2ResYear").textContent = e.year;
     const names = { S: "You supported the old phones.", N: "You ended support.", T: e.caught ? "You throttled, and got caught." : "You throttled. Nobody noticed." };
     $("r2ResTitle").textContent = names[e.t] + " Profit " + $$s(e.profit) + ".";
-    $("r2ResText").innerHTML = e.caught ? `A battery researcher published benchmarks. Class actions followed. You paid $${ECON.FINE} per phone, offered discounted fixes, and the year's extra sales evaporated. The settlement per phone is a fraction of the $${R2_MARGIN} you make on a new one.` :
+    $("r2ResText").innerHTML = e.caught ? `A battery researcher published benchmarks. Class actions followed. You paid $${ECON.FINE} per phone, offered discounted fixes, and the year's extra sales evaporated. The settlement per phone is a fraction of the $${R2_MARGIN} you make on a new one. Regulators are now watching: any further throttling will be detected for certain.` :
       e.t === "T" ? `Old phones got slow, and ${n1(e.sales)} customers bought new ones. Your buyers still believe the next phone will be looked after.` :
       e.t === "N" ? `Apps stopped working on older phones and ${n1(e.sales)} customers replaced theirs. No one blamed you.` :
       `${n1(e.sales)} customers replaced worn-out phones. The rest are happy, and it cost you.`;
@@ -818,14 +828,14 @@ const App = (() => {
   }
   // Round 3 table: per phone, plus phones sold per year. Profit is per year, since that is what the score counts.
   function r3Table(withProfit, pick, best){
-    let h = `<tr><th>Built to last</th><th>Buyers will pay</th><th>Cost to build</th><th>Sold per year*</th>${withProfit ? "<th>Profit per year if you end support</th><th>…if you keep supporting</th>" : ""}</tr>`;
+    let h = `<tr><th>Built to last</th><th>Buyers will pay</th><th>Cost to build</th><th>Sold per year if supported*</th><th>Sold per year if you end support*</th>${withProfit ? "<th>Profit per year if you keep supporting</th><th>…if you end support</th>" : ""}</tr>`;
     for (let D = 1; D <= 6; D++){
       const p = price.cheap(D), c = ECON.COST[D - 1], m = p - c;
       const N = yearOutcome(D, m, "N").profit, S = yearOutcome(D, m, "S").profit;
       const cls = (pick === D ? "pick " : "") + (best === D ? "best" : "");
-      h += `<tr class="${cls}"><td>${D} year${D > 1 ? "s" : ""}${pick === D ? '<span class="tag you">you</span>' : ""}${best === D ? '<span class="tag">best</span>' : ""}</td><td class="money">${$$(p)}</td><td class="money">${$$(c)}</td><td class="mono">${n1(ECON.N / life(D, "N"))}</td>${withProfit ? `<td class="money ${N < 0 ? "neg" : "pos"}">${$$s(N)}</td><td class="money ${S < 0 ? "neg" : "pos"}">${$$s(S)}</td>` : ""}</tr>`;
+      h += `<tr class="${cls}"><td>${D} year${D > 1 ? "s" : ""}${pick === D ? '<span class="tag you">you</span>' : ""}${best === D ? '<span class="tag">best</span>' : ""}</td><td class="money">${$$(p)}</td><td class="money">${$$(c)}</td><td class="mono">${n1(ECON.N / life(D, "S"))}</td><td class="mono">${n1(ECON.N / life(D, "N"))}</td>${withProfit ? `<td class="money ${S < 0 ? "neg" : "pos"}">${$$s(S)}</td><td class="money ${N < 0 ? "neg" : "pos"}">${$$s(N)}</td>` : ""}</tr>`;
     }
-    h += `<tr><td colspan="${withProfit ? 6 : 4}" class="small" style="text-align:left">*Your 100 customers replace a phone when it stops being worth keeping. If you end support after the warranty year, as they expect, that is a year early.</td></tr>`;
+    h += `<tr><td colspan="${withProfit ? 7 : 5}" class="small" style="text-align:left">*Sold per year = ${ECON.N} customers ÷ the years they keep the phone. With support they keep it its whole built life. If you end support after the warranty year, as buyers expect, they give up a year early. Profit per year = sales × (price − cost) − support cost ($${ECON.SUP} a phone if you support). Your score is five of these years.</td></tr>`;
     return h;
   }
   function r3SetPledge(k, btn){ btn.parentElement.querySelectorAll("button").forEach(b => b.classList.remove("sel")); btn.classList.add("sel"); r3pledge = k; }
@@ -844,7 +854,7 @@ const App = (() => {
     $("r3RevealTitle").textContent = `Best: ${best} years, then stop supporting it` + (c.D === best ? " — you nailed the design" : ` (you chose ${c.D})`);
     $("r3PledgeText").innerHTML = c.pledge ? `You pledged <b>${c.pledge} year${c.pledge>1?"s":""}</b> of updates. Buyers' reply: <i>"That's what they all say."</i> Nothing you can say changes what they pay, because nothing stops you changing your mind after the sale.` : `You made no pledge. Buyers assume the worst either way.`;
     $("r3RevealTable").innerHTML = r3Table(true, c.D, best);
-    $("r3RevealText").innerHTML = `Two things shrink the phone. Buyers won't pay for years they expect to be bad, so the later years stop covering their cost. And a phone that dies sooner sells more often. In Round 1 the best phone lasted ${basebest} years and, fully supported, earned ${$$(commitYr)} a year. Now the best is a ${best}-year phone you then abandon, for ${$$(yearly[best-1])} a year. <b>Nobody had to plan anything. Suspicion alone shortened the phone, and it cost you most of your profit.</b>`;
+    $("r3RevealText").innerHTML = `Two things shrink the phone. Buyers won't pay for years they expect to be bad, so the later years stop covering their cost. And a phone that dies sooner sells more often: a 3-year phone you abandon sells 50 a year, a 4-year one 33. Those extra sales are already in the yearly figures, and your score is five such years. In Round 1 the best phone lasted ${basebest} years and, fully supported, earned ${$$(commitYr)} a year. Now the best is a ${best}-year phone you then abandon, for ${$$(yearly[best-1])} a year. <b>Nobody had to plan anything. Suspicion alone shortened the phone, and it cost you most of your profit.</b>`;
   }
   function r3StartYears(){ G.cur.started = true; saveLocal(); r3ShowYear(); }
   function r3ShowYear(){
@@ -1176,7 +1186,7 @@ const App = (() => {
       <div class="slider"><div>Settlement per phone if caught</div><input type="range" min="0" max="400" step="25" value="${s.fine}" oninput="App.sb('fine',this.value)"><div class="v">$${s.fine}</div></div>
       <div class="slider"><div>Chance of getting caught (×)</div><input type="range" min="0" max="6" step="0.5" value="${s.catchMult}" oninput="App.sb('catchMult',this.value)"><div class="v">${pct(Math.min(1, ECON.CATCH[0] * s.catchMult))}</div></div>
       <div class="grid2" style="margin-top:12px">
-        <div><h3>Trusting buyers (pay $620)</h3><table class="res"><tr><th>Choice</th><th class="num">Profit this year</th></tr><tr><td><span class="pill S">Support</span></td><td class="num">${$$s(naive.S.p)}</td></tr><tr><td><span class="pill N">End support</span></td><td class="num">${$$s(naive.N.p)}</td></tr><tr><td><span class="pill T">Throttle</span> <span class="small">(first time)</span></td><td class="num">${$$s(naive.T.p)} <span class="small">· expected ${$$s(naive.T.e)}</span></td></tr></table></div>
+        <div><h3>Trusting buyers (pay ${$$(price.naive(4))})</h3><table class="res"><tr><th>Choice</th><th class="num">Profit this year</th></tr><tr><td><span class="pill S">Support</span></td><td class="num">${$$s(naive.S.p)}</td></tr><tr><td><span class="pill N">End support</span></td><td class="num">${$$s(naive.N.p)}</td></tr><tr><td><span class="pill T">Throttle</span> <span class="small">(first time)</span></td><td class="num">${$$s(naive.T.p)} <span class="small">· expected ${$$s(naive.T.e)}</span></td></tr></table></div>
         <div><h3>Wise buyers (pay $${Math.round(price.cheap(3))} for a 3-yr phone)</h3><table class="res"><tr><th>Choice</th><th class="num">Profit this year</th></tr><tr><td><span class="pill S">Support</span></td><td class="num">${$$s(wise.S.p)}</td></tr><tr><td><span class="pill N">End support</span></td><td class="num">${$$s(wise.N.p)}</td></tr><tr><td><span class="pill T">Throttle</span></td><td class="num">${$$s(wise.T.p)} <span class="small">· expected ${$$s(wise.T.e)}</span></td></tr></table></div>
       </div>
       <p class="small" style="margin-top:10px">Credible 4-year support with trusting-level prices: ${$$s(yearOutcome(4, R2_MARGIN, "S").profit)} a year. When does ending support stop paying? When the buyers who leave don't come back, when the penalty is big enough, or when the price already assumes the worst.</p>`;
