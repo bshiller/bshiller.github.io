@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#2C3E50">
+<title>Decouple? — You Run U.S.–China Policy</title>
+<style>
+:root{--navy:#2C3E50;--navy2:#22303f;--navy3:#1a2530;--gold:#F1C40F;--gold2:#c99f0b;--teal:#5EA8A7;--teal2:#3f8b8a;--ink:#EAF0F4;--muted:#9FB0BE;--red:#E0665C;--green:#4CC08A;--line:rgba(255,255,255,.12);--font:"Segoe UI",Calibri,system-ui,-apple-system,Helvetica,Arial,sans-serif}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--navy3);color:var(--ink);font-family:var(--font);line-height:1.4}
+body{min-height:100vh}
+h1,h2,h3{margin:0 0 .4em;line-height:1.15}
+h1{font-size:clamp(1.7rem,5vw,2.6rem)} h2{font-size:clamp(1.25rem,3.6vw,1.7rem)} h3{font-size:1.05rem;color:var(--gold)}
+p{margin:.4em 0}
+a{color:var(--teal)}
+.hidden{display:none!important}
+.muted{color:var(--muted)} .gold{color:var(--gold)} .teal{color:var(--teal)} .red{color:var(--red)} .green{color:var(--green)}
+.small{font-size:.86em}
+.shell{max-width:1180px;margin:0 auto;padding:1rem}
+.narrow{max-width:620px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.6rem 1rem;background:var(--navy);border-bottom:3px solid var(--gold)}
+.top .brand{font-weight:800;letter-spacing:.02em}
+.top .brand span{color:var(--gold)}
+@media(max-width:600px){.top .brand span{display:none}.top{padding:.5rem .8rem}}
+.pill{display:inline-block;padding:.15em .6em;border-radius:999px;background:var(--navy2);border:1px solid var(--line);font-size:.85em;color:var(--muted)}
+.pill b{color:var(--gold)}
+.panel{background:var(--navy2);border:1px solid var(--line);border-radius:14px;padding:1rem;margin:.8rem 0}
+.panel.gold{border-color:var(--gold);color:var(--ink)} .panel.teal{border-color:var(--teal);color:var(--ink)} .panel.red{border-color:var(--red);color:var(--ink)}
+.lede{font-size:1.1em;color:#d6e0e8}
+button{font:inherit;cursor:pointer;border:0;border-radius:10px;padding:.7em 1.1em;font-weight:700;background:var(--gold);color:var(--navy3)}
+button.secondary{background:var(--navy2);color:var(--ink);border:1px solid var(--line)}
+button.teal{background:var(--teal);color:#0b1a1a}
+button.big{width:100%;font-size:1.15em;padding:.9em}
+button:disabled{opacity:.45;cursor:not-allowed}
+input[type=text]{font:inherit;padding:.65em .8em;border-radius:10px;border:1px solid var(--line);background:var(--navy3);color:var(--ink);width:100%}
+input.code{text-transform:uppercase;letter-spacing:.3em;font-weight:800;text-align:center;font-size:1.3em}
+.row{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+@media(max-width:700px){.grid2{grid-template-columns:1fr}}
+.toast{position:fixed;left:50%;bottom:1.2rem;transform:translateX(-50%);background:var(--gold);color:var(--navy3);padding:.6em 1em;border-radius:10px;font-weight:700;z-index:50;box-shadow:0 6px 24px rgba(0,0,0,.4)}
+#diag{position:fixed;top:0;left:0;right:0;z-index:60}
+#diag .bar{background:var(--red);color:#fff;padding:.6em 1em;font-weight:600}
+#diag .bar code{background:rgba(0,0,0,.25);padding:.1em .3em;border-radius:4px}
+
+/* ---------- gauges ---------- */
+.gauges{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;position:sticky;top:0;z-index:5;background:var(--navy3);padding:.5rem 0;border-bottom:1px solid var(--line)}
+@media(max-width:700px){.gauges{grid-template-columns:repeat(2,1fr);gap:.35rem;padding:.35rem 0}.gauge{padding:.3rem .5rem}.gauge .val{font-size:1.1em}.gauge .proj{display:none}.gauge .bar{margin-top:.15rem;height:4px}}
+.gauge{background:var(--navy2);border:1px solid var(--line);border-radius:10px;padding:.45rem .6rem}
+.gauge .lbl{font-size:.72em;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gauge .val{font-size:1.35em;font-weight:800}
+.gauge .bar{height:6px;background:rgba(255,255,255,.08);border-radius:3px;position:relative;margin-top:.3rem;overflow:hidden}
+.gauge .bar i{position:absolute;top:0;bottom:0;background:var(--teal);transition:left .5s,width .5s,background .5s}
+.gauge .bar i.bad{background:var(--red)}
+.gauge .bar:before{content:"";position:absolute;left:50%;top:0;bottom:0;width:1px;background:rgba(255,255,255,.35)}
+.gauge .proj{font-size:.75em;color:var(--muted)}
+
+/* ---------- industry cards ---------- */
+.ind{background:var(--navy2);border:1px solid var(--line);border-radius:12px;padding:.8rem;margin:.6rem 0}
+.ind h3{color:var(--ink);font-size:1.05em;margin-bottom:.1em}
+.ind .why{font-size:.86em;color:var(--muted);margin:.1em 0 .5em}
+.seg{display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
+.seg button{padding:.55em .2em;font-size:.78em;font-weight:600;background:var(--navy3);color:var(--muted);border:1px solid var(--line);border-radius:8px;line-height:1.15}
+.seg button.on{background:var(--gold);color:var(--navy3);border-color:var(--gold)}
+.seg button .n{display:block;font-size:1.25em;font-weight:800}
+.stakes{display:flex;gap:.8rem;flex-wrap:wrap;font-size:.8em;margin-top:.45rem;color:#c9d5df}
+.stakes b{color:var(--gold)}
+
+/* ---------- choice cards (rounds 2/3) ---------- */
+.choice{display:grid;gap:.5rem}
+.choice button{text-align:left;background:var(--navy3);color:var(--ink);border:1px solid var(--line);font-weight:500;padding:.75em .9em}
+.choice button.on{border-color:var(--gold);background:#3a3410;box-shadow:inset 0 0 0 1px var(--gold)}
+.choice button b{display:block;color:var(--gold);margin-bottom:.15em}
+.choice button.on b{color:var(--gold)}
+.choice button .hint{font-size:.85em;color:var(--muted)}
+
+/* ---------- results ---------- */
+.delta{display:grid;grid-template-columns:1fr auto auto;gap:.3rem .9rem;align-items:center;font-size:.95em}
+.delta .h{font-size:.75em;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.delta .num{font-weight:800;text-align:right;min-width:3.4em}
+.surprise{border-left:4px solid var(--gold);background:rgba(241,196,15,.07);padding:.7rem .9rem;border-radius:0 10px 10px 0;margin:.55rem 0}
+.surprise h4{margin:0 0 .25em;color:var(--gold);font-size:1em}
+.surprise p{margin:0;font-size:.93em}
+.note{border-left:4px solid var(--teal);background:rgba(94,168,167,.08);padding:.6rem .9rem;border-radius:0 10px 10px 0;margin:.5rem 0;font-size:.93em}
+table.two{width:100%;border-collapse:collapse;font-size:.95em}
+table.two th,table.two td{padding:.45em .5em;border-bottom:1px solid var(--line);text-align:center}
+table.two td:first-child,table.two th:first-child{text-align:left}
+table.two th{color:var(--muted);font-weight:600;font-size:.85em;text-transform:uppercase;letter-spacing:.04em}
+.arrowup{color:var(--red);font-weight:800} .arrowdn{color:var(--teal);font-weight:800}
+.reveal{animation:fadeUp .6s ease-out both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.step{margin:.9rem 0}
+.era{display:inline-block;font-size:.8em;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);border:1px solid var(--gold);padding:.2em .7em;border-radius:999px;margin-bottom:.5rem}
+
+/* ---------- reroute animation ---------- */
+.route{display:block;width:100%;max-width:560px;margin:.5rem auto;background:var(--navy3);border-radius:12px}
+.route .node{fill:var(--navy2);stroke:var(--line)}
+.route text{fill:var(--ink);font-family:var(--font);font-size:13px;font-weight:700;text-anchor:middle}
+.route .lab{fill:var(--muted);font-weight:500;font-size:11px}
+.route .flow{stroke:var(--red);stroke-width:5;fill:none;stroke-linecap:round;stroke-dasharray:10 8;animation:dash 1.2s linear infinite}
+.route .flow.gone{stroke:#55636f;stroke-dasharray:4 8;animation:none;opacity:.5}
+.route .flow.new{stroke:var(--gold)}
+@keyframes dash{to{stroke-dashoffset:-18}}
+@media(prefers-reduced-motion:reduce){.route .flow{animation:none}}
+
+/* ---------- dice / crisis ---------- */
+.die{font-size:3rem;text-align:center;margin:.5rem 0;letter-spacing:.1em}
+.crisis{border:2px solid var(--red);background:radial-gradient(ellipse at top,#4a1f1a 0%,var(--navy2) 70%);border-radius:14px;padding:1rem}
+.calm{border:2px solid var(--teal);background:radial-gradient(ellipse at top,#173a3a 0%,var(--navy2) 70%);border-radius:14px;padding:1rem}
+.prob{height:12px;background:rgba(255,255,255,.08);border-radius:6px;overflow:hidden;margin:.4rem 0}
+.prob i{display:block;height:100%;background:var(--red)}
+
+/* ---------- split (counterfactual) ---------- */
+.split{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+@media(max-width:600px){.split{grid-template-columns:1fr}}
+.world{border-radius:12px;padding:.8rem;border:1px solid var(--line);background:var(--navy2)}
+.world.obs{border-color:var(--teal)} .world.cf{border-color:var(--gold);border-style:dashed}
+.world h4{margin:0 0 .3em;font-size:.8em;letter-spacing:.1em;text-transform:uppercase}
+.world .big{font-size:1.5em;font-weight:800}
+.world ul{padding-left:1.1rem;margin:.3rem 0;font-size:.93em}
+.world li{margin:.2em 0}
+
+/* ---------- host ---------- */
+.hostgrid{display:grid;grid-template-columns:1.1fr 1fr;gap:1rem}
+@media(max-width:900px){.hostgrid{grid-template-columns:1fr}}
+#viewHost.wrapmode .hostgrid{grid-template-columns:1fr}
+#viewHost.wrapmode .code{font-size:2rem}
+#viewHost.wrapmode .hostgrid>div:first-child{display:flex;gap:1rem;flex-wrap:wrap;align-items:flex-start}
+#viewHost.wrapmode .hostgrid>div:first-child>*{flex:1;min-width:16rem;margin:0}
+.code{font-size:clamp(2.4rem,7vw,4.6rem);font-weight:900;letter-spacing:.18em;color:var(--gold);line-height:1}
+.hostbar{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center;margin:.6rem 0}
+.count{font-size:2.2em;font-weight:900}
+.dist{display:grid;grid-template-columns:auto 1fr;gap:.25rem .6rem;align-items:center;font-size:.9em}
+.dist .bars{display:grid;grid-template-columns:repeat(5,1fr);gap:3px;height:22px}
+.dist .bars i{display:block;background:var(--teal);border-radius:3px;align-self:end;position:relative;min-height:2px}
+.dist .bars i:after{content:attr(data-n);position:absolute;left:0;right:0;top:-1.05em;font-size:.75em;text-align:center;color:var(--muted)}
+.dist .bars.hot i{background:var(--gold)}
+.players{display:flex;flex-wrap:wrap;gap:.35rem}
+.players span{background:var(--navy3);border:1px solid var(--line);border-radius:6px;padding:.15em .5em;font-size:.85em}
+.players span.done{border-color:var(--teal);color:var(--teal)}
+.scatter{width:100%;height:auto;background:var(--navy3);border-radius:12px;border:1px solid var(--line)}
+.scatter text{font-family:var(--font);fill:var(--muted);font-size:12px}
+.scatter .axis{stroke:rgba(255,255,255,.25)}
+.scatter .grid{stroke:rgba(255,255,255,.07)}
+.scatter .dot{stroke:#0b1218;stroke-width:1}
+.scatter .dot.hit{fill:var(--red)} .scatter .dot.ok{fill:var(--teal)}
+.scatter .name{fill:var(--ink);font-size:10px}
+.twin{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+.bignum{font-size:clamp(2rem,6vw,3.6rem);font-weight:900;line-height:1}
+.timer{font-size:2.4em;font-weight:900;font-variant-numeric:tabular-nums;color:var(--gold)}
+.legend{display:flex;gap:1rem;font-size:.85em;color:var(--muted)} .legend i{display:inline-block;width:.8em;height:.8em;border-radius:50%;margin-right:.3em;vertical-align:middle}
+.tabs{display:flex;gap:.4rem;flex-wrap:wrap;margin:.5rem 0}
+.tabs button{background:var(--navy2);color:var(--muted);border:1px solid var(--line);font-weight:600;padding:.45em .8em}
+.tabs button.on{background:var(--gold);color:var(--navy3);border-color:var(--gold)}
+.foot{color:var(--muted);font-size:.8em;text-align:center;margin:1.5rem 0}
+</style>
+</head>
+<body>
+<div id="diag"></div>
+<div id="toast" class="toast hidden"></div>
+
+<div class="top">
+  <div class="brand">DECOUPLE? <span>You run U.S.–China policy</span></div>
+  <div id="topRight" class="row"></div>
+</div>
+
+<!-- ===== setup (config missing) ===== -->
+<section id="viewSetup" class="shell narrow hidden">
+  <h1>Almost ready</h1>
+  <p class="lede">This page needs a Firebase Realtime Database so the class can play from their phones and you can see everyone's results on the projector.</p>
+  <div class="panel">
+    <ol style="padding-left:1.2rem;margin:0">
+      <li>Open this file in a text editor and find <code>FIREBASE_CONFIG</code> near the top of the script.</li>
+      <li>Paste your project's config from the Firebase console (Project settings → Your apps). Keep the name <code>FIREBASE_CONFIG</code>, and make sure it includes <code>databaseURL</code>.</li>
+      <li>Upload the file and reload this page.</li>
+    </ol>
+  </div>
+  <p class="muted">The same project you use for the other class games works. Sessions are stored under <code>games/dec-CODE</code>.</p>
+  <button class="secondary" onclick="App.solo()">Play solo without a database</button>
+</section>
+
+<!-- ===== landing ===== -->
+<section id="viewLanding" class="shell narrow hidden">
+  <h1>Decouple?</h1>
+  <p class="lede">The United States and China are deeply economically intertwined. For the next 15 simulated years, <b>you</b> run U.S. economic policy toward China. Not "decouple or don't" — <b>where, how much, and why.</b></p>
+  <div class="panel gold">
+    <h3>Join the class session</h3>
+    <div class="row">
+      <input id="joinCode" class="code" type="text" maxlength="4" placeholder="CODE" autocomplete="off" autocapitalize="characters" style="max-width:9em">
+      <input id="joinName" type="text" maxlength="24" placeholder="Your first name" autocomplete="given-name" style="flex:1;min-width:10em">
+    </div>
+    <button class="big" style="margin-top:.6rem" onclick="App.join()">Join</button>
+  </div>
+  <div class="row" style="justify-content:space-between">
+    <button class="secondary" onclick="App.hostSetup()">Run a session (instructor)</button>
+    <button class="secondary" onclick="App.solo()">Play solo / preview</button>
+  </div>
+  <p class="foot">This is a model, not a forecast. The numbers illustrate economic mechanisms; economists disagree about their magnitudes.</p>
+</section>
+
+<!-- ===== host setup ===== -->
+<section id="viewHostSetup" class="shell narrow hidden">
+  <h1>Run a session</h1>
+  <div class="panel">
+    <p>Students open this same page, enter the 4-letter code and their name. You control when each round opens; students see their own results the moment they submit. At the end, the projector shows the whole class.</p>
+    <label class="row"><input id="optTimer" type="checkbox" checked> Show a decision timer on the projector (3 min for round 1, 2 min after)</label>
+  </div>
+  <button class="big" onclick="App.createSession()">Open the lobby</button>
+  <p><button class="secondary" onclick="App.show('viewLanding')">Back</button></p>
+</section>
+
+<!-- ===== host ===== -->
+<section id="viewHost" class="shell hidden">
+  <div class="hostgrid">
+    <div>
+      <div class="panel gold" style="text-align:center">
+        <div class="muted small">Join at <b id="hostUrl" class="gold"></b> with code</div>
+        <div class="code" id="hostCode">----</div>
+        <div class="muted small" id="hostStatusLine">Lobby open</div>
+      </div>
+      <div class="hostbar" id="hostControls"></div>
+      <div class="panel">
+        <div class="row" style="justify-content:space-between"><b><span id="hostCount" class="count">0</span> <span class="muted">joined</span></b><span id="hostSubmitted" class="pill"></span><span id="hostTimer" class="timer hidden"></span></div>
+        <div class="players" id="hostPlayers" style="margin-top:.5rem"></div>
+      </div>
+    </div>
+    <div id="hostMain"></div>
+  </div>
+  <p class="foot"><button class="secondary small" onclick="App.addBots(8)">Add 8 computer players (for preview)</button> <button class="secondary small" onclick="App.abandon()">Leave session</button></p>
+</section>
+
+<!-- ===== player ===== -->
+<section id="viewPlayer" class="shell narrow hidden">
+  <div id="gauges" class="gauges hidden"></div>
+  <div id="playerMain"></div>
+</section>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
+/* =====================================================================
+   PASTE YOUR FIREBASE CONFIG HERE
+   Pre-filled with the same project as the other class games
+   (sessions are stored under games/dec-CODE, so the existing rules work).
+   Either name is fine if you paste a fresh snippet: FIREBASE_CONFIG or firebaseConfig.
+   ===================================================================== */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyDQ8gn5w_Jj4OzcXFBz2lY2SKuaKEo2wbk",
+  authDomain: "obfuscationgame.firebaseapp.com",
+  databaseURL: "https://obfuscationgame-default-rtdb.firebaseio.com",
+  projectId: "obfuscationgame",
+  storageBucket: "obfuscationgame.firebasestorage.app",
+  messagingSenderId: "443679460937",
+  appId: "1:443679460937:web:d6b2806717894b3c923998"
+};
+/* ===================================================================== */
+/* =====================================================================
+   DECOUPLE? — game engine (pure functions, no DOM)
+   ---------------------------------------------------------------------
+   This is a model, not a forecast. Every number below is an illustrative
+   parameter chosen so the mechanisms show up clearly in 35 minutes.
+   Tune freely in PARAMS; nothing else needs to change.
+   ===================================================================== */
+const Engine = (() => {
+
+const LEVELS = ["Stay integrated", "Diversify somewhat", "De-risk", "Mostly decouple", "Full separation"];
+
+const INDUSTRIES = [
+  { id: "semi",   name: "Advanced chips & AI hardware",
+    why: "Highest national-security stakes. Also where U.S. firms earn the export revenue that funds their R&D.",
+    sec:   [0, 5, 10, 14, 16],  jobs: [0, 1, 2, 3, 3.5],   col: [0, 0.5, 1, 2, 3],   innov: [0, 0, -1, -2, -3],
+    rw: 3, reroute: 0.1 },
+  { id: "batt",   name: "Batteries, solar & critical minerals",
+    why: "Resilience matters — and China refines most of the world's minerals. Costs land on EVs and the grid.",
+    sec:   [0, 2.5, 5, 7, 8],  jobs: [0, 1.5, 3, 4.5, 5.5], col: [0, 1, 2, 3.5, 5], innov: [0, 0, 0, -0.5, -1],
+    rw: 2, reroute: 0.4 },
+  { id: "pharma", name: "Pharmaceuticals & medical inputs",
+    why: "No military use, but a country that makes your antibiotics can stop shipping them. Costs land on drug prices.",
+    sec:   [0, 2, 4, 5.5, 6.5], jobs: [0, 0.5, 1, 1.5, 2], col: [0, 1, 2, 3.5, 5], innov: [0, 0, 0, 0, 0],
+    rw: 1.5, reroute: 0.3 },
+  { id: "elec",   name: "Consumer electronics",
+    why: "Phones, TVs, laptops. Big price effects, weak direct security case.",
+    sec:   [0, 0.5, 1, 1.5, 2], jobs: [0, 1, 2, 3, 4],     col: [0, 1.5, 3, 5, 7.5], innov: [0, 0, -0.5, -1, -1.5],
+    rw: 1, reroute: 0.5 },
+  { id: "basic",  name: "Clothing, toys & basic goods",
+    why: "Lots of visible jobs to 'bring back'. Almost no security case. Costs land on everyone's shopping cart.",
+    sec:   [0, 0, 0.5, 0.5, 0.5], jobs: [0, 1.5, 3, 4.5, 6], col: [0, 1.5, 3, 5, 7.5], innov: [0, 0, 0, 0, 0],
+    rw: 0.5, reroute: 0.6 },
+];
+const MAX_AGG = INDUSTRIES.reduce((s, i) => s + 4 * i.rw, 0); // 32
+
+const PARAMS = {
+  // Round 1: China responds
+  mineralControlsSecHit: 1.5, mineralControlsCol: 1,
+  aggFarmThreshold: 6, aggPressureThreshold: 16,
+  frontRunSecDiscount: 0.15,
+  // Round 2
+  rerouteColRebate: 0.3, extendColMult: 1.2, enforcementCol: 1, extendAllInnov: -0.5,
+  aloneInnov: -2, aloneJobs: -1, aloneSecLeak: 0.2, coordCol: 0.5,
+  // Round 3
+  reallocShare: 0.7, purchasingPowerShare: 0.3,
+  catchUpSecErosion: 0.2, catchUpInnov: -1,
+  maturedJobs: 1, maturedSec: 1,
+  subsidy: {
+    none:     { jobs: 0, sec: 0,   col: 0, innov: 0,  secLeak: 0 },
+    targeted: { jobs: 3, sec: 2,   col: 2, innov: 0,  secLeak: 0 },
+    broad:    { jobs: 5, sec: 2.5, col: 5, innov: -1, secLeak: 1 },
+  },
+  subsidyPermanentCol: 1,
+  stockpileCol: 1.5, stockpileDamageMult: 0.4,
+  // Crisis
+  crisisBase: 0.30, crisisSlope: 0.20,
+  crisisPharmaSec: 12, crisisPharmaCol: 4, crisisBattSec: 5, crisisBattCol: 3,
+  crisisExportInnov: 1.5, crisisExportJobsO: 1.5,
+  // Tangibles
+  tvBase: 500, drugBase: 100, dollarsPerColPoint: 9,
+};
+
+const CUT = {           // share of dependence actually removed at each level (before rerouting)
+  semi: [0, .2, .45, .7, .9], batt: [0, .2, .4, .65, .85], pharma: [0, .2, .4, .65, .85],
+  elec: [0, .2, .45, .7, .9], basic: [0, .2, .45, .7, .9]
+};
+
+function zeroG() { return { jobsP: 0, sec: 0, col: 0, innov: 0, jobsO: 0 }; }
+function addG(a, b) { for (const k in b) a[k] = (a[k] || 0) + b[k]; return a; }
+function r1(x) { return Math.round(x * 10) / 10; }
+function roundG(g) { const o = {}; for (const k in g) o[k] = r1(g[k]); return o; }
+
+function direct(dials) {
+  const g = zeroG();
+  for (const ind of INDUSTRIES) { const d = dials[ind.id] || 0; g.sec += ind.sec[d]; g.jobsP += ind.jobs[d]; g.col += ind.col[d]; g.innov += ind.innov[d]; }
+  return roundG(g);
+}
+function botPolicy(R) {
+  const persona = R() < 0.3 ? "dove" : R() < 0.6 ? "hawk" : "mixed";
+  const pick = (lo, hi) => lo + Math.floor(R() * (hi - lo + 1));
+  const dials = {};
+  for (const ind of INDUSTRIES) dials[ind.id] = persona === "dove" ? pick(0, 1) : persona === "hawk" ? pick(2, 4) : pick(0, 4);
+  const dec2 = { extend: ["no", "security", "all"][pick(0, 2)], allies: R() < 0.5 ? "alone" : "coordinate" };
+  const dec3 = { subsidy: ["none", "targeted", "broad"][pick(0, 2)], stockpile: R() < 0.5 };
+  return { dials, dec2, dec3 };
+}
+function aggression(dials) { return INDUSTRIES.reduce((s, i) => s + i.rw * (dials[i.id] || 0), 0); }
+
+/* ---------- Round 1: you act, China responds ---------- */
+function round1(dials) {
+  const g = zeroG(); const notes = []; const surprises = []; const chinaCosts = {};
+  const perInd = {};
+  for (const ind of INDUSTRIES) {
+    const d = dials[ind.id] || 0;
+    let sec = ind.sec[d];
+    if (ind.id === "semi" && d >= 2) sec *= (1 - PARAMS.frontRunSecDiscount);
+    perInd[ind.id] = { sec, jobs: ind.jobs[d], col: ind.col[d], innov: ind.innov[d] };
+    g.sec += sec; g.jobsP += ind.jobs[d]; g.col += ind.col[d]; g.innov += ind.innov[d];
+  }
+  const A = aggression(dials);
+
+  if (dials.semi >= 2) {
+    surprises.push({ title: "The rule shaped the product", text: "Before your controls took effect, Chinese buyers stockpiled a year of chips. Then U.S. chipmakers designed a slower China-only model that sits just under your performance threshold. Your regulation became a design spec." });
+    notes.push("Security rose less than the dial suggested (front-running and threshold-gaming).");
+  }
+  if (dials.semi >= 2) {
+    g.sec -= PARAMS.mineralControlsSecHit; g.col += PARAMS.mineralControlsCol;
+    surprises.push({ title: "China hits your weak spot", text: "Beijing answers chip controls with export licenses on gallium, germanium and graphite — inputs your battery and chip plants need. Your battery resilience just fell, and you never touched that dial." });
+  }
+  if (A >= PARAMS.aggFarmThreshold) {
+    const hit = 1 + A / 8;
+    g.jobsO -= hit;
+    surprises.push({ title: "Retaliation lands on people you never chose", text: "China shifts soybean purchases to Brazil and delays Boeing orders. Iowa farmers and Seattle aerospace workers pay for a policy about chips and toys." , hidden: r1(hit) });
+  }
+  if (A >= PARAMS.aggPressureThreshold) {
+    g.innov -= 1; g.jobsO -= 1;
+    surprises.push({ title: "Pressure on U.S. firms in China", text: "Regulators in Beijing open investigations into Apple, Tesla and GM. Profits earned in China — which funded U.S. engineering jobs — shrink." });
+  }
+  if (dials.basic >= 2 || dials.elec >= 2) {
+    notes.push("Some sourcing shifted to Vietnam, Mexico and India. Watch this space.");
+  }
+  // China's own costs (illustrative, for the two-column table)
+  chinaCosts.consumer = r1(0.6 * (INDUSTRIES.reduce((s, i) => s + i.col[dials[i.id] || 0], 0)));
+  chinaCosts.exports = r1(A / 32 * 20);
+  chinaCosts.tech = r1(perInd.semi.sec);
+  chinaCosts.protected = r1(A / 32 * 12);
+
+  return { gauges: roundG(g), perInd, A, notes, surprises, chinaCosts };
+}
+
+/* ---------- Round 2: supply chains adapt ---------- */
+// dec2 = { extend: "no" | "security" | "all", allies: "alone" | "coordinate" }
+function round2(dials, dec2, s1) {
+  const g = zeroG(); const notes = []; const surprises = []; const rerouted = [];
+  for (const ind of INDUSTRIES) {
+    const d = dials[ind.id] || 0; if (d < 2) continue;
+    const r = ind.reroute;
+    const secIllusory = r * s1.perInd[ind.id].sec;
+    g.sec -= secIllusory;
+    g.col -= PARAMS.rerouteColRebate * s1.perInd[ind.id].col;
+    rerouted.push({ id: ind.id, name: ind.name, share: Math.round(r * 100) });
+  }
+  if (rerouted.length) {
+    surprises.push({ title: "Cheaper than you feared — for a reason", text: "Direct imports from China fell sharply. But imports from Vietnam and Mexico jumped, and a large share of those new factories are Chinese-owned or run on Chinese parts. Prices rose less than expected because your decoupling was partly a change of address." });
+  } else {
+    notes.push("You restricted little, so there was little to reroute.");
+  }
+  // Decision A: extend to Chinese-content goods
+  const extendSet = dec2.extend === "all" ? INDUSTRIES.map(i => i.id) : dec2.extend === "security" ? ["semi", "batt", "pharma"] : [];
+  let extendedAny = false;
+  for (const ind of INDUSTRIES) {
+    const d = dials[ind.id] || 0; if (d < 2 || !extendSet.includes(ind.id)) continue;
+    extendedAny = true;
+    g.sec += ind.reroute * s1.perInd[ind.id].sec;
+    g.col += ind.reroute * s1.perInd[ind.id].col * PARAMS.extendColMult;
+    g.jobsP += 0.5;
+  }
+  if (extendedAny) {
+    g.col += PARAMS.enforcementCol;
+    surprises.push({ title: "Enforcement has a price tag", text: "Customs can't easily tell a Vietnamese shirt from a Chinese one sewn in Vietnam. Every importer now files origin paperwork; Mexico and Vietnam complain to the WTO. The rerouting shrinks — and so does your purchasing power." });
+    if (dec2.extend === "all") { g.innov += PARAMS.extendAllInnov; notes.push("Applying content rules to toys and TVs strained ties with the very partners you need for chips."); }
+  } else if (rerouted.length) {
+    surprises.push({ title: "Your statistics look better than your dependence", text: "Bilateral trade with China is down. The share of your goods that still contain Chinese inputs is not. If Beijing ever squeezes, the squeeze travels through Hanoi." });
+  }
+  // Decision B: allies
+  const chipsMatter = dials.semi >= 2 || dials.batt >= 2;
+  if (chipsMatter) {
+    if (dec2.allies === "alone") {
+      g.innov += PARAMS.aloneInnov; g.jobsP += PARAMS.aloneJobs;
+      const leak = PARAMS.aloneSecLeak * (s1.perInd.semi.sec + 0.5 * s1.perInd.batt.sec);
+      g.sec -= leak;
+      surprises.push({ title: "Going alone handed the sale to a competitor", text: "You banned U.S. chip tools. Chinese fabs bought Dutch and Japanese tools instead. China still got equipment; American firms lost the revenue that funded their next generation of research." });
+    } else {
+      g.col += PARAMS.coordCol;
+      surprises.push({ title: "Coalitions are slow and leaky", text: "The Netherlands and Japan matched your controls — after eighteen months of negotiation and an exemption for existing contracts. It worked, but later and with holes." });
+    }
+  } else {
+    notes.push("With chips and batteries left mostly integrated, the allies decision changed little.");
+  }
+  return { gauges: roundG(g), rerouted, notes, surprises };
+}
+
+/* ---------- Round 3: the long run ---------- */
+// dec3 = { subsidy: "none" | "targeted" | "broad", stockpile: true|false }
+function round3(dials, dec2, dec3, s1, s2) {
+  const g = zeroG(); const notes = []; const surprises = [];
+  const jobsPSoFar = s1.gauges.jobsP + s2.gauges.jobsP;
+  const colSoFar = s1.gauges.col + s2.gauges.col;
+  // Comparative advantage bill comes due
+  const realloc = PARAMS.reallocShare * jobsPSoFar;
+  const pp = PARAMS.purchasingPowerShare * Math.max(0, colSoFar);
+  g.jobsO -= realloc + pp;
+  const breakdown = { retaliation: r1(-s1.gauges.jobsO), realloc: r1(-realloc), purchasing: r1(-pp) };
+  // China catches up
+  if (dials.semi >= 2) {
+    g.sec -= PARAMS.catchUpSecErosion * s1.perInd.semi.sec; g.innov += PARAMS.catchUpInnov;
+    surprises.push({ title: "Your leverage had a half-life", text: "Cut off from U.S. chips, China poured money into its own. Its chips are now a generation behind instead of three. Every year, the thing you withheld matters a little less — and U.S. firms sell into a smaller world." });
+  }
+  // Domestic capacity matured
+  let matured = 0;
+  for (const ind of INDUSTRIES) if ((dials[ind.id] || 0) >= 3) { g.jobsP += PARAMS.maturedJobs; g.sec += PARAMS.maturedSec; matured++; }
+  if (matured) notes.push(`Domestic capacity matured in ${matured} industr${matured === 1 ? "y" : "ies"}: real factories, real engineers, real resilience.`);
+  // Targeted + coordinated chips ecosystem bonus
+  if (dials.semi >= 1 && dials.semi <= 2 && dec2.allies === "coordinate") { g.innov += 1; notes.push("Targeted chip controls plus allies left U.S. firms a big enough market to keep innovating."); }
+  // Decision A: subsidies
+  const sub = PARAMS.subsidy[dec3.subsidy];
+  addG(g, { jobsP: sub.jobs, sec: sub.sec - sub.secLeak, col: sub.col, innov: sub.innov });
+  if (dec3.subsidy !== "none") {
+    surprises.push({ title: "Subsidies attract exactly who you'd expect", text: dec3.subsidy === "broad"
+      ? "A Chinese battery maker licenses its technology to a U.S. plant to qualify for your subsidy. The EU, Korea and Japan launch matching subsidies, so the race gets expensive fast. And the 'temporary' program now has a lobby that will not let it end."
+      : "The EU, Korea and Japan launch matching subsidies, so your edge shrinks and the race gets expensive. The 'temporary' program now has a lobby that will not let it end." });
+  }
+  // Decision B: stockpile
+  if (dec3.stockpile) {
+    g.col += PARAMS.stockpileCol;
+    notes.push("You built a strategic stockpile of medicines and minerals. Drugs expire; rotating them costs money every year. Whether it pays depends on a future you cannot see.");
+  }
+  return { gauges: roundG(g), breakdown, notes, surprises };
+}
+
+/* ---------- Crisis lottery ---------- */
+function crisisProbability(dials, dec2) {
+  let A = aggression(dials);
+  if (dec2.extend === "all") A += 4; else if (dec2.extend === "security") A += 2;
+  const chinaDepUS = Math.max(0, 1 - A / MAX_AGG);   // how much China still has to lose
+  return { p: Math.min(0.6, PARAMS.crisisBase + PARAMS.crisisSlope * (1 - chinaDepUS)), chinaDepUS };
+}
+function dependence(dials, dec2, id) {
+  const d = dials[id] || 0; const ind = INDUSTRIES.find(i => i.id === id);
+  let cut = CUT[id][d];
+  const extendSet = dec2.extend === "all" ? ["semi","batt","pharma","elec","basic"] : dec2.extend === "security" ? ["semi","batt","pharma"] : [];
+  if (d >= 2 && !extendSet.includes(id)) cut *= (1 - ind.reroute); // rerouted share still depends on China
+  return 1 - cut;
+}
+function crisis(dials, dec2, dec3, hit) {
+  const g = zeroG(); const notes = []; const detail = {};
+  const pharmaDep = dependence(dials, dec2, "pharma");
+  const battDep = dependence(dials, dec2, "batt");
+  const mult = dec3.stockpile ? PARAMS.stockpileDamageMult : 1;
+  if (hit) {
+    g.sec -= (PARAMS.crisisPharmaSec * pharmaDep + PARAMS.crisisBattSec * battDep) * mult;
+    g.col += (PARAMS.crisisPharmaCol * pharmaDep + PARAMS.crisisBattCol * battDep) * mult;
+    const A = aggression(dials);
+    const exposure = 1 - A / MAX_AGG;
+    g.innov -= PARAMS.crisisExportInnov * exposure; g.jobsO -= PARAMS.crisisExportJobsO * exposure;
+    detail.pharmaDep = Math.round(pharmaDep * 100); detail.battDep = Math.round(battDep * 100);
+    detail.shortage = Math.round(45 * pharmaDep * mult);   // % of generic drug lines short
+    detail.stockpiled = !!dec3.stockpile;
+  }
+  return { gauges: roundG(g), detail, notes };
+}
+
+/* ---------- Full simulation ---------- */
+function simulate(dials, dec2, dec3, hit) {
+  const s1 = round1(dials); const s2 = round2(dials, dec2, s1); const s3 = round3(dials, dec2, dec3, s1, s2);
+  const c = crisis(dials, dec2, dec3, hit);
+  const total = zeroG();
+  for (const s of [s1, s2, s3, c]) addG(total, s.gauges);
+  const prob = crisisProbability(dials, dec2);
+  const tangible = tangibles(dials, dec2, dec3, total, hit);
+  return { s1, s2, s3, c, total: roundG(total), prob, hit, tangible };
+}
+function tangibles(dials, dec2, dec3, total, hit) {
+  const extAll = dec2.extend === "all";
+  const tv = PARAMS.tvBase * (1 + 0.045 * (dials.elec || 0) + (extAll && dials.elec >= 2 ? 0.06 : 0));
+  const extSec = dec2.extend !== "no";
+  let drug = PARAMS.drugBase * (1 + 0.05 * (dials.pharma || 0) + (extSec && dials.pharma >= 2 ? 0.05 : 0));
+  if (hit) drug *= 1 + 0.35 * dependence(dials, dec2, "pharma") * (dec3.stockpile ? PARAMS.stockpileDamageMult : 1);
+  return { tv: Math.round(tv), drug: Math.round(drug), monthly: Math.round(Math.max(0, total.col) * PARAMS.dollarsPerColPoint) };
+}
+const INTEGRATED = { dials: { semi: 0, batt: 0, pharma: 0, elec: 0, basic: 0 }, dec2: { extend: "no", allies: "alone" }, dec3: { subsidy: "none", stockpile: false } };
+
+function counterfactuals(dials, dec2, dec3, hit) {
+  return {
+    integrated: simulate(INTEGRATED.dials, INTEGRATED.dec2, INTEGRATED.dec3, hit),
+    otherRoll: simulate(dials, dec2, dec3, !hit),
+  };
+}
+
+/* ---------- RNG (mulberry32) ---------- */
+function rng(seed) { let a = seed >>> 0; return () => { a = (a + 0x6D2B79F5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+
+return { LEVELS, INDUSTRIES, PARAMS, MAX_AGG, aggression, direct, botPolicy, round1, round2, round3, crisis, crisisProbability, simulate, counterfactuals, INTEGRATED, rng, dependence };
+})();
+if (typeof module !== "undefined") module.exports = Engine;
+/* =====================================================================
+   DECOUPLE? — app (UI, session flow, Firebase / in-memory store)
+   ===================================================================== */
+const App = (() => {
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const fmt = (x, plus = true) => { const v = Math.round(x * 10) / 10; return (plus && v > 0 ? "+" : "") + v; };
+  const LS = "decouple.session";
+
+  /* ---------- stores ---------- */
+  function memStore() {
+    const data = {}; const subs = {};
+    const get = (p) => p.split("/").reduce((o, k) => (o && o[k] !== undefined ? o[k] : null), data);
+    const setDeep = (p, v) => { const ks = p.split("/"); let o = data; for (let i = 0; i < ks.length - 1; i++) { if (typeof o[ks[i]] !== "object" || o[ks[i]] === null) o[ks[i]] = {}; o = o[ks[i]]; } if (v === null) delete o[ks[ks.length - 1]]; else o[ks[ks.length - 1]] = JSON.parse(JSON.stringify(v)); };
+    const fire = () => { for (const p in subs) for (const cb of subs[p]) cb(get(p)); };
+    return {
+      kind: "memory",
+      async set(p, v) { setDeep(p, v); fire(); },
+      async update(p, obj) { for (const k in obj) setDeep(p + "/" + k, obj[k]); fire(); },
+      async get(p) { return get(p); },
+      on(p, cb) { (subs[p] = subs[p] || []).push(cb); setTimeout(() => cb(get(p)), 0); return () => { subs[p] = subs[p].filter(f => f !== cb); }; }
+    };
+  }
+  function fbStore(db) {
+    return {
+      kind: "firebase",
+      async set(p, v) { await db.ref(p).set(v); },
+      async update(p, obj) { await db.ref(p).update(obj); },
+      async get(p) { return (await db.ref(p).get()).val(); },
+      on(p, cb) { const r = db.ref(p); const h = r.on("value", s => cb(s.val()), e => diag("Database read failed (" + esc(e.message) + "). Check the database rules allow reads under <code>games</code>.")); return () => r.off("value", h); }
+    };
+  }
+
+  /* ---------- diagnostics ---------- */
+  function diag(html) { $("diag").innerHTML = '<div class="bar">' + html + "</div>"; }
+  function toast(msg, ms = 2200) { const t = $("toast"); t.textContent = msg; t.classList.remove("hidden"); clearTimeout(t._h); t._h = setTimeout(() => t.classList.add("hidden"), ms); }
+  window.addEventListener("error", e => diag("Script error: " + esc(e.message) + " (line " + e.lineno + "). If you just pasted a config, check for a stray character."));
+
+  /* ---------- state ---------- */
+  let store = null, code = null, uid = null, name = null, role = null, meta = null, players = {}, choices = {}, unsubs = [];
+  let phase = "lobby", myChoice = { dials: null, dec2: null, dec3: null, hit: null };
+  let pending = { dials: {}, dec2: {}, dec3: {} };
+  let sims = null; let timerH = null, botsH = null, botPlan = {}, twinSel = null;
+  const pathOf = (...ks) => "games/dec-" + code + "/" + ks.join("/");
+  const ORDER = { lobby: 0, r1: 1, r2: 2, r3: 3, wrap: 4 };
+
+  /* ---------- boot ---------- */
+  function boot() {
+    const cfg = (typeof FIREBASE_CONFIG !== "undefined" && FIREBASE_CONFIG) || (typeof firebaseConfig !== "undefined" && firebaseConfig) || null;
+    const ok = cfg && cfg.apiKey && cfg.databaseURL && /^https:\/\/.+firebaseio\.com|firebasedatabase\.app/.test(cfg.databaseURL || "");
+    if (!ok || typeof firebase === "undefined") {
+      if (cfg && !cfg.databaseURL) diag("Your Firebase config is missing <code>databaseURL</code>. Add it (Realtime Database → copy the URL) and reload.");
+      show("viewSetup"); return;
+    }
+    try { firebase.initializeApp(cfg); store = fbStore(firebase.database()); }
+    catch (e) { diag("Firebase failed to start: " + esc(e.message)); show("viewSetup"); return; }
+    let connected = false;
+    firebase.database().ref(".info/connected").on("value", s => { connected = !!s.val(); if (connected) $("diag").innerHTML = ""; });
+    setTimeout(() => { if (!connected) diag("Still trying to reach the database after 7 seconds. Check <code>databaseURL</code> and your network."); }, 7000);
+    const saved = JSON.parse(localStorage.getItem(LS) || "null");
+    if (saved && saved.code) { code = saved.code; uid = saved.uid; name = saved.name; role = saved.role; if (role === "host") enterHost(); else enterPlayer(); return; }
+    show("viewLanding");
+  }
+  function show(id) { for (const v of ["viewSetup", "viewLanding", "viewHostSetup", "viewHost", "viewPlayer"]) $(v).classList.toggle("hidden", v !== id); window.scrollTo(0, 0); }
+  function leave() { unsubs.forEach(f => f()); unsubs = []; clearInterval(timerH); clearTimeout(botsH); localStorage.removeItem(LS); meta = null; players = {}; choices = {}; myChoice = { dials: null, dec2: null, dec3: null, hit: null }; pending = { dials: {}, dec2: {}, dec3: {} }; sims = null; phase = "lobby"; $("gauges").classList.add("hidden"); $("topRight").innerHTML = ""; }
+  function abandon() { if (role === "host" && !confirm("Leave this session? Students will lose the projector view.")) return; leave(); show("viewLanding"); }
+  function genCode() { const A = "ABCDEFGHJKLMNPQRSTUVWXYZ"; let c = ""; for (let i = 0; i < 4; i++) c += A[Math.floor(Math.random() * A.length)]; return c; }
+  function mkUid() { return "u" + Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4); }
+  function hash(s) { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+
+  /* ---------- solo ---------- */
+  function solo() {
+    leave(); store = memStore(); code = "SOLO"; uid = "solo"; name = "You"; role = "solo";
+    store.set(pathOf("meta"), { status: "r3", createdAt: Date.now(), solo: true });
+    store.set(pathOf("players", uid), { name, joinedAt: Date.now() });
+    enterPlayer();
+  }
+
+  /* ---------- host ---------- */
+  function hostSetup() { show("viewHostSetup"); }
+  async function createSession() {
+    leave(); if (!store || store.kind !== "firebase") { store = memStore(); }
+    code = genCode(); uid = "host"; name = "Instructor"; role = "host";
+    await store.set(pathOf("meta"), { status: "lobby", createdAt: Date.now(), timer: $("optTimer").checked });
+    localStorage.setItem(LS, JSON.stringify({ code, uid, name, role }));
+    enterHost();
+  }
+  function enterHost() {
+    show("viewHost");
+    $("hostCode").textContent = code; $("hostUrl").textContent = location.host + location.pathname.replace(/index\.html$/, "");
+    $("topRight").innerHTML = '<span class="pill">Instructor · code <b>' + code + "</b></span>";
+    unsubs.push(store.on(pathOf("meta"), m => { if (!m) { toast("Session not found"); leave(); show("viewLanding"); return; } meta = m; renderHost(); }));
+    unsubs.push(store.on(pathOf("players"), p => { players = p || {}; renderHost(); }));
+    unsubs.push(store.on(pathOf("choices"), c => { choices = c || {}; renderHost(); }));
+  }
+  async function setStatus(st) {
+    await store.update(pathOf("meta"), { status: st, openedAt: Date.now() });
+    scheduleBots(st);
+  }
+  function renderHost() {
+    if (!meta) return;
+    const ids = Object.keys(players);
+    const st = meta.status;
+    $("hostCount").textContent = ids.length;
+    $("hostStatusLine").textContent = { lobby: "Lobby open — waiting for students", r1: "Round 1 open: Today. Set the five dials.", r2: "Round 2 open: Five years later.", r3: "Round 3 open: Fifteen years later.", wrap: "Wrap-up" }[st];
+    const doneKey = { r1: "dials", r2: "dec2", r3: "dec3" }[st];
+    const done = doneKey ? ids.filter(i => choices[i] && choices[i][doneKey]) : [];
+    $("hostSubmitted").textContent = doneKey ? done.length + " of " + ids.length + " submitted" : "";
+    $("hostPlayers").innerHTML = ids.map(i => '<span class="' + (choices[i] && doneKey && choices[i][doneKey] ? "done" : "") + '">' + esc(players[i].name) + "</span>").join("");
+    const next = { lobby: ["r1", "Open Round 1 — Today"], r1: ["r2", "Open Round 2 — Five years later"], r2: ["r3", "Open Round 3 — Fifteen years later"], r3: ["wrap", "Show the wrap-up"], wrap: [null, null] }[st];
+    $("hostControls").innerHTML = (next[0] ? '<button onclick="App.setStatus(\'' + next[0] + '\')">' + next[1] + "</button>" : "") +
+      (st !== "lobby" && st !== "wrap" ? ' <button class="secondary" onclick="App.hostTimer()">Start ' + (st === "r1" ? "3" : "2") + "-minute timer</button>" : "") +
+      (st === "wrap" ? ' <button class="secondary" onclick="App.setStatus(\'r3\')">Back to round 3</button>' : "");
+    $("viewHost").classList.toggle("wrapmode", st === "wrap");
+    const main = $("hostMain");
+    if (st === "lobby") main.innerHTML = '<div class="panel"><h3>How this works</h3><p>Students set five dials (0 = stay integrated … 4 = full separation), then live through 15 years of consequences: China responds, supply chains reroute, and the long run arrives — including a crisis that some of them will draw and some won\'t.</p><p>Open each round when you\'re ready. Students see their own results the moment they submit; you see the class here.</p><p class="muted small">This is a model, not a forecast.</p></div>';
+    else if (st === "r1") main.innerHTML = '<div class="panel"><h3>Where the class set the dials</h3>' + distDials(ids) + '</div>' + surpriseTally(ids, "s1");
+    else if (st === "r2") main.innerHTML = '<div class="panel"><h3>Round 2 decisions</h3>' + distOpt(ids, "dec2", "extend", ["no", "security", "all"], ["Don't extend", "Security industries only", "All industries"], "Extend restrictions to goods with Chinese content?") + distOpt(ids, "dec2", "allies", ["alone", "coordinate"], ["Go alone", "Coordinate with allies"], "Allies?") + "</div>" + surpriseTally(ids, "s2");
+    else if (st === "r3") main.innerHTML = '<div class="panel"><h3>Round 3 decisions</h3>' + distOpt(ids, "dec3", "subsidy", ["none", "targeted", "broad"], ["No subsidies", "Targeted (chips & batteries)", "Broad"], "Industrial subsidies?") + distOpt(ids, "dec3", "stockpile", [false, true], ["No stockpile", "Build a stockpile"], "Strategic stockpile?") + "</div>" + crisisTally(ids, false);
+    else main.innerHTML = wrapHost(ids);
+  }
+  function distDials(ids) {
+    return Engine.INDUSTRIES.map(ind => { const n = [0, 0, 0, 0, 0]; let t = 0; for (const i of ids) { const c = choices[i]; if (c && c.dials) { n[c.dials[ind.id] || 0]++; t++; } } const mx = Math.max(1, ...n);
+      return '<div class="dist"><div>' + esc(ind.name) + '</div><div class="bars">' + n.map(v => '<i data-n="' + (t ? v : "") + '" style="height:' + Math.max(2, 100 * v / mx) + '%"></i>').join("") + "</div></div>"; }).join("") +
+      '<div class="dist muted small"><div></div><div class="bars" style="height:auto">' + ["0 integrated", "1", "2", "3", "4 separate"].map(l => "<span style='text-align:center'>" + l + "</span>").join("") + "</div></div>";
+  }
+  function distOpt(ids, key, field, vals, labels, title) {
+    const n = vals.map(v => ids.filter(i => choices[i] && choices[i][key] && choices[i][key][field] === v).length); const mx = Math.max(1, ...n);
+    return '<div style="margin:.6rem 0"><div class="muted small">' + title + "</div>" + vals.map((v, k) => '<div class="dist"><div>' + labels[k] + '</div><div style="height:18px;background:rgba(255,255,255,.06);border-radius:4px"><div style="width:' + (100 * n[k] / mx) + '%;height:100%;background:var(--gold);border-radius:4px;min-width:2px"></div></div><span class="muted small" style="grid-column:2">' + n[k] + "</span></div>").join("") + "</div>";
+  }
+  function simFor(i) { const c = choices[i]; if (!c || !c.dials) return null; return Engine.simulate(c.dials, c.dec2 || { extend: "no", allies: "alone" }, c.dec3 || { subsidy: "none", stockpile: false }, !!c.hit); }
+  function surpriseTally(ids, round) {
+    const t = {}; let n = 0;
+    for (const i of ids) { const s = simFor(i); if (!s) continue; n++; for (const x of s[round].surprises) t[x.title] = (t[x.title] || 0) + 1; }
+    if (!n) return "";
+    const rows = Object.entries(t).sort((a, b) => b[1] - a[1]);
+    return '<div class="panel"><h3>Unintended consequences the class ran into</h3>' + (rows.length ? rows.map(([k, v]) => '<div class="row" style="justify-content:space-between"><span>' + esc(k) + '</span><b class="gold">' + v + "</b></div>").join("") : '<p class="muted">None yet.</p>') + "</div>";
+  }
+  function crisisTally(ids, big) {
+    const done = ids.filter(i => choices[i] && choices[i].dec3); const hit = done.filter(i => choices[i].hit).length;
+    return '<div class="panel red"><h3>The crisis lottery</h3><div class="row"><span class="bignum red">' + hit + '</span><span>of <b>' + done.length + '</b> students drew a U.S.–China crisis in year 12.</span></div><p class="muted small">Each student\'s odds depended on their policy (30–50%). Same choices can produce different worlds.</p></div>';
+  }
+  function wrapHost(ids) {
+    const rows = ids.map(i => ({ i, name: players[i].name, c: choices[i], s: simFor(i) })).filter(r => r.s && r.c.dec3);
+    if (!rows.length) return '<div class="panel"><p class="muted">No completed games yet.</p></div>';
+    const hit = rows.filter(r => r.c.hit), ok = rows.filter(r => !r.c.hit);
+    const avg = (arr, f) => arr.length ? (arr.reduce((s, r) => s + f(r), 0) / arr.length) : 0;
+    // scatter
+    const W = 900, H = 480, L = 56, B = 40, T = 16, R = 90;
+    const xs = rows.map(r => r.s.total.sec), ys = rows.map(r => r.s.total.col);
+    const xmin = Math.min(-5, ...xs) - 2, xmax = Math.max(10, ...xs) + 2, ymin = -2, ymax = Math.max(15, ...ys) + 3;
+    const X = v => L + (v - xmin) / (xmax - xmin) * (W - L - R), Y = v => T + (1 - (v - ymin) / (ymax - ymin)) * (H - T - B);
+    let svg = '<svg class="scatter" viewBox="0 0 ' + W + " " + H + '">';
+    for (let v = Math.ceil(xmin / 5) * 5; v <= xmax; v += 5) svg += '<line class="grid" x1="' + X(v) + '" x2="' + X(v) + '" y1="' + T + '" y2="' + (H - B) + '"/><text x="' + X(v) + '" y="' + (H - B + 16) + '" text-anchor="middle">' + v + "</text>";
+    for (let v = 0; v <= ymax; v += 5) svg += '<line class="grid" x1="' + L + '" x2="' + (W - R) + '" y1="' + Y(v) + '" y2="' + Y(v) + '"/><text x="' + (L - 8) + '" y="' + (Y(v) + 4) + '" text-anchor="end">' + v + "</text>";
+    svg += '<line class="axis" x1="' + X(0) + '" x2="' + X(0) + '" y1="' + T + '" y2="' + (H - B) + '"/><line class="axis" x1="' + L + '" x2="' + (W - R) + '" y1="' + Y(0) + '" y2="' + Y(0) + '"/>';
+    svg += '<text x="' + (W / 2) + '" y="' + (H - 6) + '" text-anchor="middle">National security & resilience →</text><text transform="translate(14,' + (H / 2) + ') rotate(-90)" text-anchor="middle">Cost of living (higher = worse) →</text>';
+    for (const r of rows) svg += '<circle class="dot ' + (r.c.hit ? "hit" : "ok") + '" cx="' + X(r.s.total.sec) + '" cy="' + Y(r.s.total.col) + '" r="7"><title>' + esc(r.name) + ": security " + fmt(r.s.total.sec) + ", cost of living " + fmt(r.s.total.col) + (r.c.hit ? " (crisis)" : "") + '</title></circle><text class="name" x="' + (X(r.s.total.sec) + 9) + '" y="' + (Y(r.s.total.col) + 4) + '">' + esc(r.name) + "</text>";
+    svg += "</svg>";
+    // twins: exact same-policy comparison for a chosen student, plus a real near-identical pair if one exists
+    const dist = (a, b) => Engine.INDUSTRIES.reduce((s, ind) => s + Math.abs((a.dials[ind.id] || 0) - (b.dials[ind.id] || 0)), 0) + (a.dec2.extend !== b.dec2.extend ? 2 : 0) + (a.dec2.allies !== b.dec2.allies ? 1 : 0) + (a.dec3.subsidy !== b.dec3.subsidy ? 1 : 0) + (!!a.dec3.stockpile !== !!b.dec3.stockpile ? 1 : 0);
+    let best = null;
+    for (const a of hit) for (const b of ok) { const d = dist(a.c, b.c); if (!best || d < best.d) best = { a, b, d }; }
+    const gap = r => { const o = Engine.simulate(r.c.dials, r.c.dec2, r.c.dec3, !r.c.hit).total; return Math.abs(o.sec - r.s.total.sec) + Math.abs(o.col - r.s.total.col); };
+    const sel = twinSel && rows.find(r => r.i === twinSel) ? rows.find(r => r.i === twinSel) : rows.slice().sort((x, y) => gap(y) - gap(x))[0];
+    const other = Engine.simulate(sel.c.dials, sel.c.dec2, sel.c.dec3, !sel.c.hit);
+    const card = (title, cls, s, isHit) => '<div class="world ' + cls + '" style="border-color:' + (isHit ? "var(--red)" : "var(--teal)") + '"><h4 class="' + (isHit ? "red" : "teal") + '">' + title + "</h4>" + gaugeList(s.total) + '<div class="small muted">TV $' + s.tangible.tv + " · generic drug $" + s.tangible.drug + " · +$" + s.tangible.monthly + "/month</div></div>";
+    const twinHtml = '<div class="row" style="margin-bottom:.5rem"><label class="muted small">Student:</label><select onchange="App.twin(this.value)" style="font:inherit;padding:.4em;border-radius:8px;background:var(--navy3);color:var(--ink);border:1px solid var(--line)">' + rows.map(r => '<option value="' + r.i + '"' + (r.i === sel.i ? " selected" : "") + ">" + esc(r.name) + "</option>").join("") + '</select><span class="small muted">Dials ' + Engine.INDUSTRIES.map(i => sel.c.dials[i.id] || 0).join("·") + " · " + sel.c.dec2.extend + " · " + sel.c.dec2.allies + " · " + sel.c.dec3.subsidy + (sel.c.dec3.stockpile ? " · stockpile" : "") + "</span></div>" +
+      '<div class="twin">' + card(esc(sel.name) + " — the world " + (sel.c.hit ? "they got (crisis)" : "they got (no crisis)"), "obs", sel.s, sel.c.hit) + card("Same choices — the world they didn't get (" + (sel.c.hit ? "no crisis" : "crisis") + ")", "cf", other, !sel.c.hit) + "</div>" +
+      '<p class="gold"><b>Identical policy. Different world.</b> Nothing ' + esc(sel.name) + ' decided explains the gap between these two columns — only the draw.</p>' +
+      (best && best.d <= 2 ? '<h3 style="margin-top:1rem">It happened in this room</h3><div class="twin">' + card(esc(best.a.name) + " — drew the crisis", "obs", best.a.s, true) + card(esc(best.b.name) + " — no crisis", "obs", best.b.s, false) + "</div><p class=\"muted small\">" + (best.d === 0 ? "Exactly the same policy." : "Nearly the same policy (distance " + best.d + " on the dials).") + " Two students, two histories.</p>" : "");
+    return '<div class="tabs"><button class="on" onclick="App.tab(this,\'wScatter\')">Where everyone landed</button><button onclick="App.tab(this,\'wChance\')">Chance</button><button onclick="App.tab(this,\'wTwins\')">Same policy, different world</button><button onclick="App.tab(this,\'wSurp\')">Unintended consequences</button></div>' +
+      '<div id="wScatter" class="wtab"><div class="panel"><h3>Security vs. cost of living — one dot per student</h3>' + svg + '<div class="legend" style="margin-top:.4rem"><span><i style="background:var(--teal)"></i>No crisis</span><span><i style="background:var(--red)"></i>Drew the crisis</span></div><p class="muted small">Hover a dot for the name. Why is there no obvious winner?</p></div></div>' +
+      '<div id="wChance" class="wtab hidden">' + crisisTally(ids, true) + '<div class="panel"><h3>Averages</h3><table class="two"><tr><th></th><th>No crisis (' + ok.length + ')</th><th>Crisis (' + hit.length + ')</th></tr>' + [["Security", "sec"], ["Cost of living", "col"], ["Jobs in protected industries", "jobsP"], ["Jobs elsewhere", "jobsO"], ["Innovation", "innov"]].map(([l, k]) => "<tr><td>" + l + "</td><td>" + fmt(avg(ok, r => r.s.total[k])) + "</td><td>" + fmt(avg(hit, r => r.s.total[k])) + "</td></tr>").join("") + '</table><p class="gold" style="margin-top:.6rem"><b>Chance was inside the model. It is also inside the world.</b> A policy that looks brilliant after a crisis and reckless without one was the same policy either way — you have to judge it before the die is rolled.</p></div></div>' +
+      '<div id="wTwins" class="wtab hidden"><div class="panel"><h3>Same policy, different world</h3>' + twinHtml + "</div></div>" +
+      '<div id="wSurp" class="wtab hidden">' + surpriseTally(ids, "s1").replace("Unintended consequences the class ran into", "Round 1 — China responds") + surpriseTally(ids, "s2").replace("Unintended consequences the class ran into", "Round 2 — supply chains adapt") + surpriseTally(ids, "s3").replace("Unintended consequences the class ran into", "Round 3 — the long run") + "</div>";
+  }
+  function twin(i) { twinSel = i; renderHost(); const b = document.querySelector('.tabs button:nth-child(3)'); if (b) tab(b, 'wTwins'); }
+  function tab(btn, id) { for (const b of btn.parentNode.children) b.classList.toggle("on", b === btn); for (const el of document.querySelectorAll(".wtab")) el.classList.toggle("hidden", el.id !== id); }
+  function hostTimer() {
+    const secs = meta.status === "r1" ? 180 : 120; let left = secs; const el = $("hostTimer"); el.classList.remove("hidden"); clearInterval(timerH);
+    const tick = () => { el.textContent = Math.floor(left / 60) + ":" + String(left % 60).padStart(2, "0"); if (left <= 0) { clearInterval(timerH); el.textContent = "Time!"; } left--; };
+    tick(); timerH = setInterval(tick, 1000);
+  }
+  async function addBots(n) {
+    if (role !== "host") return;
+    const names = ["Ada", "Bao", "Chen", "Dev", "Eli", "Fay", "Gus", "Hana", "Ivy", "Jun", "Kai", "Lin", "Mia", "Noa", "Oli", "Pia"];
+    const start = Object.keys(players).filter(k => k.startsWith("bot_")).length;
+    for (let i = 0; i < n; i++) { const b = "bot_" + (start + i); botPlan[b] = Engine.botPolicy(Engine.rng(hash(code + b))); await store.set(pathOf("players", b), { name: names[(start + i) % names.length] + " (computer)", joinedAt: Date.now() + i }); }
+    scheduleBots(meta.status);
+  }
+  function scheduleBots(st) {
+    clearTimeout(botsH); if (!["r1", "r2", "r3"].includes(st)) return;
+    botsH = setTimeout(async () => {
+      for (const b of Object.keys(players).filter(k => k.startsWith("bot_"))) {
+        const plan = botPlan[b] || (botPlan[b] = Engine.botPolicy(Engine.rng(hash(code + b))));
+        const cur = choices[b] || {};
+        if (st === "r1" && !cur.dials) await store.update(pathOf("choices", b), { dials: plan.dials });
+        if (st === "r2" && cur.dials && !cur.dec2) await store.update(pathOf("choices", b), { dec2: plan.dec2 });
+        if (st === "r3" && cur.dec2 && !cur.dec3) { const p = Engine.crisisProbability(cur.dials, cur.dec2).p; await store.update(pathOf("choices", b), { dec3: plan.dec3, hit: Engine.rng(hash(code + b + "hit"))() < p }); }
+      }
+    }, 1500);
+  }
+
+  /* ---------- player ---------- */
+  async function join() {
+    const c = $("joinCode").value.trim().toUpperCase(), n = $("joinName").value.trim();
+    if (c.length !== 4) return toast("Enter the 4-letter code");
+    if (!n) return toast("Enter your name");
+    if (!store || store.kind !== "firebase") return toast("No database connected — use Play solo");
+    const m = await store.get("games/dec-" + c + "/meta");
+    if (!m) return toast("No session with code " + c);
+    leave(); code = c; name = n; role = "player"; uid = mkUid();
+    await store.set(pathOf("players", uid), { name, joinedAt: Date.now() });
+    localStorage.setItem(LS, JSON.stringify({ code, uid, name, role }));
+    enterPlayer();
+  }
+  function enterPlayer() {
+    show("viewPlayer");
+    $("topRight").innerHTML = '<span class="pill">' + esc(name) + " · <b>" + code + '</b></span> <button class="secondary small" style="padding:.3em .6em" onclick="App.abandon()">Leave</button>';
+    unsubs.push(store.on(pathOf("choices", uid), c => { myChoice = Object.assign({ dials: null, dec2: null, dec3: null, hit: null }, c || {}); recompute(); if (!phase.startsWith("init")) advance(); }));
+    unsubs.push(store.on(pathOf("meta"), m => { if (!m) { toast("Session ended"); leave(); show("viewLanding"); return; } meta = m; advance(); }));
+  }
+  function recompute() {
+    if (!myChoice.dials) { sims = null; return; }
+    const d2 = myChoice.dec2 || { extend: "no", allies: "alone" }, d3 = myChoice.dec3 || { subsidy: "none", stockpile: false };
+    sims = Engine.simulate(myChoice.dials, d2, d3, !!myChoice.hit);
+    sims.cf = myChoice.dec3 ? Engine.counterfactuals(myChoice.dials, d2, d3, !!myChoice.hit) : null;
+  }
+  // Decide what the player should be looking at, given what they've submitted and what the host has opened.
+  function advance() {
+    if (!meta) return;
+    const st = ORDER[meta.status] || 0;
+    const staying = ["r1res", "r2res", "r3res", "cf", "done"];
+    if (staying.includes(phase)) { renderPlayer(); return; }
+    if (!myChoice.dials) phase = st >= 1 ? "r1" : "lobby";
+    else if (!myChoice.dec2) phase = st >= 2 ? "r2" : "wait2";
+    else if (!myChoice.dec3) phase = st >= 3 ? "r3" : "wait3";
+    else phase = "done";
+    renderPlayer();
+  }
+  function go(p) { phase = p; renderPlayer(); }
+
+  /* ---------- gauges ---------- */
+  const G = [["jobsP", "Jobs in protected industries", false], ["sec", "National security & resilience", false], ["col", "Cost of living", true], ["innov", "Innovation & productivity", false]];
+  function gaugeHtml(vals, proj, showJobsO) {
+    const list = showJobsO ? G.concat([["jobsO", "Jobs everywhere else", false]]) : G;
+    return list.map(([k, l, bad]) => { const v = vals[k] || 0; const pct = Math.max(-35, Math.min(35, v)) / 70 * 100; const isBad = bad ? v > 0 : v < 0;
+      return '<div class="gauge"><div class="lbl" title="' + l + '">' + l + '</div><div class="val ' + (v === 0 ? "" : isBad ? "red" : "green") + '">' + fmt(v) + '</div><div class="bar"><i class="' + (isBad ? "bad" : "") + '" style="left:' + (pct < 0 ? 50 + pct : 50) + "%;width:" + Math.abs(pct) + '%"></i></div>' + (proj ? '<div class="proj">' + proj + "</div>" : "") + "</div>"; }).join("");
+  }
+  function setGauges(vals, proj, showJobsO) { const g = $("gauges"); g.classList.remove("hidden"); g.innerHTML = gaugeHtml(vals, proj, showJobsO); }
+  function gaugeList(t, showJobsO = true) {
+    const list = showJobsO ? G.concat([["jobsO", "Jobs everywhere else", false]]) : G;
+    return '<ul>' + list.map(([k, l, bad]) => { const v = t[k] || 0; const isBad = bad ? v > 0 : v < 0; return "<li>" + l + ': <b class="' + (v === 0 ? "" : isBad ? "red" : "green") + '">' + fmt(v) + "</b></li>"; }).join("") + "</ul>";
+  }
+  function deltaTable(rows) { // rows: [label, a, b, bad]
+    return '<div class="delta"><div class="h"></div><div class="h">Projected</div><div class="h">Actual</div>' + rows.map(([l, a, b, bad]) => { const worse = bad ? b > a + 0.05 : b < a - 0.05; return "<div>" + l + '</div><div class="num muted">' + fmt(a) + '</div><div class="num ' + (worse ? "red" : Math.abs(b - a) < 0.05 ? "" : "green") + '">' + fmt(b) + "</div>"; }).join("") + "</div>";
+  }
+  function sumG(...parts) { const o = { jobsP: 0, sec: 0, col: 0, innov: 0, jobsO: 0 }; for (const p of parts) for (const k in o) o[k] += (p[k] || 0); return o; }
+
+  /* ---------- player screens ---------- */
+  function renderPlayer() {
+    const M = $("playerMain");
+    const stakes = (ind) => '<div class="stakes"><span>Security <b>' + "▲".repeat(Math.max(1, Math.round(ind.sec[4] / 5))) + '</b></span><span>Prices <b>' + "▲".repeat(Math.max(1, Math.round(ind.col[4] / 2.5))) + '</b></span><span>Visible jobs <b>' + "▲".repeat(Math.max(1, Math.round(ind.jobs[4] / 2))) + "</b></span></div>";
+    if (phase === "lobby") { $("gauges").classList.add("hidden"); M.innerHTML = '<div class="panel gold"><h2>You\'re in, ' + esc(name) + '.</h2><p class="lede">Waiting for the instructor to open Round 1.</p></div><div class="panel"><h3>Your job</h3><p>For the next 15 simulated years you run U.S. economic policy toward China. Four gauges will sit at the top of your screen: <b>jobs in protected industries</b>, <b>national security & resilience</b>, <b>cost of living</b>, and <b>innovation</b>.</p><p>There is no combined score. Nobody will tell you whether you won. You will have to decide what a good tradeoff looks like.</p><p class="muted small">This is a model, not a forecast. The numbers illustrate mechanisms; economists disagree about their magnitudes.</p></div>'; return; }
+
+    if (phase === "r1") {
+      const p = pending.dials; const proj = Engine.direct(Object.assign({ semi: 0, batt: 0, pharma: 0, elec: 0, basic: 0 }, p));
+      setGauges(proj, "advisers' projection", false);
+      M.innerHTML = '<div class="step"><span class="era">Round 1 · Today</span><h2>Where do you cut ties — and how far?</h2><p>Set a level for each of five industries. Your economic advisers project the direct effects at the top of the screen <i>assuming China does nothing</i>.</p></div>' +
+        Engine.INDUSTRIES.map(ind => '<div class="ind"><h3>' + esc(ind.name) + '</h3><div class="why">' + esc(ind.why) + '</div><div class="seg">' + Engine.LEVELS.map((l, k) => '<button class="' + (p[ind.id] === k ? "on" : "") + '" onclick="App.dial(\'' + ind.id + "'," + k + ')"><span class="n">' + k + "</span>" + l + "</button>").join("") + "</div>" + stakes(ind) + "</div>").join("") +
+        '<button class="big" id="submit1" ' + (Object.keys(p).length < 5 ? "disabled" : "") + ' onclick="App.submit1()">Enact this policy</button><p class="muted small" style="text-align:center">Pick a level for all five industries.</p>';
+      return;
+    }
+    if (phase === "r1res") {
+      const s = sims.s1; const proj = Engine.direct(myChoice.dials); const act = s.gauges;
+      setGauges(act, "actual, year 1", false);
+      const cc = s.chinaCosts;
+      M.innerHTML = '<div class="step reveal"><span class="era">Round 1 · Year 1</span><h2>What actually happened</h2>' + deltaTable([["Jobs in protected industries", proj.jobsP, act.jobsP, false], ["National security & resilience", proj.sec, act.sec, false], ["Cost of living", proj.col, act.col, true], ["Innovation", proj.innov, act.innov, false]]) + '<p class="muted small">Your advisers held China fixed. China did not hold still.</p></div>' +
+        '<div class="panel red reveal"><h3>China responds</h3><p>You chose U.S. policy. You do not get to choose China\'s. Beijing\'s response hurts the United States — <b>and it hurts China.</b></p><table class="two"><tr><th></th><th>United States</th><th>China</th></tr><tr><td>Consumer prices</td><td><span class="arrowup">▲</span> ' + fmt(act.col, false) + '</td><td><span class="arrowup">▲</span> ' + fmt(cc.consumer, false) + '</td></tr><tr><td>Export markets</td><td><span class="arrowdn">▼</span></td><td><span class="arrowdn">▼</span> ' + fmt(-cc.exports) + '</td></tr><tr><td>Access to frontier technology</td><td>—</td><td><span class="arrowdn">▼</span> ' + fmt(-cc.tech) + '</td></tr><tr><td>Protected domestic industries</td><td><span class="arrowup">▲</span> ' + fmt(act.jobsP, false) + '</td><td><span class="arrowup">▲</span> ' + fmt(cc.protected, false) + '</td></tr></table><p class="muted small">Both countries pay. That is what "not zero-sum" looks like in a table.</p></div>' +
+        (s.surprises.length ? '<div class="step reveal"><h3>Unintended consequences</h3>' + s.surprises.map(x => '<div class="surprise"><h4>' + esc(x.title) + "</h4><p>" + esc(x.text) + "</p></div>").join("") + "</div>" : '<div class="note reveal">You kept most ties intact, so China had little to retaliate against. Nothing much happened — yet.</div>') +
+        (s.notes.length ? s.notes.map(n => '<div class="note">' + esc(n) + "</div>").join("") : "") +
+        '<div class="note"><b>Something moved that your dashboard does not show.</b> You will find out in fifteen years.</div>' +
+        '<button class="big" onclick="App.next(\'wait2\')">Continue</button>';
+      return;
+    }
+    if (phase === "wait2" || phase === "wait3") {
+      const r = phase === "wait2" ? 2 : 3; setGauges(phase === "wait2" ? sims.s1.gauges : sumG(sims.s1.gauges, sims.s2.gauges), "so far", false);
+      M.innerHTML = '<div class="panel gold"><h2>Policy enacted.</h2><p class="lede">Waiting for the instructor to open Round ' + r + '.</p></div><div class="panel"><p>Meanwhile: look at your gauges. Would you defend this tradeoff to a voter in Ohio? To one in Iowa?</p><button class="secondary" onclick="App.go(\'r' + (r - 1) + 'res\')">Review Round ' + (r - 1) + " results</button></div>";
+      return;
+    }
+    if (phase === "r2") {
+      setGauges(sims.s1.gauges, "after round 1", false);
+      const rer = Engine.INDUSTRIES.filter(i => (myChoice.dials[i.id] || 0) >= 2);
+      const anyRer = rer.length > 0; const p = pending.dec2;
+      const avgShare = anyRer ? Math.round(100 * rer.reduce((s, i) => s + i.reroute, 0) / rer.length) : 0;
+      M.innerHTML = '<div class="step"><span class="era">Round 2 · Five years later</span><h2>Supply chains adapt</h2>' +
+        (anyRer ? '<div class="panel teal"><h3>Good news</h3><p>Direct U.S. imports from China in the industries you restricted have fallen sharply. Headlines call it "the great decoupling."</p></div><div class="panel gold reveal"><h3>But wait…</h3>' + routeSvg() + '<p>Imports from <b>Vietnam</b> and <b>Mexico</b> jumped. Roughly <b>' + avgShare + '%</b> of what you "decoupled" is still made by Chinese-owned factories or from Chinese parts — it just changed address. Bilateral trade statistics make separation look bigger than it is.</p><ul class="small">' + rer.map(i => "<li>" + esc(i.name) + ": about " + Math.round(i.reroute * 100) + "% rerouted</li>").join("") + "</ul></div>"
+          : '<div class="panel teal"><h3>Not much to reroute</h3><p>You restricted little, so supply chains barely moved. Other countries did decouple, though — and the decisions below still matter for what you did restrict.</p></div>') +
+        '</div><div class="step"><h3>Decision A — Chase the rerouting?</h3><p class="small">Extend your restrictions to goods that <i>contain</i> Chinese inputs or come from Chinese-owned plants abroad?</p><div class="choice">' +
+        [["no", "No — restrict direct trade only", "Cheaper goods. But your dependence on China is larger than your statistics say."], ["security", "Yes — for chips, batteries and medicines only", "Genuine decoupling where security matters; leave toys and TVs alone. Customs paperwork and enforcement cost money."], ["all", "Yes — for every restricted industry", "Real separation across the board. Highest cost of living; friction with Mexico and Vietnam, whom you need for chips."]].map(([v, l, h]) => '<button class="' + (p.extend === v ? "on" : "") + '" onclick="App.pick(\'dec2\',\'extend\',\'' + v + '\')"><b>' + l + '</b><span class="hint">' + h + "</span></button>").join("") + "</div></div>" +
+        '<div class="step"><h3>Decision B — Allies</h3><p class="small">The Netherlands and Japan make the chip tools too. Do you ask them to match your controls?</p><div class="choice">' +
+        [["alone", "Go alone — act now", "Fast. But if U.S. firms can\'t sell, Dutch and Japanese firms will."], ["coordinate", "Coordinate — build a coalition", "Slower and leakier, and allies want concessions. But controls that everyone applies actually bite."]].map(([v, l, h]) => '<button class="' + (p.allies === v ? "on" : "") + '" onclick="App.pick(\'dec2\',\'allies\',\'' + v + '\')"><b>' + l + '</b><span class="hint">' + h + "</span></button>").join("") + "</div></div>" +
+        '<button class="big" ' + (p.extend && p.allies ? "" : "disabled") + ' onclick="App.submit2()">Enact</button>';
+      return;
+    }
+    if (phase === "r2res") {
+      const s = sims.s2; setGauges(sumG(sims.s1.gauges, s.gauges), "after round 2", false);
+      M.innerHTML = '<div class="step reveal"><span class="era">Round 2 · Year 6</span><h2>Five more years of consequences</h2><div class="panel">' + gaugeList(s.gauges, false).replace("<ul>", '<div class="muted small">Change this round</div><ul>') + "</div></div>" +
+        (s.surprises.length ? '<div class="step reveal"><h3>Unintended consequences</h3>' + s.surprises.map(x => '<div class="surprise"><h4>' + esc(x.title) + "</h4><p>" + esc(x.text) + "</p></div>").join("") + "</div>" : "") +
+        s.notes.map(n => '<div class="note">' + esc(n) + "</div>").join("") +
+        '<button class="big" onclick="App.next(\'wait3\')">Continue</button>';
+      return;
+    }
+    if (phase === "r3") {
+      setGauges(sumG(sims.s1.gauges, sims.s2.gauges), "after round 2", false); const p = pending.dec3;
+      M.innerHTML = '<div class="step"><span class="era">Round 3 · Fifteen years later</span><h2>The long run</h2><p>Firms have built factories. Engineers have learned. Supply chains have moved. China has been building substitutes for everything you withheld. Two last decisions before the bill arrives.</p></div>' +
+        '<div class="step"><h3>Decision A — Industrial subsidies</h3><p class="small">Pay firms to build here?</p><div class="choice">' +
+        [["none", "No subsidies", "Let markets decide where factories go. Cheapest. Slowest to build resilience."], ["targeted", "Targeted — chips and batteries only", "Big grants for a few strategic plants. Real capacity, real jobs, real money — and other countries will match you."], ["broad", "Broad — every restricted industry", "Most visible jobs. Most expensive. Attracts everyone who can qualify, including firms you were trying to keep out."]].map(([v, l, h]) => '<button class="' + (p.subsidy === v ? "on" : "") + '" onclick="App.pick(\'dec3\',\'subsidy\',\'' + v + '\')"><b>' + l + '</b><span class="hint">' + h + "</span></button>").join("") + "</div></div>" +
+        '<div class="step"><h3>Decision B — Strategic stockpile</h3><p class="small">Warehouse a year of medicines and critical minerals against a cutoff?</p><div class="choice">' +
+        [["no", "No stockpile", "Save the money. Hope you never need it."], ["yes", "Build the stockpile", "Insurance: cuts the damage from a cutoff by more than half. Drugs expire; it costs money every year whether or not a crisis ever comes."]].map(([v, l, h]) => '<button class="' + (p.stockpile === v ? "on" : "") + '" onclick="App.pick(\'dec3\',\'stockpile\',\'' + v + '\')"><b>' + l + '</b><span class="hint">' + h + "</span></button>").join("") + "</div></div>" +
+        '<button class="big" ' + (p.subsidy && p.stockpile ? "" : "disabled") + ' onclick="App.submit3()">Enact — and roll the dice</button>';
+      return;
+    }
+    if (phase === "r3res") {
+      const s = sims.s3; const pre = sumG(sims.s1.gauges, sims.s2.gauges, s.gauges); setGauges(pre, "year 15", true);
+      const b = s.breakdown; const net = pre.jobsP + pre.jobsO;
+      M.innerHTML = '<div class="step reveal"><span class="era">Round 3 · Year 15</span><h2>The bill arrives</h2>' +
+        '<div class="panel gold"><h3>A fifth gauge just appeared</h3><p>You created <b class="green">' + fmt(pre.jobsP) + '</b> in the industries you protected. Over fifteen years, jobs <b>everywhere else</b> moved <b class="' + (pre.jobsO < 0 ? "red" : "") + '">' + fmt(pre.jobsO) + '</b>. Net: <b>' + fmt(net) + '</b>.</p><ul class="small"><li>Retaliation on farmers and exporters: <b>' + fmt(-b.retaliation) + '</b></li><li>Workers, capital and land pulled into industries where the U.S. is relatively less productive: <b>' + fmt(-b.realloc) + '</b></li><li>Households with less to spend on restaurants, software, health care: <b>' + fmt(-b.purchasing) + '</b></li></ul><p><b>Did you create jobs — or move them?</b></p></div>' +
+        (s.surprises.length ? '<h3>Unintended consequences</h3>' + s.surprises.map(x => '<div class="surprise"><h4>' + esc(x.title) + "</h4><p>" + esc(x.text) + "</p></div>").join("") : "") +
+        s.notes.map(n => '<div class="note">' + esc(n) + "</div>").join("") + "</div>" +
+        '<div class="step"><button class="big" onclick="App.go(\'roll\')">Year 12 — something happened</button></div>';
+      return;
+    }
+    if (phase === "roll") {
+      const p = sims.prob.p; const pre = sumG(sims.s1.gauges, sims.s2.gauges, sims.s3.gauges); setGauges(pre, "year 15", true);
+      M.innerHTML = '<div class="step reveal"><span class="era">Year 12</span><h2>A confrontation over Taiwan</h2><p>Warships. Sanctions threats. Beijing weighs whether to use its economic leverage against the United States.</p>' +
+        '<div class="panel"><h3>Your chance of a full crisis: ' + Math.round(p * 100) + '%</h3><div class="prob"><i style="width:' + Math.round(p * 100) + '%"></i></div><p class="small">In this model, China is more willing to coerce when it has <i>less to lose</i> from a rupture. Cutting ties lowered your exposure — and lowered China\'s restraint. (Economists argue about this; interdependence can deter, or it can be a weapon.)</p></div>' +
+        '<div class="die" id="die">?</div><button class="big" id="rollBtn" onclick="App.roll()">Roll</button></div>';
+      return;
+    }
+    if (phase === "crisis") {
+      const c = sims.c; const hit = !!myChoice.hit; const tot = sims.total; setGauges(tot, "final", true); const d = c.detail;
+      M.innerHTML = (hit ? '<div class="crisis reveal"><h2 class="red">Crisis.</h2><p>Beijing halts exports of antibiotics, insulin precursors and battery minerals to the United States.</p><p>You still depended on China for <b>' + d.pharmaDep + '%</b> of medical inputs and <b>' + d.battDep + '%</b> of battery minerals. About <b>' + d.shortage + '%</b> of generic drug lines went into shortage' + (d.stockpiled ? " — your stockpile cut the damage by more than half" : "") + '. A generic that cost $100 now costs $' + sims.tangible.drug + '.</p><p>China paid too: it lost its biggest export market, and every other country accelerated its own de-risking. <b>Coercion is expensive for the coercer.</b></p>' + gaugeList(c.gauges, true).replace("<ul>", '<div class="muted small">Crisis impact</div><ul>') + "</div>"
+        : '<div class="calm reveal"><h2 class="teal">No crisis.</h2><p>Tensions eased. Beijing decided the cost of a rupture was too high. Your ' + Math.round(sims.prob.p * 100) + '% chance did not come up.</p>' + (myChoice.dec3.stockpile ? "<p>Your stockpile sat in a warehouse, unused, costing money every year. Was it a mistake? <b>Be careful: you are judging a decision by an outcome it did not control.</b></p>" : (myChoice.dials.pharma >= 2 ? "<p>The medicines you paid more for at home were never needed. Was that a mistake?</p>" : "<p>Your bet on staying integrated paid off — this time.</p>")) + "</div>") +
+        '<div class="panel reveal"><h3>Final scorecard — 15 years</h3>' + gaugeList(tot, true) + '<p class="small muted">Household cost: about $' + sims.tangible.monthly + ' more per month. A $500 TV now costs $' + sims.tangible.tv + '. A $100 generic drug costs $' + sims.tangible.drug + '.</p></div>' +
+        '<div class="panel gold"><h3>Was that a good tradeoff?</h3><p>Nobody will score it for you.</p></div>' +
+        '<button class="big" onclick="App.go(\'cf\')">Did your policy work?</button>';
+      return;
+    }
+    if (phase === "cf") {
+      const tot = sims.total; const cf = sims.cf; $("gauges").classList.add("hidden");
+      const world = (title, cls, s, extra) => '<div class="world ' + cls + '"><h4 class="' + (cls === "obs" ? "teal" : "gold") + '">' + title + "</h4>" + gaugeList(s.total, true) + '<div class="small muted">TV $' + s.tangible.tv + " · generic drug $" + s.tangible.drug + " · +$" + s.tangible.monthly + "/month</div>" + (extra || "") + "</div>";
+      M.innerHTML = '<div class="step reveal"><h2>But you only observed one world.</h2><p>Everything on your dashboard is the world your policy produced. To know whether it <i>worked</i>, you would need to see the world it prevented.</p></div>' +
+        '<div class="split reveal">' + world("The world you created · observed", "obs", sims) + world("Had you stayed fully integrated · never observed", "cf", cf.integrated, "<div class='small'>Same dice roll" + (myChoice.hit ? " (crisis)" : " (no crisis)") + "</div>") + "</div>" +
+        '<div class="split reveal" style="margin-top:.6rem">' + world("Your policy, other dice roll · never observed", "cf", cf.otherRoll, "<div class='small'>Same choices, " + (myChoice.hit ? "no crisis" : "crisis") + "</div>") + '<div class="world"><h4 class="muted">Which of these could you have seen?</h4><ul><li>A factory that exists — <b class="green">visible</b>.</li><li>A drug shortage that happened — <b class="green">visible</b>.</li><li>' + (cf.integrated.tangible.tv !== sims.tangible.tv ? 'A $' + cf.integrated.tangible.tv + ' TV that costs $' + sims.tangible.tv + ' under your policy' : 'The $' + Math.abs(sims.tangible.monthly - cf.integrated.tangible.monthly) + ' a month a household would have had under a policy you did not choose') + ' — <b class="red">exists nowhere</b>.</li><li>A crisis that never came because China lacked the leverage — <b class="red">exists nowhere</b>.</li></ul></div></div>' +
+        '<div class="panel gold reveal" style="margin-top:.8rem"><h3>Policy effects are counterfactual.</h3><p>The world you see is one draw from one policy. The model just showed you the others. In real life, nothing does.</p></div>' +
+        '<button class="big" onclick="App.go(\'done\')">Finish</button>';
+      return;
+    }
+    if (phase === "done") {
+      if (!sims || !myChoice.dec3) { M.innerHTML = '<div class="panel"><p>Waiting…</p></div>'; return; }
+      setGauges(sims.total, "final", true);
+      M.innerHTML = '<div class="panel gold"><h2>Done. Look up at the screen.</h2><p>Your final world: security <b>' + fmt(sims.total.sec) + '</b>, cost of living <b>' + fmt(sims.total.col) + '</b>, jobs net <b>' + fmt(sims.total.jobsP + sims.total.jobsO) + '</b>, innovation <b>' + fmt(sims.total.innov) + "</b>" + (myChoice.hit ? ' · <span class="red">you drew the crisis</span>' : ' · <span class="teal">no crisis</span>') + '.</p></div><div class="row"><button class="secondary" onclick="App.go(\'cf\')">Back to the counterfactual</button><button class="secondary" onclick="App.go(\'r1res\')">Round 1</button><button class="secondary" onclick="App.go(\'r2res\')">Round 2</button><button class="secondary" onclick="App.go(\'r3res\')">Round 3</button></div>' + (role === "solo" ? '<p><button class="secondary" onclick="App.solo()">Play again</button></p>' : "");
+      return;
+    }
+  }
+  function routeSvg() {
+    return '<svg class="route" viewBox="0 0 560 170"><g><rect class="node" x="10" y="60" width="110" height="50" rx="10"/><text x="65" y="90">China</text></g><g><rect class="node" x="225" y="15" width="110" height="50" rx="10"/><text x="280" y="45">Vietnam</text></g><g><rect class="node" x="225" y="105" width="110" height="50" rx="10"/><text x="280" y="135">Mexico</text></g><g><rect class="node" x="440" y="60" width="110" height="50" rx="10"/><text x="495" y="90">United States</text></g>' +
+      '<path class="flow gone" d="M120 85 L440 85"/><text class="lab" x="280" y="80">direct imports ▼ (what the statistics show)</text>' +
+      '<path class="flow new" d="M120 78 C 170 78, 180 40, 225 40"/><path class="flow new" d="M335 40 C 380 40, 390 78, 440 78"/><path class="flow new" d="M120 92 C 170 92, 180 130, 225 130"/><path class="flow new" d="M335 130 C 380 130, 390 92, 440 92"/><text class="lab" x="280" y="165">Chinese parts · Chinese-owned plants · final assembly abroad</text></svg>';
+  }
+
+  /* ---------- actions ---------- */
+  function dial(id, k) { pending.dials[id] = k; renderPlayer(); }
+  function pick(dec, field, v) { pending[dec][field] = v; renderPlayer(); }
+  async function submit1() { if (Object.keys(pending.dials).length < 5) return; const dials = Object.assign({}, pending.dials); phase = "initwait"; await store.update(pathOf("choices", uid), { dials }); myChoice.dials = dials; recompute(); phase = "r1res"; renderPlayer(); }
+  async function submit2() { const dec2 = Object.assign({}, pending.dec2); phase = "initwait"; await store.update(pathOf("choices", uid), { dec2 }); myChoice.dec2 = dec2; recompute(); phase = "r2res"; renderPlayer(); }
+  async function submit3() {
+    const dec3 = { subsidy: pending.dec3.subsidy, stockpile: pending.dec3.stockpile === "yes" };
+    const p = Engine.crisisProbability(myChoice.dials, myChoice.dec2).p;
+    const hit = Engine.rng(hash(code + uid + "hit"))() < p;
+    phase = "initwait"; await store.update(pathOf("choices", uid), { dec3, hit }); myChoice.dec3 = dec3; myChoice.hit = hit; recompute(); phase = "r3res"; renderPlayer();
+  }
+  function next(p) { phase = p; advance(); }
+  function roll() {
+    const die = $("die"); $("rollBtn").disabled = true; let n = 0; const faces = ["⚀", "⚁", "⚂", "⚃", "⚄", "⚅"];
+    const h = setInterval(() => { die.textContent = faces[Math.floor(Math.random() * 6)] + " " + faces[Math.floor(Math.random() * 6)]; if (++n > 14) { clearInterval(h); go("crisis"); } }, 90);
+  }
+
+  return { boot, show, solo, hostSetup, createSession, setStatus, hostTimer, addBots, tab, twin, abandon, join, dial, pick, submit1, submit2, submit3, next, go, roll,
+    _test: { memStore, get phase() { return phase; }, get sims() { return sims; }, get choices() { return choices; }, get meta() { return meta; } } };
+})();
+window.App = App;
+document.addEventListener("DOMContentLoaded", App.boot);
+
+</script>
+</body>
+</html>
