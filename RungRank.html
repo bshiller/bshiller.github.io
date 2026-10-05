@@ -1,0 +1,996 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Which Rung?</title>
+<style>
+:root{
+  --navy:#1B2A4A; --navy2:#2B3D63; --gold:#C9A227; --gold-l:#FBF3DA; --teal:#1C7C7D; --teal-l:#E3F2F1;
+  --bg:#F5F6F8; --card:#fff; --ink:#1d2433; --muted:#667085; --line:#E1E4EA;
+  --ok:#1E8E5A; --ok-l:#E4F5EC; --warn:#B7791F; --warn-l:#FFF5DE; --bad:#C0392B; --bad-l:#FBE9E7;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+header.top{background:var(--navy);color:#fff;border-bottom:4px solid var(--gold);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+header.top .brand{font-weight:700;font-size:20px;letter-spacing:.3px}
+header.top .codebadge{font-size:14px;opacity:.9}
+header.top .codebadge b{font-size:18px;letter-spacing:2px;color:var(--gold)}
+main{max-width:1180px;margin:0 auto;padding:18px 16px 60px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin:0 0 16px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.narrow{max-width:560px;margin-left:auto;margin-right:auto}
+h1{font-size:26px;margin:0 0 6px;color:var(--navy)}
+h2{font-size:19px;margin:0 0 10px;color:var(--navy)}
+h3{font-size:16px;margin:0 0 6px;color:var(--navy)}
+p{margin:0 0 10px}
+.muted{color:var(--muted)} .small{font-size:13px}
+label{display:block;font-weight:600;margin:12px 0 4px;font-size:14px}
+label small{display:block;font-weight:400;color:var(--muted)}
+input[type=text],select,textarea{width:100%;font:inherit;padding:9px 11px;border:1px solid #C9CED8;border-radius:8px;background:#fff;color:var(--ink)}
+textarea{min-height:200px;resize:vertical;font-size:14px}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--teal);outline-offset:0;border-color:var(--teal)}
+.btn{font:inherit;font-weight:600;border:1px solid var(--navy);background:#fff;color:var(--navy);border-radius:8px;padding:9px 16px;cursor:pointer}
+.btn:hover{background:#EEF1F6}
+.btn.primary{background:var(--teal);border-color:var(--teal);color:#fff}
+.btn.primary:hover{background:#166667}
+.btn.gold{background:var(--gold);border-color:var(--gold);color:var(--navy)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.sm{padding:5px 10px;font-size:13px}
+.link{background:none;border:0;color:var(--teal);cursor:pointer;font:inherit;font-size:13px;padding:0;text-decoration:underline}
+.link.danger{color:var(--bad)}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.msg{margin-top:10px;font-size:14px;min-height:1px}
+.msg.ok{color:var(--ok)} .msg.err{color:var(--bad)}
+.banner{background:var(--bad-l);color:var(--bad);border-bottom:1px solid #f0c4bf;padding:10px 20px;font-size:14px}
+.demo-bar{background:var(--warn-l);border-bottom:1px solid #f1d9a0;padding:8px 20px;font-size:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.chip{display:inline-block;font-size:12px;font-weight:600;border-radius:999px;padding:2px 9px;margin:2px 4px 2px 0}
+.chip.ok{background:var(--ok-l);color:var(--ok)}
+.chip.miss{background:#F1F2F5;color:#98A2B3}
+.chip.teal{background:var(--teal-l);color:var(--teal)}
+.live{font-size:11px;font-weight:700;color:var(--ok);background:var(--ok-l);border-radius:999px;padding:2px 8px;vertical-align:middle;margin-left:6px;text-transform:uppercase;letter-spacing:.5px}
+.slot{border-top:1px solid var(--line);padding:10px 0}
+.slot:first-child{border-top:0}
+.slot .head{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.slot .rn{font-weight:800;color:var(--navy);min-width:62px}
+details{margin:6px 0 0;border:1px solid var(--line);border-radius:8px;background:#FAFBFC}
+details>summary{cursor:pointer;padding:7px 10px;font-size:14px;font-weight:600}
+details .out{padding:0 12px 10px;white-space:pre-wrap;font-size:14px;max-height:340px;overflow:auto}
+details .act{padding:0 12px 10px}
+.teams{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.team{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:#fff}
+.team h3{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.team .members{font-size:13px;color:var(--muted);margin-bottom:6px}
+.team .aline{font-size:14px;margin:3px 0}
+.team .merge{margin-top:8px;font-size:13px}
+.team .merge select{width:auto;padding:4px 8px;font-size:13px}
+.hero{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;background:var(--navy);color:#fff;border:0}
+.hero h2{color:#fff}
+.hero .bigcode{font-size:44px;font-weight:800;letter-spacing:6px;color:var(--gold);line-height:1}
+.hero .url{font-size:15px;opacity:.9;word-break:break-all}
+.steps{display:flex;gap:6px;margin:0 0 14px;flex-wrap:wrap}
+.steps span{font-size:13px;font-weight:600;padding:5px 12px;border-radius:999px;background:#E8EBF1;color:var(--muted)}
+.steps span.on{background:var(--navy);color:#fff}
+.steps span.done{background:var(--teal-l);color:var(--teal)}
+.howto{background:var(--teal-l);border:1px solid #C5E3E1;border-radius:10px;padding:12px 16px;font-size:14px;margin-bottom:14px}
+.howto ol{margin:6px 0 0;padding-left:20px}
+.howto li{margin:2px 0}
+.prompt{position:sticky;top:0;z-index:5;background:var(--navy);color:#fff;border-radius:10px;padding:12px 16px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;box-shadow:0 4px 10px rgba(27,42,74,.18)}
+.prompt .q{font-size:18px;font-weight:700}
+.prompt .q small{display:block;font-size:13px;font-weight:400;opacity:.85}
+.prompt .btn{background:transparent;color:#fff;border-color:rgba(255,255,255,.6)}
+.prompt .btn:hover{background:rgba(255,255,255,.12)}
+.prompt.done{background:var(--ok)}
+.outputs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.outputs.n2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.outputs.n1{grid-template-columns:minmax(0,1fr)}
+.output{border:2px solid var(--line);border-radius:10px;display:flex;flex-direction:column;background:#FCFCFD}
+.output.picked{border-color:var(--gold);background:#FFFDF6}
+.output .olabel{background:var(--navy);color:#fff;font-weight:800;font-size:20px;padding:6px 12px;border-radius:7px 7px 0 0;display:flex;justify-content:space-between;align-items:center;gap:6px}
+.output .olabel .tag{font-size:12px;font-weight:700;background:var(--gold);color:var(--navy);border-radius:999px;padding:3px 10px}
+.output .otext{padding:10px 12px;white-space:pre-wrap;font-size:14px;max-height:420px;overflow:auto;flex:1}
+.output .ctl{border-top:1px solid var(--line);padding:10px 12px;font-size:13px;min-height:54px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.output .ctl .note{color:var(--muted)}
+.choose{font:inherit;font-weight:700;font-size:14px;width:100%;border:2px dashed var(--teal);background:#fff;color:var(--teal);border-radius:8px;padding:8px 10px;cursor:pointer}
+.choose:hover{background:var(--teal-l);border-style:solid}
+.sticky-submit{position:sticky;bottom:0;background:rgba(245,246,248,.97);border-top:1px solid var(--line);padding:12px 16px;margin:12px -16px 0;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+table.stat{width:100%;border-collapse:collapse;font-size:14px;margin-top:6px}
+table.stat th,table.stat td{padding:7px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+table.stat th{font-size:12px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted)}
+table.stat td.L{font-weight:800;font-size:16px;color:var(--navy)}
+table.stat tr.best td{background:#FFF9E6}
+.bars{display:grid;gap:14px}
+.barrow{display:grid;grid-template-columns:90px 1fr 70px;gap:10px;align-items:center;font-size:14px}
+.bar{height:22px;background:#EEF0F4;border-radius:6px;overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--teal);border-radius:6px}
+.bar.gold>i{background:var(--gold)}
+.bar.navy>i{background:var(--navy2)}
+.metric h3{margin-bottom:8px}
+.voters{font-size:13px;margin-top:6px}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px;vertical-align:middle;background:#C9CED8}
+.dot.r{background:var(--gold)} .dot.d{background:var(--ok)}
+.hostlinks{text-align:center;font-size:14px;color:var(--muted);margin-top:22px}
+.hostlinks .btn{margin:4px}
+.warnbox{background:var(--warn-l);color:#7a5413;border-radius:8px;padding:8px 12px;font-size:14px;margin:8px 0}
+.okbox{background:var(--ok-l);color:#16613f;border-radius:8px;padding:10px 14px;font-size:15px;margin:8px 0}
+@media (max-width:820px){
+  .outputs,.outputs.n2{grid-template-columns:minmax(0,1fr)}
+  .grid2{grid-template-columns:1fr}
+  .hero .bigcode{font-size:34px}
+  .barrow{grid-template-columns:70px 1fr 60px}
+}
+</style>
+</head>
+<body>
+<div id="fatal" class="banner" hidden></div>
+<div id="demoBar" class="demo-bar" hidden></div>
+<header class="top">
+  <div class="brand">Which Rung?</div>
+  <div id="codeBadge" class="codebadge" hidden></div>
+</header>
+<main id="app"><div class="card narrow"><p class="muted">Loading…</p></div></main>
+
+<!-- Firebase compat SDK (same as the other class games) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
+/* =====================================================================
+   FIREBASE CONFIG (same project as the other class games)
+   Sessions live under games/rng-CODE, so your existing rules apply.
+   ===================================================================== */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyDQ8gn5w_Jj4OzcXFBz2lY2SKuaKEo2wbk",
+  authDomain: "obfuscationgame.firebaseapp.com",
+  databaseURL: "https://obfuscationgame-default-rtdb.firebaseio.com",
+  projectId: "obfuscationgame",
+  storageBucket: "obfuscationgame.firebasestorage.app",
+  messagingSenderId: "443679460937",
+  appId: "1:443679460937:web:d6b2806717894b3c923998"
+};
+const PREFIX = "rng-";
+/* ===================================================================== */
+
+const LETTERS = ["A", "B", "C"];
+const RUNGS = [1, 2, 3];
+const MAX_CHARS = 40000;
+const $ = id => document.getElementById(id);
+const app = $("app");
+function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
+function slug(s) { return String(s || "").toLowerCase().normalize("NFKD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, " ").trim().replace(/ /g, "-").slice(0, 60); }
+function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function words(t) { const s = String(t || "").trim(); return s ? s.split(/\s+/).length : 0; }
+function mean(a) { return a.length ? a.reduce((x, y) => x + y, 0) / a.length : null; }
+function pct(n, d) { return d ? Math.round(100 * n / d) + "%" : "–"; }
+function fmt2(x) { return x == null ? "–" : x.toFixed(2); }
+function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
+function fatal(msg) { const f = $("fatal"); f.innerHTML = msg; f.hidden = false; }
+// Rank label for position pos (0 = best) among n outputs
+function rankWord(pos, n) {
+  const ord = ["1st", "2nd", "3rd"][pos];
+  if (n <= 1) return ord;
+  return ord + " · " + (pos === 0 ? "best" : pos === n - 1 ? "worst" : "middle");
+}
+
+/* ---------------- stores ---------------- */
+function fbStore(db) {
+  return {
+    kind: "firebase",
+    set: (p, v) => db.ref(p).set(v),
+    update: (p, o) => db.ref(p).update(o),
+    get: async p => (await db.ref(p).get()).val(),
+    on(p, cb) {
+      const r = db.ref(p);
+      const h = r.on("value", s => cb(s.val()), e => fatal("Database read failed (" + esc(e.message) + "). Check that your Firebase rules allow reads and writes under <code>games</code>."));
+      return () => r.off("value", h);
+    }
+  };
+}
+function memStore() {
+  const data = {}; let subs = [];
+  const get = p => p.split("/").filter(Boolean).reduce((o, k) => (o && o[k] !== undefined ? o[k] : null), data);
+  const setDeep = (p, v) => {
+    const ks = p.split("/").filter(Boolean); let o = data;
+    for (let i = 0; i < ks.length - 1; i++) { if (typeof o[ks[i]] !== "object" || o[ks[i]] === null) o[ks[i]] = {}; o = o[ks[i]]; }
+    const last = ks[ks.length - 1];
+    if (v === null || v === undefined) delete o[last]; else o[last] = JSON.parse(JSON.stringify(v));
+  };
+  const copy = v => v == null ? null : JSON.parse(JSON.stringify(v));
+  const fire = () => { for (const s of subs) s.cb(copy(get(s.p))); };
+  return {
+    kind: "memory",
+    async set(p, v) { setDeep(p, v); fire(); },
+    async update(p, o) { for (const k in o) setDeep(p + "/" + k, o[k]); fire(); },
+    async get(p) { return copy(get(p)); },
+    on(p, cb) { const s = { p, cb }; subs.push(s); setTimeout(() => cb(copy(get(p))), 0); return () => { subs = subs.filter(x => x !== s); }; }
+  };
+}
+let fbCache = null;
+function firebaseStore() {
+  if (fbCache) return fbCache;
+  if (typeof firebase === "undefined") throw new Error("The Firebase library didn't load. Check your internet connection and reload the page.");
+  if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+  fbCache = fbStore(firebase.database());
+  return fbCache;
+}
+
+/* ---------------- state ----------------
+   games/rng-CODE:
+     players/{pid}           {name, team}
+     teamNames/{team}        display name
+     entries/{team}/r{1..3}  {author, text, pid, ts}   (one output per rung per team)
+     vote                    {teams:[x,y], order:{team:[rungs shown as A,B,C]}, assign:{pid:team}, startedAt}
+     ballots/{pid}           {team, name, rank:{A:1..}, guess:{A:rung..}}
+     revealed, history
+   -------------------------------------- */
+let store = null;
+let ctx = { role: null, code: null, pid: null, demo: false };
+let S = null, unsub = null;
+let screen = null, sig = null;
+const openDetails = new Set();
+let pendingRender = false;
+const base = () => "games/" + PREFIX + ctx.code;
+function getPid() {
+  let p = lsGet("whichrung.pid");
+  if (!p) { p = "p" + Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4); lsSet("whichrung.pid", p); }
+  return p;
+}
+const players = () => (S && S.players) || {};
+const entries = () => (S && S.entries) || {};
+function teamName(tk) { return ((S && S.teamNames) || {})[tk] || tk; }
+function myTeam() { const p = players()[ctx.pid]; return p ? p.team : null; }
+function allTeams() {
+  const set = new Set([...Object.keys((S && S.teamNames) || {}), ...Object.keys(entries())]);
+  for (const pid in players()) if (players()[pid].team) set.add(players()[pid].team);
+  return [...set].sort((a, b) => teamName(a).localeCompare(teamName(b)));
+}
+function teamRungs(tk) { const e = entries()[tk] || {}; return RUNGS.filter(r => e["r" + r]); }
+function voteOrder(tk) { return (((S && S.vote) || {}).order || {})[tk] || []; }
+
+/* ---------------- rendering helpers ---------------- */
+function setScreen(name, html) {
+  if (screen === name) return false;
+  screen = name; sig = null;
+  app.innerHTML = html;
+  window.scrollTo(0, 0);
+  return true;
+}
+app.addEventListener("toggle", e => {
+  const d = e.target; if (d.tagName !== "DETAILS" || !d.dataset.k) return;
+  if (d.open) openDetails.add(d.dataset.k); else openDetails.delete(d.dataset.k);
+}, true);
+document.addEventListener("focusout", e => {
+  if (e.target.tagName === "SELECT" && pendingRender) setTimeout(() => { if (pendingRender) { pendingRender = false; render(); } }, 0);
+});
+function updateBadge() {
+  const b = $("codeBadge");
+  if (ctx.code && ctx.role) { b.hidden = false; b.innerHTML = (ctx.role === "host" ? "Instructor · " : "") + "Session <b>" + esc(ctx.code) + "</b>"; }
+  else b.hidden = true;
+}
+function connect() {
+  if (unsub) unsub();
+  screen = null; sig = null;
+  updateBadge();
+  unsub = store.on(base(), val => {
+    S = val;
+    if (!S) { showLanding("That session no longer exists."); return; }
+    render();
+  });
+}
+function render() {
+  if (!S) return;
+  const a = document.activeElement;
+  if (ctx.role === "host" && a && a.tagName === "SELECT" && app.contains(a)) { pendingRender = true; return; }
+  if (ctx.role === "host") { renderHost(); hostAutoAssign(); if (ctx.demo) demoBots(); }
+  else renderStudent();
+}
+
+/* =====================================================================
+   LANDING / JOIN
+   ===================================================================== */
+function showLanding(note) {
+  if (unsub) { unsub(); unsub = null; }
+  ctx = { role: null, code: null, pid: null, demo: false };
+  S = null; screen = "landing"; updateBadge(); $("demoBar").hidden = true;
+  store = null;
+  const params = new URLSearchParams(location.search);
+  const preCode = (params.get("code") || "").toUpperCase().replace(/[^A-Z]/g, "").slice(0, 4);
+  const hostCode = lsGet("whichrung.host");
+  app.innerHTML = `
+  <section class="card narrow">
+    <h1>Which Rung?</h1>
+    <p class="muted">Join your class session.</p>
+    ${note ? `<div class="warnbox">${esc(note)}</div>` : ""}
+    <label>Session code<input type="text" id="jCode" maxlength="4" autocapitalize="characters" autocomplete="off" value="${esc(preCode)}" placeholder="ABCD"></label>
+    <label>Team name
+      <small><b>All three teammates must type exactly the same team name.</b> If a teammate already joined, pick your team from the list.</small>
+      <input type="text" id="jTeam" list="teamList" autocomplete="off" maxlength="40"><datalist id="teamList"></datalist></label>
+    <label>Your first name<input type="text" id="jName" autocomplete="off" maxlength="40"></label>
+    <div class="row" style="margin-top:14px"><button class="btn primary" id="jGo">Join</button></div>
+    <div class="msg" id="jMsg"></div>
+  </section>
+  <div class="hostlinks">
+    Instructor:
+    <button class="btn sm" id="hNew">Start a new session</button>
+    ${hostCode ? `<button class="btn sm" id="hResume">Resume session ${esc(hostCode)}</button>` : ""}
+    <button class="btn sm" id="hDemo">Preview with a simulated class</button>
+  </div>`;
+  const loadTeams = async () => {
+    const c = $("jCode").value.toUpperCase().replace(/[^A-Z]/g, "");
+    $("jCode").value = c;
+    if (c.length !== 4) return;
+    try {
+      const names = await firebaseStore().get("games/" + PREFIX + c + "/teamNames");
+      $("teamList").innerHTML = Object.values(names || {}).map(n => `<option value="${esc(n)}">`).join("");
+    } catch (e) {}
+  };
+  $("jCode").addEventListener("input", loadTeams);
+  if (preCode.length === 4) loadTeams();
+  $("jGo").onclick = joinSession;
+  $("jName").addEventListener("keydown", e => { if (e.key === "Enter") joinSession(); });
+  $("hNew").onclick = hostNew;
+  if ($("hResume")) $("hResume").onclick = () => hostResume(hostCode);
+  $("hDemo").onclick = startDemo;
+}
+
+async function joinSession() {
+  const msg = $("jMsg");
+  const code = $("jCode").value.toUpperCase().replace(/[^A-Z]/g, "");
+  const team = $("jTeam").value.trim().replace(/\s+/g, " ");
+  const name = $("jName").value.trim().replace(/\s+/g, " ");
+  msg.className = "msg err";
+  if (code.length !== 4) { msg.textContent = "Enter the 4-letter session code."; return; }
+  if (!slug(team)) { msg.textContent = "Enter your team name (letters or numbers)."; return; }
+  if (!name) { msg.textContent = "Enter your first name."; return; }
+  $("jGo").disabled = true; msg.className = "msg"; msg.textContent = "Joining…";
+  try {
+    store = firebaseStore();
+    const created = await store.get("games/" + PREFIX + code + "/created");
+    if (!created) { msg.className = "msg err"; msg.textContent = "No session with that code. Check the board."; $("jGo").disabled = false; return; }
+    ctx = { role: "student", code, pid: getPid(), demo: false };
+    const tk = slug(team);
+    const existingName = await store.get(base() + "/teamNames/" + tk);
+    const upd = {};
+    upd["players/" + ctx.pid] = { name, team: tk, joined: Date.now() };
+    if (!existingName) upd["teamNames/" + tk] = team;
+    await store.update(base(), upd);
+    lsSet("whichrung.student", JSON.stringify({ code }));
+    connect();
+  } catch (e) {
+    msg.className = "msg err"; msg.textContent = "Couldn't join: " + e.message; $("jGo").disabled = false;
+  }
+}
+
+/* =====================================================================
+   STUDENT
+   ===================================================================== */
+function renderStudent() {
+  if (!players()[ctx.pid]) { lsDel("whichrung.student"); showLanding("Please join again."); return; }
+  const phase = S.phase || "submit";
+  if (phase === "submit") studentSubmit();
+  else if (phase === "vote") studentVote();
+  else studentSummary();
+}
+function whoLine() {
+  const p = players()[ctx.pid];
+  return `<div class="row small muted" style="margin-bottom:8px">Team <b style="color:var(--navy)">${esc(teamName(p.team))}</b> · ${esc(p.name)}${ctx.demo ? "" : ` · <button class="link" data-act="rejoin">change team or name</button>`}</div>`;
+}
+app.addEventListener("click", e => {
+  const t = e.target.closest("[data-act='rejoin']");
+  if (!t) return;
+  if (!confirm("Leave this team and join again? Anything already submitted stays with your old team.")) return;
+  lsDel("whichrung.student");
+  const c = ctx.code; showLanding();
+  $("jCode").value = c; $("jCode").dispatchEvent(new Event("input"));
+});
+
+function studentSubmit() {
+  const fresh = setScreen("s-submit", `
+    <div id="who"></div>
+    <section class="card">
+      <h2>Your team's three outputs <span class="live">live</span></h2>
+      <p class="muted small">Each teammate submits the AI output for a <b>different</b> rung. This list updates as teammates submit from their own computers.</p>
+      <div id="teamSlots"></div>
+    </section>
+    <section class="card">
+      <h2>Submit an output</h2>
+      <div class="grid2">
+        <label>Which rung is this?<select id="fRung"><option value="">Choose…</option><option value="1">Rung 1</option><option value="2">Rung 2</option><option value="3">Rung 3</option></select></label>
+        <label>Submitted by<input type="text" id="fAuthor" maxlength="40"><small>Change this if you're entering a teammate's output for them.</small></label>
+      </div>
+      <label>AI output<textarea id="fText" placeholder="Paste the AI's output here"></textarea></label>
+      <div class="row" style="margin-top:12px"><button class="btn primary" id="fSubmit">Submit</button><span class="small muted" id="fCount"></span></div>
+      <div class="msg" id="fMsg"></div>
+    </section>`);
+  if (fresh) {
+    $("fAuthor").value = players()[ctx.pid].name;
+    const open = RUNGS.find(r => !teamRungs(myTeam()).includes(r));
+    if (open) $("fRung").value = String(open);
+    $("fText").addEventListener("input", () => { const n = words($("fText").value); $("fCount").textContent = n ? n + " words" : ""; });
+    $("fSubmit").onclick = submitEntry;
+    $("teamSlots").addEventListener("click", async e => {
+      const b = e.target.closest("button[data-del]"); if (!b) return;
+      if (!confirm(`Delete your team's Rung ${b.dataset.del} output?`)) return;
+      await store.set(`${base()}/entries/${myTeam()}/r${b.dataset.del}`, null);
+    });
+  }
+  $("who").innerHTML = whoLine();
+  $("teamSlots").innerHTML = slotsHTML(myTeam(), true);
+}
+
+async function submitEntry() {
+  const msg = $("fMsg"); msg.className = "msg err";
+  if ((S.phase || "submit") !== "submit") { msg.textContent = "Submissions are closed."; return; }
+  const author = $("fAuthor").value.trim().replace(/\s+/g, " ");
+  const rung = $("fRung").value;
+  const text = $("fText").value.trim();
+  if (!rung) { msg.textContent = "Choose which rung this output is from."; return; }
+  if (!author) { msg.textContent = "Enter who this output is from."; return; }
+  if (!text) { msg.textContent = "Paste the AI output into the box."; return; }
+  if (text.length > MAX_CHARS) { msg.textContent = `That's too long (${text.length.toLocaleString()} characters). The limit is ${MAX_CHARS.toLocaleString()}.`; return; }
+  const tk = myTeam();
+  const existing = (entries()[tk] || {})["r" + rung];
+  if (existing && !confirm(`Your team already has a Rung ${rung} output (from ${existing.author}). Replace it with this one?`)) return;
+  $("fSubmit").disabled = true;
+  try {
+    await store.set(`${base()}/entries/${tk}/r${rung}`, { author, text, pid: ctx.pid, ts: Date.now() });
+    msg.className = "msg ok"; msg.textContent = `Saved as your team's Rung ${rung} output.`;
+    $("fText").value = ""; $("fCount").textContent = "";
+    const open = RUNGS.find(r => !teamRungs(tk).includes(r) && String(r) !== rung);
+    $("fRung").value = open ? String(open) : "";
+  } catch (e) { msg.textContent = "Couldn't save: " + e.message; }
+  $("fSubmit").disabled = false;
+}
+
+function slotsHTML(tk, canDelete) {
+  const ents = entries()[tk] || {};
+  return RUNGS.map(r => {
+    const e = ents["r" + r];
+    if (!e) return `<div class="slot"><div class="head"><span class="rn">Rung ${r}</span><span class="chip miss">not submitted yet</span></div></div>`;
+    const k = `${tk}|r${r}`;
+    return `<div class="slot"><div class="head"><span class="rn">Rung ${r}</span><span class="chip ok">✓ from ${esc(e.author)}</span><span class="small muted">${words(e.text)} words</span></div>
+      <details data-k="${esc(k)}" ${openDetails.has(k) ? "open" : ""}><summary>Read it</summary><div class="out">${esc(e.text)}</div>
+      ${canDelete ? `<div class="act"><button class="link danger" data-del="${r}">Delete this output</button></div>` : ""}</details></div>`;
+  }).join("");
+}
+
+/* ---------- student voting ---------- */
+// draft.rank / draft.guess: letters in the order the student picked them
+let draft = { rank: [], guess: [] }, draftKey = null;
+function studentVote() {
+  const v = S.vote || {};
+  const tk = (v.assign || {})[ctx.pid];
+  const b = (S.ballots || {})[ctx.pid] || {};
+  const step = !tk ? 0 : !b.rank ? 1 : !b.guess ? 2 : 3;
+  const dk = v.startedAt + "|" + tk;
+  if (draftKey !== dk) { draftKey = dk; draft = { rank: [], guess: [] }; }
+  const key = dk + "|" + step;
+  if (screen === "s-vote" && sig === key) return;
+  screen = null; setScreen("s-vote", `<div id="voteBody"></div>`); sig = key;
+  drawVote();
+}
+function autoFill(arr, n) {
+  // Once only one output is left, it fills itself in.
+  if (n > 0 && arr.length === n - 1) arr.push(LETTERS.slice(0, n).find(L => !arr.includes(L)));
+}
+function drawVote() {
+  const v = S.vote || {};
+  const tk = (v.assign || {})[ctx.pid];
+  const b = (S.ballots || {})[ctx.pid] || {};
+  const body = $("voteBody");
+  if (!tk) { body.innerHTML = whoLine() + `<section class="card narrow"><h2>Voting is starting…</h2><p class="muted">Hang on a moment while you're assigned a team to review.</p></section>`; return; }
+  if (b.rank && b.guess) {
+    body.innerHTML = whoLine() + `<section class="card narrow"><h2>Your votes are in ✓</h2><p>Thanks! Watch the screen at the front for the results.</p></section>`;
+    return;
+  }
+  const order = voteOrder(tk); const n = order.length;
+  const rungsAvail = order.slice().sort();
+  const step = b.rank ? 2 : 1;
+  const arr = step === 1 ? draft.rank : draft.guess;
+  autoFill(arr, n);
+  const complete = arr.length === n;
+
+  let q, sub;
+  if (step === 1) {
+    if (complete) { q = "Your ranking: " + draft.rank.map((L, i) => `${["1st", "2nd", "3rd"][i]} ${L}`).join("  ·  "); sub = "Happy with it? Click “Submit ranking” below, or start over."; }
+    else if (draft.rank.length === 0) { q = "Which output is the best?"; sub = "Read all of them, then click “Pick as best” under one."; }
+    else { q = "Of the two that are left, which is better?"; sub = "The other one is ranked last automatically."; }
+  } else {
+    if (complete) { q = "Your guesses: " + LETTERS.slice(0, n).map(L => `${L} = Rung ${rungsAvail[draft.guess.indexOf(L)]}`).join("  ·  "); sub = "Happy with them? Click “Submit guesses” below, or start over."; }
+    else { const r = rungsAvail[draft.guess.length]; q = `Which output do you think came from Rung ${r}?`; sub = draft.guess.length === n - 2 ? "The last one is filled in automatically." : `Click “This is Rung ${r}” under one of them.`; }
+  }
+
+  const steps = `<div class="steps"><span class="${step === 1 ? "on" : "done"}">1 · Rank the outputs</span><span class="${step === 2 ? "on" : ""}">2 · Guess the rungs</span><span>3 · Done</span></div>`;
+  const howto = `<div class="howto"><b>How this works.</b> You're looking at <b>another team's</b> ${n} AI outputs. They're labeled ${LETTERS.slice(0, n).join(", ")} in a random order. The letters tell you nothing about the rung.
+    <ol><li><b>Rank them:</b> pick the best one, then the better of the two left. The last one is ranked worst automatically.</li>
+    <li><b>Guess the rungs:</b> you'll be asked which output came from Rung 1, then Rung 2. The last one is Rung 3.</li></ol>
+    Each output gets its own rank and its own rung. Clicked the wrong one? Use <b>Start over</b>.</div>`;
+
+  const cards = order.map((_, li) => {
+    const L = LETTERS[li];
+    const pos = arr.indexOf(L);
+    const picked = pos >= 0;
+    let tag = "", ctl = "";
+    if (step === 1) {
+      if (picked) tag = `<span class="tag">${rankWord(pos, n)}</span>`;
+      ctl = picked ? `<span class="note">Ranked ${rankWord(pos, n)}</span>`
+                   : `<button class="choose" data-pick="${L}">${draft.rank.length === 0 ? "Pick as best" : "Pick as the better one"}</button>`;
+    } else {
+      const myRank = (b.rank || {})[L];
+      if (picked) tag = `<span class="tag">Your guess: Rung ${rungsAvail[pos]}</span>`;
+      ctl = picked ? `<span class="note">${myRank ? "You ranked it " + rankWord(myRank - 1, n) + "." : ""}</span>`
+                   : `<button class="choose" data-pick="${L}">This is Rung ${rungsAvail[draft.guess.length]}</button>`;
+    }
+    return `<div class="output ${picked ? "picked" : ""}"><div class="olabel"><span>${L}</span>${tag}</div>
+      <div class="otext">${esc(outputText(tk, order[li]))}</div><div class="ctl">${ctl}</div></div>`;
+  }).join("");
+
+  body.innerHTML = whoLine() + steps + howto +
+    `<div class="prompt ${complete ? "done" : ""}"><div class="q">${esc(q)}<small>${esc(sub)}</small></div>
+       ${arr.length && n > 1 ? `<button class="btn sm" id="vReset">Start over</button>` : ""}</div>
+     <div class="outputs n${n}">${cards}</div>
+     <div class="sticky-submit"><span class="small muted">${complete ? "Ready to submit." : (step === 1 ? "Finish ranking to continue." : "Finish your guesses to continue.")}</span>
+       <button class="btn primary" id="vSubmit" ${complete ? "" : "disabled"}>${step === 1 ? "Submit ranking →" : "Submit guesses"}</button></div>`;
+  if ($("vReset")) $("vReset").onclick = () => { if (step === 1) draft.rank = []; else draft.guess = []; drawVote(); };
+  $("vSubmit").onclick = () => submitBallot(step, tk, order);
+}
+function outputText(tk, rung) {
+  const e = (entries()[tk] || {})["r" + rung];
+  return e ? e.text : "(This output was deleted.)";
+}
+app.addEventListener("click", e => {
+  const p = e.target.closest("[data-pick]"); if (!p || screen !== "s-vote") return;
+  const b = (S.ballots || {})[ctx.pid] || {};
+  const arr = b.rank ? draft.guess : draft.rank;
+  if (!arr.includes(p.dataset.pick)) arr.push(p.dataset.pick);
+  drawVote();
+});
+async function submitBallot(step, tk, order) {
+  $("vSubmit").disabled = true;
+  try {
+    if (step === 1) {
+      const rank = {}; draft.rank.forEach((L, i) => rank[L] = i + 1);
+      await store.set(`${base()}/ballots/${ctx.pid}`, { team: tk, name: players()[ctx.pid].name, rank, rankedAt: Date.now() });
+    } else {
+      const rungsAvail = order.slice().sort();
+      const guess = {}; draft.guess.forEach((L, i) => guess[L] = rungsAvail[i]);
+      await store.update(`${base()}/ballots/${ctx.pid}`, { guess, guessedAt: Date.now() });
+    }
+    window.scrollTo(0, 0);
+  } catch (e) { alert("Couldn't save: " + e.message); $("vSubmit").disabled = false; }
+}
+
+function studentSummary() {
+  const b = (S.ballots || {})[ctx.pid];
+  const key = ["sum", !!S.revealed, b ? 1 : 0].join("|");
+  if (screen === "s-sum" && sig === key) return;
+  screen = null; setScreen("s-sum", `<div id="sumBody"></div>`); sig = key;
+  let extra = "";
+  if (S.revealed && b && b.guess) {
+    const order = voteOrder(b.team);
+    let right = 0; order.forEach((rung, li) => { if (b.guess[LETTERS[li]] === rung) right++; });
+    extra = `<div class="okbox">You identified <b>${right} of ${order.length}</b> rungs correctly.</div>`;
+  }
+  $("sumBody").innerHTML = whoLine() + `<section class="card narrow"><h2>Voting is closed</h2><p>The results are on the screen at the front.</p>${extra}</section>`;
+}
+
+/* =====================================================================
+   INSTRUCTOR
+   ===================================================================== */
+async function hostNew() {
+  try {
+    store = firebaseStore();
+    const A = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+    let code = null;
+    for (let i = 0; i < 20; i++) {
+      const c = Array.from({ length: 4 }, () => A[Math.floor(Math.random() * A.length)]).join("");
+      if (!(await store.get("games/" + PREFIX + c + "/created"))) { code = c; break; }
+    }
+    if (!code) throw new Error("couldn't find a free code");
+    ctx = { role: "host", code, pid: null, demo: false };
+    await store.set(base(), { created: Date.now(), phase: "submit" });
+    lsSet("whichrung.host", code);
+    connect();
+  } catch (e) { fatal("Couldn't create a session: " + esc(e.message)); }
+}
+async function hostResume(code) {
+  try {
+    store = firebaseStore();
+    const created = await store.get("games/" + PREFIX + code + "/created");
+    if (!created) { lsDel("whichrung.host"); showLanding("Session " + code + " no longer exists."); return; }
+    ctx = { role: "host", code, pid: null, demo: false };
+    connect();
+  } catch (e) { fatal("Couldn't resume: " + esc(e.message)); }
+}
+function joinURL() { return location.origin + location.pathname + "?code=" + ctx.code; }
+function stepsBar(phase) {
+  const order = ["submit", "vote", "summary"], names = ["1 · Submissions", "2 · Voting", "3 · Results"];
+  const i = order.indexOf(phase);
+  return `<div class="steps">${names.map((n, j) => `<span class="${j === i ? "on" : j < i ? "done" : ""}">${n}</span>`).join("")}</div>`;
+}
+function heroHTML() {
+  return `<section class="card hero"><div><h2>Join at</h2><div class="url">${esc(joinURL())}</div></div>
+    <div style="text-align:right"><div class="small" style="opacity:.8">Session code</div><div class="bigcode">${esc(ctx.code)}</div></div></section>`;
+}
+let hostSel = { x: "", y: "" };
+function renderHost() {
+  const phase = S.phase || "submit";
+  if (phase === "submit") hostSubmit();
+  else if (phase === "vote") hostVote();
+  else hostSummary();
+}
+
+/* ---------- submissions ---------- */
+function hostSubmit() {
+  const fresh = setScreen("h-submit", `<div id="hHero"></div>${stepsBar("submit")}<div id="hStats"></div>
+    <section class="card"><h2>Choose two teams for the vote</h2><div id="hPick"></div></section>
+    <section class="card"><h2>Teams <span class="live">live</span></h2>
+      <p class="muted small">Team names are matched ignoring capitals and extra spaces. If one team typed two different names, merge them.</p>
+      <div id="hTeams" class="teams"></div></section>
+    <div id="hHistory"></div>`);
+  if (fresh) $("hHero").innerHTML = heroHTML();
+  const teams = allTeams();
+  const nPlayers = Object.keys(players()).length;
+  const full = teams.filter(tk => teamRungs(tk).length === 3).length;
+  $("hStats").innerHTML = `<p class="muted">${nPlayers} student${nPlayers === 1 ? "" : "s"} joined · ${teams.length} team${teams.length === 1 ? "" : "s"} · ${full} with all three rungs in</p>`;
+
+  const eligible = teams.filter(tk => teamRungs(tk).length >= 2);
+  if (!eligible.includes(hostSel.x)) hostSel.x = "";
+  if (!eligible.includes(hostSel.y)) hostSel.y = "";
+  const opt = (sel, other) => `<option value="">Choose a team…</option>` + eligible.map(tk => {
+    const k = teamRungs(tk).length;
+    return `<option value="${esc(tk)}" ${tk === sel ? "selected" : ""} ${tk === other ? "disabled" : ""}>${esc(teamName(tk))}${k < 3 ? ` (only ${k} of 3 in)` : ""}</option>`;
+  }).join("");
+  let warn = "";
+  for (const tk of [hostSel.x, hostSel.y].filter(Boolean)) {
+    const miss = RUNGS.filter(r => !teamRungs(tk).includes(r));
+    if (miss.length) warn += `<div class="warnbox"><b>${esc(teamName(tk))}</b> is missing Rung ${miss.join(" & ")}. Voters will see only ${3 - miss.length} outputs from this team.</div>`;
+  }
+  const ready = hostSel.x && hostSel.y && hostSel.x !== hostSel.y;
+  $("hPick").innerHTML = eligible.length < 2
+    ? `<p class="muted">Waiting for at least two teams to submit (at least two of their three rungs).</p>`
+    : `<div class="grid2"><label>Team 1<select id="selX">${opt(hostSel.x, hostSel.y)}</select></label><label>Team 2<select id="selY">${opt(hostSel.y, hostSel.x)}</select></label></div>
+       ${warn}
+       <p class="muted small" style="margin-top:10px">Team 1 reviews Team 2 and vice versa; everyone else is split evenly between them. Submissions close when voting starts.</p>
+       <button class="btn primary" id="startVote" ${ready ? "" : "disabled"}>Start voting</button>`;
+
+  $("hTeams").innerHTML = teams.length ? teams.map(tk => {
+    const mem = Object.values(players()).filter(p => p.team === tk).map(p => p.name);
+    const ents = entries()[tk] || {};
+    const lines = RUNGS.map(r => ents["r" + r]
+      ? `<div class="aline"><span class="chip ok">Rung ${r}</span> ${esc(ents["r" + r].author)} <span class="muted small">· ${words(ents["r" + r].text)} words</span></div>`
+      : `<div class="aline"><span class="chip miss">Rung ${r}</span> <span class="muted small">not yet</span></div>`).join("");
+    const others = teams.filter(t => t !== tk);
+    const k = "host|" + tk;
+    const nIn = teamRungs(tk).length;
+    return `<div class="team"><h3><span>${esc(teamName(tk))}</span><span class="chip ${nIn === 3 ? "ok" : "teal"}">${nIn}/3</span></h3>
+      <div class="members">Joined: ${mem.length ? esc(mem.join(", ")) : "—"}</div>
+      ${lines}
+      ${nIn ? `<details data-k="${esc(k)}" ${openDetails.has(k) ? "open" : ""}><summary>Read outputs</summary><div style="padding:0 10px 8px">${slotsHTML(tk, false)}</div></details>` : ""}
+      ${others.length ? `<div class="merge">Merge into: <select data-merge="${esc(tk)}"><option value="">—</option>${others.map(o => `<option value="${esc(o)}">${esc(teamName(o))}</option>`).join("")}</select></div>` : ""}
+    </div>`;
+  }).join("") : `<p class="muted">No teams yet. Students join with the code above.</p>`;
+
+  const hist = S.history ? Object.keys(S.history).length : 0;
+  $("hHistory").innerHTML = hist ? `<p class="muted small">${hist} earlier vote${hist === 1 ? "" : "s"} saved in this session.</p>` : "";
+}
+app.addEventListener("change", e => {
+  if (screen !== "h-submit") return;
+  const t = e.target;
+  if (t.id === "selX" || t.id === "selY") {
+    hostSel[t.id === "selX" ? "x" : "y"] = t.value;
+    t.blur(); pendingRender = false; render();
+  } else if (t.dataset.merge) {
+    const from = t.dataset.merge, to = t.value;
+    if (!to) return;
+    if (!confirm(`Merge "${teamName(from)}" into "${teamName(to)}"? Members and outputs move to "${teamName(to)}". If both have the same rung, the newer one is kept.`)) { t.value = ""; return; }
+    t.blur(); pendingRender = false;
+    mergeTeams(from, to);
+  }
+});
+app.addEventListener("click", async e => {
+  if (screen !== "h-submit" || e.target.id !== "startVote") return;
+  e.target.disabled = true;
+  await startVoting(hostSel.x, hostSel.y);
+});
+async function mergeTeams(from, to) {
+  const upd = {};
+  const a = entries()[from] || {}, b = entries()[to] || {};
+  for (const r in a) if (!b[r] || (a[r].ts || 0) > (b[r].ts || 0)) upd[`entries/${to}/${r}`] = a[r];
+  upd["entries/" + from] = null;
+  upd["teamNames/" + from] = null;
+  if (!(S.teamNames || {})[to]) upd["teamNames/" + to] = teamName(to);
+  for (const pid in players()) if (players()[pid].team === from) upd[`players/${pid}/team`] = to;
+  await store.update(base(), upd);
+}
+
+/* ---------- voting ---------- */
+function computeAssign(existing, x, y) {
+  const counts = { [x]: 0, [y]: 0 };
+  for (const k in existing) counts[existing[k]] = (counts[existing[k]] || 0) + 1;
+  const pids = Object.keys(players()).filter(p => !existing[p]);
+  const members = pids.filter(p => [x, y].includes(players()[p].team));
+  const others = shuffle(pids.filter(p => ![x, y].includes(players()[p].team)));
+  const add = {};
+  for (const p of members) { const to = players()[p].team === x ? y : x; add[p] = to; counts[to]++; }
+  for (const p of others) {
+    const to = counts[x] < counts[y] ? x : counts[y] < counts[x] ? y : (Math.random() < .5 ? x : y);
+    add[p] = to; counts[to]++;
+  }
+  return add;
+}
+async function startVoting(x, y) {
+  if (!x || !y || x === y) return;
+  const order = { [x]: shuffle(teamRungs(x)), [y]: shuffle(teamRungs(y)) };
+  const assign = computeAssign({}, x, y);
+  await store.update(base(), {
+    phase: "vote",
+    vote: { teams: [x, y], order, assign, startedAt: Date.now() },
+    ballots: null, revealed: null
+  });
+}
+const pendingAssign = new Map();
+function hostAutoAssign() {
+  if (S.phase !== "vote" || !S.vote || !S.vote.teams) return;
+  const [x, y] = S.vote.teams;
+  const existing = Object.assign({}, S.vote.assign || {});
+  for (const [p, t] of pendingAssign) if (!existing[p]) existing[p] = t;
+  const add = computeAssign(existing, x, y);
+  const keys = Object.keys(add);
+  if (!keys.length) return;
+  keys.forEach(k => pendingAssign.set(k, add[k]));
+  store.update(base() + "/vote/assign", add).finally(() => keys.forEach(k => pendingAssign.delete(k)));
+}
+// Instructor's read-only view of a team's outputs; reveal adds rung + who submitted it
+function outputsView(tk, reveal) {
+  const order = voteOrder(tk);
+  const ents = entries()[tk] || {};
+  return `<div class="outputs n${order.length}">` + order.map((rung, li) => {
+    const e = ents["r" + rung];
+    const tag = reveal ? `<span class="tag">Rung ${rung}${e ? " · " + esc(e.author) : ""}</span>` : "";
+    return `<div class="output"><div class="olabel"><span>${LETTERS[li]}</span>${tag}</div><div class="otext">${esc(e ? e.text : "(This output was deleted.)")}</div></div>`;
+  }).join("") + `</div>`;
+}
+function hostVote() {
+  const v = S.vote || {};
+  const [x, y] = v.teams || [];
+  const fresh = setScreen("h-vote", `<div id="hHero"></div>${stepsBar("vote")}
+    <section class="card"><h2>Voting in progress <span class="live">live</span></h2><div id="hVoteStatus"></div>
+      <div class="row" style="margin-top:14px"><button class="btn primary" id="hSummarize">Summarize votes</button>
+      <button class="btn" id="hCancel">Cancel vote and go back to submissions</button></div></section>
+    <div id="hPeek"></div>`);
+  if (fresh) {
+    $("hHero").innerHTML = heroHTML();
+    $("hSummarize").onclick = async () => {
+      const assigned = Object.keys((S.vote || {}).assign || {}).length;
+      const done = Object.values(S.ballots || {}).filter(b => b.guess).length;
+      if (done < assigned && !confirm(`${done} of ${assigned} students have finished. Close voting and summarize now?`)) return;
+      await store.update(base(), { phase: "summary", revealed: false });
+    };
+    $("hCancel").onclick = async () => {
+      if (!confirm("Cancel this vote? Votes cast so far are discarded and students can submit again.")) return;
+      await store.update(base(), { phase: "submit", vote: null, ballots: null, revealed: null });
+    };
+  }
+  const ballots = S.ballots || {};
+  const col = tk => {
+    const pids = Object.keys(v.assign || {}).filter(p => v.assign[p] === tk);
+    const ranked = pids.filter(p => ballots[p] && ballots[p].rank).length;
+    const done = pids.filter(p => ballots[p] && ballots[p].guess).length;
+    const names = pids.map(p => {
+      const b = ballots[p]; const cls = b && b.guess ? "d" : b && b.rank ? "r" : "";
+      return `<span style="margin-right:10px;white-space:nowrap"><span class="dot ${cls}"></span>${esc((players()[p] || {}).name || "?")}</span>`;
+    }).join("");
+    return `<div class="team"><h3><span>Team ${esc(teamName(tk))}</span></h3>
+      <p style="margin:4px 0">Reviewed by <b>${pids.length}</b> · ranked <b>${ranked}</b> · finished <b>${done}</b></p>
+      <div class="voters">${names || `<span class="muted">No reviewers yet.</span>`}</div></div>`;
+  };
+  $("hVoteStatus").innerHTML = `<div class="grid2">${col(x)}${col(y)}</div>
+    <p class="muted small" style="margin-top:8px"><span class="dot"></span>not started <span class="dot r" style="margin-left:10px"></span>ranked <span class="dot d" style="margin-left:10px"></span>finished</p>`;
+  $("hPeek").innerHTML = [x, y].map(tk => {
+    const k = "peek|" + tk;
+    return `<details class="card" data-k="${esc(k)}" ${openDetails.has(k) ? "open" : ""} style="padding:0"><summary style="padding:14px 18px">Show Team ${esc(teamName(tk))}'s outputs as voters see them</summary><div style="padding:0 14px 14px">${outputsView(tk, false)}</div></details>`;
+  }).join("");
+}
+
+/* ---------- summary ---------- */
+function teamStats(tk) {
+  const order = voteOrder(tk); const n = order.length;
+  const ballots = Object.values(S.ballots || {}).filter(b => b.team === tk && b.rank);
+  return {
+    n, nBallots: ballots.length, nGuess: ballots.filter(b => b.guess).length,
+    letters: order.map((rung, li) => {
+      const L = LETTERS[li];
+      const ranks = [], guesses = {};
+      let first = 0, gN = 0, correct = 0;
+      for (const b of ballots) {
+        const r = (b.rank || {})[L];
+        if (r) { ranks.push(r); if (r === 1) first++; }
+        const g = (b.guess || {})[L];
+        if (g) { guesses[g] = (guesses[g] || 0) + 1; gN++; if (g === rung) correct++; }
+      }
+      return { L, rung, avg: mean(ranks), nRank: ranks.length, first, guesses, gN, correct };
+    })
+  };
+}
+function rungStats(tks) {
+  const out = {}; RUNGS.forEach(r => out[r] = { rankSum: 0, rN: 0, first: 0, correct: 0, gN: 0 });
+  for (const tk of tks) {
+    const ts = teamStats(tk);
+    for (const l of ts.letters) {
+      const o = out[l.rung];
+      o.correct += l.correct; o.gN += l.gN;
+      if (ts.n < 2) continue;
+      o.rankSum += (l.avg || 0) * l.nRank; o.rN += l.nRank; o.first += l.first;
+    }
+  }
+  RUNGS.forEach(r => { const o = out[r]; o.avg = o.rN ? o.rankSum / o.rN : null; });
+  return out;
+}
+app.addEventListener("click", async e => {
+  if (screen !== "h-sum") return;
+  const id = e.target.id;
+  if (id === "hReveal") await store.update(base(), { revealed: true });
+  if (id === "hHide") await store.update(base(), { revealed: false });
+  if (id === "hReopen") await store.update(base(), { phase: "vote", revealed: null });
+  if (id === "hAnother") {
+    if (!confirm("Save these results and go back to choose two more teams?")) return;
+    const upd = { phase: "submit", vote: null, ballots: null, revealed: null };
+    upd["history/" + Date.now()] = { vote: S.vote || null, ballots: S.ballots || null };
+    hostSel = { x: "", y: "" };
+    await store.update(base(), upd);
+  }
+});
+function hostSummary() {
+  const v = S.vote || {};
+  const [x, y] = v.teams || [];
+  setScreen("h-sum", `${stepsBar("summary")}<div id="hSumBody"></div>`);
+  const R = !!S.revealed;
+  const teamBlock = tk => {
+    const ts = teamStats(tk);
+    const rungsAvail = voteOrder(tk).slice().sort();
+    const ranked = ts.letters.filter(l => l.avg != null);
+    const bestAvg = ranked.length ? Math.min(...ranked.map(l => l.avg)) : null;
+    const rows = ts.letters.map(l => {
+      const gd = rungsAvail.map(r => `R${r}: ${l.guesses[r] || 0}`).join(" · ");
+      return `<tr class="${ts.n > 1 && l.avg != null && l.avg === bestAvg ? "best" : ""}">
+        <td class="L">${l.L}</td>
+        <td>${ts.n > 1 ? fmt2(l.avg) : "–"}</td>
+        <td>${ts.n > 1 ? `${l.first} <span class="muted small">(${pct(l.first, l.nRank)})</span>` : "–"}</td>
+        <td class="small">${gd}</td>
+        ${R ? `<td><span class="chip teal">Rung ${l.rung}</span></td><td>${pct(l.correct, l.gN)} <span class="muted small">(${l.correct}/${l.gN})</span></td>` : ""}
+      </tr>`;
+    }).join("");
+    const k = "sumpeek|" + tk;
+    return `<section class="card"><h2>Team ${esc(teamName(tk))}</h2>
+      <p class="muted small">${ts.nBallots} voter${ts.nBallots === 1 ? "" : "s"} ranked · ${ts.nGuess} guessed rungs</p>
+      <table class="stat"><thead><tr><th>Output</th><th>Avg rank<br><span style="text-transform:none">(1 = best)</span></th><th>Ranked best</th><th>Rung guesses</th>${R ? "<th>Actually</th><th>Guessed right</th>" : ""}</tr></thead><tbody>${rows}</tbody></table>
+      <details data-k="${esc(k)}" ${openDetails.has(k) ? "open" : ""} style="margin-top:14px"><summary>Show the outputs</summary><div style="padding:10px">${outputsView(tk, R)}</div></details>
+    </section>`;
+  };
+  let big = "";
+  if (R) {
+    const rs = rungStats([x, y]);
+    const bar = (cls, frac, label) => `<div class="bar ${cls}"><i style="width:${Math.max(0, Math.min(1, frac)) * 100}%"></i></div><span>${label}</span>`;
+    big = `<section class="card"><h2>Both teams together, by actual rung</h2>
+      <div class="grid2">
+        <div class="metric"><h3>Average rank <span class="muted small">(1 = best; shorter bar is better)</span></h3><div class="bars">
+          ${RUNGS.map(r => `<div class="barrow"><b>Rung ${r}</b>${bar("navy", rs[r].avg ? rs[r].avg / 3 : 0, fmt2(rs[r].avg))}</div>`).join("")}</div></div>
+        <div class="metric"><h3>Share of voters who ranked it best</h3><div class="bars">
+          ${RUNGS.map(r => `<div class="barrow"><b>Rung ${r}</b>${bar("gold", rs[r].rN ? rs[r].first / rs[r].rN : 0, pct(rs[r].first, rs[r].rN))}</div>`).join("")}</div></div>
+        <div class="metric"><h3>Share of guesses that got the rung right</h3><div class="bars">
+          ${RUNGS.map(r => `<div class="barrow"><b>Rung ${r}</b>${bar("", rs[r].gN ? rs[r].correct / rs[r].gN : 0, pct(rs[r].correct, rs[r].gN))}</div>`).join("")}</div>
+          <p class="muted small" style="margin-top:6px">Random guessing would get about 33% right.</p></div>
+      </div></section>`;
+  }
+  $("hSumBody").innerHTML = `
+    <section class="card"><div class="row" style="justify-content:space-between">
+      <div><h2 style="margin:0">Results</h2><p class="muted small" style="margin:0">${R ? "Rungs revealed." : "Rungs are hidden. Discuss the rankings first, then reveal."}</p></div>
+      <div class="row">${R ? `<button class="btn" id="hHide">Hide rungs</button>` : `<button class="btn gold" id="hReveal">Reveal which output is which rung</button>`}</div></div></section>
+    ${big}${teamBlock(x)}${teamBlock(y)}
+    <section class="card"><div class="row"><button class="btn" id="hReopen">Reopen voting</button><button class="btn" id="hAnother">Save results and vote on two more teams</button></div></section>`;
+}
+
+/* =====================================================================
+   PREVIEW MODE (in-memory, simulated class)
+   ===================================================================== */
+const DEMO_TEXT = {
+  1: [
+    "AI can help students study by explaining things and answering questions. Students should use it but also make sure they still learn the material themselves.",
+    "Students at Brandeis should use AI for some things but not everything. It is a helpful tool, but relying on it too much could hurt learning.",
+    "AI is changing education. It can be good or bad depending on how students use it. Universities should think about this carefully."
+  ],
+  2: [
+    "AI is most useful for low-stakes tasks like summarizing readings or checking grammar, where it saves time without replacing thinking. It is less appropriate for problem sets and first drafts, because the struggle of producing an answer is where learning happens. Students should also learn to verify AI output, since it can be confidently wrong.",
+    "A sensible approach: use AI after you have tried a task yourself, not before. For example, write your own outline, then ask AI to critique it. This keeps the skill-building with the student while still getting feedback. Employers will expect AI fluency, so some practice matters too.",
+    "The key question is whether AI complements or substitutes for what a student is trying to learn. In intro writing courses it likely substitutes, which reduces human capital. In upper-level courses where students already have the basics, it can expand what they can do."
+  ],
+  3: [
+    "Thesis: Brandeis students should treat AI as a complement to skills they have already built, not a substitute for skills they are still building.\n\n1. Learning requires effortful retrieval. When AI does the first draft, the student skips the step that builds the skill.\n2. Labor-market returns are shifting toward judgment and verification. Students who can spot AI errors will be worth more than those who can only prompt.\n3. So the right rule depends on the course: restrict AI in foundational courses; require transparent AI use in advanced ones.\n\nCounterargument: AI access is universal, so restrictions only disadvantage honest students. Response: assessments can be redesigned (oral exams, in-class writing) so restrictions are enforceable.",
+    "Claim: The value of AI in a Brandeis education depends on whether the task is the point of the course or a means to it.\n\n- When the task is the point (learning to write an argument), AI use should be limited, because outsourcing it removes the practice that builds human capital.\n- When the task is a means (formatting citations, summarizing background reading), AI frees time for higher-value work.\n- Preparing for work: graduates will use AI daily, so courses should teach verification explicitly.\n\nCounterpoint: the line between 'point' and 'means' is blurry; a clear course-by-course policy is needed.",
+    "Argument: AI expands human capital when students use it to get feedback on work they produced, and reduces it when it produces the work for them.\n\nPoint 1 — Mechanism: learning comes from attempting, failing, and correcting. AI feedback speeds up correcting; AI drafting removes attempting.\nPoint 2 — Career prep: employers want graduates who can evaluate AI output, which requires the domain knowledge built in point 1.\n\nCounterargument and reply: some say AI is just the next calculator. But calculators automated a narrow task after students learned arithmetic; AI can automate the whole assignment."
+  ]
+};
+const DEMO_TEAMS = {
+  "Night Owls": ["Maya", "Jordan", "Priya"],
+  "Red Foxes": ["Leo", "Sam", "Ava"],
+  "Comets": ["Noah", "Zoe", "Ethan"],
+  "Lattes": ["Grace", "Omar", "Lily"],
+  "Pixels": ["Ben", "Chloe", "Ravi"]
+};
+function startDemo() {
+  store = memStore();
+  ctx = { role: "host", code: "DEMO", pid: null, demo: true };
+  const data = { created: Date.now(), phase: "submit", teamNames: {}, entries: {}, players: {} };
+  let k = 0, t = 0;
+  for (const [team, names] of Object.entries(DEMO_TEAMS)) {
+    const tk = slug(team); data.teamNames[tk] = team; data.entries[tk] = {};
+    names.forEach((n, i) => {
+      data.players["bot" + (++k)] = { name: n, team: tk, joined: Date.now() };
+      const rung = i + 1;
+      if (team === "Pixels" && rung === 3) return; // one team still missing a rung
+      data.entries[tk]["r" + rung] = { author: n, text: DEMO_TEXT[rung][t % 3], pid: "bot" + k, ts: Date.now() };
+    });
+    t++;
+  }
+  data.players["demo-you"] = { name: "You (preview)", team: "night-owls", joined: Date.now() };
+  store.set(base(), data).then(() => { drawDemoBar(); connect(); });
+}
+function drawDemoBar() {
+  const b = $("demoBar"); b.hidden = false;
+  b.innerHTML = `<b>Preview mode</b> — simulated class, nothing is saved.
+    View as: <button class="btn sm ${ctx.role === "host" ? "primary" : ""}" data-view="host">Instructor</button>
+    <button class="btn sm ${ctx.role === "student" ? "primary" : ""}" data-view="student">A student on Team Night Owls</button>
+    <button class="btn sm" data-view="exit">Exit preview</button>`;
+}
+$("demoBar").addEventListener("click", e => {
+  const v = e.target.dataset.view; if (!v) return;
+  if (v === "exit") { showLanding(); return; }
+  ctx.role = v; ctx.pid = v === "student" ? "demo-you" : null;
+  screen = null; sig = null; updateBadge(); drawDemoBar(); render();
+});
+const demoScheduled = new Set();
+function demoBots() {
+  if (S.phase !== "vote" || !S.vote) return;
+  const v = S.vote;
+  for (const pid in v.assign || {}) {
+    if (!pid.startsWith("bot") || demoScheduled.has(v.startedAt + pid) || (S.ballots || {})[pid]) continue;
+    demoScheduled.add(v.startedAt + pid);
+    const tk = v.assign[pid], order = voteOrder(tk);
+    const util = order.map(r => r + (Math.random() * 2.2 - 1.1));
+    const byU = order.map((_, i) => i).sort((a, b) => util[b] - util[a]);
+    const rank = {}; byU.forEach((li, pos) => rank[LETTERS[li]] = pos + 1);
+    const util2 = order.map((r, i) => util[i] + (Math.random() * 1.6 - .8));
+    const byG = order.map((_, i) => i).sort((a, b) => util2[a] - util2[b]);
+    const rs = order.slice().sort();
+    const guess = {}; byG.forEach((li, pos) => guess[LETTERS[li]] = rs[pos]);
+    const name = (players()[pid] || {}).name;
+    const t1 = 1000 + Math.random() * 4000, t2 = t1 + 1000 + Math.random() * 4000;
+    const started = v.startedAt;
+    const live = () => S && S.phase === "vote" && S.vote && S.vote.startedAt === started;
+    setTimeout(() => { if (live()) store.set(`${base()}/ballots/${pid}`, { team: tk, name, rank, rankedAt: Date.now() }); }, t1);
+    setTimeout(() => { if (live() && (S.ballots || {})[pid]) store.update(`${base()}/ballots/${pid}`, { guess, guessedAt: Date.now() }); }, t2);
+  }
+}
+
+/* =====================================================================
+   BOOT
+   ===================================================================== */
+(async function boot() {
+  const params = new URLSearchParams(location.search);
+  const urlCode = (params.get("code") || "").toUpperCase();
+  let saved = null; try { saved = JSON.parse(lsGet("whichrung.student") || "null"); } catch (e) {}
+  if (saved && saved.code && (!urlCode || urlCode === saved.code)) {
+    try {
+      store = firebaseStore();
+      const pid = getPid();
+      const p = await store.get("games/" + PREFIX + saved.code + "/players/" + pid);
+      if (p) { ctx = { role: "student", code: saved.code, pid, demo: false }; connect(); return; }
+    } catch (e) { fatal(esc(e.message)); }
+  }
+  showLanding();
+})();
+</script>
+</body>
+</html>
