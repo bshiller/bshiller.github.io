@@ -138,6 +138,18 @@ label.lab { display: block; font-size: .88rem; font-weight: bold; color: var(--n
 .e.note.good { background: #E4F4E8; border-left-color: #2E8B57; }
 .e.card { border: 2px solid var(--navy); border-left: .45rem solid var(--yellow); border-radius: .5rem; padding: .6rem .75rem; background: #fff; }
 .e.card h3 { margin: 0 0 .3rem; font-size: 1.02rem; color: var(--navy); }
+.e.card.flat { border-left-color: var(--red); }
+.e.card.flat.done { border-left-color: #2E8B57; background: #F6FBF7; }
+.flatq { margin: 0 0 .35rem; font-size: 1.02rem; font-weight: bold; color: var(--navy); }
+.flatp { margin: .2rem 0; font-size: .92rem; }
+.flatp + ul, .refuse ul { margin: .1rem 0 .3rem; padding-left: 1.2rem; font-size: .9rem; }
+.ctx .dimt { color: var(--dim); }
+.minetag { background: var(--lyellow); border: 1px solid var(--yellow); border-radius: .7rem; padding: 0 .4rem; color: #5C4A00; text-transform: none; letter-spacing: 0; }
+.rwdone { margin: .2rem 0; font-weight: bold; color: #1E6B3A; }
+.rwdone .s.you { font-weight: normal; color: var(--body); }
+.refuse { background: #F4F7F9; border: 1px solid var(--line); border-left: .3rem solid var(--navy); border-radius: .4rem; padding: .45rem .65rem; margin: .4rem 0; font-size: .92rem; }
+.refuse .who { display: block; font-size: .7rem; font-weight: bold; color: var(--teal-deep); text-transform: uppercase; letter-spacing: .04em; }
+.btn.ghost { border-style: dashed; color: var(--dim); border-color: #9AA9B6; }
 .e.perm { font-family: var(--mono); font-size: .84rem; border: 2px solid var(--navy); border-radius: .4rem; background: #FAFBFC; }
 .e.perm .t { background: var(--navy); color: #fff; padding: .2rem .6rem; font-weight: bold; }
 .e.perm .b { padding: .5rem .65rem; }
@@ -191,6 +203,12 @@ label.lab { display: block; font-size: .88rem; font-weight: bold; color: var(--n
 .banner.red { background: var(--lred); color: var(--red); border: 1.5px solid var(--red); }
 .banner.lock { background: var(--lteal); color: var(--teal-deep); border: 1.5px solid var(--teal); }
 .banner.info { background: var(--lyellow); color: #5C4A00; border: 1.5px solid var(--yellow); }
+.banner.edit { background: #E4F4E8; color: #1E6B3A; border: 1.5px solid #2E8B57; font-weight: normal; }
+.sb { cursor: pointer; border-radius: .2rem; }
+.sb:hover { background: #E4F4E8; box-shadow: 0 0 0 .15rem #E4F4E8; }
+.sb.on .s, .sb.on .chip { outline: .18rem solid #2E8B57; outline-offset: 1px; background: #E4F4E8; }
+.sedit { margin: -.2rem 0 .8rem; border: 2px solid #2E8B57; border-radius: .4rem; padding: .45rem .6rem; background: #F6FBF7; }
+.sedit textarea { margin-top: .3rem; }
 .outline { list-style: none; margin: 0; padding: 0; }
 .outline li { border: 1px solid var(--line); border-left: .35rem solid var(--teal); border-radius: .3rem; padding: .3rem .55rem; margin-bottom: .35rem; background: #fff; }
 .outline li b { color: var(--navy); }
@@ -506,6 +524,7 @@ window.RG_FIREBASE = {"apiKey":"AIzaSyDQ8gn5w_Jj4OzcXFBz2lY2SKuaKEo2wbk","authDo
 
   var TITLE = "AI and My Education";
   var MAX_TYPED = 300;
+  var MAX_EDIT = 600;    // a sentence edited in place may become two
 
   /* ---------- game state for one draft ---------- */
   // The defaults are the SPEC §15 step 2 "default" path.
@@ -529,6 +548,7 @@ window.RG_FIREBASE = {"apiKey":"AIzaSyDQ8gn5w_Jj4OzcXFBz2lY2SKuaKEo2wbk","authDo
     order: 'a',          // Decision 3: 'a' | 'b' | 'c'
     d4: 'none',          // Decision 4: 'none' | 'fix'
     d4text: '',          // (a) only: the typed "bigger point" sentence
+    rewrites: {},        // Step 8: sentence id → the student's replacement (a string), or null to cut it
     stage: 'final'       // 'first' = before the checker's fixes (stale roadmap, uncited references kept)
   };
 
@@ -545,8 +565,8 @@ window.RG_FIREBASE = {"apiKey":"AIzaSyDQ8gn5w_Jj4OzcXFBz2lY2SKuaKEo2wbk","authDo
     return out;
   }
 
-  function clean(text) {
-    return String(text == null ? '' : text).replace(/\s+/g, ' ').trim().slice(0, MAX_TYPED);
+  function clean(text, max) {
+    return String(text == null ? '' : text).replace(/\s+/g, ' ').trim().slice(0, max || MAX_TYPED);
   }
   // The student's sentence if they typed one, otherwise the placeholder.
   function typedOr(key, text, placeholderId) {
@@ -711,6 +731,7 @@ window.RG_FIREBASE = {"apiKey":"AIzaSyDQ8gn5w_Jj4OzcXFBz2lY2SKuaKEo2wbk","authDo
     } else {
       paras = [].concat(intro(st), tech(st), practice(st), whenNot(st), careers(st), product(st), brandeis(st), conclusion(st));
     }
+    paras = applyRewrites(paras, st.rewrites);
     var text = paras.map(paraText).join('\n');
     // First run: the reference list is still draft1's. Final: only what the text cites.
     var refs = REFS.filter(function (r) { return st.stage === 'first' || r.cite.test(text); });
@@ -724,6 +745,25 @@ window.RG_FIREBASE = {"apiKey":"AIzaSyDQ8gn5w_Jj4OzcXFBz2lY2SKuaKEo2wbk","authDo
     };
   }
 
+  // Step 8: the student's own sentence replaces a flat one (src 'you'); null cuts it. A paragraph is never emptied.
+  function applyRewrites(paras, rewrites) {
+    if (!rewrites) return paras;
+    var any = false;
+    for (var k in rewrites) if (Object.prototype.hasOwnProperty.call(rewrites, k)) { any = true; break; }
+    if (!any) return paras;
+    return paras.map(function (p) {
+      var sents = [];
+      p.sents.forEach(function (s) {
+        if (!Object.prototype.hasOwnProperty.call(rewrites, s.id)) { sents.push(s); return; }
+        var v = rewrites[s.id];
+        if (v === null) return;
+        var t = clean(v, MAX_EDIT);
+        sents.push(t ? { id: 'YOU.rw.' + s.id, src: 'you', t: t, from: s.id } : s);
+      });
+      return { unit: p.unit, sents: sents.length ? sents : p.sents };
+    });
+  }
+
   /* ---------- helpers ---------- */
   function paraText(p) { return p.sents.map(function (s) { return s.t; }).join(' '); }
 
@@ -735,10 +775,11 @@ window.RG_FIREBASE = {"apiKey":"AIzaSyDQ8gn5w_Jj4OzcXFBz2lY2SKuaKEo2wbk","authDo
 
   function stats(draft) {
     var by = { orig: 0, trim: 0, notes: 0, agent: 0, asked: 0, ph: 0, you: 0 };
-    var words = 0, chips = 0;
+    var words = 0, chips = 0, rewritten = 0;
     draft.paras.forEach(function (p) {
       p.sents.forEach(function (s) {
         by[s.src] += 1;
+        if (/^YOU\.rw\./.test(s.id)) rewritten += 1;
         words += countWords(s.t);
         chips += (s.t.match(CHIP) || []).length;
       });
@@ -751,6 +792,7 @@ window.RG_FIREBASE = {"apiKey":"AIzaSyDQ8gn5w_Jj4OzcXFBz2lY2SKuaKEo2wbk","authDo
       bySrc: by,
       unchanged: by.orig,                 // verbatim from draft1
       placeholders: chips,                // [YOUR THINKING] + [TRANSITION] + [CITE?]
+      rewritten: rewritten,               // flat sentences replaced by the student's own (Step 8)
       // Share of sentences that are the writer's own words: draft1 sentences (verbatim or trimmed),
       // sentences built from the writer's notes, and anything the student typed.
       yourWordsPct: Math.round(100 * (by.orig + by.trim + by.notes + by.you) / prose)
@@ -766,9 +808,9 @@ window.RG_FIREBASE = {"apiKey":"AIzaSyDQ8gn5w_Jj4OzcXFBz2lY2SKuaKEo2wbk","authDo
   }
 
   var api = {
-    SENTENCES: S, REFS: REFS, TITLE: TITLE, MAX_TYPED: MAX_TYPED,
+    SENTENCES: S, REFS: REFS, TITLE: TITLE, MAX_TYPED: MAX_TYPED, MAX_EDIT: MAX_EDIT,
     DEFAULT_STATE: DEFAULT_STATE, EVERYTHING_DECLINED: EVERYTHING_DECLINED, ROADMAP_ORDER: ROADMAP_ORDER,
-    withDefaults: withDefaults, assemble: assemble, stats: stats,
+    withDefaults: withDefaults, assemble: assemble, applyRewrites: applyRewrites, stats: stats, clean: clean,
     paraText: paraText, countWords: countWords, toMarkdown: toMarkdown
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
@@ -801,7 +843,8 @@ window.RG_FIREBASE = {"apiKey":"AIzaSyDQ8gn5w_Jj4OzcXFBz2lY2SKuaKEo2wbk","authDo
       copy: 'No: you\'d copy every change back by hand.',
       checker: 'No: it can\'t run checks on your files.',
       readers: 'Manually: three new chats, pasting the draft each time.',
-      del: 'It can\'t delete your files, which is the flip side of its limits.'
+      del: 'It can\'t delete your files, which is the flip side of its limits.',
+      voice: 'Partly: it can find flat sentences in text you paste. It would also offer to rewrite them, and then the words would be its.'
     },
 
     folder: {
@@ -1077,6 +1120,28 @@ window.RG_FIREBASE = {"apiKey":"AIzaSyDQ8gn5w_Jj4OzcXFBz2lY2SKuaKEo2wbk","authDo
       late: 'You caught it, after you would have submitted.'
     },
 
+    edit: {
+      banner: 'Click any sentence to change it in your words, fill in a note, or cut it. Nothing changes until you save.'
+    },
+    voice: {
+      prompt: 'Read drafts/draft2.md and find the sentences that don\'t say anything: generic openers, "interesting," filler that could sit in any paper. Tell me what each one is missing. Don\'t rewrite them.',
+      think1: 'A test for each sentence: cover it up. Does the reader lose anything? If not, it said nothing.',
+      think2: 'Some of these are mine: the signposts and bridges I added. They say where we are, not what the paragraph claims. They count too.',
+      voiceHead: 'First, what sounds like you.',
+      voiceSay: 'Short sentences, first person, a concrete example, and a comparison a reader remembers. These are the sentences to keep exactly as they are:',
+      found: function (n, total) { return (total > n ? 'I found ' + total + ' sentences that say nothing. Here are the ' + n + ' that matter most.' : n + ' sentences say nothing.') + ' Each card says what the sentence is missing and what it has to do in that spot. The words are yours to write.'; },
+      none: 'I didn\'t find a sentence that says nothing. Every sentence in draft2.md carries something.',
+      missing: 'What it\'s missing', job: 'What it has to do', facts: 'Facts you can use (verified in your sources, notes and draft)',
+      mine: 'I wrote this one', context: 'In context',
+      ph: 'Your sentence, in your words',
+      use: 'Use my sentence', cutBtn: 'Cut it', keep: 'Keep it as is', ask: 'Just write it for me', change: 'Change',
+      refuse: 'CLAUDE.md says: "Don\'t write my thinking for me." This sentence is the thinking: it says why this is here. I can tell you what it\'s missing and give you the facts I can verify. The words have to be yours, or it stops being your paper.',
+      rewritten: 'Rewritten, in your words:', cutDone: 'Cut. The paragraph reads on without it.', kept: 'Kept as it is.',
+      needText: 'Type your sentence first.',
+      nudge: 'You haven\'t rewritten any of them yet. This step is about your words. (Continue again to skip.)',
+      host: 'In class: pick one sentence, ask the room for a rewrite, and type the best one.',
+      done: function (rw, cut) { return (rw ? rw + ' sentence' + (rw === 1 ? '' : 's') + ' now in your words' : '') + (rw && cut ? ', ' : '') + (cut ? cut + ' cut' : '') + '.'; }
+    },
     s8: {
       say: 'Revision complete. Want me to tidy the folder? I\'ll remove peer_reviews/ and drafts/draft1.md, since draft2 is done.',
       cmd: 'rm -r peer_reviews drafts/draft1.md',
@@ -1112,6 +1177,7 @@ window.RG_FIREBASE = {"apiKey":"AIzaSyDQ8gn5w_Jj4OzcXFBz2lY2SKuaKEo2wbk","authDo
         'Ask for options: "Give me 3 ways to do this, with trade-offs, plus none of the above."',
         'Plan → approve → work on a copy.',
         'Check: run the checker and the fresh-reader thesis test, then do your own read.',
+        'Ask it to find the sentences that say nothing ("could this open any paragraph in any paper?"). Rewrite those yourself.',
         'Keep the log; it\'s your worksheet Part 4.'
       ],
       copy: 'Copy the recipe', copied: 'Copied',
@@ -1471,7 +1537,88 @@ window.RG_FIREBASE = {"apiKey":"AIzaSyDQ8gn5w_Jj4OzcXFBz2lY2SKuaKEo2wbk","authDo
     { n: 7, title: 'Conclusion', gist: '"Benefits and drawbacks." Then privacy, for the first time.' }
   ];
 
-  /* ---------- the revision log (SPEC §5 Step 9) ---------- */
+
+  /* ---------- Step 8: sentences that say nothing ---------- */
+  // Diagnoses for sentences a revised draft can contain. The agent names the gap and the job; it never
+  // supplies the words. 'facts' are things the agent can verify (the bibliography, the notes, the draft).
+  // 'cut' = the sentence after it can stand without it, so cutting is offered. 'mine' = the agent wrote it.
+  var FLAT = {
+    'S6.1x': { rank: 1, why: '"Interesting" doesn\'t say why. The sentence doesn\'t say what the study found or what it has to do with your argument. Cover it up and the reader loses nothing but a name.',
+      job: 'Say why this study is here: what question it settles for your argument. The next three sentences give the details, so this one shouldn\'t. It still has to name the authors, because the next sentence says "They."',
+      facts: ['It is the study your gym comparison and your practice-versus-product rule come from.', 'It is the only study in the paper where people with AI did worse: 17% worse on the exam, after doing 48% better on the practice problems.', 'The tutor version, which gave hints instead of answers, did no harm.'] },
+    'S6.1': { rank: 1, why: '"Another interesting study": "another" is a list, and "interesting" doesn\'t say why. The sentence doesn\'t say what the study found or what it has to do with your argument. Cover it up and the reader loses nothing but a name.',
+      job: 'Say why this study is here: what question it settles for your argument. The next three sentences give the details, so this one shouldn\'t. It still has to name the authors, because the next sentence says "They."',
+      facts: ['It is the study your gym comparison and your practice-versus-product rule come from.', 'It is the only study in the paper where people with AI did worse: 17% worse on the exam, after doing 48% better on the practice problems.', 'The tutor version, which gave hints instead of answers, did no harm.'] },
+    'S1.1': { rank: 1.5, cut: true, why: 'You kept this one. Every phrase in it is on your banned list or could open any paper about anything.',
+      job: 'Say something only this paper would say, or cut it: the next sentence starts the history on its own.' },
+    'S7.4': { rank: 2, cut: true, why: 'The last sentence of the paper, and it is the one sentence anyone could write about AI. "Powerful tool" and "use it wisely" could end any paper on this topic.',
+      job: 'End on your claim, in your words: what should a Brandeis student do differently because of this paper? The sentence before it already restates the thesis, so cutting is also an option.',
+      facts: ['Reviewer A: the gym comparison is the sentence a reader remembers.'] },
+    'S7.1': { rank: 2.2, cut: true, why: '"Benefits and drawbacks" is the vague thesis again. It could be anyone\'s conclusion.',
+      job: 'Open the conclusion with your actual claim.', facts: ['Your framing sheet: "Students should use AI when the finished product is what matters, but not when the practice is the point."'] },
+    'S3.7': { rank: 2.5, cut: true, why: 'A summary that ignores the sentence right before it (the 19-point finding) and says less than the two studies did.',
+      job: 'Say what the two studies together tell a student: where AI helps, and that it isn\'t everywhere. Or cut it; the paragraph can end on the finding.',
+      facts: ['Your bibliography note on Dell\'Acqua: "AI helps, but not everywhere, and you have to know where."'] },
+    'S5.1': { rank: 3, why: 'This could open any paragraph in any paper about AI at any school. "Many classes" and "could be useful" tell the reader nothing they didn\'t assume.',
+      job: 'Set up the test the examples apply: which kinds of Brandeis work are the product and which are the practice. The examples follow; this sentence says what they show.',
+      facts: ['Your notes: intro econ problem sets (practice), formatting the bibliography (product), UWS essay drafts (practice), chem lab report formatting (product?), AI quiz questions as a coach, not a doer.'] },
+    'S5.4': { rank: 3.2, cut: true, why: 'Reviewer B asked "How?" The sentence is true of every tool and says nothing about which uses help and which hurt.',
+      job: 'Say which uses help and which hurt, with one example of each. Or cut it and let the examples speak.',
+      facts: ['Your notes have five examples from your own classes.'] },
+    'S3.1': { rank: 3.5, cut: true, why: '"A lot of times" is the whole claim, and it isn\'t one. Which times?',
+      job: 'Name the kind of work these two studies are about: finished products. Or cut it; the paragraph can open on Noy and Zhang.' },
+    'S3.4': { rank: 4, why: '"Another study is by" is a list, not an argument. It says who was studied, not why this study comes next.',
+      job: 'Say what this study adds to the one before it. Noy and Zhang showed AI helping with a writing task; this is the study where the limit shows up, two sentences later. Keep the authors\' names: the next sentence says "The consultants."',
+      facts: ['758 consultants at Boston Consulting Group.', 'On the task outside AI\'s abilities, consultants with AI were 19 percentage points less likely to get the right answer.', 'The authors\' term for the uneven boundary: the "jagged technological frontier."'] },
+    'S4.4t': { rank: 4.5, cut: true, why: 'It repeats the paragraph\'s first sentence. "Be ready for it" doesn\'t say how, and "how" is the assignment\'s third question.',
+      job: 'Make it the "how": what does a student do to be ready? Or cut it.', facts: ['Your notes: "knowing WHEN to trust AI (jagged frontier!)"'] },
+    'S4.4': { rank: 4.5, cut: true, why: '"This shows again": it repeats what ¶2 already said, and "be ready for it" doesn\'t say how.',
+      job: 'Make it the "how": what does a student do to be ready? Or cut it.', facts: ['Your notes: "knowing WHEN to trust AI (jagged frontier!)"'] },
+    'S2.4t': { rank: 5, cut: true, why: 'A warning with nothing in it: left behind by whom, at what? It restates the sentence before it.',
+      job: 'Say what "behind" means for a student, or cut it.', facts: ['Brynjolfsson, Li, and Raymond (2023): the least experienced workers gained the most from an AI assistant (34%, against 14% on average).'] },
+    'S2.4': { rank: 5, cut: true, why: '"At the end of the day" is on your banned list, and the rest is a warning with nothing in it: left behind by whom, at what?',
+      job: 'Say what "behind" means for a student, or cut it.', facts: ['Brynjolfsson, Li, and Raymond (2023): the least experienced workers gained the most from an AI assistant (34%, against 14% on average).'] },
+    'A.cq': { rank: 5.5, cut: true, mine: true, why: 'I wrote this bridge. "That raises the question" is a hinge with nothing on it.',
+      job: 'Say in your words why what employers want leads to the question of school. Or cut it; your thesis can follow the stakes directly.' },
+    'A.ar1': { rank: 6, cut: true, mine: true, why: 'I wrote this. A signpost says where we are and nothing else: not why coursework comes first, not what the paragraph will claim.',
+      job: 'Make it say what this area shows, in your words. Or cut it; the paragraph can open on the examples.' },
+    'A.ar2': { rank: 6.1, cut: true, mine: true, why: 'Mine again: a signpost with no claim in it.', job: 'Say what papers and research show about product versus practice. Or cut it.' },
+    'A.ar3': { rank: 6.2, cut: true, mine: true, why: 'Mine: the third signpost. It names the area and stops.', job: 'Say what the jobs material shows. Or cut it; the next sentence already says the workforce is changing.' }
+  };
+  var VOICE_IDS = ['S6.5', 'S6.5b', 'S6.5bb', 'N.coach', 'S6.7', 'S6.7g', 'N.mid'];   // in order of preference
+  var MAX_FLAT = 6;
+
+  // The flat sentences in the current draft (found before any rewrite), with each one's current status.
+  function flatSentences(state) {
+    var st = D.withDefaults(state), rw = st.rewrites || {};
+    st.rewrites = {};
+    var draft = D.assemble(st), out = [];
+    draft.paras.forEach(function (p, pi) {
+      p.sents.forEach(function (s, si) {
+        var f = FLAT[s.id];
+        if (!f) return;
+        var status = 'open', value = '';
+        if (Object.prototype.hasOwnProperty.call(rw, s.id)) {
+          if (rw[s.id] === null) status = 'cut';
+          else if (D.clean(rw[s.id], D.MAX_EDIT)) { status = 'rewritten'; value = D.clean(rw[s.id], D.MAX_EDIT); }
+        }
+        out.push({ id: s.id, text: s.t, para: pi + 1, unit: p.unit, before: si ? p.sents[si - 1].t : '', after: si + 1 < p.sents.length ? p.sents[si + 1].t : '',
+          why: f.why, job: f.job, facts: f.facts || [], cut: !!f.cut, mine: !!f.mine, rank: f.rank, status: status, value: value });
+      });
+    });
+    out.sort(function (a, b) { return a.rank - b.rank; });
+    var total = out.length;
+    out = out.slice(0, MAX_FLAT);
+    // Sentences that already sound like the writer: named so the student keeps them.
+    var voice = [], present = {};
+    draft.paras.forEach(function (p) { p.sents.forEach(function (s) { present[s.id] = s.t; }); });
+    VOICE_IDS.forEach(function (id) { if (present[id] && voice.length < 3) voice.push(present[id]); });
+    return { list: out, total: total, voice: voice,
+      rewritten: out.filter(function (x) { return x.status === 'rewritten'; }).length,
+      cut: out.filter(function (x) { return x.status === 'cut'; }).length };
+  }
+
+  /* ---------- the revision log (SPEC §5 Step 10) ---------- */
   // g = { c: choices, reasons: {key: text}, s8: 'yes'|'no', d4pick, ownPlan }
   function revisionLog(g) {
     var st = D.withDefaults(g.c), draft = D.assemble(st), R = g.reasons || {};
@@ -1502,6 +1649,13 @@ window.RG_FIREBASE = {"apiKey":"AIzaSyDQ8gn5w_Jj4OzcXFBz2lY2SKuaKEo2wbk","authDo
     row('2c', 'Explain how ChatGPT works', 'B', st.tech ? 'Added the paragraph' : 'Not taken', st.tech ? unit(['TECH']) : '–', !st.tech);
     row('2e', 'Develop Question 3 (preparing for work)', 'the agent (no reviewer)', st.q3 ? (String(st.q3text || '').trim() ? 'Accepted: wrote my sentence' : 'Accepted: note left for me') : 'Declined', unit(['CAREERS']), !st.q3);
     row('2f', 'Add the GPT Tutor result', 'the agent (no reviewer)', st.tutor ? 'Accepted' : 'Declined', unit(['PRACTICE', 'PRINCIPLE']), !st.tutor);
+    var fl = flatSentences(st);
+    if (fl.list.length) {
+      var done = fl.rewritten + fl.cut, where = [];
+      fl.list.forEach(function (x) { if (x.status !== 'open' && where.indexOf('¶' + x.para) < 0) where.push('¶' + x.para); });
+      row('voice', 'Rewrite the sentences that say nothing (' + fl.list.length + ' found)', 'the agent (no reviewer)',
+        done ? 'Rewrote ' + fl.rewritten + ' in my words' + (fl.cut ? ', cut ' + fl.cut : '') : 'Left them as they are', where.length ? where.join(', ') : '–', !done);
+    }
     if (g.s8) row('s8', 'Delete peer_reviews/ and draft1.md', 'the agent', g.s8 === 'no' ? 'Denied' : 'Approved (the game restored the files)', 'the folder', false);
     // Worksheet Part 4: one suggestion I decided not to take, and why. Prefer a reviewer's suggestion with a reason.
     var order = ['2c', '2b', '2a', 'F1', 'F2', 'F3', 'F4', 'F5', '2d', '2g', '2e', '2f'];
@@ -1515,7 +1669,8 @@ window.RG_FIREBASE = {"apiKey":"AIzaSyDQ8gn5w_Jj4OzcXFBz2lY2SKuaKEo2wbk","authDo
     var st = D.withDefaults(g.c), draft = D.assemble(st), stats = D.stats(draft);
     var rep = checkerReport(st), rt = g.readerResult || readerTest(st), log = revisionLog(g);
     var s = rep.summary;
-    var decisions = 17;   // D1, F1–F5, 2a–2g, D3, the plan, D4, the delete prompt
+    var decisions = 18;   // D1, F1–F5, 2a–2g, D3, the plan, D4, the voice pass, the delete prompt
+    var fl = flatSentences(st);
     var checkLine = s.pass + ' ✓' + (s.fail ? ', ' + s.fail + ' ✗' : '') + (s.warn ? ', ' + s.warn + ' ⚠' : '') + (s.info ? ', ' + s.info + ' left for you' : '');
     return [
       { k: 'Decisions you made', lazy: '0 (one "allow all" click)', you: decisions + ', ' + log.reasons + ' with a reason in your words', good: true },
@@ -1527,6 +1682,7 @@ window.RG_FIREBASE = {"apiKey":"AIzaSyDQ8gn5w_Jj4OzcXFBz2lY2SKuaKEo2wbk","authDo
       { k: 'Opposite suggestions both applied', lazy: 'yes', you: 'no', good: true },
       { k: 'Off-prompt content', lazy: 'yes (tech ¶)', you: st.tech ? 'yes (tech ¶, your call)' : 'no', good: !st.tech },
       { k: 'Sentences still in your words', lazy: 'about 5%', you: stats.yourWordsPct + '%', good: true },
+      { k: 'Sentences that said nothing', lazy: 'not looked for (most of the draft)', you: fl.list.length + ' found: ' + fl.rewritten + ' rewritten in your words' + (fl.cut ? ', ' + fl.cut + ' cut' : '') + (fl.list.length && !fl.rewritten && !fl.cut ? ', none changed' : ''), good: !fl.list.length || fl.rewritten + fl.cut > 0 },
       { k: 'Things left for you to write', lazy: '0 (it wrote everything)', you: stats.placeholders ? stats.placeholders + ' (yours to write)' : stats.bySrc.you ? '0 (you wrote them)' : '0 (you declined the notes)', good: true }
     ];
   }
@@ -1535,7 +1691,7 @@ window.RG_FIREBASE = {"apiKey":"AIzaSyDQ8gn5w_Jj4OzcXFBz2lY2SKuaKEo2wbk","authDo
     init: init, statTokens: statTokens, overlap: overlap, citationsIn: citationsIn,
     runChecker: runChecker, checkerReport: checkerReport, placeholders: placeholders, stillToWrite: stillToWrite,
     claim: claim, readerTest: readerTest, planFor: planFor, outline: outline, DRAFT1_OUTLINE: DRAFT1_OUTLINE,
-    revisionLog: revisionLog, scorecard: scorecard
+    revisionLog: revisionLog, scorecard: scorecard, flatSentences: flatSentences, FLAT: FLAT
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.RG_LOGIC = api;
@@ -1861,10 +2017,11 @@ function fresh() {
     d1: null, lazyFirst: false, lazyLater: false, guess: null, agree: null,
     c: { F1: true, F2: true, F3: true, F4: true, F5: true, F5text: '', thesis: null, phrasing: 'T1', thesisText: '',
          whenNot: null, tech: null, stat90: null, q3: true, q3text: '', tutor: true, analysis: true, analysisText: '',
-         order: null, d4: 'none', d4text: '' },
+         order: null, d4: 'none', d4text: '', rewrites: {} },
     picked: {}, push: {}, reasons: {}, ownPlan: '', ownShown: false, planOk: false,
     d4first: null, d4read: false, d4tries: [], caught: false, s8: null, reader: null,
     opened: {},               // files the student has opened from the folder
+    vt: {}, voice: { kept: {}, asked: {} },   // Step 8: typed rewrites (by sentence id, dots as _), kept and "write it for me" flags
     ui: {}
   };
 }
@@ -1888,7 +2045,7 @@ function choices(over) {
     thesis: c.thesis || 'T1', thesisText: c.thesisText,
     whenNot: c.whenNot || 'signpost', tech: !!c.tech, stat90: c.stat90 || 'cite',
     q3: c.q3, q3text: c.q3text, tutor: c.tutor, analysis: c.analysis, analysisText: c.analysisText,
-    order: c.order || 'a', d4: c.d4, d4text: c.d4text
+    order: c.order || 'a', d4: c.d4, d4text: c.d4text, rewrites: c.rewrites || {}
   };
   for (var k in (over || {})) st[k] = over[k];
   return st;
@@ -1951,10 +2108,28 @@ function lazyHTML(o) {
   return h;
 }
 var SRC_TIP = { orig: 'Your sentence, unchanged', trim: 'Your sentence, trimmed', notes: 'Built from your own notes', agent: 'Written by the agent (structure only)', asked: 'Drafted by the agent because you asked', you: 'You typed this', ph: 'Left for you' };
-function sentHTML(s, freshIds) {
-  var cls = 's ' + s.src + (freshIds && freshIds.indexOf(s.id) >= 0 ? ' fresh' : '');
-  if (s.src === 'ph') return '<span class="chip' + (freshIds && freshIds.indexOf(s.id) >= 0 ? ' s fresh' : '') + '" title="' + SRC_TIP.ph + '">' + esc(s.t) + '</span>';
-  return '<span class="' + cls + '" title="' + SRC_TIP[s.src] + '">' + esc(s.t).replace(/ \[CITE\?\]/, ' <span class="chip">[CITE?]</span>') + '</span>';
+// The id a sentence is edited under: the original sentence, even after it has been rewritten once.
+function editKey(s) { return s.from && /^YOU\.rw\./.test(s.id) ? s.from : s.id; }
+function sentHTML(s, freshIds, editable) {
+  var fresh = freshIds && freshIds.indexOf(s.id) >= 0, key = editKey(s), editing = editable && G.ui.edit && G.ui.edit.id === key;
+  var cls = 's ' + s.src + (fresh ? ' fresh' : '') + (editing ? ' editing' : '');
+  var inner = s.src === 'ph' ? '<span class="chip' + (fresh ? ' s fresh' : '') + '">' + esc(s.t) + '</span>'
+    : '<span class="' + cls + '">' + esc(s.t).replace(/ \[CITE\?\]/, ' <span class="chip">[CITE?]</span>') + '</span>';
+  var tip = s.src === 'ph' ? SRC_TIP.ph : SRC_TIP[s.src];
+  if (!editable) return '<span title="' + tip + '">' + inner + '</span>';
+  return '<span role="button" tabindex="0" class="sb' + (editing ? ' on' : '') + '" data-act="editSent" data-arg="' + esc(key) + '" title="' + tip + '. Click to change it.">' + inner + '</span>';
+}
+// The inline editor for one sentence (shown under its paragraph).
+function editorHTML(s) {
+  var e = G.ui.edit, key = editKey(s), changed = Object.prototype.hasOwnProperty.call(G.c.rewrites, key);
+  var hint = s.src === 'ph' ? 'This is a note the agent left for you. Write the sentence it asks for.' : s.src === 'you' ? 'Your sentence. Change it, or cut it.' :
+    s.src === 'agent' || s.src === 'asked' ? 'The agent wrote this one. Make it yours, or cut it.' : 'Your sentence from draft1' + (s.src === 'trim' ? ', trimmed' : '') + '. Change it, or cut it.';
+  return '<div class="sedit"><div class="fine"><b>Editing ¶' + e.para + ':</b> ' + hint + '</div>' +
+    '<textarea class="field" id="sedit-text" data-bind="ui.edit.text" maxlength="' + D.MAX_EDIT + '" rows="3" aria-label="Edit this sentence">' + esc(e.text) + '</textarea>' +
+    '<div class="row" style="margin-top:.35rem"><button type="button" class="btn small primary" data-act="editSave">Save</button>' +
+    '<button type="button" class="btn small" data-act="editCut">Cut this sentence</button>' +
+    (changed ? '<button type="button" class="btn small" data-act="editRestore">Restore the original</button>' : '') +
+    '<button type="button" class="btn small ghost" data-act="editCancel">Cancel</button></div></div>';
 }
 function draft2HTML(st, o) {
   o = o || {};
@@ -1962,10 +2137,16 @@ function draft2HTML(st, o) {
   var h = (o.banner || '') + '<div class="legend"><span>Plain: your sentence</span><span><span class="s trim">trimmed</span></span><span><span class="s notes">from your notes</span></span>' +
     '<span><span class="s agent">agent: structure only</span></span>' + (st.tech || st.whenNot === 'addnew' ? '<span><span class="s asked">agent: you asked</span></span>' : '') +
     '<span><span class="s you">you typed</span></span><span><span class="chip">[yours to write]</span></span></div>';
+  if (o.editable) h += '<div class="banner edit">✎ ' + esc(T.edit.banner) + '</div>';
   h += '<h1>' + esc(d.title) + '</h1>';
   d.paras.forEach(function (p, i) {
-    h += '<p><span class="pn">¶' + (i + 1) + '</span>' + p.sents.map(function (s) { return sentHTML(s, o.fresh); }).join(' ') +
+    var editing = null;
+    h += '<p><span class="pn">¶' + (i + 1) + '</span>' + p.sents.map(function (s) {
+      if (o.editable && G.ui.edit && G.ui.edit.id === editKey(s)) { editing = s; G.ui.edit.para = i + 1; }
+      return sentHTML(s, o.fresh, o.editable);
+    }).join(' ') +
       (ol[i].was && ol[i].was !== '¶' + (i + 1) ? ' <span class="was">(' + (ol[i].was === 'new' ? 'new' : 'was ' + ol[i].was) + ')</span>' : '') + '</p>';
+    if (editing) h += editorHTML(editing);
   });
   return h + refsHTML(d.refs);
 }
@@ -2033,14 +2214,15 @@ function logHTML() {
 function compareHTML() {
   var tab = G.ui.tab || 'full', st = choices();
   var left = tab === 'outline' ? outlineList(LAZY_OUTLINE) : lazyHTML({ pins: true });
-  var right = tab === 'outline' ? outlineList(L.outline(D.assemble(st))) : draft2HTML(st, { fresh: catchIds() });
+  var right = tab === 'outline' ? outlineList(L.outline(D.assemble(st))) : draft2HTML(st, { fresh: catchIds(), editable: true });
   return '<div class="cols"><div class="doc"><div class="colh bad">✗ ' + esc(T.s10.lazyCol) + ' · draft1.md, overwritten</div>' + left + '</div>' +
     '<div class="doc"><div class="colh good">✓ ' + esc(T.s10.youCol) + ' · draft2.md' + (G.caught ? ' · ' + esc(T.d4.caught) : '') + '</div>' + right + '</div></div>';
 }
 // Sentences that the Decision 4 fix added or moved, so they can be outlined in the draft.
 function catchIds() {
-  if (G.c.d4 !== 'fix') return [];
-  return { a: ['PH.big', 'YOU.d4'], b: ['S6.5bb'], c: ['T1', 'T2', 'YOU.thesis', 'S1.6'] }[G.c.order || 'a'];
+  var rw = Object.keys(G.c.rewrites || {}).map(function (id) { return 'YOU.rw.' + id; });
+  if (G.c.d4 !== 'fix') return rw;
+  return rw.concat({ a: ['PH.big', 'YOU.d4'], b: ['S6.5bb'], c: ['T1', 'T2', 'YOU.thesis', 'S1.6'] }[G.c.order || 'a']);
 }
 
 // What the right-hand pane shows. doc: { file } | { view }.
@@ -2065,7 +2247,7 @@ function docHTML(doc) {
   }
   if (doc.file === 'drafts/draft2.md') {
     var st = choices({ stage: doc.stage || 'final' });
-    return tab === 'outline' ? outlineList(L.outline(D.assemble(st))) : draft2HTML(st, { fresh: doc.fresh });
+    return tab === 'outline' ? outlineList(L.outline(D.assemble(st))) : draft2HTML(st, { fresh: doc.fresh, editable: after('voice') });
   }
   if (doc.file === 'CLAUDE.md') return claudeHTML(G.at === 's2');
   if (doc.file === 'check_draft.py') return checkFileHTML();
@@ -2083,7 +2265,7 @@ var TREE = [
   ['notes/', ['notes/brainstorm.md']]
 ];
 var BASE8 = ['assignment/prompt.md', 'drafts/draft1.md', 'peer_reviews/writer_framing.md', 'peer_reviews/reviewer_A.md', 'peer_reviews/reviewer_B.md', 'peer_reviews/reviewer_C.md', 'sources/annotated_bibliography.md', 'notes/brainstorm.md'];
-var ENGAGED = ['s2', 's3', 's4', 'd2fix', 'd2a', 'd2b', 'd2c', 'd2d', 'd2more', 'd3', 's5', 's6', 's7', 'd4', 's8', 's9', 's10', 's11'];
+var ENGAGED = ['s2', 's3', 's4', 'd2fix', 'd2a', 'd2b', 'd2c', 'd2d', 'd2more', 'd3', 's5', 's6', 's7', 'd4', 'voice', 's8', 's9', 's10', 's11'];
 function after(id) { return ENGAGED.indexOf(G.at) >= ENGAGED.indexOf(id) && ENGAGED.indexOf(G.at) >= 0; }
 // path → state, for the current step: unread | read | new | edited | over | gone | locked | notpasted
 function folderState() {
@@ -2216,7 +2398,7 @@ var LAZY = ['lazyRun', 'lazyReport', 'lazyPins', 'lazyRewind'];
 function stepIds() {
   var a = ['start', 'folder', 'd1'];
   if (G.lazyFirst) a = a.concat(LAZY);
-  a = a.concat(['s2', 's3', 's4', 'd2fix', 'd2a', 'd2b', 'd2c', 'd2d', 'd2more', 'd3', 's5', 's6', 's7', 'd4', 's8', 's9']);
+  a = a.concat(['s2', 's3', 's4', 'd2fix', 'd2a', 'd2b', 'd2c', 'd2d', 'd2more', 'd3', 's5', 's6', 's7', 'd4', 'voice', 's8', 's9']);
   if (G.lazyLater) a = a.concat(LAZY);
   return a.concat(['s10', 's11']);
 }
@@ -2507,7 +2689,47 @@ def('d4', 'Decision 4: Before you submit', function () {
 });
 
 var V_S8 = { id: 's8', q: T.s8.q, options: T.s8.options };
-def('s8', 'Step 8: One more permission prompt', function () {
+/* Step 8: the sentences that say nothing. The agent diagnoses; the student writes. */
+var kid = function (id) { return id.replace(/\./g, '_'); };
+function rwIds() { return Object.keys(G.c.rewrites || {}).map(function (id) { return 'YOU.rw.' + id; }); }
+def('voice', 'Step 8: Say it in your words', function () {
+  var fl = L.flatSentences(choices()), e = [E.prompt(T.voice.prompt), E.tool('Read', 'drafts/draft2.md', { file: 'drafts/draft2.md' }), E.tool('Read', 'CLAUDE.md', { file: 'CLAUDE.md' }), E.think(T.voice.think1)];
+  if (fl.list.some(function (x) { return x.mine; })) e.push(E.think(T.voice.think2));
+  if (fl.voice.length) e.push(E.say('<b>' + esc(T.voice.voiceHead) + '</b> ' + esc(T.voice.voiceSay) + ul(fl.voice.map(function (t) { return '"' + esc(t) + '"'; }))));
+  if (!fl.list.length) { e.push(E.say(esc(T.voice.none))); return { entries: e, doc: { file: 'drafts/draft2.md', stage: 'final' }, badge: T.badges.voice, next: { ok: true, label: 'Continue' } }; }
+  e.push(E.say(esc(T.voice.found(fl.list.length, fl.total))));
+  if (MODE === 'host') e.push(E.note(esc(T.voice.host)));
+  fl.list.forEach(function (x, i) {
+    var k = kid(x.id), asked = !!G.voice.asked[x.id], kept = !!G.voice.kept[x.id], h;
+    h = '<div class="e card flat' + (x.status !== 'open' || kept ? ' done' : '') + '"><span class="who">Sentence ' + (i + 1) + ' of ' + fl.list.length + ' · ¶' + x.para + (x.mine ? ' · <span class="minetag">' + esc(T.voice.mine) + '</span>' : '') + '</span>';
+    h += '<p class="flatq">"' + esc(x.text) + '"</p>';
+    if (x.status === 'rewritten') {
+      h += '<p class="rwdone">✓ ' + esc(T.voice.rewritten) + ' <span class="s you">' + esc(x.value) + '</span></p>';
+    } else if (x.status === 'cut') {
+      h += '<p class="rwdone">✂ ' + esc(T.voice.cutDone) + '</p>';
+    } else if (kept) {
+      h += '<p class="rwdone">' + esc(T.voice.kept) + '</p>';
+    } else {
+      h += '<p class="fine ctx"><b>' + esc(T.voice.context) + ':</b> <span class="dimt">' + esc(x.before) + '</span> <mark>' + esc(x.text) + '</mark> <span class="dimt">' + esc(x.after) + '</span></p>';
+      h += '<p class="flatp"><b>' + esc(T.voice.missing) + ':</b> ' + esc(x.why) + '</p><p class="flatp"><b>' + esc(T.voice.job) + ':</b> ' + esc(x.job) + '</p>';
+      if (asked) {
+        h += '<div class="refuse"><span class="who">Agent</span>' + esc(T.voice.refuse) + (x.facts.length ? '<p class="flatp" style="margin-top:.3rem"><b>' + esc(T.voice.facts) + ':</b></p>' + ul(x.facts.map(esc)) : '') + '</div>';
+      } else if (x.facts.length) h += '<p class="flatp"><b>' + esc(T.voice.facts) + ':</b></p>' + ul(x.facts.map(esc));
+      h += '<label class="lab" for="vt-' + k + '">' + esc(T.voice.ph) + '</label><textarea class="field" id="vt-' + k + '" data-bind="vt.' + k + '" maxlength="' + D.MAX_TYPED + '" rows="2">' + esc(G.vt[k] || '') + '</textarea>';
+      h += '<div class="row" style="margin-top:.4rem"><button class="btn small primary" data-act="voiceUse" data-arg="' + esc(x.id) + '">' + esc(T.voice.use) + '</button>' +
+        (x.cut ? '<button class="btn small" data-act="voiceCut" data-arg="' + esc(x.id) + '">' + esc(T.voice.cutBtn) + '</button>' : '') +
+        '<button class="btn small" data-act="voiceKeep" data-arg="' + esc(x.id) + '">' + esc(T.voice.keep) + '</button>' +
+        (asked ? '' : '<button class="btn small ghost" data-act="voiceAsk" data-arg="' + esc(x.id) + '">' + esc(T.voice.ask) + '</button>') + '</div>';
+    }
+    if (x.status !== 'open' || kept) h += '<div class="row" style="margin-top:.3rem"><button class="btn small" data-act="voiceEdit" data-arg="' + esc(x.id) + '">' + esc(T.voice.change) + '</button></div>';
+    e.push(E.html(h + '</div>', 450));
+  });
+  var done = fl.rewritten + fl.cut;
+  if (done) e.push(E.note('<b>' + esc(T.voice.done(fl.rewritten, fl.cut)) + '</b>', 'good'));
+  return { entries: e, doc: { file: 'drafts/draft2.md', stage: 'final', fresh: rwIds() }, badge: T.badges.voice, nudge: done ? null : T.voice.nudge, next: { ok: true, label: 'Continue' } };
+});
+
+def('s8', 'Step 9: One more permission prompt', function () {
   var e = [E.say(esc(T.s8.say)),
     E.html('<div class="e perm"><div class="t">Bash command</div><div class="b">' + esc(T.s8.cmd) + '</div></div>', 600),
     voteCard(V_S8, G.s8, { who: 'Permission' })];
@@ -2515,7 +2737,7 @@ def('s8', 'Step 8: One more permission prompt', function () {
   return { entries: e, doc: { file: 'drafts/draft2.md', stage: 'final', fresh: catchIds() }, badge: T.badges.del, vote: V_S8, next: { ok: !!G.s8, label: 'Ask for the revision log' } };
 });
 
-def('s9', 'Step 9: The revision log', function () {
+def('s9', 'Step 10: The revision log', function () {
   var lg = L.revisionLog(logInput()), e = [E.prompt(T.s9.prompt), E.tool('Write', 'revision_log.md', { file: 'revision_log.md', fstate: 'new', doc: { file: 'revision_log.md' } }), E.say(esc(T.s9.say))];
   var box = '<div class="e card"><span class="who">For your worksheet</span><h3>' + esc(T.s9.part4) + '</h3>';
   if (!lg.part4) box += '<p style="margin:0">' + esc(T.s9.noDecline) + '</p>';
@@ -2528,7 +2750,7 @@ def('s9', 'Step 9: The revision log', function () {
   return { entries: e, doc: { file: 'drafts/draft2.md', stage: 'final', fresh: catchIds() }, next: { ok: true } };
 });
 
-def('s10', 'Step 10: The comparison', function () {
+def('s10', 'Step 11: The comparison', function () {
   var rows = L.scorecard(logInput());
   var tbl = '<table class="t"><thead><tr><th></th><th>' + esc(T.s10.lazyCol) + '</th><th>' + esc(T.s10.youCol) + '</th></tr></thead><tbody>' + rows.map(function (r) {
     return '<tr><td data-l="Measure"><b>' + esc(r.k) + '</b></td><td data-l="' + esc(T.s10.lazyCol) + '">' + esc(r.lazy) + '</td><td data-l="' + esc(T.s10.youCol) + '">' + (r.good ? '' : '⚠ ') + esc(r.you) + '</td></tr>';
@@ -2539,7 +2761,7 @@ def('s10', 'Step 10: The comparison', function () {
   return { entries: e, doc: { view: 'compare' }, wide: true, next: { ok: true } };
 });
 
-def('s11', 'Step 11: Your recipe', function () {
+def('s11', 'Step 12: Your recipe', function () {
   var e = [E.html('<div class="e card"><span class="who">Take this with you</span><h3>' + esc(T.s11.head) + '</h3><ol style="margin:0;padding-left:1.3rem">' +
     T.s11.steps.map(function (x) { return '<li style="margin:.2rem 0">' + esc(x) + '</li>'; }).join('') + '</ol><div class="row" style="margin-top:.5rem">' +
     '<button class="btn small primary" data-act="copyRecipe">' + esc(T.s11.copy) + '</button>' + (MODE === 'solo' ? '<button class="btn small" data-act="restart">' + esc(T.s11.again) + '</button>' : '') + '</div></div>', 500)];
@@ -2674,6 +2896,18 @@ function render(o) {
   save();
   hostSync();
 }
+// Redraw the document without losing the student's place in it.
+function withDocScroll(fn) {
+  var pane = $('doc'), y = pane.scrollTop;
+  fn();
+  $('doc').scrollTop = y;
+}
+// Redraw the step without losing the student's place in the activity pane.
+function renderKeep() {
+  var pane = $('stream').parentNode, y = pane.scrollTop;
+  render();
+  pane.scrollTop = y;
+}
 function refreshNav() { if (!playing && G.at !== 'start') { view.next = STEPS[G.at].view().next; paintNav(); } }
 
 /* ---------- navigation ---------- */
@@ -2700,7 +2934,7 @@ function back() {
 function invalidate() {
   G.planOk = false; G.reader = null; G.picked.d4 = null; G.d4first = null; G.d4read = false; G.d4tries = []; G.caught = false;
   G.c.d4 = 'none'; G.s8 = null;
-  ['s5', 's6', 's7', 'd4', 's8', 's9', 's10', 's11'].forEach(function (k) { delete shown[k]; });
+  ['s5', 's6', 's7', 'd4', 'voice', 's8', 's9', 's10', 's11'].forEach(function (k) { delete shown[k]; });
   if (HOST) ['d4', 's8'].forEach(function (k) { delete HOST.v[k]; });
 }
 function setPath(path, val) {
@@ -2761,6 +2995,37 @@ var ACT = {
   },
   d4use: function () { if (!String(G.c.d4text || '').trim()) { toast('Type your sentence first, or leave a note instead.'); return; } G.c.d4 = 'fix'; G.ui.tab = 'full'; render({ bottom: true }); },
   d4skip: function () { G.c.d4text = ''; G.c.d4 = 'fix'; G.ui.tab = 'full'; render({ bottom: true }); },
+  voiceUse: function (id) {
+    var t = D.clean(G.vt[kid(id)] || '');
+    if (!t) { toast(T.voice.needText); var ta = $('vt-' + kid(id)); if (ta) ta.focus(); return; }
+    G.c.rewrites[id] = t; delete G.voice.kept[id]; renderKeep();
+  },
+  voiceCut: function (id) { G.c.rewrites[id] = null; delete G.voice.kept[id]; renderKeep(); },
+  voiceKeep: function (id) { delete G.c.rewrites[id]; G.voice.kept[id] = true; renderKeep(); },
+  voiceAsk: function (id) { G.voice.asked[id] = true; renderKeep(); },
+  voiceEdit: function (id) { if (G.c.rewrites[id]) G.vt[kid(id)] = G.c.rewrites[id]; delete G.c.rewrites[id]; delete G.voice.kept[id]; renderKeep(); },
+  // Editing any sentence of draft2 in place (Step 8 onward). Edits are rewrites keyed by the original sentence.
+  editSent: function (id) {
+    if (G.ui.edit && G.ui.edit.id === id) { G.ui.edit = null; withDocScroll(paintDoc); return; }
+    var cur = null;
+    [].concat.apply([], D.assemble(choices()).paras.map(function (p) { return p.sents; })).forEach(function (s) { if (editKey(s) === id) cur = s; });
+    if (!cur) return;
+    G.ui.edit = { id: id, text: cur.src === 'ph' ? '' : cur.t, para: 0 };
+    withDocScroll(paintDoc);
+    var ta = $('sedit-text'); if (ta) { ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); }
+  },
+  editSave: function () {
+    if (!G.ui.edit) return;
+    var id = G.ui.edit.id, t = D.clean(G.ui.edit.text, D.MAX_EDIT), orig = D.SENTENCES[id];
+    if (!t) { toast('Type the sentence, or use "Cut this sentence."'); return; }
+    if (orig && t === orig.t) delete G.c.rewrites[id]; else G.c.rewrites[id] = t;
+    delete G.voice.kept[id];
+    G.ui.edit = null;
+    withDocScroll(renderKeep);
+  },
+  editCut: function () { if (!G.ui.edit) return; G.c.rewrites[G.ui.edit.id] = null; delete G.voice.kept[G.ui.edit.id]; G.ui.edit = null; withDocScroll(renderKeep); },
+  editRestore: function () { if (!G.ui.edit) return; delete G.c.rewrites[G.ui.edit.id]; G.ui.edit = null; withDocScroll(renderKeep); },
+  editCancel: function () { G.ui.edit = null; withDocScroll(paintDoc); },
   watchLazy: function () { G.lazyLater = true; goto('lazyRun'); },
   copyRecipe: function () {
     var text = T.s11.head + '\n' + T.s11.steps.map(function (s, i) { return (i + 1) + '. ' + s; }).join('\n');
@@ -2819,6 +3084,10 @@ document.addEventListener('change', function (ev) {
 });
 document.addEventListener('keydown', function (ev) {
   if (ev.key === 'Enter' && ev.target.id === 'join-code') ACT.join();
+  // Sentences in the draft are spans with role=button, so Enter and Space activate them like a button.
+  if ((ev.key === 'Enter' || ev.key === ' ') && ev.target.classList && ev.target.classList.contains('sb')) { ev.preventDefault(); ev.target.click(); }
+  if (ev.key === 'Escape' && G && G.ui && G.ui.edit) ACT.editCancel();
+  if (ev.key === 'Enter' && (ev.metaKey || ev.ctrlKey) && ev.target.id === 'sedit-text') ACT.editSave();
 });
 
 /* ---------- start screen ---------- */
@@ -2838,7 +3107,8 @@ function showStart() {
     '<div class="row" style="margin-top:.3rem"><input class="field" id="join-code" maxlength="4" autocapitalize="characters" autocomplete="off" spellcheck="false" aria-label="Session code" placeholder="CODE" style="width:7rem;font-family:var(--mono);font-size:1.2rem;letter-spacing:.15em;text-transform:uppercase;margin:0">' +
     '<button class="btn" data-act="join">Join</button><span class="fine" id="join-err" role="alert"></span></div></div>');
 }
-ACT.resumeSaved = function () { var s = load('solo'); if (s) { G = s.G; G.ui = {}; G.opened = G.opened || {}; } render(); };
+function upgrade(g) { g.opened = g.opened || {}; g.vt = g.vt || {}; g.voice = g.voice || { kept: {}, asked: {} }; g.c.rewrites = g.c.rewrites || {}; return g; }
+ACT.resumeSaved = function () { var s = load('solo'); if (s) { G = upgrade(s.G); G.ui = {}; } render(); };
 
 /* ---------- class mode: the presenter ---------- */
 var FALLBACK_URL = 'https://benjaminshiller.com/Revision';
@@ -2992,7 +3262,7 @@ function boot() {
     HOST = { code: null, online: false, v: {}, unwatch: null };
     G = fresh();
     if (saved && saved.G.at !== 'start') {
-      G = saved.G; G.ui = {}; G.opened = G.opened || {};
+      G = upgrade(saved.G); G.ui = {};
       HOST.v = (saved.host && saved.host.v) || {};
       Object.keys(HOST.v).forEach(function (k) { HOST.v[k].open = false; });
       var code = saved.host && saved.host.code;
