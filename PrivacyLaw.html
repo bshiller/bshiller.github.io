@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#2C3E50">
+<title>Write the Privacy Law — a policy design game</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2C3E50; --navy-deep:#22303F; --gold:#F1C40F; --gold-soft:#F9E79F; --teal:#5EA8A7; --teal-deep:#3F7E7D;
+  --paper:#F5F4EF; --card:#FFFFFF; --ink:#1E2A36; --ink-soft:#5A6A79; --line:#DDD9CE; --red:#C0574F; --red-soft:#F6E0DE; --green:#3E8E5A; --green-soft:#E1F0E6;
+  --purple:#7A5C99; --orange:#E67E22;
+  --radius:12px;
+  --font-display:'Space Grotesk',sans-serif; --font-body:'Inter',system-ui,sans-serif; --font-mono:'IBM Plex Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--paper);color:var(--ink);font-family:var(--font-body);font-size:16px;line-height:1.5;min-height:100vh}
+button{font-family:var(--font-body);cursor:pointer}
+input,select{font-family:var(--font-body)}
+.hidden{display:none!important}
+.shell{max-width:1120px;margin:0 auto;padding:20px 16px 64px}
+.shell.narrow{max-width:520px}
+.shell.mid{max-width:760px}
+header.top{background:var(--navy);color:#fff;padding:12px 0;position:sticky;top:0;z-index:20}
+header.top .shell{padding:0 16px;display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:4px}
+.brand{font-family:var(--font-display);font-weight:700;font-size:20px}
+.brand .accent{color:var(--gold)}
+.session-tag{font-family:var(--font-mono);font-size:13px;color:#CBD6E0}
+.session-tag b{color:var(--gold);letter-spacing:2px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px;margin-top:18px}
+.card.tint{background:#EEF6F6;border-color:#CDE3E3}
+.card.gold{background:#FFF8D6;border-color:#EAD48A}
+.card.good{background:var(--green-soft);border-color:#BFDCC8}
+h1{font-family:var(--font-display);font-size:clamp(26px,5vw,40px);line-height:1.12;color:var(--navy)}
+h2{font-family:var(--font-display);font-size:21px;color:var(--navy);margin-bottom:10px}
+h3{font-family:var(--font-display);font-size:16px;color:var(--navy)}
+p{margin:6px 0}
+p.sub{color:var(--ink-soft);margin-top:8px;max-width:64ch}
+.eyebrow{font-family:var(--font-mono);font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--teal-deep);margin-bottom:6px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;border-radius:10px;padding:13px 22px;font-size:16px;font-weight:600;transition:transform .06s ease,box-shadow .12s ease}
+.btn:active{transform:translateY(1px)}
+.btn:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.btn-primary{background:var(--navy);color:#fff}
+.btn-gold{background:var(--gold);color:var(--navy-deep)}
+.btn-teal{background:var(--teal);color:#fff}
+.btn-ghost{background:transparent;color:var(--navy);border:1.5px solid var(--navy)}
+.btn-block{width:100%}
+.btn[disabled]{opacity:.45;cursor:not-allowed;box-shadow:none}
+.btn-sm{padding:8px 14px;font-size:14px;border-radius:8px}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+label.f{display:block;font-size:13px;font-weight:600;color:var(--ink-soft);margin:14px 0 5px;text-transform:uppercase;letter-spacing:.6px}
+input.f,select.f{width:100%;padding:12px 14px;font-size:17px;border:1.5px solid var(--line);border-radius:10px;background:#fff;color:var(--ink)}
+input.f:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(94,168,167,.18)}
+.f-err{color:var(--red);font-size:13px;margin-top:6px;min-height:18px}
+.code-input{font-family:var(--font-mono);letter-spacing:8px;text-transform:uppercase;text-align:center;font-size:24px!important}
+.land-hero{padding:36px 0 8px}
+.role-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:22px}
+@media(max-width:720px){.role-grid{grid-template-columns:1fr}}
+.role-card{background:var(--card);border:1.5px solid var(--line);border-radius:var(--radius);padding:22px;text-align:left;transition:border-color .12s,box-shadow .12s}
+.role-card:hover{border-color:var(--teal);box-shadow:0 6px 20px rgba(44,62,80,.10)}
+.role-card h3{font-size:19px;margin-bottom:6px}
+.role-card p{font-size:14px;color:var(--ink-soft)}
+.role-card .go{margin-top:14px;font-weight:700;color:var(--teal-deep);font-size:14px}
+.pulse-dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--teal);margin-right:8px;animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.35}50%{opacity:1}}
+@media(prefers-reduced-motion:reduce){.pulse-dot{animation:none}}
+.big-count{font-family:var(--font-display);font-size:56px;color:var(--navy);line-height:1}
+.big-count small{font-size:20px;color:var(--ink-soft);font-family:var(--font-body)}
+.join-code{font-family:var(--font-mono);font-size:64px;letter-spacing:14px;color:var(--navy);font-weight:600;line-height:1;margin:6px 0 2px}
+.roster{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.roster .p{font-size:13px;background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:4px 10px;display:inline-flex;gap:6px;align-items:center}
+.roster .p.in{border-color:var(--teal);background:#E8F4F4}
+.roster .p button{border:none;background:transparent;color:var(--red);font-weight:700;font-size:14px;padding:0 2px;line-height:1}
+.host-bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:16px}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--navy);color:#fff;padding:10px 18px;border-radius:10px;font-weight:600;z-index:50;max-width:90vw}
+.mono{font-family:var(--font-mono)}
+.small{font-size:13px;color:var(--ink-soft)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:720px){.grid2{grid-template-columns:1fr}}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.tabs button{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:7px 14px;font-weight:600;color:var(--navy);font-size:13.5px}
+.tabs button.sel{background:var(--navy);border-color:var(--navy);color:#fff}
+/* role banner */
+.me{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center}
+.me .badge{width:84px;height:84px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:38px;background:var(--navy)}
+.me .who{font-family:var(--font-display);font-size:24px;color:var(--navy);line-height:1.15}
+.me .goal{font-size:14.5px;margin-top:4px}
+.partners{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.partners .p{font-size:14px;background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:5px 12px}
+/* dashboard */
+.dash{display:grid;grid-template-columns:1.1fr 1fr;gap:18px;margin-top:18px;align-items:start}
+@media(max-width:860px){.dash{grid-template-columns:1fr}}
+.levers .lv{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:10px}
+.lv .q{font-family:var(--font-display);font-weight:700;font-size:16px;color:var(--navy)}
+.lv .opts{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.lv .opts button{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:7px 13px;font-weight:600;color:var(--navy);font-size:13.5px}
+.lv .opts button.sel{background:var(--navy);border-color:var(--navy);color:#fff}
+.lv .opts button[disabled]{cursor:default;opacity:.85}
+.lv .why{font-size:13.5px;color:var(--ink);margin-top:8px}
+.lv .fx{font-size:12.5px;color:var(--ink-soft);margin-top:4px}
+.lv .fx b.plus{color:var(--green)} .lv .fx b.minus{color:var(--red)}
+.gauges{position:sticky;top:64px}
+@media(max-width:860px){.gauges{position:static}}
+.g{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:10px}
+.g .k{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.g .k .n{font-family:var(--font-display);font-weight:700;font-size:15px;color:var(--navy)}
+.g .k .v{font-family:var(--font-mono);font-weight:600;font-size:16px;color:var(--navy)}
+.g .bar{height:14px;background:var(--paper);border:1px solid var(--line);border-radius:6px;overflow:hidden;margin-top:6px;position:relative}
+.g .bar span{display:block;height:100%;background:var(--teal);transition:width .25s}
+.g .bar span.red{background:var(--red)} .g .bar span.gold{background:var(--gold)} .g .bar span.green{background:var(--green)} .g .bar span.navy{background:var(--navy)} .g .bar span.purple{background:var(--purple)} .g .bar span.orange{background:var(--orange)}
+.g .bar i{position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--ink);opacity:.5}
+.g .d{font-size:12.5px;color:var(--ink-soft);margin-top:4px}
+.g ul.ab{list-style:none;margin-top:6px}
+.g ul.ab li{display:grid;grid-template-columns:22px 1fr;gap:6px;font-size:13px;padding:3px 0;border-top:1px dashed var(--line)}
+.g ul.ab li:first-child{border-top:none}
+.g ul.ab .s{font-weight:700}
+.g ul.ab .s.ok{color:var(--green)} .g ul.ab .s.part{color:#B8860B} .g ul.ab .s.no{color:var(--red)}
+.g ul.ab .w{color:var(--ink-soft);font-size:12px}
+.faces{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:6px}
+@media(max-width:480px){.faces{grid-template-columns:repeat(3,1fr)}}
+.face{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:6px 4px;text-align:center;font-size:11.5px;line-height:1.2}
+.face .e{font-size:22px} .face .sc{font-family:var(--font-mono);font-weight:600;color:var(--navy)}
+.face.me{border-color:var(--gold);background:var(--gold-soft)}
+.presets{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.presets button{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:7px 13px;font-weight:600;color:var(--navy);font-size:13px}
+.presets button.sel{background:var(--teal);border-color:var(--teal);color:#fff}
+.callout-line{background:var(--navy);color:#fff;border-radius:10px;padding:12px 16px;margin-top:14px;font-weight:600}
+.callout-line.gold{background:var(--gold);color:var(--navy-deep)}
+/* vote cards */
+.vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;margin-top:12px}
+.vc{background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:14px}
+.vc.sel{border-color:var(--gold);background:#FFFBE6}
+.vc .t{font-family:var(--font-display);font-weight:700;color:var(--navy);font-size:16px}
+.vc .kv{display:grid;grid-template-columns:1fr auto;gap:3px 10px;font-size:13px;margin-top:8px}
+.vc .kv .v{font-family:var(--font-mono);font-weight:600;text-align:right}
+.vc .lv-list{font-size:12px;color:var(--ink-soft);margin-top:8px;line-height:1.45}
+.vc .votes{font-family:var(--font-mono);font-size:13px;color:var(--teal-deep);margin-top:6px}
+table.res{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:10px}
+table.res th,table.res td{padding:7px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
+table.res th{font-size:12px;text-transform:uppercase;letter-spacing:.6px;color:var(--ink-soft)}
+table.res td.num,table.res th.num{text-align:right;font-family:var(--font-mono)}
+table.res th.win,table.res td.win{background:var(--gold-soft)}
+table.res .r{font-size:11px;color:var(--ink-soft);display:block;font-weight:500;text-transform:none;letter-spacing:0}
+.wrap{overflow-x:auto}
+ul.discuss{padding-left:20px;margin-top:8px;font-size:14.5px}
+ul.discuss li{margin:6px 0}
+details{margin-top:10px}
+summary{cursor:pointer;font-weight:600;color:var(--navy);font-size:14px}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--paper);border:1px solid var(--line);color:var(--ink-soft)}
+.pill.ok{background:var(--green-soft);color:var(--green);border-color:#BFDCC8}
+.pill.wait{background:#FFF4D6;color:#8A6D00;border-color:#EAD48A}
+</style>
+</head>
+<body>
+<header class="top"><div class="shell">
+  <div class="brand">WRITE THE PRIVACY LAW <span class="accent">/ you're the regulator</span></div>
+  <div class="session-tag" id="topTag">FYS 7b · classroom game</div>
+</div></header>
+
+<!-- ============ LANDING ============ -->
+<div id="viewLanding" class="shell hidden">
+  <div class="land-hero">
+    <div class="eyebrow">A classroom game: design a law, live with the consequences</div>
+    <h1>Seven switches. Every one protects someone and costs someone.</h1>
+    <p class="sub">Your group plays a role: a startup founder, a hospital researcher, a data broker, a patient advocate, or a government minister. Flip the switches, watch the gauges, submit your law, then the class votes on which one to live under.</p>
+  </div>
+  <div class="role-grid">
+    <button class="role-card" onclick="App.showJoin()">
+      <h3>Join the class session</h3>
+      <p>Enter the 4-letter code on the screen. You'll be put in a group with a role.</p>
+      <div class="go">Join →</div>
+    </button>
+    <button class="role-card" onclick="App.startSolo()">
+      <h3>Explore on your own</h3>
+      <p>No code needed. Flip the switches and compare with the laws Europe and the US actually wrote.</p>
+      <div class="go">Explore →</div>
+    </button>
+    <button class="role-card" onclick="App.showHost()">
+      <h3>Host a session</h3>
+      <p>Create a code, form the role groups, open the vote, and reveal the real-world laws.</p>
+      <div class="go">Host a session →</div>
+    </button>
+  </div>
+</div>
+
+<!-- ============ JOIN ============ -->
+<div id="viewJoin" class="shell narrow hidden">
+  <div class="card">
+    <div class="eyebrow">Join</div>
+    <h2>Enter the session code</h2>
+    <label class="f" for="joinCode">Code on the screen</label>
+    <input class="f code-input" id="joinCode" maxlength="4" autocomplete="off" autocapitalize="characters" placeholder="ABCD">
+    <label class="f" for="joinName">Your first name</label>
+    <input class="f" id="joinName" maxlength="24" autocomplete="given-name" placeholder="So your group can find you">
+    <div class="f-err" id="joinErr"></div>
+    <button class="btn btn-primary btn-block" onclick="App.join()">Join</button>
+    <div class="btn-row"><button class="btn btn-ghost btn-sm" onclick="App.showLanding()">Back</button></div>
+  </div>
+</div>
+
+<!-- ============ WAIT ============ -->
+<div id="viewWait" class="shell narrow hidden">
+  <div class="card">
+    <div class="eyebrow" id="waitEyebrow">You're in</div>
+    <h2 id="waitTitle">Waiting for the host to form the groups…</h2>
+    <p class="sub"><span class="pulse-dot"></span>Keep this page open.</p>
+  </div>
+</div>
+
+<!-- ============ DESIGN (student group) / SOLO ============ -->
+<div id="viewDesign" class="shell hidden">
+  <div class="card" id="roleCard">
+    <div class="me">
+      <div class="badge" id="dBadge">🏛️</div>
+      <div>
+        <div class="eyebrow" id="dEyebrow">Group 1</div>
+        <div class="who" id="dWho">You are the Patient Advocate</div>
+        <div class="goal" id="dGoal"></div>
+        <div class="partners" id="dPartners"></div>
+      </div>
+    </div>
+    <p class="small" style="margin-top:10px" id="dHint">Everyone in your group sees the same switches. Agree out loud, then one of you taps Submit. You have until the host opens the vote.</p>
+  </div>
+  <div class="card gold hidden" id="soloCard">
+    <div class="eyebrow">Explore</div>
+    <h2 style="margin-bottom:4px">Flip the switches. Watch what moves.</h2>
+    <p class="small">Start from a real law, or build your own. Pick a role to see whose side you're judging from.</p>
+    <div class="presets" id="soloPresets"></div>
+    <div class="presets" id="soloRoles" style="margin-top:6px"></div>
+  </div>
+  <div class="dash">
+    <div class="levers" id="dLevers"></div>
+    <div class="gauges" id="dGauges"></div>
+  </div>
+  <div class="card" id="submitCard">
+    <div class="eyebrow">When your group agrees</div>
+    <div id="submitBody"></div>
+  </div>
+  <details class="card" style="margin-top:12px"><summary>How are the gauges computed?</summary><div id="howText" class="small" style="margin-top:8px"></div></details>
+</div>
+
+<!-- ============ VOTE (student) ============ -->
+<div id="viewVote" class="shell hidden">
+  <div class="card">
+    <div class="eyebrow">Class vote</div>
+    <h2>Which law would you want to live under?</h2>
+    <p class="small">Forget your role for a moment. Pick the one you'd choose as a citizen. You can change your vote until the host closes it.</p>
+    <div class="vgrid" id="voteGrid"></div>
+  </div>
+</div>
+
+<!-- ============ REVEAL / DONE (student) ============ -->
+<div id="viewReveal" class="shell mid hidden">
+  <div class="card">
+    <div class="eyebrow" id="rvEyebrow">The vote</div>
+    <h2 id="rvTitle">Look at the screen</h2>
+    <div id="rvBody"></div>
+  </div>
+</div>
+
+<!-- ============ HOST: CREATE ============ -->
+<div id="viewHostCreate" class="shell narrow hidden">
+  <div class="card">
+    <div class="eyebrow">Host</div>
+    <h2>Create a session</h2>
+    <p class="sub">Students join with a code. You form the role groups, they design their laws, the class votes, and you reveal what Europe and the US actually chose.</p>
+    <button class="btn btn-primary btn-block" style="margin-top:16px" onclick="App.createGame()">Create session</button>
+    <div class="btn-row"><button class="btn btn-ghost btn-sm" onclick="App.showLanding()">Back</button></div>
+  </div>
+</div>
+
+<!-- ============ HOST: RUN ============ -->
+<div id="viewHost" class="shell hidden">
+  <div class="card">
+    <div class="grid2">
+      <div>
+        <div class="eyebrow">Session code</div>
+        <div class="join-code" id="hostCode">----</div>
+        <p class="small" id="hostUrlHint"></p>
+      </div>
+      <div>
+        <div class="eyebrow">Joined</div>
+        <div class="big-count"><span id="hostCount">0</span> <small>students</small></div>
+        <div class="small" id="hostPhaseNote">waiting</div>
+      </div>
+    </div>
+    <div class="roster" id="hostRoster"></div>
+    <div class="host-bar">
+      <span id="hostFormWrap"><label class="small" for="nGroups">Groups:</label> <select id="nGroups" class="f" style="width:auto;display:inline-block;padding:8px 10px;font-size:14px"><option value="auto">auto</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
+      <button class="btn btn-primary" id="btnForm" onclick="App.formGroups()">Form groups &amp; start designing</button></span>
+      <button class="btn btn-primary hidden" id="btnVote" onclick="App.setPhase('vote')">Open the class vote</button>
+      <button class="btn btn-primary hidden" id="btnReveal" onclick="App.setPhase('reveal')">Close vote &amp; reveal</button>
+      <button class="btn btn-primary hidden" id="btnDone" onclick="App.setPhase('done')">End</button>
+      <button class="btn btn-ghost btn-sm hidden" id="btnReform" onclick="App.formGroups(true)">Re-form groups</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="tabs" id="resTabs"></div>
+    <div id="resBody"></div>
+  </div>
+</div>
+
+<div id="toast" class="toast hidden"></div>
+
+<!-- Firebase compat SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
+/* =====================================================================
+   FIREBASE CONFIG — same project as the other FYS 7b classroom games.
+   Sessions live at games/law-CODE (the database only permits writes under games/).
+   ===================================================================== */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyDQ8gn5w_Jj4OzcXFBz2lY2SKuaKEo2wbk",
+  authDomain: "obfuscationgame.firebaseapp.com",
+  databaseURL: "https://obfuscationgame-default-rtdb.firebaseio.com",
+  projectId: "obfuscationgame",
+  storageBucket: "obfuscationgame.firebasestorage.app",
+  messagingSenderId: "443679460937",
+  appId: "1:443679460937:web:d6b2806717894b3c923998"
+};
+
+/* =====================================================================
+   THE LAW: seven switches
+   ===================================================================== */
+const LEVERS = [
+  { id: "consent", q: "Who has to say yes before a company uses your data?", opts: [
+    { l: "Opt-out", why: "Companies can use your data unless you find the setting and say stop. This is the US default today.", fx: "<b class='plus'>+</b> cheap for apps &nbsp; <b class='minus'>−</b> most people never opt out" },
+    { l: "Opt-in", why: "Nothing happens until you say yes to each use. Europe's rule since 2018.", fx: "<b class='plus'>+</b> real choice &nbsp; <b class='minus'>−</b> when Apple added an opt-in prompt, about 1 in 4 Americans said yes, so free ad-funded apps lost most of their income; Google and Meta, which have logged-in users, gained share" } ] },
+  { id: "purpose", q: "Can data be reused for something new?", opts: [
+    { l: "Any use", why: "Once collected, data can be sold or reused for anything: the period app sells to employers, the search log becomes a recovery list.", fx: "<b class='plus'>+</b> surprise discoveries (flu tracking from searches) &nbsp; <b class='minus'>−</b> surprise betrayals" },
+    { l: "Stated purpose only", why: "Data may be used only for the reason you were told. A new use needs new permission.", fx: "<b class='plus'>+</b> stops resale &nbsp; <b class='minus'>−</b> research that reuses old data must go back and ask everyone, unless scientists get a special rule (switch 7)" } ] },
+  { id: "delete", q: "How long can they keep it?", opts: [
+    { l: "Forever", why: "Your 2005 photos are still there in 2025, ready for whatever tomorrow's tools can do with them.", fx: "<b class='plus'>+</b> long-term studies possible &nbsp; <b class='minus'>−</b> old uploads become deepfake material" },
+    { l: "You can ask for deletion", why: "Companies must erase your data if you ask. Most people never ask.", fx: "<b class='plus'>+</b> an escape hatch &nbsp; <b class='minus'>−</b> engineering cost; only helps if you remember" },
+    { l: "Auto-delete after 2 years", why: "Everything is erased unless you renew it.", fx: "<b class='plus'>+</b> your past can't be weaponized &nbsp; <b class='minus'>−</b> kills studies that follow patients for years" } ] },
+  { id: "shield", q: "Which sensitive data get doctor-level protection?", opts: [
+    { l: "Only doctors & hospitals", why: "HIPAA covers your doctor. Your period app, DNA kit, fitness tracker, and chatbot are not covered.", fx: "<b class='plus'>+</b> simple &nbsp; <b class='minus'>−</b> the loophole the chapter describes stays open" },
+    { l: "All health, genetic & location data", why: "Covered no matter who collects it: apps, DNA kits, chatbots, cars. Like Washington State's 2024 law.", fx: "<b class='plus'>+</b> closes the loophole; people get tested and share more, as they did after HIPAA and GINA &nbsp; <b class='minus'>−</b> what counts as 'health data' is fuzzy, so consumer health startups face hospital-grade compliance or leave" } ] },
+  { id: "compliance", q: "How much checking and paperwork?", opts: [
+    { l: "Light", why: "Companies sign a pledge. Nobody audits.", fx: "<b class='plus'>+</b> nearly free &nbsp; <b class='minus'>−</b> nobody believes the pledge" },
+    { l: "Heavy", why: "Audits, a privacy officer, a written risk review before every new feature. Europe's approach.", fx: "<b class='plus'>+</b> credible &nbsp; <b class='minus'>−</b> about $1.7M a year for a small company; a third of apps left the EU store within a year and new apps fell by half" },
+    { l: "Heavy, small firms exempt", why: "The heavy rules apply only above 250 employees.", fx: "<b class='plus'>+</b> startups survive &nbsp; <b class='minus'>−</b> most data brokers are small companies" } ] },
+  { id: "enforce", q: "What happens to rule-breakers?", opts: [
+    { l: "Small fines", why: "A cost of doing business.", fx: "<b class='minus'>−</b> protections exist on paper" },
+    { l: "Huge fines", why: "Up to 4% of worldwide sales. Meta has paid over a billion euros.", fx: "<b class='plus'>+</b> companies take it seriously &nbsp; <b class='minus'>−</b> risky to experiment" },
+    { l: "Huge fines + anyone can sue", why: "Individuals and class actions can collect damages. Illinois does this for face data.", fx: "<b class='plus'>+</b> strongest deterrent &nbsp; <b class='minus'>−</b> companies switch features off rather than risk a lawsuit: Google Photos won't group faces in Illinois" } ] },
+  { id: "research", q: "Can scientists use anonymized data?", opts: [
+    { l: "No special rule", why: "Research follows the same rules as everyone else.", fx: "<b class='minus'>−</b> under strict rules, the stent study and the vaccine finding never happen" },
+    { l: "Research safe harbor", why: "Anonymized, aggregated data can be used for research without asking each person again.", fx: "<b class='plus'>+</b> keeps discoveries alive under strict rules &nbsp; <b class='minus'>−</b> 'anonymized' is a promise, not a guarantee; done badly, people can be re-identified" } ] },
+];
+const ROLES = {
+  advocate: { name: "Patient & Consumer Advocate", e: "🛡️", goal: "Make sure the period-app story and the recovery list never happen again. Your gauge: Privacy protection." },
+  dev:      { name: "Startup Founder", e: "🚀", goal: "You have 6 employees and an app idea. Survive. Your gauge: Startups surviving." },
+  research: { name: "Hospital Researcher", e: "🔬", goal: "Keep the stent study and the vaccine finding possible. Your gauge: Medical discoveries." },
+  policy:   { name: "Government Minister", e: "🏛️", goal: "Protect citizens without falling further behind the US on AI. Your gauges: Protection and Months behind." },
+  broker:   { name: "Data Broker", e: "💼", goal: "Your business is buying and selling lists. Keep it legal. Your gauge: 100 minus Protection." },
+};
+const ROLE_ORDER = ["advocate", "dev", "research", "policy", "broker"];
+const PRESETS = {
+  us: { name: "US federal law today", L: { consent: 0, purpose: 0, delete: 0, shield: 0, compliance: 0, enforce: 0, research: 0 }, note: "No general privacy law. HIPAA for doctors, GINA for genes, a patchwork of state rules." },
+  eu: { name: "Europe: GDPR (2018)", L: { consent: 1, purpose: 1, delete: 1, shield: 1, compliance: 1, enforce: 1, research: 1 }, note: "Opt-in, purpose limits, a right to be forgotten, heavy compliance, fines up to 4% of sales, and a research exemption." },
+  ca: { name: "California: CCPA/CPRA (2020)", L: { consent: 0, purpose: 1, delete: 1, shield: 0, compliance: 0, enforce: 1, research: 0 }, note: "Opt out of sale, purpose limits, a right to delete, a state regulator with real fines." },
+  wa: { name: "Washington: My Health My Data (2024)", L: { consent: 0, purpose: 0, delete: 1, shield: 1, compliance: 0, enforce: 2, research: 0 }, note: "Closes the HIPAA loophole for apps and lets individuals sue. Nothing else changes." },
+};
+const DEFAULT_L = () => Object.assign({}, PRESETS.us.L);
+
+/* ---------- the model ---------- */
+const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+function model(L) {
+  const c = L.consent, p = L.purpose, d = L.delete, sh = L.shield, co = L.compliance, en = L.enforce, rs = L.research;
+  // 1. which of the chapter's abuses does this law stop?
+  const st = (full, part, whyFull, whyPart, whyNone) => full ? { s: "ok", w: whyFull } : part ? { s: "part", w: whyPart } : { s: "no", w: whyNone };
+  const abuses = [
+    Object.assign({ n: "Period app sells your cycle data to your employer" }, st(p || sh, c, p ? "stated-purpose rule forbids the resale" : "health data are shielded wherever collected", "they need your opt-in, but it's buried in the sign-up", "legal: no rule against it")),
+    Object.assign({ n: "A 'recovery list' of people in addiction treatment, 8¢ a name" }, st(p || sh, c, p ? "the search and app data can't be reused this way" : "health data are shielded wherever collected", "needs opt-in; most people click yes without reading", "legal: not from a doctor, so no rule applies")),
+    Object.assign({ n: "Your old posts become a deepfake 20 years later" }, st(d === 2, d === 1, "the posts are gone after 2 years", "gone, if you remember to ask", "the raw material waits forever")),
+    Object.assign({ n: "Your car sends your driving data to your insurer" }, st(p || sh, c, p ? "not the purpose you were told" : "location data are shielded", "needs opt-in; carmakers bury it in the setup screen", "legal: GM did exactly this")),
+    Object.assign({ n: "Your medical questions to a chatbot are sold or subpoenaed" }, st(sh, p || d === 2, "chatbot health chats get doctor-level privilege", p ? "can't be sold, but still discoverable in court" : "old chats are gone, recent ones aren't", "no privilege, no rule: fair game")),
+    Object.assign({ n: "Your brother's DNA test raises your insurance premium" }, st(sh, p, "genetic data are shielded; insurers can't use them", "the DNA company can't resell, but the insurer can still ask", "legal for life insurers today")),
+  ];
+  const enfMult = [0.5, 0.9, 1][en], compMult = [0.8, 1, 0.9][co];
+  const raw = abuses.reduce((a, x) => a + (x.s === "ok" ? 1 : x.s === "part" ? 0.4 : 0), 0) / abuses.length;
+  const protection = Math.round(100 * raw * enfMult * compMult);
+  abuses.forEach(x => { if (x.s === "ok" && en === 0) { x.s = "part"; x.w += "; but with small fines, companies risk it"; } });
+  // 2. trust: the chapter's paradox. Lock the door and people share more.
+  const trust = Math.round(40 + 0.5 * protection);
+  // 3. startups
+  const startups = Math.round(100 - c * 8 - p * 4 - [0, 3, 6][d] - sh * 6 - [0, 18, 5][co] - [0, 3, 8][en] + rs * 2 + (trust - 40) * 0.15);
+  // 4. discoveries and the three examples
+  const purposeHit = p ? (rs ? 5 : 35) : 0, consentHit = c ? (rs ? 3 : 10) : 0, deleteHit = [0, 5, 25][d];
+  const discoveries = Math.round(clamp(100 - purposeHit - consentHit - deleteHit + sh * 8 + (trust - 50) * 0.3, 0, 115));
+  const examples = [
+    { n: "Flu outbreaks spotted two weeks early from search queries", on: !((p && !rs) || (c && !rs)), w: "needs search logs reused for a new purpose, in bulk" },
+    { n: "Period-app data showed vaccines barely shift cycles", on: !(p && !rs), w: "users opted in, but the data were reused for a new question" },
+    { n: "Merged hospital records revealed which stents fail", on: !(d === 2 || (p && !rs)), w: "needs years of records, merged across hospitals" },
+  ];
+  // 5. who wins market share, how far behind, what it costs
+  const bigtech = 50 + c * 6 + [0, 8, 3][co] + (en === 2 ? 2 : 0) + sh * 2;
+  const behind = c * 2 + p * 2 + (d === 2 ? 2 : 0) + sh * 3 + [0, 6, 2][co] + [0, 1, 4][en];
+  const cost = 20 + c * 60 + p * 40 + [0, 30, 50][d] + sh * 100 + [0, 1200, 20][co] + [0, 10, 80][en];
+  const roles = {
+    advocate: clamp(protection, 0, 100), dev: clamp(startups, 0, 100), research: clamp(discoveries, 0, 100),
+    policy: clamp(Math.round(0.5 * protection + 0.5 * (100 - behind * 4)), 0, 100), broker: clamp(100 - protection, 0, 100),
+  };
+  return { protection, abuses, trust, startups, discoveries, examples, bigtech, behind, cost, roles };
+}
+const money = k => k >= 1000 ? "$" + (k / 1000).toFixed(k % 1000 ? 1 : 0) + "M" : "$" + k + "k";
+const face = s => s >= 75 ? "😀" : s >= 50 ? "🙂" : s >= 30 ? "😕" : "😠";
+
+/* ---------- dashboard renderer (shared by students, solo, host) ---------- */
+function renderLevers(el, L, editable, onPick) {
+  el.innerHTML = LEVERS.map((lv, i) => {
+    const v = L[lv.id] || 0;
+    return `<div class="lv"><div class="q">${i + 1}. ${lv.q}</div>
+      <div class="opts">${lv.opts.map((o, j) => `<button class="${j === v ? "sel" : ""}" ${editable ? `onclick="${onPick}('${lv.id}',${j})"` : "disabled"}>${o.l}</button>`).join("")}</div>
+      <div class="why">${lv.opts[v].why}</div><div class="fx">${lv.opts[v].fx}</div></div>`;
+  }).join("");
+}
+function renderGauges(el, L, myRole) {
+  const m = model(L);
+  const bar = (cls, v, max, mark) => `<div class="bar"><span class="${cls}" style="width:${clamp(100 * v / max, 0, 100)}%"></span>${mark != null ? `<i style="left:${clamp(100 * mark / max, 0, 100)}%"></i>` : ""}</div>`;
+  el.innerHTML = `
+    <div class="g"><div class="k"><span class="n">Privacy protection</span><span class="v">${m.protection} / 100</span></div>${bar("teal", m.protection, 100)}
+      <ul class="ab">${m.abuses.map(a => `<li><span class="s ${a.s}">${a.s === "ok" ? "✓" : a.s === "part" ? "~" : "✗"}</span><span>${a.n}<br><span class="w">${a.w}</span></span></li>`).join("")}</ul></div>
+    <div class="g"><div class="k"><span class="n">People willing to share honestly</span><span class="v">${m.trust}</span></div>${bar("green", m.trust, 100, 40)}<div class="d">The chapter's paradox: lock the door and people tell you more. Line = today.</div></div>
+    <div class="g"><div class="k"><span class="n">Startups surviving</span><span class="v">${m.startups}</span></div>${bar(m.startups < 70 ? "red" : m.startups < 90 ? "gold" : "green", m.startups, 110, 100)}<div class="d">100 = today. ${m.startups < 70 ? "Roughly one in three gone, like Europe after GDPR." : m.startups < 90 ? "Some leave; the rest spend on lawyers." : "Hardly any change."}</div></div>
+    <div class="g"><div class="k"><span class="n">Medical discoveries</span><span class="v">${m.discoveries}</span></div>${bar(m.discoveries < 70 ? "red" : "purple", m.discoveries, 115, 100)}
+      <ul class="ab">${m.examples.map(x => `<li><span class="s ${x.on ? "ok" : "no"}">${x.on ? "✓" : "✗"}</span><span>${x.n}<br><span class="w">${x.on ? "still happens" : "doesn't happen: " + x.w}</span></span></li>`).join("")}</ul></div>
+    <div class="g"><div class="k"><span class="n">Big Tech's share of the market</span><span class="v">${m.bigtech}%</span></div>${bar("navy", m.bigtech, 100, 50)}<div class="d">Rules cost the same whether you have 6 employees or 60,000. Line = today.</div></div>
+    <div class="g"><div class="k"><span class="n">Months behind the US on new AI products</span><span class="v">${m.behind}</span></div>${bar("orange", m.behind, 20)}<div class="d">${m.behind === 0 ? "Launches on day one." : m.behind < 6 ? "Minor delays." : "New features launch here months late, or never."}</div></div>
+    <div class="g"><div class="k"><span class="n">Yearly compliance cost, 50-person company</span><span class="v">${money(m.cost)}</span></div>${bar("red", m.cost, 1600)}<div class="d">${m.cost >= 1000 ? "That's a dozen engineers' salaries spent on paperwork." : m.cost >= 200 ? "A couple of hires." : "Pocket change."}</div></div>
+    <div class="g"><div class="k"><span class="n">Who's happy?</span></div><div class="faces">${ROLE_ORDER.map(r => `<div class="face ${r === myRole ? "me" : ""}"><div class="e">${face(m.roles[r])}</div>${ROLES[r].name.split(" ")[0]}${r === "advocate" ? " adv." : r === "policy" ? "" : ""}<br><span class="sc">${m.roles[r]}</span></div>`).join("")}</div></div>`;
+  return m;
+}
+const HOW = `Every number is an index, not a forecast. <b>Privacy protection</b> counts how many of the six abuses from Chapter 8 the law stops (a partial stop counts 40%), then discounts it if fines are small (×0.5) or nobody audits (×0.8). <b>Willing to share</b> rises with protection, following the chapter's evidence from BRCA testing and therapy records. <b>Startups</b> start at 100 and lose points for each rule's fixed cost, with heavy compliance the biggest hit (calibrated to the GDPR study: a third of apps gone, new entries halved), partly offset by higher trust. <b>Discoveries</b> lose points when data can't be reused (purpose limit), when old records are erased, and when fewer people consent; they gain when sensitive data are shielded (more people get tested) and when trust is high; a research safe harbor removes most of the purpose-limit penalty. <b>Big Tech's share</b> rises with rules that cost the same for everyone, and with opt-in, which favors firms whose users are logged in. <b>Months behind</b> and <b>cost</b> add up the delay and dollars each rule tends to impose. The numbers are tunable at the top of the script.`;
+
+/* =====================================================================
+   APP
+   ===================================================================== */
+const App = (() => {
+  let db = null, code = null, uid = null, myName = null, isHost = false, solo = false;
+  let state = null, players = {}, groups = {}, votes = {}, listeners = [];
+  let myGroup = null, myGroupData = null, groupListener = null, resTab = "groups", showPkg = null, soloL = DEFAULT_L(), soloRole = "advocate", soloPreset = "us";
+
+  const $ = id => document.getElementById(id);
+  const views = ["viewLanding","viewJoin","viewWait","viewDesign","viewVote","viewReveal","viewHostCreate","viewHost"];
+  function show(v){ views.forEach(x => $(x).classList.toggle("hidden", x !== v)); if (v !== "viewDesign") window.scrollTo(0,0); }
+  function toast(msg){ const t=$("toast"); t.textContent=msg; t.classList.remove("hidden"); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.add("hidden"),2800); }
+  function getUid(){ const tu = new URLSearchParams(location.search).get("u"); if (tu) return "test-" + tu; let u=null; try{u=localStorage.getItem("law_uid");}catch(e){} if(!u){u=(crypto.randomUUID?crypto.randomUUID():"u"+Date.now()+Math.random().toString(36).slice(2)); try{localStorage.setItem("law_uid",u);}catch(e){}} return u; }
+  function clearListeners(){ listeners.forEach(([r,e,c])=>r.off(e,c)); listeners=[]; }
+  function on(ref,ev,cb){ ref.on(ev,cb); listeners.push([ref,ev,cb]); }
+  function esc(s){ return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+  const path = (...p) => ["games", "law-" + code, ...p].join("/");
+  const hasDb = () => !!(FIREBASE_CONFIG && FIREBASE_CONFIG.apiKey && !FIREBASE_CONFIG.apiKey.startsWith("PASTE"));
+  function saveLocal(){ try{ localStorage.setItem("law_game", JSON.stringify({ code, myName, isHost })); }catch(e){} }
+  function loadLocal(){ try{ return JSON.parse(localStorage.getItem("law_game")||"null"); }catch(e){ return null; } }
+  function clearLocal(){ try{ localStorage.removeItem("law_game"); }catch(e){} }
+
+  function boot(){
+    uid = getUid();
+    $("howText").innerHTML = HOW;
+    if (hasDb()){ firebase.initializeApp(FIREBASE_CONFIG); db = firebase.database(); }
+    const qs = new URLSearchParams(location.search);
+    if (qs.get("solo") != null){ startSolo(); return; }
+    const saved = loadLocal();
+    if (db && saved && saved.code && qs.get("host") == null && !qs.get("g")){
+      db.ref(`games/law-${saved.code}/state`).get().then(s => {
+        if (!s.exists() || (s.val().phase === "done" && !saved.isHost)){ clearLocal(); show("viewLanding"); return; }
+        code = saved.code; myName = saved.myName; isHost = !!saved.isHost;
+        if (isHost){ $("hostCode").textContent = code; hostUrl(); $("topTag").innerHTML = `Hosting session <b>${code}</b>`; listenGame(); show("viewHost"); }
+        else { $("topTag").innerHTML = `Session <b>${code}</b> · ${esc(myName)}`; listenGame(); }
+      });
+      return;
+    }
+    if (db && qs.get("g")){ show("viewJoin"); $("joinCode").value = qs.get("g").toUpperCase(); $("joinName").focus(); }
+    else if (db && qs.get("host") != null){ show("viewHostCreate"); }
+    else show("viewLanding");
+  }
+  function showLanding(){ show("viewLanding"); }
+  function showJoin(){ if (!db){ toast("No database connection; try Explore."); return; } show("viewJoin"); }
+  function showHost(){ if (!db){ toast("No database connection."); return; } show("viewHostCreate"); }
+
+  /* ---------- solo / explore ---------- */
+  function startSolo(){
+    solo = true; $("topTag").textContent = "Explore mode";
+    $("roleCard").classList.add("hidden"); $("soloCard").classList.remove("hidden"); $("submitCard").classList.add("hidden");
+    renderSolo(); show("viewDesign");
+  }
+  function renderSolo(){
+    $("soloPresets").innerHTML = Object.entries(PRESETS).map(([k, p]) => `<button class="${soloPreset === k ? "sel" : ""}" onclick="App.soloPreset('${k}')">${p.name}</button>`).join("") + `<button class="${soloPreset === "custom" ? "sel" : ""}" disabled>Your own</button>`;
+    $("soloRoles").innerHTML = ROLE_ORDER.map(r => `<button class="${soloRole === r ? "sel" : ""}" onclick="App.soloRole('${r}')">${ROLES[r].e} ${ROLES[r].name}</button>`).join("");
+    renderLevers($("dLevers"), soloL, true, "App.soloPick");
+    renderGauges($("dGauges"), soloL, soloRole);
+    const p = PRESETS[soloPreset];
+    $("dHint").textContent = "";
+    if (p) $("soloCard").querySelector(".small").textContent = p.note; else $("soloCard").querySelector(".small").textContent = "Your own law. Compare it with the presets above.";
+  }
+  function setSoloPreset(k){ soloPreset = k; soloL = Object.assign({}, PRESETS[k].L); renderSolo(); }
+  function setSoloRole(r){ soloRole = r; renderSolo(); }
+  function soloPick(id, v){ soloL[id] = v; soloPreset = "custom"; renderSolo(); }
+
+  /* ---------- student ---------- */
+  async function join(){
+    const c = $("joinCode").value.trim().toUpperCase(), n = $("joinName").value.trim(), err = $("joinErr");
+    if (c.length !== 4){ err.textContent = "Enter the 4-letter code on the screen."; return; }
+    if (!n){ err.textContent = "Add your first name."; return; }
+    err.textContent = "";
+    const snap = await db.ref(`games/law-${c}/state`).get();
+    if (!snap.exists()){ err.textContent = "No session with that code — check the projector."; return; }
+    code = c; myName = n; isHost = false; saveLocal();
+    await db.ref(path("players", uid)).update({ name: n, joinedAt: Date.now() });
+    $("topTag").innerHTML = `Session <b>${code}</b> · ${esc(n)}`;
+    listenGame();
+  }
+  function listenGame(){
+    clearListeners();
+    on(db.ref(path("state")), "value", s => { state = s.val(); if (!state) return; if (isHost) renderHost(); else route(); });
+    on(db.ref(path("groups")), "value", s => { groups = s.val() || {}; if (isHost) renderHost(); else route(); });
+    if (isHost){
+      on(db.ref(path("players")), "value", s => { players = s.val() || {}; renderHost(); });
+      on(db.ref(path("votes")), "value", s => { votes = s.val() || {}; renderHost(); });
+    } else {
+      let seen = false;
+      on(db.ref(path("players", uid)), "value", s => { const p = s.val(); if (p){ seen = true; myGroup = p.group || null; route(); } else if (seen){ clearLocal(); toast("The host removed you from the session."); setTimeout(() => location.search = "", 1500); } });
+      on(db.ref(path("votes", uid)), "value", s => { votes[uid] = s.val(); if (state && state.phase === "vote") renderVote(); });
+    }
+  }
+  function route(){
+    if (!state) return;
+    const ph = state.phase;
+    if (ph === "lobby" || !myGroup || !groups[myGroup]){ $("waitTitle").textContent = ph === "lobby" ? "Waiting for the host to form the groups…" : "Waiting for your group…"; show("viewWait"); return; }
+    if (ph === "design"){ renderDesign(); return; }
+    if (ph === "vote"){ renderVote(); return; }
+    renderReveal();
+  }
+  function renderDesign(){
+    const g = groups[myGroup], R = ROLES[g.role];
+    $("roleCard").classList.remove("hidden"); $("soloCard").classList.add("hidden"); $("submitCard").classList.remove("hidden");
+    $("dBadge").textContent = R.e; $("dEyebrow").textContent = `Group ${myGroup.replace("g", "")}`;
+    $("dWho").textContent = `You are the ${R.name}`; $("dGoal").textContent = R.goal;
+    $("dPartners").innerHTML = Object.values(g.members || {}).map(n => `<span class="p">${esc(n)}</span>`).join("");
+    $("dHint").textContent = g.submitted ? "Your law is submitted. The host will open the vote. You can still reopen it to make changes." : "Everyone in your group sees the same switches. Agree out loud, then one of you taps Submit.";
+    const L = Object.assign(DEFAULT_L(), g.levers || {});
+    renderLevers($("dLevers"), L, !g.submitted, "App.pick");
+    renderGauges($("dGauges"), L, g.role);
+    $("submitBody").innerHTML = g.submitted
+      ? `<span class="pill ok">Submitted</span> <button class="btn btn-ghost btn-sm" style="margin-left:8px" onclick="App.submit(false)">Reopen</button>`
+      : `<button class="btn btn-gold" onclick="App.submit(true)">Submit our law</button> <span class="small" style="margin-left:8px">Any member can tap it.</span>`;
+    show("viewDesign");
+  }
+  async function pick(id, v){ if (!myGroup) return; await db.ref(path("groups", myGroup, "levers", id)).set(v); }
+  async function submit(flag){ await db.ref(path("groups", myGroup)).update({ submitted: flag, submittedAt: Date.now() }); toast(flag ? "Submitted!" : "Reopened."); }
+  function renderVote(){
+    const ids = Object.keys(groups).sort();
+    const my = votes[uid];
+    $("voteGrid").innerHTML = ids.map(id => {
+      const g = groups[id], m = model(Object.assign(DEFAULT_L(), g.levers || {}));
+      return `<div class="vc ${my === id ? "sel" : ""}"><div class="t">${ROLES[g.role].e} ${ROLES[g.role].name}${id === myGroup ? " (your group)" : ""}</div>
+        <div class="kv"><span>Privacy protection</span><span class="v">${m.protection}</span><span>Startups surviving</span><span class="v">${m.startups}</span><span>Medical discoveries</span><span class="v">${m.discoveries}</span><span>Months behind the US</span><span class="v">${m.behind}</span><span>Cost, small company</span><span class="v">${money(m.cost)}</span></div>
+        <div class="lv-list">${LEVERS.map(lv => lv.opts[(g.levers || {})[lv.id] || 0].l).join(" · ")}</div>
+        <button class="btn ${my === id ? "btn-gold" : "btn-ghost"} btn-sm btn-block" style="margin-top:10px" onclick="App.vote('${id}')">${my === id ? "Your vote ✓" : "Vote for this law"}</button></div>`;
+    }).join("");
+    show("viewVote");
+  }
+  async function vote(id){ await db.ref(path("votes", uid)).set(id); }
+  function renderReveal(){
+    const tally = {}; Object.values(votes).forEach(v => { if (v) tally[v] = (tally[v] || 0) + 1; });
+    const ids = Object.keys(groups).sort(); let win = null; ids.forEach(id => { if (win === null || (tally[id] || 0) > (tally[win] || 0)) win = id; });
+    $("rvEyebrow").textContent = state.phase === "done" ? "Game over" : "The vote";
+    $("rvTitle").textContent = win ? `The class chose the ${ROLES[groups[win].role].name}'s law` : "Look at the screen";
+    $("rvBody").innerHTML = win ? `<p class="small">${LEVERS.map(lv => `<b>${lv.q}</b> ${lv.opts[(groups[win].levers || {})[lv.id] || 0].l}`).join("<br>")}</p><p class="small" style="margin-top:10px">Now compare it with what Europe and the US actually wrote (on the screen).</p>` : "";
+    show("viewReveal");
+  }
+
+  /* ---------- host ---------- */
+  function hostUrl(){
+    const web = /^https?:/.test(location.protocol);
+    const base = web ? location.host + location.pathname.replace(/\.html$/, "") : "benjaminshiller.com/PrivacyLaw";
+    const url = (web ? location.origin + location.pathname : "https://benjaminshiller.com/PrivacyLaw") + "?g=" + code;
+    $("hostUrlHint").innerHTML = `Students open <b>${esc(base)}</b> and enter the code, or use the link <span class="mono">${esc(url)}</span>`;
+  }
+  async function createGame(){
+    isHost = true;
+    code = Array.from({length:4}, () => "ABCDEFGHJKLMNPQRSTUVWXYZ"[Math.floor(Math.random()*24)]).join("");
+    await db.ref(path()).set({ meta: { createdAt: Date.now() }, state: { phase: "lobby", createdAt: Date.now() } });
+    saveLocal(); $("hostCode").textContent = code; hostUrl();
+    $("topTag").innerHTML = `Hosting session <b>${code}</b>`;
+    listenGame(); show("viewHost");
+  }
+  async function setPhase(p){ await db.ref(path("state")).update({ phase: p, changedAt: Date.now() }); resTab = p === "vote" ? "votes" : p === "reveal" || p === "done" ? "reveal" : "groups"; }
+  async function removePlayer(u){ if (!confirm(`Remove ${players[u] && players[u].name}?`)) return; await db.ref(path("players", u)).remove(); }
+  function shuffle(a){ for (let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+  async function formGroups(re){
+    const ids = shuffle(Object.keys(players));
+    if (ids.length < 2){ toast("Need at least 2 students joined."); return; }
+    if (re && !confirm("Re-form groups? Current designs will be erased.")) return;
+    const sel = $("nGroups").value;
+    const n = sel === "auto" ? clamp(Math.floor(ids.length / 3), 2, 5) : Math.min(Number(sel), ids.length);
+    const upd = { groups: {}, players: {} };
+    for (let i = 0; i < n; i++) upd.groups["g" + (i + 1)] = { role: ROLE_ORDER[i], members: {}, levers: DEFAULT_L(), submitted: false };
+    ids.forEach((u, k) => { const g = "g" + ((k % n) + 1); upd.groups[g].members[u] = players[u].name; });
+    await db.ref(path("groups")).set(upd.groups);
+    const pu = {}; ids.forEach((u, k) => { pu[u + "/group"] = "g" + ((k % n) + 1); });
+    await db.ref(path("players")).update(pu);
+    await db.ref(path("votes")).remove();
+    await setPhase("design");
+  }
+  function renderHost(){
+    if (!state) return;
+    const ph = state.phase, list = Object.entries(players);
+    $("hostCount").textContent = list.length;
+    $("hostPhaseNote").textContent = { lobby: "waiting in the lobby", design: "groups are designing", vote: "voting is open", reveal: "revealed", done: "game over" }[ph] || "";
+    $("hostRoster").innerHTML = list.map(([id, p]) => `<span class="p in">${esc(p.name)}${p.group ? ` <span class="small">· G${p.group.replace("g", "")}</span>` : ""}${ph === "lobby" ? ` <button title="remove" onclick="App.removePlayer('${id}')">×</button>` : ""}</span>`).join("");
+    $("hostFormWrap").classList.toggle("hidden", ph !== "lobby");
+    $("btnVote").classList.toggle("hidden", ph !== "design");
+    $("btnReveal").classList.toggle("hidden", ph !== "vote");
+    $("btnDone").classList.toggle("hidden", ph !== "reveal");
+    $("btnReform").classList.toggle("hidden", ph !== "design");
+    renderResults();
+  }
+  function tab(id){ resTab = id; renderResults(); }
+  function renderResults(){
+    const tabs = [["groups","Groups"],["votes","Votes"],["reveal","Compare with real laws"],["explore","Explore on screen"]];
+    $("resTabs").innerHTML = tabs.map(t => `<button class="${t[0]===resTab?"sel":""}" onclick="App.tab('${t[0]}')">${t[1]}</button>`).join("");
+    const b = $("resBody");
+    if (resTab === "groups") b.innerHTML = renderGroups();
+    else if (resTab === "votes") b.innerHTML = renderVotes();
+    else if (resTab === "reveal") b.innerHTML = renderCompare();
+    else renderExplore(b);
+  }
+  function renderGroups(){
+    const ids = Object.keys(groups).sort(); if (!ids.length) return `<p class="small" style="margin-top:10px">Form the groups to begin. Auto picks 2–5 groups of about 3; the roles go in this order: advocate, founder, researcher, minister, broker.</p>`;
+    return `<div class="vgrid">` + ids.map(id => { const g = groups[id], m = model(Object.assign(DEFAULT_L(), g.levers || {}));
+      return `<div class="vc"><div class="t">${ROLES[g.role].e} Group ${id.replace("g", "")}: ${ROLES[g.role].name} ${g.submitted ? '<span class="pill ok">submitted</span>' : '<span class="pill wait">designing</span>'}</div><div class="small">${Object.values(g.members || {}).map(esc).join(", ")}</div>
+        <div class="kv"><span>Protection</span><span class="v">${m.protection}</span><span>Startups</span><span class="v">${m.startups}</span><span>Discoveries</span><span class="v">${m.discoveries}</span><span>Cost</span><span class="v">${money(m.cost)}</span></div>
+        <div class="lv-list">${LEVERS.map(lv => lv.opts[(g.levers || {})[lv.id] || 0].l).join(" · ")}</div></div>`; }).join("") + `</div>`;
+  }
+  function tally(){ const t = {}; Object.values(votes).forEach(v => { if (v) t[v] = (t[v] || 0) + 1; }); return t; }
+  function renderVotes(){
+    const ids = Object.keys(groups).sort(); if (!ids.length) return `<p class="small" style="margin-top:10px">No groups yet.</p>`;
+    const t = tally(), total = Object.values(t).reduce((a, b) => a + b, 0), max = Math.max(1, ...Object.values(t));
+    return `<p class="small" style="margin-top:10px">${total} vote${total === 1 ? "" : "s"} so far.</p>` + ids.map(id => `<div class="g" style="margin-top:8px"><div class="k"><span class="n">${ROLES[groups[id].role].e} ${ROLES[groups[id].role].name}</span><span class="v">${t[id] || 0}</span></div><div class="bar"><span class="gold" style="width:${100 * (t[id] || 0) / max}%"></span></div></div>`).join("");
+  }
+  function renderCompare(){
+    const ids = Object.keys(groups).sort(), t = tally();
+    let win = null; ids.forEach(id => { if (win === null || (t[id] || 0) > (t[win] || 0)) win = id; });
+    const cols = ids.map(id => ({ id, name: ROLES[groups[id].role].e + " " + ROLES[groups[id].role].name.split(" ").slice(-1)[0], sub: (t[id] || 0) + " votes", L: Object.assign(DEFAULT_L(), groups[id].levers || {}), win: id === win && (t[win] || 0) > 0 }))
+      .concat(Object.entries(PRESETS).map(([k, p]) => ({ id: k, name: p.name, sub: "real law", L: p.L, win: false })));
+    const ms = cols.map(c => model(c.L));
+    const row = (label, f, cls) => `<tr><td>${label}</td>${ms.map((m, i) => `<td class="num ${cols[i].win ? "win" : ""}">${f(m)}</td>`).join("")}</tr>`;
+    let h = `<p class="small" style="margin-top:10px">Tap a column header to put that law on the full dashboard.</p><div class="wrap"><table class="res"><tr><th></th>${cols.map(c => `<th class="num ${c.win ? "win" : ""}" style="cursor:pointer" onclick="App.showPkg('${c.id}')">${c.name}<span class="r">${c.sub}</span></th>`).join("")}</tr>` +
+      row("Privacy protection", m => m.protection) + row("Abuses stopped (of 6)", m => m.abuses.filter(a => a.s === "ok").length + (m.abuses.some(a => a.s === "part") ? " + " + m.abuses.filter(a => a.s === "part").length + " partly" : "")) +
+      row("Willing to share", m => m.trust) + row("Startups surviving", m => m.startups) + row("Medical discoveries", m => m.discoveries) + row("Big Tech share", m => m.bigtech + "%") + row("Months behind US", m => m.behind) + row("Cost, 50-person firm", m => money(m.cost)) +
+      LEVERS.map((lv, i) => `<tr><td class="small">${i + 1}. ${lv.q}</td>${cols.map((c, j) => `<td class="num ${c.win ? "win" : ""}" style="font-size:11.5px;font-family:var(--font-body)">${lv.opts[c.L[lv.id] || 0].l}</td>`).join("")}</tr>`).join("") + `</table></div>`;
+    if (showPkg){ const c = cols.find(x => x.id === showPkg); if (c){ h += `<h3 style="margin-top:16px">${c.name}</h3>${PRESETS[c.id] ? `<p class="small">${PRESETS[c.id].note}</p>` : ""}<div class="dash"><div class="levers" id="pkLevers"></div><div class="gauges" id="pkGauges"></div></div>`; setTimeout(() => { renderLevers($("pkLevers"), c.L, false); renderGauges($("pkGauges"), c.L, null); }, 0); } }
+    h += `<ul class="discuss"><li>Did the winning law beat GDPR on protection? On startups? On discoveries? Which switch made the difference?</li><li>Which group found the research safe harbor? It is the one switch that moves the frontier instead of sliding along it.</li><li>GDPR's defenders say Europe chose protection on purpose. Its critics say it chose a lost generation of apps. Looking at the columns, who is right?</li></ul>`;
+    return h;
+  }
+  function setShowPkg(id){ showPkg = id; renderResults(); }
+  function renderExplore(b){
+    b.innerHTML = `<div class="presets" id="hxPresets" style="margin-top:12px"></div><div class="dash"><div class="levers" id="hxLevers"></div><div class="gauges" id="hxGauges"></div></div>`;
+    const draw = () => {
+      $("hxPresets").innerHTML = Object.entries(PRESETS).map(([k, p]) => `<button class="${soloPreset === k ? "sel" : ""}" onclick="App.soloPreset('${k}')">${p.name}</button>`).join("");
+      renderLevers($("hxLevers"), soloL, true, "App.soloPick"); renderGauges($("hxGauges"), soloL, null);
+    };
+    draw();
+  }
+  // explore mode shares soloL; when the host is on the explore tab, re-render there
+  function soloPresetAny(k){ soloPreset = k; soloL = Object.assign({}, PRESETS[k].L); if (isHost) renderResults(); else renderSolo(); }
+  function soloPickAny(id, v){ soloL[id] = v; soloPreset = "custom"; if (isHost) renderResults(); else renderSolo(); }
+
+  document.addEventListener("DOMContentLoaded", boot);
+  return { showLanding, showJoin, showHost, join, startSolo, soloPreset: soloPresetAny, soloRole: setSoloRole, soloPick: soloPickAny, pick, submit, vote, createGame, setPhase, formGroups, removePlayer, tab, showPkg: setShowPkg };
+})();
+</script>
+</body>
+</html>
