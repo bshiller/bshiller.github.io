@@ -47,6 +47,7 @@ p.sub{color:var(--ink-soft);margin-top:8px;max-width:64ch}
 .btn-primary{background:var(--navy);color:#fff}
 .btn-gold{background:var(--gold);color:var(--navy-deep)}
 .btn-teal{background:var(--teal);color:#fff}
+.btn-green{background:var(--green);color:#fff}
 .btn-red{background:var(--red);color:#fff}
 .btn-ghost{background:transparent;color:var(--navy);border:1.5px solid var(--navy)}
 .btn-block{width:100%}
@@ -82,7 +83,6 @@ input.f:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(94
 .money{font-family:var(--font-mono);font-weight:600}
 .pos{color:var(--green)} .neg{color:var(--red)}
 .small{font-size:13px;color:var(--ink-soft)}
-/* role card for a player */
 .me{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center}
 .me .badge{width:84px;height:84px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:15px;color:#fff;text-align:center;line-height:1.1;padding:6px}
 .badge.user{background:var(--teal-deep)} .badge.google{background:var(--navy)} .badge.brother{background:var(--teal-deep)} .badge.sister{background:var(--purple)} .badge.observer{background:#8A8F96}
@@ -104,16 +104,14 @@ input.f:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(94
 .dist .d .v{font-family:var(--font-mono);font-weight:600;font-size:15px;color:var(--navy)}
 .timer{font-family:var(--font-mono);font-size:30px;font-weight:600;color:var(--navy);line-height:1}
 .timer.low{color:var(--red)}
-.seg{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
-.seg button{border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:12px 16px;font-size:15px;font-weight:600;color:var(--navy);flex:1;min-width:120px}
-.seg button.sel{background:var(--navy);border-color:var(--navy);color:#fff}
-.pay{display:grid;grid-template-columns:1fr 120px;gap:8px 12px;align-items:center;margin-top:8px;font-size:14.5px}
-.pay input{width:100%;padding:10px 12px;font-size:17px;border:1.5px solid var(--line);border-radius:10px;font-family:var(--font-mono)}
-.pay .who{color:var(--ink)}
+.pay{display:grid;grid-template-columns:1fr 130px;gap:8px 12px;align-items:center;margin-top:8px;font-size:14.5px}
+.pay input{width:100%;padding:10px 12px;font-size:20px;border:1.5px solid var(--line);border-radius:10px;font-family:var(--font-mono);text-align:center}
+.offer{background:var(--gold-soft);border:1.5px solid #EAD48A;border-radius:12px;padding:16px 18px;margin-top:12px}
+.offer .big{font-family:var(--font-display);font-size:30px;color:var(--navy);line-height:1.1}
+.offer .d{font-size:14px;margin-top:6px}
 .kv{display:grid;grid-template-columns:1fr auto;gap:6px 14px;font-size:14px;margin-top:8px}
 .kv .k{color:var(--ink-soft)} .kv .v{font-family:var(--font-mono);font-weight:600;text-align:right}
 .kv .tot{border-top:2px solid var(--navy);padding-top:6px;font-weight:700}
-/* host */
 .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
 .tabs button{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:7px 14px;font-weight:600;color:var(--navy);font-size:13.5px}
 .tabs button.sel{background:var(--navy);border-color:var(--navy);color:#fff}
@@ -123,9 +121,10 @@ table.res th{font-size:12px;text-transform:uppercase;letter-spacing:.6px;color:v
 table.res td.num,table.res th.num{text-align:right;font-family:var(--font-mono)}
 table.res tr.top td{background:var(--gold-soft)}
 table.res tr.bad td{background:var(--red-soft)}
+table.res tr.miss td{background:#FFF4D6}
 .hist{margin-top:10px}
-.hist .hrow{display:grid;grid-template-columns:190px 1fr 70px;gap:10px;align-items:center;font-size:14px;margin:6px 0}
-@media(max-width:600px){.hist .hrow{grid-template-columns:120px 1fr 60px}}
+.hist .hrow{display:grid;grid-template-columns:210px 1fr 80px;gap:10px;align-items:center;font-size:14px;margin:6px 0}
+@media(max-width:600px){.hist .hrow{grid-template-columns:130px 1fr 60px}}
 .hist .bar{height:22px;background:var(--paper);border-radius:6px;overflow:hidden;border:1px solid var(--line)}
 .hist .bar span{display:block;height:100%;background:var(--teal)}
 .hist .bar span.gold{background:var(--gold)} .hist .bar span.red{background:var(--red)} .hist .bar span.green{background:var(--green)} .hist .bar span.navy{background:var(--navy)} .hist .bar span.purple{background:var(--purple)}
@@ -135,7 +134,7 @@ table.res tr.bad td{background:var(--red-soft)}
 .callout .k{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--ink-soft)}
 .callout .v{font-family:var(--font-display);font-size:26px;color:var(--navy)}
 .callout .d{font-size:12.5px;color:var(--ink-soft)}
-.callout.red .v{color:var(--red)} .callout.green .v{color:var(--green)} .callout.purple .v{color:var(--purple)}
+.callout.red .v{color:var(--red)} .callout.green .v{color:var(--green)} .callout.purple .v{color:var(--purple)} .callout.gold{background:var(--gold-soft);border-color:#EAD48A}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 @media(max-width:720px){.grid2{grid-template-columns:1fr}}
 .tables-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:10px}
@@ -151,6 +150,10 @@ ul.discuss li{margin:6px 0}
 .pill.wait{background:#FFF4D6;color:#8A6D00;border-color:#EAD48A}
 details{margin-top:10px}
 summary{cursor:pointer;font-weight:600;color:var(--navy);font-size:14px}
+.draw{background:var(--navy);color:#fff;border-radius:12px;padding:18px 20px;margin-top:12px}
+.draw .big{font-family:var(--font-display);font-size:28px;color:var(--gold);line-height:1.1}
+.draw .d{font-size:15px;margin-top:8px}
+.draw .d b{color:var(--gold)}
 </style>
 </head>
 <body>
@@ -164,16 +167,16 @@ summary{cursor:pointer;font-weight:600;color:var(--navy);font-size:14px}
   <div class="card">
     <div class="eyebrow">One-time setup</div>
     <h2>Connect a Firebase database</h2>
-    <p class="sub">This game needs the class database: students negotiate in pairs and trios and record what they agreed, and the host screen tallies it live. Paste the project's config into <code>FIREBASE_CONFIG</code> near the top of the script and reload.</p>
+    <p class="sub">This game needs the class database: offers and answers travel between phones, and the host screen tallies them live. Paste the project's config into <code>FIREBASE_CONFIG</code> near the top of the script and reload.</p>
   </div>
 </div>
 
 <!-- ============ LANDING ============ -->
 <div id="viewLanding" class="shell hidden">
   <div class="land-hero">
-    <div class="eyebrow">A classroom game in three rounds</div>
-    <h1>Your data are for sale. Who gets to decide?</h1>
-    <p class="sub">You'll be paired up and handed a private card. Negotiate face to face, record the deal, and the class finds out whether a free market for data gets the right answer.</p>
+    <div class="eyebrow">A classroom game in three rounds, for real money</div>
+    <h1>Your data are for sale. Name your price.</h1>
+    <p class="sub">You'll be paired up and handed a private card. Talk for a minute (bluffing allowed), then whoever owns the data makes one take-it-or-leave-it offer on their phone and the other side accepts or refuses on theirs. At the end, one table from one round is drawn at random and paid in cash.</p>
   </div>
   <div class="role-grid">
     <button class="role-card" onclick="App.showJoin()">
@@ -183,7 +186,7 @@ summary{cursor:pointer;font-weight:600;color:var(--navy);font-size:14px}
     </button>
     <button class="role-card" onclick="App.showHost()">
       <h3>Host a session</h3>
-      <p>Create a code, form the groups, open the rounds, and show the class's results.</p>
+      <p>Create a code, form the groups, open the rounds, show the results, draw the paying table.</p>
       <div class="go">Host a session →</div>
     </button>
   </div>
@@ -210,7 +213,6 @@ summary{cursor:pointer;font-weight:600;color:var(--navy);font-size:14px}
     <div class="eyebrow" id="waitEyebrow">You're in</div>
     <h2 id="waitTitle">Waiting for the host to start Round 1…</h2>
     <p class="sub"><span class="pulse-dot"></span>Keep this page open. You'll be told your role and who to sit with.</p>
-    <div id="waitScores"></div>
   </div>
 </div>
 
@@ -234,7 +236,7 @@ summary{cursor:pointer;font-weight:600;color:var(--navy);font-size:14px}
     </div>
     <div class="value-box" id="rValueBox">
       <div class="k" id="rValK">Your private card</div>
-      <div class="v" id="rValV">$40</div>
+      <div class="v" id="rValV">$4</div>
       <div class="d" id="rValD"></div>
     </div>
     <p class="small" style="margin-top:10px" id="rOwnerNote"></p>
@@ -246,25 +248,41 @@ summary{cursor:pointer;font-weight:600;color:var(--navy);font-size:14px}
     <div class="dist" id="rDist"></div>
   </div>
 
-  <div class="card" id="rFormCard">
-    <div class="eyebrow">Record the deal</div>
-    <h3 id="rFormTitle">What did you agree?</h3>
-    <div id="rForm"></div>
-    <div class="f-err" id="rFormErr"></div>
-    <button class="btn btn-gold btn-block" style="margin-top:12px" onclick="App.submitOutcome()">Record this deal</button>
-    <p class="small" style="margin-top:8px">If you can't agree before time runs out, record "no deal": the default happens.</p>
+  <!-- owner: make the offer -->
+  <div class="card gold" id="rOfferCard">
+    <div class="eyebrow">Your one offer</div>
+    <h3 id="rOfferTitle">Name your price</h3>
+    <p class="small" id="rOfferHint">Talk first if you like. Then enter one number. There is no second offer.</p>
+    <div id="rOfferForm"></div>
+    <div class="f-err" id="rOfferErr"></div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="App.sendOffer()">Send this offer</button>
+      <button class="btn btn-ghost" id="rNoOfferBtn" onclick="App.sendNoOffer()">No deal at any price</button>
+    </div>
   </div>
 
+  <!-- responder: wait for the offer / answer it -->
   <div class="card" id="rWaitCard">
-    <p><span class="pulse-dot"></span><span id="rWaitText">Your partner records the deal. It will show up here.</span></p>
+    <p><span class="pulse-dot"></span><span id="rWaitText">Waiting for the offer…</span></p>
+  </div>
+  <div class="card" id="rAnswerCard">
+    <div class="eyebrow">The offer</div>
+    <div class="offer"><div class="big" id="rOfferBig">$6</div><div class="d" id="rOfferDesc"></div></div>
+    <p class="small" style="margin-top:10px" id="rAnswerHint"></p>
+    <div class="btn-row">
+      <button class="btn btn-green" onclick="App.answer(true)" id="rAcceptBtn">Accept</button>
+      <button class="btn btn-red" onclick="App.answer(false)" id="rRejectBtn">Refuse</button>
+    </div>
+  </div>
+  <div class="card" id="rAnsweredCard">
+    <p><span class="pulse-dot"></span><span id="rAnsweredText">Answer sent. Waiting for the others…</span></p>
   </div>
 
   <div class="card good" id="rDoneCard">
-    <div class="eyebrow">Recorded</div>
-    <h3 id="rDoneTitle">Deal recorded</h3>
+    <div class="eyebrow">Result</div>
+    <h3 id="rDoneTitle">Deal</h3>
     <div class="kv" id="rDoneKv"></div>
     <p class="small" style="margin-top:10px" id="rDoneNote"></p>
-    <div class="btn-row" id="rDoneBtns"></div>
   </div>
 </div>
 
@@ -274,6 +292,7 @@ summary{cursor:pointer;font-weight:600;color:var(--navy);font-size:14px}
     <div class="eyebrow">Game over</div>
     <h2>Your results</h2>
     <div class="kv" id="doneKv"></div>
+    <div id="doneDraw"></div>
     <p class="sub" id="doneLine">The question was never who got rich. It was whether the data ended up in the right hands.</p>
   </div>
 </div>
@@ -283,7 +302,7 @@ summary{cursor:pointer;font-weight:600;color:var(--navy);font-size:14px}
   <div class="card">
     <div class="eyebrow">Host</div>
     <h2>Create a session</h2>
-    <p class="sub">Students join with a code. You form the groups, deal the private cards, and open the rounds one at a time. The host screen tallies the deals as they come in.</p>
+    <p class="sub">Students join with a code. You form the groups, deal the private cards, and open the rounds one at a time. Offers and answers go through the phones; the host screen tallies them live and, at the end, draws the paying table.</p>
     <button class="btn btn-primary btn-block" style="margin-top:16px" onclick="App.createGame()">Create session</button>
     <div class="btn-row"><button class="btn btn-ghost btn-sm" onclick="App.showLanding()">Back</button></div>
   </div>
@@ -308,11 +327,12 @@ summary{cursor:pointer;font-weight:600;color:var(--navy);font-size:14px}
     <div class="roster" id="hostRoster"></div>
     <div class="host-bar">
       <button class="btn btn-primary" id="btnR1" onclick="App.openRound('r1')">Start Round 1: form pairs &amp; deal cards</button>
-      <button class="btn btn-primary hidden" id="btnR2a" onclick="App.openRound('r2a')">Start Round 2: brother decides alone</button>
-      <button class="btn btn-primary hidden" id="btnR2b" onclick="App.openRound('r2b')">Start Round 3: sister must agree</button>
+      <button class="btn btn-primary hidden" id="btnR2" onclick="App.openRound('r2')">Start Round 2: the sister who isn't here</button>
+      <button class="btn btn-primary hidden" id="btnR3" onclick="App.openRound('r3')">Start Round 3: sister must agree</button>
       <button class="btn btn-primary hidden" id="btnDone" onclick="App.setPhase('done')">End the game</button>
+      <button class="btn btn-gold hidden" id="btnDraw" onclick="App.drawTable()">Draw the paying table</button>
       <button class="btn btn-ghost btn-sm hidden" id="btnRedeal" onclick="App.redeal()">Re-form groups (this round)</button>
-      <span class="small" id="hostTimerBtns"><button class="btn btn-ghost btn-sm" onclick="App.startTimer(180)">3-min timer</button> <button class="btn btn-ghost btn-sm" onclick="App.startTimer(240)">4-min</button> <button class="btn btn-ghost btn-sm" onclick="App.startTimer(0)">clear</button></span>
+      <span class="small" id="hostTimerBtns"><button class="btn btn-ghost btn-sm" onclick="App.startTimer(120)">2-min timer</button> <button class="btn btn-ghost btn-sm" onclick="App.startTimer(180)">3-min</button> <button class="btn btn-ghost btn-sm" onclick="App.startTimer(0)">clear</button></span>
     </div>
   </div>
 
@@ -344,70 +364,78 @@ const FIREBASE_CONFIG = {
 };
 
 /* =====================================================================
-   THE ECONOMICS (one place to tune). Every value is equally likely.
+   THE ECONOMICS (one place to tune). Amounts are real dollars for the table
+   that gets drawn at the end. Every card value is equally likely.
+   Worst case for one table: Round 3, Google's $15 value plus the sister's $12 stake = $27.
    ===================================================================== */
 const ECON = {
-  r1: { user: [10, 40, 150], google: [25, 60, 100] },                 // Round 1: User's privacy value, Google's ad value
-  r2: { brother: [10, 30, 80], google: [40, 90, 150], sister: [20, 50, 120] }, // Rounds 2-3: brother's privacy value, Google's value, sister's harm
+  r1: { user: [1, 4, 12], google: [2, 6, 10] },                     // Round 1: User's privacy value, Google's ad value
+  r2: { brother: [1, 3, 8], google: [4, 9, 15], sisterHarm: 5 },    // Round 2: fictitious sister, known harm if sold
+  r3: { brother: [1, 3, 8], google: [4, 9, 15], sister: [2, 5, 12], endow: 12 }, // Round 3: real sister with $12 at stake
 };
 const ROUNDS = {
-  r1:  { n: 1, title: "One person, one company", group: 2, short: "Round 1" },
-  r2a: { n: 2, title: "Brother decides alone", group: 3, short: "Round 2" },
-  r2b: { n: 3, title: "Sister must agree", group: 3, short: "Round 3" },
+  r1: { n: 1, title: "One person, one company", short: "Round 1" },
+  r2: { n: 2, title: "The sister who isn't here", short: "Round 2" },
+  r3: { n: 3, title: "Sister must agree", short: "Round 3" },
 };
-const PHASES = ["lobby", "r1", "r2a", "r2b", "done"];
+const PHASES = ["lobby", "r1", "r2", "r3", "done"];
 const pick = arr => arr[Math.floor(Math.random() * arr.length)];
-const $$ = n => (n < 0 ? "−$" : "$") + Math.abs(Math.round(n)).toLocaleString("en-US");
+const $$ = n => (n < 0 ? "−$" : "$") + Math.abs(Math.round(n * 100) / 100).toLocaleString("en-US");
 const pct = (a, b) => b ? Math.round(100 * a / b) + "%" : "—";
 const sum = a => a.reduce((x, y) => x + y, 0);
 
-/* ---------- payoffs ----------
-   Round 1. Data used by Google or not. Payment p>0 means Google paid the User; p<0 means the User paid Google.
-   Rounds 2-3. Sold or not. gToB: Google→Brother. Per sister: bToS, gToS, sToB. */
-function payoffsR1(T) {
-  const o = T.public.outcome, v = T.values, roles = T.public.roles;
-  const used = !!o.used, p = o.pay || 0;
-  const out = {};
-  for (const uid in roles) {
-    const r = roles[uid];
-    if (r === "user") out[uid] = (used ? 0 : v[uid]) + p;
-    else if (r === "google") out[uid] = (used ? v[uid] : 0) - p;
-    else out[uid] = 0;
+/* ---------- resolving a table ----------
+   T = { public: { n, names, roles, owner, offer, responses }, values: { uid: card } }
+   offer = { none: true } | { p: price, s: payment per sister (round 3) }
+   responses = { uid: true/false }                                        */
+function roleOf(T, r) { for (const u in T.public.roles) if (T.public.roles[u] === r) return u; return null; }
+function sisters(T) { return Object.keys(T.public.roles).filter(u => T.public.roles[u] === "sister"); }
+function responders(T, round) {
+  if (round === "r1") return [T.public.owner === "user" ? roleOf(T, "google") : roleOf(T, "user")].filter(Boolean);
+  if (round === "r2") return [roleOf(T, "google")].filter(Boolean);
+  return [roleOf(T, "google")].concat(sisters(T)).filter(Boolean);
+}
+// returns null while unresolved; else { traded, p, s, accepted:{uid:bool} }
+function resolve(T, round) {
+  const o = T.public.offer; if (!o) return null;
+  if (o.none) return { traded: false, p: 0, s: 0, none: true };
+  const need = responders(T, round), resp = T.public.responses || {};
+  if (need.some(u => resp[u] == null)) return null;
+  const all = need.every(u => resp[u] === true);
+  // Round 1 with Google owning: "traded" means the user bought their privacy back
+  return { traded: all, p: o.p || 0, s: o.s || 0, accepted: resp };
+}
+function analyze(T, round) {
+  const v = T.values, R = resolve(T, round), out = { R, round };
+  if (round === "r1") {
+    const u = roleOf(T, "user"), g = roleOf(T, "google"), vu = v[u] || 0, vg = v[g] || 0, go = T.public.owner === "google";
+    out.vu = vu; out.vg = vg; out.shouldUse = vg > vu; out.owner = T.public.owner;
+    out.used = R ? (go ? !R.traded : R.traded) : null;
+    out.ask = T.public.offer && !T.public.offer.none ? T.public.offer.p : null;
+    out.refused = T.public.offer && T.public.offer.none ? true : false;
+    out.efficient = R ? out.used === out.shouldUse : null;
+    out.realized = R ? (out.used ? vg : vu) : null; out.max = Math.max(vu, vg);
+    out.pay = {}; if (R) { if (!go) { out.pay[u] = out.used ? R.p : vu; out.pay[g] = out.used ? vg - R.p : 0; } else { out.pay[u] = out.used ? 0 : vu - R.p; out.pay[g] = out.used ? vg : R.p; } }
+    out.ownerVal = go ? vg : vu; out.otherVal = go ? vu : vg;
+    return out;
+  }
+  const b = roleOf(T, "brother"), g = roleOf(T, "google"), vb = v[b] || 0, vg = v[g] || 0;
+  const S = sisters(T), L = round === "r2" ? ECON.r2.sisterHarm : sum(S.map(u => v[u] || 0));
+  out.vb = vb; out.vg = vg; out.L = L; out.nS = S.length; out.shouldSell = vg > vb + L; out.privateSell = vg > vb;
+  out.sold = R ? R.traded : null; out.ask = T.public.offer && !T.public.offer.none ? T.public.offer.p : null; out.sisterCut = T.public.offer && !T.public.offer.none ? (T.public.offer.s || 0) : null;
+  out.refused = !!(T.public.offer && T.public.offer.none);
+  out.efficient = R ? out.sold === out.shouldSell : null; out.harmful = R ? (out.sold && !out.shouldSell) : null; out.missed = R ? (!out.sold && out.shouldSell) : null;
+  out.realized = R ? (out.sold ? vg - L : vb) : null; out.max = Math.max(vg - L, vb); out.harm = R && out.sold ? L : 0;
+  out.pay = {};
+  if (R) {
+    const s = round === "r3" ? R.s : 0;
+    out.pay[b] = out.sold ? R.p - s * S.length : vb; out.pay[g] = out.sold ? vg - R.p : 0;
+    S.forEach(u => { out.pay[u] = ECON.r3.endow - (out.sold ? (v[u] || 0) : 0) + (out.sold ? s : 0); });
+    out.toSisters = out.sold ? s * S.length : 0;
+    // who said no?
+    out.googleNo = R.accepted && R.accepted[g] === false; out.sisterNo = R.accepted && S.some(u => R.accepted[u] === false);
   }
   return out;
-}
-function payoffsR2(T) {
-  const o = T.public.outcome, v = T.values, roles = T.public.roles;
-  const sold = !!o.sold, gToB = o.gToB || 0, s = o.sisters || {};
-  const out = {};
-  let paidBySisters = 0, paidToSistersByB = 0, paidToSistersByG = 0;
-  for (const uid in roles) if (roles[uid] === "sister") {
-    const x = s[uid] || {};
-    paidBySisters += x.sToB || 0; paidToSistersByB += x.bToS || 0; paidToSistersByG += x.gToS || 0;
-    out[uid] = (sold ? -v[uid] : 0) + (x.bToS || 0) + (x.gToS || 0) - (x.sToB || 0);
-  }
-  for (const uid in roles) {
-    const r = roles[uid];
-    if (r === "brother") out[uid] = (sold ? 0 : v[uid]) + gToB + paidBySisters - paidToSistersByB;
-    else if (r === "google") out[uid] = (sold ? v[uid] : 0) - gToB - paidToSistersByG;
-  }
-  return out;
-}
-// what a wise planner would do, and the surplus at stake
-function analyzeR1(T) {
-  const v = T.values, roles = T.public.roles;
-  let vu = 0, vg = 0; for (const uid in roles) { if (roles[uid] === "user") vu = v[uid]; if (roles[uid] === "google") vg = v[uid]; }
-  const shouldUse = vg > vu, o = T.public.outcome;
-  const used = o ? !!o.used : null;
-  return { vu, vg, shouldUse, used, efficient: o ? used === shouldUse : null, realized: o ? (used ? vg : vu) : null, max: Math.max(vu, vg) };
-}
-function analyzeR2(T) {
-  const v = T.values, roles = T.public.roles;
-  let vb = 0, vg = 0, L = 0, nS = 0; for (const uid in roles) { if (roles[uid] === "brother") vb = v[uid]; if (roles[uid] === "google") vg = v[uid]; if (roles[uid] === "sister") { L += v[uid]; nS++; } }
-  const shouldSell = vg > vb + L, privateSell = vg > vb, o = T.public.outcome;
-  const sold = o ? !!o.sold : null;
-  let toSisters = 0; if (o && o.sisters) for (const k in o.sisters) toSisters += (o.sisters[k].bToS || 0) + (o.sisters[k].gToS || 0) - (o.sisters[k].sToB || 0);
-  return { vb, vg, L, nS, shouldSell, privateSell, sold, efficient: o ? sold === shouldSell : null, harmful: o ? (sold && !shouldSell) : null, missed: o ? (!sold && shouldSell) : null, realized: o ? (sold ? vg - L : vb) : null, max: Math.max(vg - L, vb), toSisters, harm: o && sold ? L : 0 };
 }
 
 /* =====================================================================
@@ -415,10 +443,9 @@ function analyzeR2(T) {
    ===================================================================== */
 const App = (() => {
   let db = null, code = null, uid = null, myName = null, isHost = false;
-  let state = null, players = {}, listeners = [], roundListeners = [];
-  let myAssign = null, myTable = null, myPriv = null, curRound = null;
+  let state = null, players = {}, listeners = [], roundListeners = [], tableListeners = [];
+  let myAssign = null, myTable = null, myPriv = null, curRound = null, lastScored = null;
   let hostRounds = {}, resTab = "lobby", timerH = null;
-  let formState = {};
 
   const $ = id => document.getElementById(id);
   const views = ["viewSetup","viewLanding","viewJoin","viewWait","viewRound","viewDone","viewHostCreate","viewHost"];
@@ -429,10 +456,10 @@ const App = (() => {
   function on(ref,ev,cb){ ref.on(ev,cb); listeners.push([ref,ev,cb]); }
   function clearRoundListeners(){ roundListeners.forEach(([r,e,c])=>r.off(e,c)); roundListeners=[]; }
   function onR(ref,ev,cb){ ref.on(ev,cb); roundListeners.push([ref,ev,cb]); }
+  function clearTableListeners(){ tableListeners.forEach(([r,e,c])=>r.off(e,c)); tableListeners=[]; }
   function esc(s){ return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
   const path = (...p) => ["games", "barg-" + code, ...p].join("/");
   const hasDb = () => !!(FIREBASE_CONFIG && FIREBASE_CONFIG.apiKey && !FIREBASE_CONFIG.apiKey.startsWith("PASTE"));
-
   function saveLocal(){ try{ localStorage.setItem("barg_game", JSON.stringify({ code, myName, isHost })); }catch(e){} }
   function loadLocal(){ try{ return JSON.parse(localStorage.getItem("barg_game")||"null"); }catch(e){ return null; } }
   function clearLocal(){ try{ localStorage.removeItem("barg_game"); }catch(e){} }
@@ -446,7 +473,7 @@ const App = (() => {
     const saved = loadLocal();
     if (saved && saved.code && qs.get("host") == null && !qs.get("g")){
       db.ref(`games/barg-${saved.code}/state`).get().then(s => {
-        if (!s.exists() || s.val().phase === "done" && !saved.isHost){ clearLocal(); show("viewLanding"); return; }
+        if (!s.exists() || (s.val().phase === "done" && !saved.isHost)){ clearLocal(); show("viewLanding"); return; }
         code = saved.code; myName = saved.myName; isHost = !!saved.isHost;
         if (isHost){ $("hostCode").textContent = code; hostUrl(); $("topTag").innerHTML = `Hosting session <b>${code}</b>`; listenGame(); show("viewHost"); }
         else { $("topTag").innerHTML = `Session <b>${code}</b> · ${esc(myName)}`; listenGame(); }
@@ -484,7 +511,7 @@ const App = (() => {
       on(db.ref(path("rounds")), "value", s => { hostRounds = s.val() || {}; renderHost(); });
     } else {
       let seen = false;
-      on(db.ref(path("players", uid)), "value", s => { const p = s.val(); if (p) seen = true; else if (seen){ /* removed by host */ clearLocal(); toast("The host removed you from the session."); setTimeout(() => location.search = "", 1500); } });
+      on(db.ref(path("players", uid)), "value", s => { const p = s.val(); if (p) seen = true; else if (seen){ clearLocal(); toast("The host removed you from the session."); setTimeout(() => location.search = "", 1500); } });
     }
     tick();
   }
@@ -492,180 +519,159 @@ const App = (() => {
     const ph = state.phase;
     if (ph === "lobby"){ curRound = null; clearRoundListeners(); clearTableListeners(); $("waitTitle").textContent = "Waiting for the host to start Round 1…"; show("viewWait"); return; }
     if (ph === "done"){ curRound = null; clearRoundListeners(); clearTableListeners(); renderDone(); return; }
-    if (ph !== curRound){ curRound = ph; myAssign = null; myTable = null; myPriv = null; formState = {}; listenRound(ph); }
+    if (ph !== curRound){ curRound = ph; myAssign = null; myTable = null; myPriv = null; lastScored = null; listenRound(ph); }
   }
-  let tableListeners = [];
-  function clearTableListeners(){ tableListeners.forEach(([r,e,c])=>r.off(e,c)); tableListeners=[]; }
   function listenRound(r){
     clearRoundListeners(); clearTableListeners();
     onR(db.ref(path("rounds", r, "assign", uid)), "value", s => {
       const a = s.val();
       if (!a){ myAssign = null; clearTableListeners(); $("waitTitle").textContent = `${ROUNDS[r].short} is starting. Waiting for your table…`; show("viewWait"); return; }
       if (myAssign && myAssign.table === a.table && myAssign.role === a.role) return;
-      myAssign = a; myTable = null; myPriv = null; formState = {};
+      myAssign = a; myTable = null; myPriv = null; lastScored = null;
       clearTableListeners();
       const r1 = db.ref(path("rounds", r, "tables", "t" + a.table, "public")), r2 = db.ref(path("rounds", r, "tables", "t" + a.table, "private", uid));
       const c1 = s2 => { myTable = s2.val(); renderRound(); }, c2 = s2 => { myPriv = s2.val(); renderRound(); };
       r1.on("value", c1); r2.on("value", c2); tableListeners.push([r1, "value", c1], [r2, "value", c2]);
     });
   }
+  const roleName = r => ({ user: "User", google: "Google", brother: "Brother", sister: "Sister", observer: "Observer" }[r] || r);
 
   function renderRound(){
     if (!myAssign || !myTable) return;
-    const r = curRound, R = ROUNDS[r], role = myAssign.role, isR1 = r === "r1";
-    const names = myTable.names || {}, roles = myTable.roles || {};
-    const partners = Object.keys(roles).filter(u => u !== uid).map(u => `<span class="p"><b>${esc(names[u] || "?")}</b> · ${roleName(roles[u])}</span>`).join("");
-    $("rEyebrow").textContent = `${R.short} of 3`;
-    $("rTitle").textContent = R.title;
+    const r = curRound, R = ROUNDS[r], role = myAssign.role, names = myTable.names || {}, roles = myTable.roles || {};
+    const v = myPriv && myPriv.value;
+    $("rEyebrow").textContent = `${R.short} of 3`; $("rTitle").textContent = R.title;
     $("rBadge").className = "badge " + role; $("rBadge").textContent = roleName(role).toUpperCase();
     $("rWho").textContent = `You are ${role === "observer" ? "an Observer" : "the " + roleName(role)}`;
-    $("rTable").textContent = `Table ${myAssign.table} · find your ${isR1 ? "partner" : "group"}:`;
-    $("rPartners").innerHTML = partners;
-    const v = myPriv && myPriv.value;
+    $("rTable").textContent = `Table ${myAssign.table} · find your ${r === "r3" ? "group" : "partner"}:`;
+    $("rPartners").innerHTML = Object.keys(roles).filter(u => u !== uid).map(u => `<span class="p"><b>${esc(names[u] || "?")}</b> · ${roleName(roles[u])}</span>`).join("");
     const vb = $("rValueBox"); vb.className = "value-box" + (role === "sister" ? " purple" : "");
-    if (role === "observer"){
-      vb.classList.add("hidden");
-      $("rOwnerNote").textContent = "There was an odd number of students, so you observe this table. Watch the negotiation: did the data end up where they should? You'll be asked.";
-    } else {
-      vb.classList.remove("hidden");
-      $("rValK").textContent = "Your private card — don't show it, but you may talk about it";
-      $("rValV").textContent = v != null ? $$(v) : "…";
-      $("rValD").textContent = valueText(r, role, v);
-      $("rOwnerNote").innerHTML = ownerText(r, role, myTable);
-    }
+    vb.classList.toggle("hidden", role === "observer");
+    if (role !== "observer"){ $("rValV").textContent = v != null ? $$(v) : "…"; $("rValD").textContent = valueText(r, role, v); }
+    $("rOwnerNote").innerHTML = ownerText(r, role, myTable);
     $("rRulesTitle").textContent = `How ${R.short} works`;
     $("rRules").innerHTML = rulesText(r, role).map(x => `<li>${x}</li>`).join("");
     $("rDist").innerHTML = distText(r);
-    // outcome
-    const o = myTable.outcome;
-    const owner = myTable.recorder; // uid who records
-    const iRecord = owner === uid;
-    $("rFormCard").classList.toggle("hidden", !iRecord || !!o);
-    $("rWaitCard").classList.toggle("hidden", iRecord || !!o);
-    $("rDoneCard").classList.toggle("hidden", !o);
-    $("rWaitText").textContent = `${esc(names[owner] || "The data owner")} records the deal on their phone. It will show up here.`;
-    if (iRecord && !o) renderForm(r);
-    if (o) renderOutcome(r, role);
+    // who does what
+    const T = { public: myTable, values: {} };
+    const ownerUid = ownerOf(myTable, r), iOwn = ownerUid === uid;
+    const need = responders(T, r), iRespond = need.includes(uid);
+    const offer = myTable.offer, resp = myTable.responses || {}, res = resolve(T, r);
+    $("rOfferCard").classList.toggle("hidden", !(iOwn && !offer));
+    $("rWaitCard").classList.toggle("hidden", !(!offer && !iOwn));
+    $("rAnswerCard").classList.toggle("hidden", !(offer && !offer.none && iRespond && resp[uid] == null));
+    $("rAnsweredCard").classList.toggle("hidden", !(offer && !res && (iOwn || (iRespond && resp[uid] != null) || role === "observer")));
+    $("rDoneCard").classList.toggle("hidden", !res);
+    if (iOwn && !offer) renderOfferForm(r);
+    if (!offer && !iOwn) $("rWaitText").textContent = `${esc(names[ownerUid] || "The owner")} is deciding on the offer. Talk, bluff, make your case.`;
+    if (offer && !res){
+      const waiting = need.filter(u => resp[u] == null).map(u => esc(names[u] || "?"));
+      $("rAnsweredText").textContent = iOwn ? `Offer sent. Waiting for ${waiting.join(" and ")} to answer…` : `Answer sent. Waiting for ${waiting.join(" and ") || "the others"}…`;
+    }
+    if (offer && !offer.none && iRespond && resp[uid] == null) renderAnswer(r, role, offer);
+    if (res) renderOutcome(r, role);
     show("viewRound");
   }
-  function roleName(r){ return { user: "User", google: "Google", brother: "Brother", sister: "Sister", observer: "Observer" }[r] || r; }
+  function ownerOf(T, r){ const w = { public: T }; return r === "r1" ? roleOf(w, T.owner === "google" ? "google" : "user") : roleOf(w, "brother"); }
   function valueText(r, role, v){
     if (v == null) return "";
     if (role === "user") return `Keeping your browsing history private is worth ${$$(v)} to you. If Google ends up using it, you lose that. Money you receive (or pay) counts too.`;
     if (role === "google" && r === "r1") return `Using this person's browsing history would earn you ${$$(v)} in ad revenue. Money you pay counts against you.`;
     if (role === "google") return `Buying Brother's DNA results would earn you ${$$(v)} (ads, insurers, research partners). Money you pay counts against you.`;
-    if (role === "brother") return `Keeping your DNA results private is worth ${$$(v)} to you. Sell them and you lose that, but you keep whatever Google pays.`;
-    if (role === "sister") return `If Brother's results are sold, you lose ${$$(v)}: the results reveal your genes too (insurers, employers, family secrets). Money you receive counts for you; money you pay counts against you.`;
+    if (role === "brother") return `Keeping your DNA results private is worth ${$$(v)} to you. Sell them and you lose that, but you keep whatever Google pays${r === "r3" ? ", minus whatever you promise Sister" : ""}.`;
+    if (role === "sister") return `You have ${$$(ECON.r3.endow)} at stake. If Brother's results are sold, you lose ${$$(v)} of it: the results reveal your genes too. Any payment you're promised adds back.`;
     return "";
   }
   function ownerText(r, role, T){
     if (r === "r1"){
       const uo = T.owner === "user";
-      if (uo) return role === "user" ? "<b>You own your data.</b> Google needs your permission. If you can't agree, the data stay private." : "<b>The User owns the data.</b> You need their permission. If you can't agree, the data stay private.";
-      return role === "user" ? "<b>Google already has your data</b> (you clicked \"I agree\" years ago). If you want it kept private, you'll have to pay Google. If you can't agree, Google uses it." : "<b>You already have the data</b> (they clicked \"I agree\" years ago). If you can't agree, you use it.";
+      if (uo) return role === "user" ? "<b>You own your data.</b> You make one offer: the price Google must pay to use it. Google accepts or refuses. No deal → the data stay private." : role === "google" ? "<b>The User owns the data.</b> They will name a price. You accept (and pay it) or refuse. No deal → the data stay private." : "The User owns the data and names a price; Google accepts or refuses.";
+      return role === "user" ? "<b>Google already has your data</b> (you clicked \"I agree\" years ago). Google will name a price to delete it. You accept (and pay it) or refuse. No deal → Google uses it." : role === "google" ? "<b>You already have the data.</b> You make one offer: the price the User must pay you to delete it. They accept or refuse. No deal → you use it." : "Google owns the data and names a price for deleting it; the User accepts or refuses.";
     }
-    if (r === "r2a") return role === "brother" ? "<b>You own the results.</b> You can sell without asking Sister. You may also pay her, or accept money from her. If you can't agree with Google, nothing is sold." : role === "sister" ? "<b>Brother can sell without your OK.</b> You can argue, plead, or offer him money. You can't block the sale." : "<b>Brother owns the results.</b> Only he has to say yes. If you can't agree, nothing is sold.";
-    return role === "brother" ? "<b>Sister must agree.</b> No sale unless she says yes. If anyone refuses, nothing is sold." : role === "sister" ? "<b>You must agree.</b> Nothing is sold unless you say yes. You can ask for money, from Brother or from Google." : "<b>Both Brother and Sister must agree.</b> If either refuses, nothing is sold.";
+    if (r === "r2") return role === "brother" ? `<b>You own the results.</b> Name the price Google must pay. Google accepts or refuses. <b>Your sister is not here</b>, but she's real: if you sell, she loses ${$$(ECON.r2.sisterHarm)} (her genes are in there too). It's your call.` : role === "google" ? `<b>Brother owns the results.</b> He names a price; you accept or refuse. His sister isn't here; if the sale happens she loses ${$$(ECON.r2.sisterHarm)}.` : "Brother names a price; Google accepts or refuses.";
+    return role === "brother" ? "<b>You own the results, but Sister must agree.</b> Your one offer names two numbers: the price Google pays you, and the cut you pass on to Sister. Both Google and Sister must accept. If either refuses, nothing is sold." : role === "sister" ? "<b>No sale without your yes.</b> Brother will offer you a cut of the price. You accept or refuse." : role === "google" ? "<b>Brother names a price</b> and a cut for Sister. You accept or refuse. The sale also needs Sister's yes." : "Brother offers a price and a cut for Sister; both must accept.";
   }
   function rulesText(r, role){
-    const base = ["Talk to your partner face to face. Any deal is allowed: a price, a promise, or no deal.", "Your card is private, but you may say whatever you like about it (true or not)."];
-    if (r === "r1") return base.concat(["Decide: does Google get to use the data? Does any money change hands?", "Your score: your card value (if you keep what you value) plus money received, minus money paid."]);
-    if (r === "r2a") return base.concat(["Brother took a DNA test. The results reveal Sister's genes too. Google wants to buy them.", "Decide: is it sold? What does Google pay Brother? Does anyone pay Sister (or does she pay anyone)?", "Your score: your card value (if you keep what you value) plus money received, minus money paid."]);
-    return base.concat(["Same situation as Round 2, but now the law says genetic results belong to the whole family: Sister must sign too.", "Decide: is it sold? What does Google pay Brother? Does Sister get paid, and by whom?", "Your score: your card value (if you keep what you value) plus money received, minus money paid."]);
+    const talk = "Talk for a minute first. Bluffing is allowed: say whatever you like about your card.";
+    const one = "Then the owner makes <b>one</b> take-it-or-leave-it offer on their phone. No haggling, no second offer.";
+    const money = "Your dollars this round: your card value if you keep what you value, plus money received, minus money paid. One table from one round is drawn at the end and paid in cash.";
+    if (r === "r1") return [talk, one, "The other side accepts or refuses on their phone.", money];
+    if (r === "r2") return [talk, one, `Google accepts or refuses. The sister isn't in the room and has no say, but if the sale happens she loses ${$$(ECON.r2.sisterHarm)}.`, money];
+    return [talk, "Brother's one offer names a price for Google and a cut for Sister. <b>Both</b> must accept on their phones.", `Sister has ${$$(ECON.r3.endow)} at stake and loses her card value if the sale happens.`, money];
   }
   function distText(r){
-    const d = r === "r1" ? ECON.r1 : ECON.r2;
+    const d = ECON[r];
     const row = (k, arr) => `<div class="d"><div class="k">${k} (equally likely)</div><div class="v">${arr.map(x => $$(x)).join(" / ")}</div></div>`;
     if (r === "r1") return row("User's privacy value", d.user) + row("Google's ad value", d.google) + `<div class="d"><div class="k">Who starts with the data</div><div class="v">coin flip</div></div>`;
+    if (r === "r2") return row("Brother's privacy value", d.brother) + row("Google's value", d.google) + `<div class="d"><div class="k">Sister's harm if sold (not here)</div><div class="v">${$$(d.sisterHarm)}</div></div>`;
     return row("Brother's privacy value", d.brother) + row("Google's value", d.google) + row("Sister's harm if sold", d.sister);
   }
-  function renderForm(r){
-    const T = myTable, names = T.names || {}, roles = T.roles || {};
-    const f = $("rForm");
-    if (r === "r1"){
-      const used = formState.used;
-      f.innerHTML = `
-        <p><b>Does Google get to use the data?</b></p>
-        <div class="seg"><button class="${used===true?"sel":""}" onclick="App.fs('used',true)">Yes, Google uses it</button><button class="${used===false?"sel":""}" onclick="App.fs('used',false)">No, it stays private</button></div>
-        <p style="margin-top:12px"><b>Did money change hands?</b></p>
-        <div class="seg"><button class="${formState.payDir==="none"?"sel":""}" onclick="App.fs('payDir','none')">No money</button><button class="${formState.payDir==="g2u"?"sel":""}" onclick="App.fs('payDir','g2u')">Google paid User</button><button class="${formState.payDir==="u2g"?"sel":""}" onclick="App.fs('payDir','u2g')">User paid Google</button></div>
-        <div class="pay ${formState.payDir && formState.payDir!=="none" ? "" : "hidden"}"><div class="who">Amount</div><input type="number" inputmode="numeric" min="0" step="1" id="payAmt" value="${formState.payAmt ?? ""}" placeholder="$"></div>`;
-    } else {
-      const sisters = Object.keys(roles).filter(u => roles[u] === "sister");
-      const sold = formState.sold;
-      f.innerHTML = `
-        <p><b>Were the results sold to Google?</b></p>
-        <div class="seg"><button class="${sold===true?"sel":""}" onclick="App.fs('sold',true)">Yes, sold</button><button class="${sold===false?"sel":""}" onclick="App.fs('sold',false)">No sale</button></div>
-        <p style="margin-top:12px"><b>Money that changed hands</b> <span class="small">(leave 0 if none)</span></p>
-        <div class="pay">
-          <div class="who">Google paid <b>Brother</b></div><input type="number" inputmode="numeric" min="0" step="1" id="gToB" value="${formState.gToB ?? 0}">
-          ${sisters.map(u => `
-          <div class="who">Brother paid <b>${esc(names[u])}</b> (Sister)</div><input type="number" inputmode="numeric" min="0" step="1" id="bToS_${u}" value="${(formState.sis && formState.sis[u] && formState.sis[u].bToS) ?? 0}">
-          <div class="who">Google paid <b>${esc(names[u])}</b> (Sister)</div><input type="number" inputmode="numeric" min="0" step="1" id="gToS_${u}" value="${(formState.sis && formState.sis[u] && formState.sis[u].gToS) ?? 0}">
-          <div class="who"><b>${esc(names[u])}</b> (Sister) paid Brother</div><input type="number" inputmode="numeric" min="0" step="1" id="sToB_${u}" value="${(formState.sis && formState.sis[u] && formState.sis[u].sToB) ?? 0}">`).join("")}
-        </div>`;
-    }
+  function renderOfferForm(r){
+    const T = myTable, go = r === "r1" && T.owner === "google";
+    const f = $("rOfferForm");
+    if (r === "r1" && !go){ $("rOfferTitle").textContent = "Name your price"; $("rOfferHint").textContent = "Google must pay you this much to use your data. One number. Talk first if you like."; f.innerHTML = `<div class="pay"><div>Google pays me</div><input type="number" inputmode="decimal" min="0" step="1" id="offP" placeholder="$"></div>`; $("rNoOfferBtn").textContent = "Not for sale at any price"; }
+    else if (go){ $("rOfferTitle").textContent = "Name your price"; $("rOfferHint").textContent = "The User must pay you this much to have their data deleted. One number."; f.innerHTML = `<div class="pay"><div>User pays me to delete it</div><input type="number" inputmode="decimal" min="0" step="1" id="offP" placeholder="$"></div>`; $("rNoOfferBtn").textContent = "No deal: I'll just use it"; }
+    else if (r === "r2"){ $("rOfferTitle").textContent = "Name your price"; $("rOfferHint").textContent = `Google must pay you this much for the results. Remember your sister loses ${$$(ECON.r2.sisterHarm)} if you sell. One number.`; f.innerHTML = `<div class="pay"><div>Google pays me</div><input type="number" inputmode="decimal" min="0" step="1" id="offP" placeholder="$"></div>`; $("rNoOfferBtn").textContent = "Not for sale at any price"; }
+    else { $("rOfferTitle").textContent = "Name the price, and Sister's cut"; $("rOfferHint").textContent = "Google pays you the price. Out of it, you pass the cut to Sister. Both must accept."; f.innerHTML = `<div class="pay"><div>Google pays me</div><input type="number" inputmode="decimal" min="0" step="1" id="offP" placeholder="$"><div>Sister's cut (out of that)</div><input type="number" inputmode="decimal" min="0" step="1" id="offS" placeholder="$" value="0"></div>`; $("rNoOfferBtn").textContent = "Not for sale at any price"; }
   }
-  function fs(k, v){ if (k === "payDir" || k === "used") { const a = $("payAmt"); if (a) formState.payAmt = a.value; } formState[k] = v; renderForm(curRound); }
-  async function submitOutcome(){
-    const r = curRound, err = $("rFormErr"); err.textContent = "";
-    let o;
-    if (r === "r1"){
-      if (formState.used == null){ err.textContent = "Say whether Google gets to use the data."; return; }
-      if (!formState.payDir){ err.textContent = "Say whether money changed hands."; return; }
-      let p = 0;
-      if (formState.payDir !== "none"){ p = Number(($("payAmt") || {}).value); if (!(p >= 0)){ err.textContent = "Enter the amount."; return; } if (formState.payDir === "u2g") p = -p; }
-      o = { used: formState.used, pay: p };
-    } else {
-      if (formState.sold == null){ err.textContent = "Say whether the results were sold."; return; }
-      const roles = myTable.roles || {}, sisters = Object.keys(roles).filter(u => roles[u] === "sister");
-      const num = id => { const x = Number(($(id) || {}).value || 0); return x >= 0 ? x : 0; };
-      o = { sold: formState.sold, gToB: num("gToB"), sisters: {} };
-      sisters.forEach(u => { o.sisters[u] = { bToS: num("bToS_" + u), gToS: num("gToS_" + u), sToB: num("sToB_" + u) }; });
-    }
-    o.by = uid; o.at = Date.now();
-    await db.ref(path("rounds", r, "tables", "t" + myAssign.table, "public", "outcome")).set(o);
-    toast("Recorded. Thanks!");
+  async function sendOffer(){
+    const r = curRound, err = $("rOfferErr"); err.textContent = "";
+    const p = Number(($("offP") || {}).value); if (!(p >= 0) || ($("offP") || {}).value === ""){ err.textContent = "Enter a dollar amount."; return; }
+    const o = { p: Math.round(p * 100) / 100, by: uid, at: Date.now() };
+    if (r === "r3"){ const s = Number(($("offS") || {}).value || 0); if (!(s >= 0)){ err.textContent = "Sister's cut must be 0 or more."; return; } if (s > p){ err.textContent = "Sister's cut can't be more than the price."; return; } o.s = Math.round(s * 100) / 100; }
+    await db.ref(path("rounds", r, "tables", "t" + myAssign.table, "public", "offer")).set(o);
+    toast("Offer sent.");
   }
+  async function sendNoOffer(){
+    const r = curRound;
+    if (!confirm(r === "r1" && myTable.owner === "google" ? "No deal: you keep and use the data. Sure?" : "Refuse to sell at any price. Sure?")) return;
+    await db.ref(path("rounds", r, "tables", "t" + myAssign.table, "public", "offer")).set({ none: true, by: uid, at: Date.now() });
+  }
+  function renderAnswer(r, role, offer){
+    const T = { public: myTable }, names = myTable.names || {}, v = myPriv && myPriv.value, bro = esc(names[roleOf(T, "brother")] || "Brother");
+    if (r === "r1" && role === "google"){ $("rOfferBig").textContent = $$(offer.p); $("rOfferDesc").textContent = `${esc(names[roleOf(T, "user")] || "The User")} will let you use their data if you pay this.`; $("rAnswerHint").textContent = `Your card: using the data is worth ${$$(v)} to you. Accept = you pay ${$$(offer.p)} and use it. Refuse = no deal, data stay private, you get $0.`; $("rAcceptBtn").textContent = `Accept: pay ${$$(offer.p)}`; $("rRejectBtn").textContent = "Refuse"; }
+    else if (r === "r1" && role === "user"){ $("rOfferBig").textContent = $$(offer.p); $("rOfferDesc").textContent = "Google will delete your data if you pay this."; $("rAnswerHint").textContent = `Your card: privacy is worth ${$$(v)} to you. Accept = you pay ${$$(offer.p)} and keep your privacy. Refuse = Google uses the data, you get $0.`; $("rAcceptBtn").textContent = `Accept: pay ${$$(offer.p)}`; $("rRejectBtn").textContent = "Refuse"; }
+    else if (role === "google"){ $("rOfferBig").textContent = $$(offer.p); $("rOfferDesc").textContent = `${bro} will sell the results for this.${r === "r3" ? ` He's passing ${$$(offer.s || 0)} of it to Sister, who also has to agree.` : ""}`; $("rAnswerHint").textContent = `Your card: the results are worth ${$$(v)} to you. Accept = you pay ${$$(offer.p)}. Refuse = no sale, you get $0.`; $("rAcceptBtn").textContent = `Accept: pay ${$$(offer.p)}`; $("rRejectBtn").textContent = "Refuse"; }
+    else { $("rOfferBig").textContent = $$(offer.s || 0) + " for you"; $("rOfferDesc").textContent = `${bro} wants to sell the results to Google for ${$$(offer.p)} and pass this much to you. No sale unless you say yes${sisters(T).length > 1 ? " (every sister must agree)" : ""}.`; $("rAnswerHint").textContent = `Your card: if the sale happens you lose ${$$(v)} of your ${$$(ECON.r3.endow)} and receive ${$$(offer.s || 0)}. Accept = sale can go ahead. Refuse = no sale, you keep your ${$$(ECON.r3.endow)}.`; $("rAcceptBtn").textContent = "Accept the sale"; $("rRejectBtn").textContent = "Refuse"; }
+  }
+  async function answer(yes){ await db.ref(path("rounds", curRound, "tables", "t" + myAssign.table, "public", "responses", uid)).set(!!yes); }
   function renderOutcome(r, role){
-    const T = myTable, o = T.outcome, names = T.names || {}, roles = T.roles || {};
-    // I only know my own value; the deal's money is public. Compute my own payoff.
-    const v = myPriv && myPriv.value;
-    let rows = [], mine = 0, note = "";
+    const T = myTable, v = myPriv && myPriv.value;
+    // compute only my own payoff: give the analyzer my value and zeros for the rest
+    const fake = { public: T, values: {} }; for (const u in T.roles) fake.values[u] = u === uid ? (v || 0) : 0;
+    const A = analyze(fake, r), res = A.R, rows = [];
+    let mine = role === "observer" ? null : (A.pay[uid] ?? 0), note = "";
     if (r === "r1"){
-      rows.push(["Google uses the data?", o.used ? "Yes" : "No"]);
-      if (o.pay > 0) rows.push(["Google paid User", $$(o.pay)]); else if (o.pay < 0) rows.push(["User paid Google", $$(-o.pay)]); else rows.push(["Money changed hands", "None"]);
-      if (role === "user") mine = (o.used ? 0 : v) + o.pay; else if (role === "google") mine = (o.used ? v : 0) - o.pay;
-      if (role === "user") note = o.used ? "Your privacy value is gone; what you got is the money." : `You kept your privacy, worth ${$$(v)} to you.`;
-      if (role === "google") note = o.used ? `You earned your ad value of ${$$(v)}, minus what you paid.` : "No data, no ad revenue; only the money moved.";
+      $("rDoneTitle").textContent = res.none ? (T.owner === "google" ? "No deal: Google uses the data" : "No deal: not for sale") : A.used ? (T.owner === "google" ? "Refused: Google uses the data" : "Deal: Google pays and uses the data") : (T.owner === "google" ? "Deal: the User pays and the data are deleted" : "Refused: the data stay private");
+      if (!res.none) rows.push([T.owner === "google" ? "Google's price to delete" : "User's price", $$(res.p)], ["Answer", res.traded ? "Accepted" : "Refused"]);
+      rows.push(["Google uses the data?", A.used ? "Yes" : "No"]);
+      if (role === "user") note = A.used ? "Your privacy is gone; what you have is the money, if any." : `You kept your privacy, worth ${$$(v)} to you${T.owner === "google" && res.traded ? ", minus what you paid" : ""}.`;
+      if (role === "google") note = A.used ? `You earned your ad value of ${$$(v)}${T.owner === "user" ? ", minus what you paid" : ""}.` : (T.owner === "google" && res.traded ? "You got paid to delete it." : "No data, no ad revenue.");
     } else {
-      rows.push(["Results sold to Google?", o.sold ? "Yes" : "No"]);
-      if (o.gToB) rows.push(["Google paid Brother", $$(o.gToB)]);
-      const s = o.sisters || {};
-      for (const u in s){ const n = esc(names[u] || "Sister"); if (s[u].bToS) rows.push([`Brother paid ${n}`, $$(s[u].bToS)]); if (s[u].gToS) rows.push([`Google paid ${n}`, $$(s[u].gToS)]); if (s[u].sToB) rows.push([`${n} paid Brother`, $$(s[u].sToB)]); }
-      if (rows.length === 1) rows.push(["Money changed hands", "None"]);
-      const fake = { public: T, values: {} }; fake.values[uid] = v; // compute only my own line
-      for (const u in roles) if (u !== uid) fake.values[u] = 0;
-      const p = r === "r1" ? payoffsR1(fake) : payoffsR2(fake); mine = p[uid] || 0;
-      if (role === "sister") note = o.sold ? `The results were sold, so you lost ${$$(v)}${mine > -v ? ", partly offset by what you were paid" : ""}.` : "Nothing was sold, so you lost nothing.";
-      if (role === "brother") note = o.sold ? "You gave up your privacy value and kept the money." : `You kept your privacy, worth ${$$(v)} to you.`;
-      if (role === "google") note = o.sold ? `You earned ${$$(v)}, minus what you paid.` : "No sale, no revenue.";
+      $("rDoneTitle").textContent = res.none ? "No deal: not for sale" : A.sold ? "Deal: the results are sold" : (A.sisterNo && A.googleNo ? "Refused by Google and Sister" : A.sisterNo ? "Refused by Sister: no sale" : "Refused by Google: no sale");
+      if (!res.none) rows.push(["Brother's price", $$(res.p)]);
+      if (r === "r3" && !res.none) rows.push(["Sister's cut", $$(res.s)]);
+      rows.push(["Sold?", A.sold ? "Yes" : "No"]);
+      if (r === "r2") rows.push(["The sister who isn't here", A.sold ? `loses ${$$(ECON.r2.sisterHarm)}` : "unharmed"]);
+      if (role === "sister") note = A.sold ? `The results were sold: you lost ${$$(v)} of your ${$$(ECON.r3.endow)}${res.s ? ` and received ${$$(res.s)}` : ""}.` : `Nothing was sold. You keep your ${$$(ECON.r3.endow)}.`;
+      if (role === "brother") note = A.sold ? "You gave up your privacy value and kept the money." : `You kept your privacy, worth ${$$(v)} to you.`;
+      if (role === "google") note = A.sold ? `You earned ${$$(v)}, minus what you paid.` : "No sale, no revenue.";
     }
-    if (role === "observer"){ mine = null; note = "Observer: did the data end up where they should? Keep that thought for the debrief."; }
-    $("rDoneTitle").textContent = "Deal recorded";
-    $("rDoneKv").innerHTML = rows.map(x => `<div class="k">${x[0]}</div><div class="v">${x[1]}</div>`).join("") + (mine == null ? "" : `<div class="k tot">Your score this round</div><div class="v tot ${mine >= 0 ? "pos" : "neg"}">${$$(mine)}</div>`);
-    $("rDoneNote").textContent = note + (T.recorder === uid ? "  Made a mistake? You can fix it." : "");
-    $("rDoneBtns").innerHTML = T.recorder === uid ? `<button class="btn btn-ghost btn-sm" onclick="App.fixOutcome()">Change this record</button>` : "";
-    // save my score so the host can show a leaderboard
-    if (mine != null) db.ref(path("players", uid, "scores", r)).set(Math.round(mine)).catch(() => {});
+    if (role === "observer") note = "Observer: did the data end up where they should? Keep that thought for the debrief.";
+    $("rDoneKv").innerHTML = rows.map(x => `<div class="k">${x[0]}</div><div class="v">${x[1]}</div>`).join("") + (mine == null ? "" : `<div class="k tot">Your dollars this round</div><div class="v tot ${mine >= 0 ? "pos" : "neg"}">${$$(mine)}</div>`);
+    $("rDoneNote").textContent = note;
+    if (mine != null && lastScored !== r){ lastScored = r; db.ref(path("players", uid, "scores", r)).set(Math.round(mine * 100) / 100).catch(() => {}); }
   }
-  async function fixOutcome(){ formState = {}; await db.ref(path("players", uid, "scores", curRound)).remove().catch(() => {}); await db.ref(path("rounds", curRound, "tables", "t" + myAssign.table, "public", "outcome")).remove(); }
   function renderDone(){
     db.ref(path("players", uid)).get().then(s => {
       const p = s.val() || {}, sc = p.scores || {};
-      const rows = ["r1","r2a","r2b"].filter(k => sc[k] != null).map(k => `<div class="k">${ROUNDS[k].short}: ${ROUNDS[k].title}</div><div class="v ${sc[k] >= 0 ? "pos" : "neg"}">${$$(sc[k])}</div>`).join("");
-      const tot = sum(Object.values(sc));
-      $("doneKv").innerHTML = rows + `<div class="k tot">Total</div><div class="v tot">${$$(tot)}</div>`;
+      const rows = ["r1","r2","r3"].filter(k => sc[k] != null).map(k => `<div class="k">${ROUNDS[k].short}: ${ROUNDS[k].title}</div><div class="v ${sc[k] >= 0 ? "pos" : "neg"}">${$$(sc[k])}</div>`).join("");
+      $("doneKv").innerHTML = rows + `<div class="k tot">Total over three rounds</div><div class="v tot">${$$(sum(Object.values(sc)))}</div>`;
+      const d = state.draw;
+      $("doneDraw").innerHTML = !d ? `<p class="small" style="margin-top:12px"><span class="pulse-dot"></span>The host hasn't drawn the paying table yet.</p>`
+        : (d.payouts && d.payouts[uid] != null)
+          ? `<div class="draw"><div class="big">Your table was drawn!</div><div class="d">${ROUNDS[d.round].short}, Table ${d.table}. You get <b>${$$(d.payouts[uid])}</b> in cash.</div></div>`
+          : `<div class="draw" style="background:var(--paper);color:var(--ink)"><div class="big" style="color:var(--navy)">The draw</div><div class="d">${ROUNDS[d.round].short}, Table ${d.table}: ${esc(d.who)}. Not you this time. Your three rounds were worth ${$$(sum(Object.values(sc)))} on paper.</div></div>`;
       show("viewDone");
     });
   }
@@ -696,79 +702,68 @@ const App = (() => {
     isHost = true;
     code = Array.from({length:4}, () => "ABCDEFGHJKLMNPQRSTUVWXYZ"[Math.floor(Math.random()*24)]).join("");
     await db.ref(path()).set({ meta: { createdAt: Date.now() }, state: { phase: "lobby", createdAt: Date.now() } });
-    saveLocal();
-    $("hostCode").textContent = code; hostUrl();
+    saveLocal(); $("hostCode").textContent = code; hostUrl();
     $("topTag").innerHTML = `Hosting session <b>${code}</b>`;
-    listenGame();
-    show("viewHost");
+    listenGame(); show("viewHost");
   }
-  async function setPhase(p){ await db.ref(path("state")).update({ phase: p, changedAt: Date.now(), deadline: null }); resTab = p; }
+  async function setPhase(p){ await db.ref(path("state")).update({ phase: p, changedAt: Date.now(), deadline: null }); resTab = p === "done" ? "lead" : p; }
   async function startTimer(sec){ await db.ref(path("state")).update({ deadline: sec ? Date.now() + sec * 1000 : null }); }
   async function removePlayer(u){ if (!confirm(`Remove ${players[u] && players[u].name}?`)) return; await db.ref(path("players", u)).remove(); }
-
-  // Form groups for a round and deal the private cards. Groups are random.
   function shuffle(a){ for (let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
   function makeTables(r, ids){
-    ids = shuffle(ids.slice());
-    const tables = [];
-    if (r === "r1"){
-      // pairs; a leftover student observes a table
+    ids = shuffle(ids.slice()); const tables = [];
+    if (r !== "r3"){
       while (ids.length >= 2) tables.push(ids.splice(0, 2));
       if (ids.length === 1){ if (tables.length) tables[0].push(ids[0]); else tables.push([ids[0]]); }
       return tables.map((m, i) => {
-        const roles = {}, values = {};
-        roles[m[0]] = "user"; values[m[0]] = pick(ECON.r1.user);
-        if (m[1]){ roles[m[1]] = "google"; values[m[1]] = pick(ECON.r1.google); }
+        const roles = {}, values = {}, d = ECON[r], first = r === "r1" ? "user" : "brother";
+        roles[m[0]] = first; values[m[0]] = pick(d[first]);
+        if (m[1]){ roles[m[1]] = "google"; values[m[1]] = pick(d.google); }
         if (m[2]) roles[m[2]] = "observer";
-        const owner = Math.random() < 0.5 ? "user" : "google";
-        const recorder = owner === "user" || !m[1] ? m[0] : m[1];
-        return { n: i + 1, members: m, roles, values, owner, recorder };
+        const owner = r === "r1" ? (Math.random() < 0.5 ? "user" : "google") : "brother";
+        return { n: i + 1, members: m, roles, values, owner: m[1] ? owner : first };
       });
     }
-    // trios: brother, google, sister. Leftovers become extra sisters (groups of 4).
     while (ids.length >= 3) tables.push(ids.splice(0, 3));
-    if (ids.length && tables.length){ ids.forEach((u, k) => tables[k % tables.length].push(u)); }
-    else if (ids.length) tables.push(ids.splice(0));
+    if (ids.length && tables.length) ids.forEach((u, k) => tables[k % tables.length].push(u)); else if (ids.length) tables.push(ids.splice(0));
     return tables.map((m, i) => {
       const roles = {}, values = {};
-      roles[m[0]] = "brother"; values[m[0]] = pick(ECON.r2.brother);
-      if (m[1]){ roles[m[1]] = "google"; values[m[1]] = pick(ECON.r2.google); }
-      m.slice(2).forEach(u => { roles[u] = "sister"; values[u] = pick(ECON.r2.sister); });
-      return { n: i + 1, members: m, roles, values, owner: "brother", recorder: m[0] };
+      roles[m[0]] = "brother"; values[m[0]] = pick(ECON.r3.brother);
+      if (m[1]){ roles[m[1]] = "google"; values[m[1]] = pick(ECON.r3.google); }
+      m.slice(2).forEach(u => { roles[u] = "sister"; values[u] = pick(ECON.r3.sister); });
+      return { n: i + 1, members: m, roles, values, owner: "brother" };
     });
   }
   async function openRound(r){
     const ids = Object.keys(players);
     if (ids.length < 2){ toast("Need at least 2 students joined."); return; }
-    await dealRound(r, ids);
-    await setPhase(r);
+    await dealRound(r, ids); await setPhase(r);
   }
   async function dealRound(r, ids){
-    const tables = makeTables(r, ids);
-    const upd = { assign: {}, tables: {} };
+    const tables = makeTables(r, ids), upd = { assign: {}, tables: {} };
     tables.forEach(t => {
       const names = {}; t.members.forEach(u => names[u] = (players[u] && players[u].name) || "?");
-      upd.tables["t" + t.n] = { public: { n: t.n, names, roles: t.roles, owner: t.owner, recorder: t.recorder, outcome: null }, private: {} };
+      upd.tables["t" + t.n] = { public: { n: t.n, names, roles: t.roles, owner: t.owner, offer: null, responses: null }, private: {} };
       t.members.forEach(u => { upd.tables["t" + t.n].private[u] = { value: t.values[u] == null ? null : t.values[u] }; upd.assign[u] = { table: t.n, role: t.roles[u] }; });
     });
     await db.ref(path("rounds", r)).set(upd);
   }
   async function redeal(){
     const r = state.phase; if (!ROUNDS[r]) return;
-    if (!confirm(`Re-form groups for ${ROUNDS[r].short}? Deals already recorded in this round will be erased.`)) return;
+    if (!confirm(`Re-form groups for ${ROUNDS[r].short}? Offers already made in this round will be erased.`)) return;
     await dealRound(r, Object.keys(players)); toast("Groups re-formed.");
   }
   function renderHost(){
     if (!state) return;
-    const phase = state.phase, idx = PHASES.indexOf(phase);
-    const list = Object.entries(players);
+    const phase = state.phase, list = Object.entries(players);
     $("hostCount").textContent = list.length;
-    $("hostPhaseNote").textContent = { lobby: "waiting in the lobby", r1: "Round 1 open", r2a: "Round 2 open", r2b: "Round 3 open", done: "game over" }[phase] || "";
+    $("hostPhaseNote").textContent = { lobby: "waiting in the lobby", r1: "Round 1 open", r2: "Round 2 open", r3: "Round 3 open", done: "game over" }[phase] || "";
     $("hostRoster").innerHTML = list.map(([id, p]) => `<span class="p in">${esc(p.name)}${phase === "lobby" ? ` <button title="remove" onclick="App.removePlayer('${id}')">×</button>` : ""}</span>`).join("");
     $("btnR1").classList.toggle("hidden", phase !== "lobby");
-    $("btnR2a").classList.toggle("hidden", phase !== "r1");
-    $("btnR2b").classList.toggle("hidden", phase !== "r2a");
-    $("btnDone").classList.toggle("hidden", phase !== "r2b");
+    $("btnR2").classList.toggle("hidden", phase !== "r1");
+    $("btnR3").classList.toggle("hidden", phase !== "r2");
+    $("btnDone").classList.toggle("hidden", phase !== "r3");
+    $("btnDraw").classList.toggle("hidden", !(phase === "done" && !state.draw));
     $("btnRedeal").classList.toggle("hidden", !ROUNDS[phase]);
     renderResults();
   }
@@ -777,116 +772,132 @@ const App = (() => {
     const R = hostRounds[r]; if (!R || !R.tables) return [];
     return Object.values(R.tables).filter(Boolean).map(t => { const values = {}; for (const u in (t.private || {})) values[u] = t.private[u].value; return { public: t.public, values }; });
   }
+  function rows(r){ return tablesOf(r).map(T => Object.assign({ T }, analyze(T, r))).filter(a => a.T.public.roles && Object.values(a.T.public.roles).includes("google")); }
   function renderResults(){
-    const tabs = [["lobby","Tables"],["r1","Round 1: one owner"],["r2a","Round 2: brother alone"],["r2b","Round 3: sister must agree"],["cmp","Compare rounds 2 & 3"],["lead","Scoreboard"]];
+    const tabs = [["lobby","Tables"],["r1","Round 1"],["r2","Round 2"],["r3","Round 3"],["cmp","Compare"],["lead","Scoreboard & draw"]];
     $("resTabs").innerHTML = tabs.map(t => `<button class="${t[0]===resTab?"sel":""}" onclick="App.tab('${t[0]}')">${t[1]}</button>`).join("");
     const b = $("resBody");
     if (resTab === "lobby") b.innerHTML = renderTables(ROUNDS[state.phase] ? state.phase : null);
     else if (resTab === "r1") b.innerHTML = renderR1();
-    else if (resTab === "r2a" || resTab === "r2b") b.innerHTML = renderR2(resTab);
+    else if (resTab === "r2" || resTab === "r3") b.innerHTML = renderR23(resTab);
     else if (resTab === "cmp") b.innerHTML = renderCompare();
     else b.innerHTML = renderLead();
   }
   function renderTables(r){
     if (!r) return `<p class="small" style="margin-top:10px">Once a round starts, this shows who sits with whom (handy on the projector).</p>`;
-    const ts = tablesOf(r);
-    return `<h3 style="margin-top:10px">${ROUNDS[r].short}: who sits where</h3><div class="tables-grid">` + ts.map(T => {
-      const p = T.public; const who = Object.keys(p.roles).map(u => `${esc(p.names[u])} <span class="m">(${roleName(p.roles[u])})</span>`).join(", ");
-      return `<div class="tbl ${p.outcome ? "done" : ""}"><div class="t">Table ${p.n} ${p.outcome ? "✓" : ""}</div><div>${who}</div></div>`;
+    return `<h3 style="margin-top:10px">${ROUNDS[r].short}: who sits where</h3><div class="tables-grid">` + tablesOf(r).map(T => {
+      const p = T.public, done = !!resolve(T, r);
+      const who = Object.keys(p.roles).map(u => `${esc(p.names[u])} <span class="m">(${roleName(p.roles[u])})</span>`).join(", ");
+      return `<div class="tbl ${done ? "done" : ""}"><div class="t">Table ${p.n} ${done ? "✓" : p.offer ? "· answering" : "· deciding"}</div><div>${who}</div></div>`;
     }).join("") + `</div>`;
   }
   const bar = (label, frac, cls, txt) => `<div class="hrow"><div>${label}</div><div class="bar"><span class="${cls}" style="width:${Math.round(100 * Math.max(0, Math.min(1, frac || 0)))}%"></span></div><div class="n">${txt}</div></div>`;
   function renderR1(){
-    const ts = tablesOf("r1"); if (!ts.length) return `<p class="small" style="margin-top:10px">Round 1 hasn't started.</p>`;
-    const A = ts.map(T => Object.assign({ T }, analyzeR1(T))).filter(a => a.T.public.roles && Object.values(a.T.public.roles).includes("google"));
-    const done = A.filter(a => a.used !== null);
-    const byOwner = own => done.filter(a => a.T.public.owner === own);
-    const eff = arr => arr.filter(a => a.efficient).length;
-    const usedRate = arr => arr.filter(a => a.used).length;
-    const shouldRate = arr => arr.filter(a => a.shouldUse).length;
+    const A = rows("r1"); if (!A.length) return `<p class="small" style="margin-top:10px">Round 1 hasn't started.</p>`;
+    const done = A.filter(a => a.R), eff = arr => arr.filter(a => a.efficient).length;
+    const uo = done.filter(a => a.owner === "user"), go = done.filter(a => a.owner === "google");
     const realized = sum(done.map(a => a.realized)), max = sum(done.map(a => a.max));
-    const uo = byOwner("user"), go = byOwner("google");
-    let h = `<p class="small" style="margin-top:10px">${done.length} of ${A.length} pairs recorded.</p>`;
+    const missed = done.filter(a => !a.efficient && (a.owner === "user" ? !a.used : a.used)); // good deal died
+    const ownerTake = done.filter(a => a.R && !a.R.none).map(a => a.R.traded ? a.R.p : 0);
+    let h = `<p class="small" style="margin-top:10px">${done.length} of ${A.length} pairs decided.</p>`;
     h += `<div class="callouts">
-      <div class="callout"><div class="k">Right outcome</div><div class="v">${pct(eff(done), done.length)}</div><div class="d">data went to whoever valued it more</div></div>
-      <div class="callout"><div class="k">Surplus captured</div><div class="v">${pct(realized, max)}</div><div class="d">${$$(realized)} of a possible ${$$(max)}</div></div>
-      <div class="callout"><div class="k">Google used the data</div><div class="v">${pct(usedRate(done), done.length)}</div><div class="d">should have been ${pct(shouldRate(done), done.length)}</div></div>
+      <div class="callout"><div class="k">Right outcome</div><div class="v">${pct(eff(done), done.length)}</div><div class="d">data went to whoever valued them more</div></div>
+      <div class="callout red"><div class="k">Good deals that died</div><div class="v">${missed.length}</div><div class="d">the other side valued it more, but the price was too high</div></div>
+      <div class="callout"><div class="k">Value captured</div><div class="v">${pct(realized, max)}</div><div class="d">${$$(realized)} of ${$$(max)} possible</div></div>
+      <div class="callout gold"><div class="k">Owners' average take</div><div class="v">${ownerTake.length ? $$(sum(ownerTake) / ownerTake.length) : "—"}</div><div class="d">money the owner actually received</div></div>
     </div>`;
     h += `<h3 style="margin-top:16px">Did the starting point matter?</h3><div class="hist">` +
-      bar(`User owned (${uo.length})`, eff(uo) / (uo.length || 1), "teal", pct(eff(uo), uo.length) + " right") +
-      bar(`Google owned (${go.length})`, eff(go) / (go.length || 1), "navy", pct(eff(go), go.length) + " right") +
-      bar(`User owned: Google used it`, usedRate(uo) / (uo.length || 1), "gold", pct(usedRate(uo), uo.length)) +
-      bar(`Google owned: Google used it`, usedRate(go) / (go.length || 1), "gold", pct(usedRate(go), go.length)) + `</div>`;
-    const paid = done.filter(a => a.T.public.outcome.pay);
-    if (paid.length) h += `<p class="small" style="margin-top:8px">Money moved in ${paid.length} pair${paid.length === 1 ? "" : "s"}: Google paid the User in ${paid.filter(a => a.T.public.outcome.pay > 0).length}, the User paid Google in ${paid.filter(a => a.T.public.outcome.pay < 0).length}. The starting point decided who paid, not where the data went.</p>`;
-    h += `<details><summary>Every table</summary><table class="res"><tr><th>Table</th><th>Owner</th><th class="num">User value</th><th class="num">Google value</th><th>Should</th><th>Did</th><th class="num">Paid</th><th>Right?</th></tr>` +
-      A.map(a => `<tr class="${a.efficient === false ? "bad" : ""}"><td>${a.T.public.n}</td><td>${a.T.public.owner}</td><td class="num">${$$(a.vu)}</td><td class="num">${$$(a.vg)}</td><td>${a.shouldUse ? "use" : "private"}</td><td>${a.used === null ? "…" : a.used ? "use" : "private"}</td><td class="num">${a.used === null ? "" : a.T.public.outcome.pay > 0 ? "G→U " + $$(a.T.public.outcome.pay) : a.T.public.outcome.pay < 0 ? "U→G " + $$(-a.T.public.outcome.pay) : "—"}</td><td>${a.efficient === null ? "" : a.efficient ? "✓" : "✗"}</td></tr>`).join("") + `</table></details>`;
-    h += `<ul class="discuss"><li>Coase's prediction: who starts with the data shouldn't matter. Did it?</li><li>What <i>did</i> the starting point change?</li></ul>`;
+      bar(`User owned (${uo.length}): right outcome`, eff(uo) / (uo.length || 1), "teal", pct(eff(uo), uo.length)) +
+      bar(`Google owned (${go.length}): right outcome`, eff(go) / (go.length || 1), "navy", pct(eff(go), go.length)) +
+      bar(`User owned: Google got the data`, uo.filter(a => a.used).length / (uo.length || 1), "gold", pct(uo.filter(a => a.used).length, uo.length) + " (should: " + pct(uo.filter(a => a.shouldUse).length, uo.length) + ")") +
+      bar(`Google owned: Google got the data`, go.filter(a => a.used).length / (go.length || 1), "gold", pct(go.filter(a => a.used).length, go.length) + " (should: " + pct(go.filter(a => a.shouldUse).length, go.length) + ")") + `</div>`;
+    h += `<details><summary>Every table: the offer against the other side's true value</summary><table class="res"><tr><th>Table</th><th>Owner</th><th class="num">User value</th><th class="num">Google value</th><th class="num">Asked</th><th>Answer</th><th>Should</th><th>Did</th><th>Right?</th></tr>` +
+      A.map(a => `<tr class="${a.R && !a.efficient ? (missed.includes(a) ? "miss" : "bad") : ""}"><td>${a.T.public.n}</td><td>${a.owner}</td><td class="num">${$$(a.vu)}</td><td class="num">${$$(a.vg)}</td><td class="num">${a.refused ? "no sale" : a.ask == null ? "…" : $$(a.ask)}</td><td>${!a.R ? "…" : a.R.none ? "—" : a.R.traded ? "accepted" : "refused"}</td><td>${a.shouldUse ? "use" : "private"}</td><td>${a.used === null ? "…" : a.used ? "use" : "private"}</td><td>${a.efficient === null ? "" : a.efficient ? "✓" : "✗"}</td></tr>`).join("") + `</table><p class="small">Yellow: a good deal that died. Red: the data went the wrong way.</p></details>`;
+    h += `<ul class="discuss"><li>Coase's prediction: who starts with the data shouldn't matter. Did the two owner columns come out the same?</li><li>Why did good deals die? Nobody knew the other side's card. What did the owners do with that?</li><li>Who ended up with the money, and did that depend on who started with the data?</li></ul>`;
     return h;
   }
-  function r2stats(r){
-    const ts = tablesOf(r); const A = ts.map(T => Object.assign({ T }, analyzeR2(T))).filter(a => a.T.public.roles && Object.values(a.T.public.roles).includes("google"));
-    const done = A.filter(a => a.sold !== null);
+  function stats(r){
+    const A = rows(r), done = A.filter(a => a.R);
+    const asks = done.filter(a => a.ask != null);
     return { A, done, n: done.length,
       sold: done.filter(a => a.sold).length, shouldSell: done.filter(a => a.shouldSell).length, privateSell: done.filter(a => a.privateSell).length,
       harmful: done.filter(a => a.harmful).length, missed: done.filter(a => a.missed).length, eff: done.filter(a => a.efficient).length,
-      realized: sum(done.map(a => a.realized)), max: sum(done.map(a => a.max)), harm: sum(done.map(a => a.harm)), toSisters: sum(done.map(a => a.toSisters)),
-      sistersPaid: done.filter(a => a.toSisters > 0).length };
+      refused: done.filter(a => a.refused).length, googleNo: done.filter(a => a.googleNo).length, sisterNo: done.filter(a => a.sisterNo).length,
+      realized: sum(done.map(a => a.realized)), max: sum(done.map(a => a.max)), harm: sum(done.map(a => a.harm)), toSisters: sum(done.map(a => a.toSisters || 0)),
+      markup: asks.length ? sum(asks.map(a => a.ask - a.vb)) / asks.length : null,
+      avgAsk: asks.length ? sum(asks.map(a => a.ask)) / asks.length : null };
   }
-  function renderR2(r){
-    const S = r2stats(r); if (!S.A.length) return `<p class="small" style="margin-top:10px">${ROUNDS[r].short} hasn't started.</p>`;
-    const rule = r === "r2a" ? "Brother could sell without Sister's OK." : "Sister had to agree.";
-    let h = `<p class="small" style="margin-top:10px">${rule} ${S.n} of ${S.A.length} groups recorded.</p>`;
+  function renderR23(r){
+    const S = stats(r); if (!S.A.length) return `<p class="small" style="margin-top:10px">${ROUNDS[r].short} hasn't started.</p>`;
+    const rule = r === "r2" ? `Brother named a price; the sister wasn't here and loses ${$$(ECON.r2.sisterHarm)} if sold.` : "Brother named a price and a cut for Sister; both Google and Sister had to accept.";
+    let h = `<p class="small" style="margin-top:10px">${rule} ${S.n} of ${S.A.length} tables decided.</p>`;
     h += `<div class="callouts">
-      <div class="callout"><div class="k">Sold</div><div class="v">${pct(S.sold, S.n)}</div><div class="d">should have sold: ${pct(S.shouldSell, S.n)}</div></div>
-      <div class="callout red"><div class="k">Harmful sales</div><div class="v">${S.harmful}</div><div class="d">sold, but Sister's harm outweighed the gain</div></div>
-      <div class="callout"><div class="k">Missed good deals</div><div class="v">${S.missed}</div><div class="d">not sold, though everyone could have gained</div></div>
-      <div class="callout green"><div class="k">Value captured</div><div class="v">${$$(S.realized)}</div><div class="d">of ${$$(S.max)} possible, counting sisters (negative = the class lost value)</div></div>
-      <div class="callout purple"><div class="k">Harm to sisters</div><div class="v">${$$(S.harm)}</div><div class="d">sisters were paid ${$$(S.toSisters)} in ${S.sistersPaid} group${S.sistersPaid === 1 ? "" : "s"}</div></div>
+      <div class="callout"><div class="k">Sold</div><div class="v">${pct(S.sold, S.n)}</div><div class="d">should have sold (counting the sister): ${pct(S.shouldSell, S.n)}</div></div>
+      <div class="callout red"><div class="k">Harmful sales</div><div class="v">${S.harmful}</div><div class="d">sold, but the sister's harm outweighed the gain</div></div>
+      <div class="callout"><div class="k">Good deals that died</div><div class="v">${S.missed}</div><div class="d">everyone could have gained${r === "r3" ? ` · refused by Google: ${S.googleNo}, by Sister: ${S.sisterNo}` : ""}</div></div>
+      <div class="callout green"><div class="k">Value captured</div><div class="v">${$$(S.realized)}</div><div class="d">of ${$$(S.max)} possible, counting the sister</div></div>
+      <div class="callout purple"><div class="k">Harm to sisters</div><div class="v">${$$(S.harm)}</div><div class="d">${r === "r3" ? `sisters were paid ${$$(S.toSisters)}` : "nobody had to count it"}</div></div>
+      <div class="callout gold"><div class="k">Average asking price</div><div class="v">${S.avgAsk == null ? "—" : $$(S.avgAsk)}</div><div class="d">${S.markup == null ? "" : "that's " + $$(S.markup) + " above the brother's own value"}${S.refused ? ` · ${S.refused} refused to sell at all` : ""}</div></div>
     </div>`;
     h += `<div class="hist" style="margin-top:14px">` +
       bar("Right outcome", S.eff / (S.n || 1), "teal", pct(S.eff, S.n)) +
-      bar("Brother would gain from selling", S.privateSell / (S.n || 1), "gold", pct(S.privateSell, S.n)) +
+      bar("Brother alone gains from selling", S.privateSell / (S.n || 1), "gold", pct(S.privateSell, S.n)) +
       bar("Family as a whole gains from selling", S.shouldSell / (S.n || 1), "green", pct(S.shouldSell, S.n)) +
       bar("Actually sold", S.sold / (S.n || 1), "navy", pct(S.sold, S.n)) + `</div>`;
-    h += `<details><summary>Every table</summary><table class="res"><tr><th>Table</th><th class="num">Brother</th><th class="num">Google</th><th class="num">Sister harm</th><th>Should</th><th>Did</th><th class="num">G→Brother</th><th class="num">Sister net</th><th>Right?</th></tr>` +
-      S.A.map(a => `<tr class="${a.harmful ? "bad" : ""}"><td>${a.T.public.n}</td><td class="num">${$$(a.vb)}</td><td class="num">${$$(a.vg)}</td><td class="num">${$$(a.L)}${a.nS > 1 ? " (" + a.nS + ")" : ""}</td><td>${a.shouldSell ? "sell" : "keep"}</td><td>${a.sold === null ? "…" : a.sold ? "sold" : "kept"}</td><td class="num">${a.sold === null ? "" : $$(a.T.public.outcome.gToB || 0)}</td><td class="num">${a.sold === null ? "" : $$(a.toSisters)}</td><td>${a.efficient === null ? "" : a.efficient ? "✓" : "✗"}</td></tr>`).join("") + `</table></details>`;
-    h += r === "r2a"
-      ? `<ul class="discuss"><li>How many brothers sold even though the family lost overall? Did any sister talk her brother out of it, or pay him?</li><li>Coase says the sister could always buy her brother off. Why didn't that happen more?</li></ul>`
-      : `<ul class="discuss"><li>Fewer sales? Fewer harmful ones? How many good deals died because three people had to agree before the clock ran out?</li><li>Who got the money this time?</li></ul>`;
+    h += `<details><summary>Every table</summary><table class="res"><tr><th>Table</th><th class="num">Brother</th><th class="num">Google</th><th class="num">Sister harm</th><th class="num">Asked</th>${r === "r3" ? "<th class=\"num\">Sister's cut</th>" : ""}<th>Answer</th><th>Should</th><th>Did</th><th>Right?</th></tr>` +
+      S.A.map(a => `<tr class="${a.harmful ? "bad" : a.missed ? "miss" : ""}"><td>${a.T.public.n}</td><td class="num">${$$(a.vb)}</td><td class="num">${$$(a.vg)}</td><td class="num">${$$(a.L)}${a.nS > 1 ? " (" + a.nS + ")" : ""}</td><td class="num">${a.refused ? "no sale" : a.ask == null ? "…" : $$(a.ask)}</td>${r === "r3" ? `<td class="num">${a.sisterCut == null ? "" : $$(a.sisterCut)}</td>` : ""}<td>${!a.R ? "…" : a.R.none ? "—" : a.sold ? "accepted" : a.sisterNo && a.googleNo ? "both refused" : a.sisterNo ? "sister refused" : "Google refused"}</td><td>${a.shouldSell ? "sell" : "keep"}</td><td>${a.sold === null ? "…" : a.sold ? "sold" : "kept"}</td><td>${a.efficient === null ? "" : a.efficient ? "✓" : "✗"}</td></tr>`).join("") + `</table></details>`;
+    h += r === "r2"
+      ? `<ul class="discuss"><li>Did knowing about the sister change anyone's price? Compare the asking prices with Round 1 on the Compare tab.</li><li>How many brothers sold even though the family lost overall? She wasn't here to object. Who was supposed to count her ${$$(ECON.r2.sisterHarm)}?</li></ul>`
+      : `<ul class="discuss"><li>Fewer harmful sales? Fewer sales overall? How many good deals died because a third person had to say yes?</li><li>What did sisters get paid, and did it cover their harm?</li></ul>`;
     return h;
   }
   function renderCompare(){
-    const a = r2stats("r2a"), b = r2stats("r2b");
-    if (!a.n && !b.n) return `<p class="small" style="margin-top:10px">Nothing to compare yet.</p>`;
-    const row = (k, fa, fb) => `<tr><td>${k}</td><td class="num">${fa}</td><td class="num">${fb}</td></tr>`;
-    let h = `<table class="res" style="margin-top:12px"><tr><th></th><th class="num">Round 2<br><span class="small">brother alone</span></th><th class="num">Round 3<br><span class="small">sister must agree</span></th></tr>` +
-      row("Groups recorded", a.n, b.n) +
-      row("Sold", pct(a.sold, a.n), pct(b.sold, b.n)) +
-      row("Should have sold (family as a whole gains)", pct(a.shouldSell, a.n), pct(b.shouldSell, b.n)) +
-      row("Harmful sales", a.harmful, b.harmful) +
-      row("Missed good deals", a.missed, b.missed) +
-      row("Right outcome", pct(a.eff, a.n), pct(b.eff, b.n)) +
-      row("Value captured (of possible)", $$(a.realized) + " of " + $$(a.max), $$(b.realized) + " of " + $$(b.max)) +
-      row("Harm to sisters", $$(a.harm), $$(b.harm)) +
-      row("Paid to sisters", $$(a.toSisters), $$(b.toSisters)) + `</table>`;
-    h += `<div class="hist" style="margin-top:14px">` +
-      bar("R2 value captured", a.realized / (a.max || 1), "teal", $$(a.realized)) +
-      bar("R3 value captured", b.realized / (b.max || 1), "purple", $$(b.realized)) +
-      bar("R2 harm to sisters", a.harm / (Math.max(a.harm, b.harm) || 1), "red", $$(a.harm)) +
-      bar("R3 harm to sisters", b.harm / (Math.max(a.harm, b.harm) || 1), "red", $$(b.harm)) + `</div>`;
-    h += `<ul class="discuss"><li>Coase's prediction: the rule shouldn't change what gets sold, only who pays whom. Did the two rounds come out the same?</li><li>In the real world the sister isn't at the table. She usually never learns the sale happened. Which round is closer to that world?</li><li>How many people would have to be in the room for one "recovery list"? What would it cost to get them there?</li></ul>`;
+    const A1 = rows("r1").filter(a => a.R && a.owner === "user"), S2 = stats("r2"), S3 = stats("r3");
+    if (!A1.length && !S2.n && !S3.n) return `<p class="small" style="margin-top:10px">Nothing to compare yet.</p>`;
+    const asks1 = A1.filter(a => a.ask != null), m1 = asks1.length ? sum(asks1.map(a => a.ask - a.vu)) / asks1.length : null;
+    const r1sold = A1.filter(a => a.used).length, r1should = A1.filter(a => a.shouldUse).length, r1priv = A1.filter(a => a.vg > a.vu).length;
+    const row = (k, a, b, c) => `<tr><td>${k}</td><td class="num">${a}</td><td class="num">${b}</td><td class="num">${c}</td></tr>`;
+    let h = `<p class="small" style="margin-top:10px">Round 1 here counts only the pairs where the User owned the data (the brother's situation).</p>`;
+    h += `<table class="res"><tr><th></th><th class="num">Round 1<br><span class="small">no one else affected</span></th><th class="num">Round 2<br><span class="small">sister not here</span></th><th class="num">Round 3<br><span class="small">sister must agree</span></th></tr>` +
+      row("Tables decided", A1.length, S2.n, S3.n) +
+      row("Owner's price above own card value, on average", m1 == null ? "—" : $$(m1), S2.markup == null ? "—" : $$(S2.markup), S3.markup == null ? "—" : $$(S3.markup)) +
+      row("Refused to sell at any price", A1.filter(a => a.refused).length, S2.refused, S3.refused) +
+      row("Sold", pct(r1sold, A1.length), pct(S2.sold, S2.n), pct(S3.sold, S3.n)) +
+      row("Owner alone gains from selling", pct(r1priv, A1.length), pct(S2.privateSell, S2.n), pct(S3.privateSell, S3.n)) +
+      row("Everyone counted gains from selling", pct(r1should, A1.length), pct(S2.shouldSell, S2.n), pct(S3.shouldSell, S3.n)) +
+      row("Harmful sales", "—", S2.harmful, S3.harmful) +
+      row("Good deals that died", A1.filter(a => a.shouldUse && !a.used).length, S2.missed, S3.missed) +
+      row("Right outcome", pct(A1.filter(a => a.efficient).length, A1.length), pct(S2.eff, S2.n), pct(S3.eff, S3.n)) +
+      row("Harm to sisters", "—", $$(S2.harm), $$(S3.harm)) +
+      row("Paid to sisters", "—", "$0", $$(S3.toSisters)) + `</table>`;
+    h += `<ul class="discuss"><li>Round 1 to Round 2: the only change was a sister who isn't in the room. Did prices move? Did sales?</li><li>Round 2 to Round 3: she got a veto. Fewer harmful sales, but how many good deals died waiting for a third yes?</li><li>Coase said the rule shouldn't change what gets sold, only who pays whom. With private cards, did that hold even in Round 1?</li><li>In the real world, how many people would have to be in the room for one "recovery list"?</li></ul>`;
     return h;
   }
   function renderLead(){
-    const list = Object.entries(players).map(([id, p]) => ({ name: p.name, sc: p.scores || {}, tot: sum(Object.values(p.scores || {})) })).sort((x, y) => y.tot - x.tot);
-    if (!list.length) return `<p class="small" style="margin-top:10px">No scores yet.</p>`;
-    return `<p class="small" style="margin-top:10px">Scores are each player's card value kept plus money received, minus money paid. High scores reward sharp bargaining, not good outcomes. That's the point.</p><table class="res"><tr><th>#</th><th>Name</th><th class="num">R1</th><th class="num">R2</th><th class="num">R3</th><th class="num">Total</th></tr>` +
-      list.map((p, i) => `<tr class="${i === 0 ? "top" : ""}"><td>${i + 1}</td><td>${esc(p.name)}</td><td class="num">${p.sc.r1 == null ? "" : $$(p.sc.r1)}</td><td class="num">${p.sc.r2a == null ? "" : $$(p.sc.r2a)}</td><td class="num">${p.sc.r2b == null ? "" : $$(p.sc.r2b)}</td><td class="num"><b>${$$(p.tot)}</b></td></tr>`).join("") + `</table>`;
+    const list = Object.entries(players).map(([id, p]) => ({ id, name: p.name, sc: p.scores || {}, tot: sum(Object.values(p.scores || {})) })).sort((x, y) => y.tot - x.tot);
+    let h = "";
+    const d = state.draw;
+    if (d) h += `<div class="draw"><div class="big">The paying table: ${ROUNDS[d.round].short}, Table ${d.table}</div><div class="d">${esc(d.who)}</div><div class="d">${Object.entries(d.payouts).map(([u, x]) => `<b>${esc((players[u] || {}).name || "?")}</b> gets ${$$(x)}`).join(" · ")} &nbsp; (total ${$$(sum(Object.values(d.payouts)))})</div></div>`;
+    else if (state.phase === "done") h += `<p class="small" style="margin-top:10px">Press "Draw the paying table" to pick one table from one round at random. Everyone at it is paid their dollars from that round.</p>`;
+    if (!list.length) return h + `<p class="small" style="margin-top:10px">No scores yet.</p>`;
+    return h + `<p class="small" style="margin-top:10px">Dollars are each player's card value kept plus money received, minus money paid (sisters start from ${$$(ECON.r3.endow)}). High totals reward sharp bargaining, not good outcomes. That's the point.</p><table class="res"><tr><th>#</th><th>Name</th><th class="num">R1</th><th class="num">R2</th><th class="num">R3</th><th class="num">Total</th></tr>` +
+      list.map((p, i) => `<tr class="${i === 0 ? "top" : ""}"><td>${i + 1}</td><td>${esc(p.name)}</td><td class="num">${p.sc.r1 == null ? "" : $$(p.sc.r1)}</td><td class="num">${p.sc.r2 == null ? "" : $$(p.sc.r2)}</td><td class="num">${p.sc.r3 == null ? "" : $$(p.sc.r3)}</td><td class="num"><b>${$$(p.tot)}</b></td></tr>`).join("") + `</table>`;
+  }
+  async function drawTable(){
+    // one table from one round, chosen uniformly among decided tables; paid in dollars from that round
+    const pool = [];
+    ["r1","r2","r3"].forEach(r => rows(r).filter(a => a.R).forEach(a => pool.push({ r, a })));
+    if (!pool.length){ toast("No decided tables to draw from."); return; }
+    const { r, a } = pool[Math.floor(Math.random() * pool.length)];
+    const payouts = {}; for (const u in a.pay) payouts[u] = Math.max(0, Math.round(a.pay[u] * 100) / 100);
+    const who = Object.keys(a.T.public.roles).map(u => `${a.T.public.names[u]} (${roleName(a.T.public.roles[u])})`).join(", ");
+    if (!confirm(`Draw: ${ROUNDS[r].short}, Table ${a.T.public.n}: ${who}. Total ${$$(sum(Object.values(payouts)))}. Lock it in?`)) return;
+    await db.ref(path("state", "draw")).set({ round: r, table: a.T.public.n, who, payouts, at: Date.now() });
+    resTab = "lead";
   }
 
   document.addEventListener("DOMContentLoaded", boot);
-  return { showLanding, showJoin, showHost, join, createGame, setPhase, openRound, redeal, startTimer, removePlayer, tab, fs, submitOutcome, fixOutcome };
+  return { showLanding, showJoin, showHost, join, createGame, setPhase, openRound, redeal, startTimer, removePlayer, tab, sendOffer, sendNoOffer, answer, drawTable };
 })();
 </script>
 </body>

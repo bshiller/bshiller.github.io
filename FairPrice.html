@@ -1,0 +1,951 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fair Price? | FYS 7b</title>
+<style>
+:root{
+  --navy:#16213A; --navy2:#22314F; --ink:#1E2A3E; --muted:#5E6B7D; --line:#D8DEE6;
+  --bg:#F3F5F8; --card:#FFFFFF; --teal:#3E8E89; --teal-t:#E4F1F0; --gold:#D9A93A; --gold-t:#FBF3DC;
+  --orange:#D87B3C; --orange-t:#FBEADD; --red:#B8432F;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+header.top{background:var(--navy);color:#fff;padding:.7rem 1rem;display:flex;align-items:baseline;gap:.8rem;flex-wrap:wrap;border-bottom:4px solid var(--gold)}
+header.top .brand{font:700 1.25rem Georgia,"Times New Roman",serif}
+header.top .who{margin-left:auto;font-size:.85rem;opacity:.85}
+header.top .who a{color:#fff}
+main{max-width:720px;margin:0 auto;padding:1rem}
+main.host{max-width:1180px;font-size:19px}
+h1{font:700 1.9rem/1.2 Georgia,"Times New Roman",serif;margin:.4rem 0 .6rem;color:var(--navy)}
+h2{font:700 1.4rem/1.25 Georgia,"Times New Roman",serif;margin:0 0 .4rem;color:var(--navy)}
+h3{font-size:1.05rem;margin:1rem 0 .35rem;color:var(--navy)}
+p{margin:.4rem 0 .7rem}
+.muted{color:var(--muted)} .small{font-size:.85rem}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.2rem;margin:0 0 1rem}
+.panel.gold{background:var(--gold-t);border-color:#E9D49A}
+.panel.teal{background:var(--teal-t);border-color:#BFDCDA}
+.tag{display:inline-block;font-size:.75rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--teal)}
+button{font:inherit;font-weight:600;border:0;border-radius:10px;padding:.65rem 1.1rem;background:var(--navy);color:#fff;cursor:pointer}
+button:hover{background:var(--navy2)}
+button:disabled{opacity:.4;cursor:not-allowed}
+button.secondary{background:#fff;color:var(--navy);border:1.5px solid var(--navy)}
+button.secondary:hover{background:#EEF1F6}
+button.go{background:var(--orange)} button.go:hover{background:#C56A2D}
+button.link{background:none;color:var(--teal);padding:0;text-decoration:underline;font-weight:500}
+button.big{width:100%;padding:.85rem;font-size:1.1rem}
+input[type=text],textarea{font:inherit;width:100%;padding:.6rem .7rem;border:1.5px solid #B9C2CF;border-radius:10px;background:#fff;color:var(--ink)}
+textarea{min-height:5.2rem;resize:vertical}
+input.code{text-transform:uppercase;letter-spacing:.25em;font-weight:700;text-align:center}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.row{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center}
+.spread{justify-content:space-between}
+.opts{display:flex;gap:.5rem;flex-wrap:wrap}
+.opt{flex:1 1 7rem;background:#fff;color:var(--navy);border:1.5px solid #B9C2CF;padding:.7rem .5rem}
+.opt:hover{background:#EEF1F6}
+.opt.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.opt.on.fair{background:var(--teal);border-color:var(--teal)}
+.opt.on.unfair{background:var(--orange);border-color:var(--orange)}
+.case{border-top:1px solid var(--line);padding:.8rem 0}
+.case:first-of-type{border-top:0}
+.case b{display:block}
+.case .opts{margin-top:.45rem}
+.scale .opt{flex:1 1 2.6rem;padding:.7rem 0;font-size:1.1rem}
+.scaleEnds{display:flex;justify-content:space-between;font-size:.8rem;color:var(--muted);margin-top:.25rem}
+.quote{font:600 1.2rem/1.45 Georgia,"Times New Roman",serif;background:var(--gold-t);border:1px solid #E9D49A;border-radius:12px;padding:1rem 1.1rem;margin:.6rem 0}
+.ok{color:var(--teal);font-weight:600}
+.warn{color:var(--red);font-weight:600}
+/* host */
+.hero{background:var(--navy);color:#fff;border-radius:14px;padding:1rem 1.4rem;margin-bottom:1rem;display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap}
+.hero .url{font:700 1.7rem/1.2 system-ui,sans-serif;word-break:break-all}
+.hero.lobby .url{font-size:2.3rem}
+.hero .lab{font-size:.8rem;letter-spacing:.09em;text-transform:uppercase;opacity:.75}
+.hero .bigcode{font:800 3rem/1 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.14em;color:var(--gold)}
+.hero.lobby .bigcode{font-size:4.6rem}
+.rounds{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1rem}
+.rounds button{background:#fff;color:var(--navy);border:1.5px solid var(--line);padding:.45rem .7rem;font-size:.85rem;border-radius:999px}
+.rounds button.on{background:var(--gold);border-color:var(--gold);color:var(--navy)}
+.rounds button .n{opacity:.6;margin-right:.3rem}
+.count{font:800 2.6rem/1 system-ui,sans-serif;color:var(--navy)}
+.count small{font:500 1rem system-ui,sans-serif;color:var(--muted);margin-left:.4rem}
+.bar{display:grid;grid-template-columns:minmax(7rem,13rem) 1fr 5.5rem;gap:.7rem;align-items:center;margin:.35rem 0}
+.bar .track{background:#E7EBF1;border-radius:6px;height:1.5rem;overflow:hidden}
+.bar .fill{height:100%;background:var(--navy);border-radius:6px;min-width:2px}
+.bar .num{font-variant-numeric:tabular-nums;font-size:.9rem;color:var(--muted)}
+.split{display:grid;grid-template-columns:minmax(8rem,15rem) 1fr;gap:.9rem;align-items:center;padding:.45rem 0;border-top:1px solid var(--line)}
+.split:first-of-type{border-top:0}
+.split .name b{display:block}
+.split .name span{display:block;font-size:.8rem;line-height:1.35;color:var(--muted)}
+.stack{display:flex;height:2rem;border-radius:7px;overflow:hidden;gap:2px;background:#fff}
+.stack div{display:flex;align-items:center;color:#fff;font-weight:700;font-size:.9rem;padding:0 .5rem;white-space:nowrap;overflow:hidden}
+.stack .f{background:var(--teal)} .stack .u{background:var(--orange);justify-content:flex-end}
+.legend{display:flex;gap:1.2rem;font-size:.85rem;color:var(--muted);margin:.2rem 0 .6rem}
+.legend i{display:inline-block;width:.8rem;height:.8rem;border-radius:3px;margin-right:.35rem;vertical-align:-1px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+@media (max-width:700px){.two{grid-template-columns:1fr}.bar{grid-template-columns:6.5rem 1fr 4.6rem}.split{grid-template-columns:1fr}}
+.mean{font:800 3.2rem/1 system-ui,sans-serif;color:var(--navy)}
+.mean small{font:500 .95rem system-ui,sans-serif;color:var(--muted);margin-left:.4rem}
+.dist{display:flex;gap:.35rem;align-items:flex-end;height:4.2rem;margin-top:.6rem}
+.dist div{flex:1;text-align:center;font-size:.75rem;color:var(--muted);display:flex;flex-direction:column;justify-content:flex-end;height:100%}
+.dist i{display:block;background:var(--navy);border-radius:4px 4px 0 0;min-height:2px}
+.clause{display:grid;grid-template-columns:1fr auto;gap:.8rem;align-items:start;padding:.55rem 0;border-top:1px solid var(--line)}
+.clause:first-of-type{border-top:0}
+.clause.off .txt{opacity:.45;text-decoration:line-through}
+.clause .who{font-size:.8rem;color:var(--muted)}
+.pill{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-radius:999px;padding:.15rem .6rem;white-space:nowrap}
+.pill.in{background:var(--teal-t);color:#256560} .pill.split{background:var(--gold-t);color:#7A5A0C} .pill.out{background:#EEF0F3;color:var(--muted)}
+.pct{font-weight:700;font-variant-numeric:tabular-nums;margin-right:.5rem}
+label.pick{display:flex;gap:.7rem;align-items:flex-start;padding:.65rem .7rem;border:1.5px solid var(--line);border-radius:10px;margin:.4rem 0;background:#fff;cursor:pointer}
+label.pick.on{border-color:var(--teal);background:var(--teal-t)}
+label.pick input{width:1.3rem;height:1.3rem;margin-top:.15rem;flex:none;accent-color:var(--teal)}
+pre.prompt{white-space:pre-wrap;word-break:break-word;background:#F7F8FA;border:1px solid var(--line);border-radius:10px;padding:.9rem;font:.85rem/1.5 ui-monospace,Menlo,Consolas,monospace;max-height:22rem;overflow:auto}
+.draft{white-space:pre-wrap;font:1.05rem/1.6 Georgia,"Times New Roman",serif;background:#fff;border:1px solid var(--line);border-radius:10px;padding:1rem 1.2rem}
+ul.loops{padding-left:1.2rem;margin:.4rem 0} ul.loops li{margin:.45rem 0}
+#banner{position:sticky;top:0;z-index:5}
+#banner div{background:var(--red);color:#fff;padding:.6rem 1rem;font-size:.9rem}
+#banner div.info{background:var(--teal)}
+#banner button{background:#fff;color:var(--navy);padding:.25rem .7rem;margin-left:.6rem;font-size:.85rem}
+ol.rank{list-style:none;margin:.5rem 0;padding:0}
+.rk{display:grid;grid-template-columns:2.9rem 1fr auto;gap:.4rem;align-items:center;background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:.4rem .5rem .4rem 0;margin:.35rem 0;user-select:none;-webkit-user-select:none}
+.rk .grip{touch-action:none;cursor:grab;align-self:stretch;display:flex;align-items:center;justify-content:center;font-size:1.25rem;letter-spacing:-.15em;color:var(--muted);min-height:2.9rem}
+.rk b{display:block;line-height:1.25}
+.rk .d{display:block;font-size:.82rem;line-height:1.3;color:var(--muted)}
+.rk .no{display:inline-block;min-width:1.45rem;font-weight:800;color:var(--teal)}
+.rk.below .no{color:var(--orange)}
+.rk .mv{display:flex;flex-direction:column;gap:.2rem}
+.rk .mv button{padding:.1rem .55rem;font-size:.8rem;line-height:1.3;background:#fff;color:var(--navy);border:1.5px solid var(--line);border-radius:7px}
+.rk.dragging{border-color:var(--gold);box-shadow:0 8px 20px rgba(22,33,58,.28);position:relative;z-index:2}
+.rk.line{background:var(--navy);border-color:var(--navy)}
+.rk.line b{color:#fff}.rk.line .d{color:#D5DBE6}.rk.line .grip{color:var(--gold)}
+.rk.line .mv button{background:var(--navy2);color:#fff;border-color:#4A5A7C}
+.rankEnd{font-size:.75rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:.2rem 0 0 .2rem}
+.classline{display:flex;align-items:center;gap:.7rem;margin:.55rem 0;font-weight:700;font-size:.9rem;color:var(--navy)}
+.classline:before,.classline:after{content:"";flex:1;border-top:3px dashed var(--navy)}
+.seg{display:inline-flex;border:1.5px solid var(--navy);border-radius:10px;overflow:hidden;flex-wrap:wrap}
+.seg button{border-radius:0;background:#fff;color:var(--navy)}
+.seg button.on{background:var(--navy);color:#fff}
+.foot{margin-top:1.4rem;font-size:.8rem;color:var(--muted);display:flex;gap:1.2rem;flex-wrap:wrap}
+</style>
+</head>
+<body>
+<header class="top"><span class="brand">Fair Price?</span><span class="small" style="opacity:.8">FYS 7b · Big Tech Under Fire</span><span class="who" id="who"></span></header>
+<div id="banner"></div>
+<main id="app"><p class="muted">Loading…</p></main>
+<noscript><p style="padding:1rem">This page needs JavaScript turned on.</p></noscript>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
+/* =====================================================================
+   FIREBASE CONFIG  (same project as the other class games)
+   Sessions are stored under games/ppr-CODE
+   ===================================================================== */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyDQ8gn5w_Jj4OzcXFBz2lY2SKuaKEo2wbk",
+  authDomain: "obfuscationgame.firebaseapp.com",
+  databaseURL: "https://obfuscationgame-default-rtdb.firebaseio.com",
+  projectId: "obfuscationgame",
+  storageBucket: "obfuscationgame.firebasestorage.app",
+  messagingSenderId: "443679460937",
+  appId: "1:443679460937:web:d6b2806717894b3c923998"
+};
+
+/* =====================================================================
+   CONTENT  (edit wording here)
+   ===================================================================== */
+const ROUNDS = [
+  { id: "poll1",  name: "Opening poll" },
+  { id: "sort",   name: "Fairness ranking" },
+  { id: "frame",  name: "Framing test" },
+  { id: "poll2",  name: "Re-vote" },
+  { id: "law",    name: "Draft your law" },
+  { id: "vote",   name: "Clause vote" },
+  { id: "prompt", name: "AI draft" },
+  { id: "red",    name: "Red team" },
+  { id: "sign",   name: "Sign it?" }
+];
+const POLL = [
+  { id: "fair", q: "Personalized pricing is…", opts: [["unfair", "Unfair"], ["depends", "It depends"], ["fair", "Fair"]] },
+  { id: "ban",  q: "Should it be banned?",      opts: [["yes", "Yes, ban it"], ["unsure", "Not sure"], ["no", "No"]] }
+];
+const CASES = [
+  { id: "senior",   t: "Senior discount",   d: "A movie theater charges people over 65 less." },
+  { id: "student",  t: "Student discount",  d: "A software company charges students half price." },
+  { id: "military", t: "Military discount", d: "A restaurant gives service members 10% off." },
+  { id: "bulk",     t: "Bulk discount",     d: "A warehouse store charges less per roll when you buy 48 rolls." },
+  { id: "coupon",   t: "Coupons",           d: "A grocery store charges less to shoppers who clip coupons." },
+  { id: "zip",      t: "ZIP code pricing",  d: "An online store shows higher prices to shoppers in some ZIP codes." },
+  { id: "browse",   t: "Browsing history",  d: "A travel site sets your price using the websites you visited." },
+  { id: "aid",      t: "Financial aid",     d: "A college charges each family a different price based on its income and savings." }
+];
+const FRAMES = {
+  A: { label: "Discount wording",  text: "A museum's ticket price is $10. Students get 20% off, so students pay $8." },
+  B: { label: "Surcharge wording", text: "A museum's ticket price is $8. Non-students pay a 25% surcharge, so non-students pay $10." }
+};
+const FRAME_SAME = "Same prices under both: students pay $8, everyone else pays $10.";
+const FIELDS = [
+  { id: "why",     t: "Why it's needed", q: "What problem does your law solve? This is the argument that goes into the email or op-ed.", ph: "Without this law…" },
+  { id: "scope",   t: "What's covered", q: "Which sellers, which prices, and which data does your law apply to?", ph: "Any business that…" },
+  { id: "rule",    t: "The rule",       q: "What must covered sellers do, or stop doing?", ph: "A covered seller may not… / must…" },
+  { id: "exempt",  t: "Exemptions",     q: "What is still allowed? Decide about senior discounts, coupons and financial aid.", ph: "This law does not apply to…" },
+  { id: "enforce", t: "Enforcement",    q: "Who checks, and what happens to a seller that breaks the rule?", ph: "The state attorney general may…" }
+];
+const MAXLEN = 400;
+
+/* =====================================================================
+   PLUMBING
+   ===================================================================== */
+const PREFIX = "ppr-";
+const LS_STU = "fairprice.student", LS_HOST = "fairprice.host", LS_LAW = "fairprice.lawdraft";
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const norm = (s) => String(s).trim().toLowerCase().replace(/\s+/g, " ");
+const pct = (a, b) => (b ? Math.round((100 * a) / b) : 0);
+const plural = (n, w) => n + " " + w + (n === 1 ? "" : "s");
+const rid = (p) => p + Math.random().toString(36).slice(2, 10);
+function lsGet(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } }
+function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
+
+let store = null, ctx = null, S = {}, CC = {}, unsub = null, unsubCC = null, lastHTML = null;
+const local = {};          // unsent choices and typed text, keyed "round.field"
+const seeded = {};         // rounds whose local values were loaded from saved answers
+const hostUI = { drafts: false, names: false, missing: false, edit: false, cc: false };
+
+function banner(msg, kind) { $("banner").innerHTML = msg ? `<div class="${kind || ""}">${msg}</div>` : ""; }
+window.addEventListener("error", (e) => banner("Something went wrong on this page: " + esc(e.message) + ". Reload to try again."));
+
+function memStore() {
+  const data = {}, subs = [];
+  const get = (p) => p.split("/").reduce((o, k) => (o && o[k] !== undefined ? o[k] : null), data);
+  const put = (p, v) => {
+    const ks = p.split("/"); let o = data;
+    for (let i = 0; i < ks.length - 1; i++) { if (typeof o[ks[i]] !== "object" || o[ks[i]] === null) o[ks[i]] = {}; o = o[ks[i]]; }
+    if (v === null || v === undefined) delete o[ks[ks.length - 1]]; else o[ks[ks.length - 1]] = JSON.parse(JSON.stringify(v));
+  };
+  const fire = () => subs.forEach((s) => s.cb(get(s.p)));
+  return {
+    kind: "memory",
+    async set(p, v) { put(p, v); fire(); },
+    async update(p, obj) { for (const k in obj) put(p + "/" + k, obj[k]); fire(); },
+    async get(p) { return get(p); },
+    on(p, cb) { const s = { p, cb }; subs.push(s); setTimeout(() => cb(get(p)), 0); return () => subs.splice(subs.indexOf(s), 1); }
+  };
+}
+let fbDb = null;
+function fbStore() {
+  if (!fbDb) {
+    if (typeof firebase === "undefined") throw new Error("the database library did not load (check the internet connection)");
+    if (!FIREBASE_CONFIG || !/^https:\/\/.+/.test(FIREBASE_CONFIG.databaseURL || "")) throw new Error("FIREBASE_CONFIG is missing its databaseURL");
+    if (!firebase.apps || !firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+    fbDb = firebase.database();
+  }
+  const db = fbDb;
+  const fail = (e) => banner("The class database refused that (" + esc(e && e.message) + "). Check that its rules allow reading and writing under <code>games</code>.");
+  return {
+    kind: "firebase",
+    async set(p, v) { try { await db.ref(p).set(v); } catch (e) { fail(e); throw e; } },
+    async update(p, obj) { try { await db.ref(p).update(obj); } catch (e) { fail(e); throw e; } },
+    async get(p) { return (await db.ref(p).get()).val(); },
+    on(p, cb) { const r = db.ref(p); const h = r.on("value", (s) => cb(s.val()), fail); return () => r.off("value", h); }
+  };
+}
+const base = () => "games/" + PREFIX + ctx.code;
+const ccPath = () => "games/" + PREFIX + ctx.code + "-cc";   // signers' email addresses, kept out of what students' devices load
+const draftV = () => S.draftV || 0;
+const fmt = () => (S.format === "oped" ? "oped" : "email");
+const pieceName = () => (fmt() === "oped" ? "op-ed" : "email");
+const players = () => S.players || {};
+const resp = (r) => (S.r && S.r[r]) || {};
+const revealed = (r) => !!(S.reveal && S.reveal[r]);
+const curRound = () => S.round || "lobby";
+
+function connect() {
+  if (unsub) unsub();
+  if (unsubCC) unsubCC(); unsubCC = null; CC = {};
+  lastHTML = null;
+  if (ctx.role === "host") unsubCC = store.on(ccPath(), (v) => { CC = v || {}; render(); });
+  unsub = store.on(base(), (v) => {
+    if (!v && !ctx.demo) { A.leave("That session no longer exists."); return; }
+    S = v || {};
+    render();
+  });
+}
+
+/* Rebuild only when the markup changed; keep typed text, focus and scroll. */
+function paint(html, wide) {
+  $("app").className = wide ? "host" : "";
+  if (html === lastHTML) return;
+  const a = document.activeElement, keep = a && a.id ? { id: a.id, s: a.selectionStart, e: a.selectionEnd } : null;
+  const y = window.scrollY;
+  lastHTML = html;
+  $("app").innerHTML = html;
+  document.querySelectorAll("[data-bind]").forEach((el) => { el.value = local[el.dataset.bind] || ""; });
+  if (keep && $(keep.id)) { const el = $(keep.id); el.focus(); try { el.setSelectionRange(keep.s, keep.e); } catch (e) {} }
+  window.scrollTo(0, y);
+}
+document.addEventListener("input", (e) => {
+  const k = e.target && e.target.dataset && e.target.dataset.bind;
+  if (!k) return;
+  local[k] = e.target.value;
+  if (k.indexOf("law.") === 0) { saveLawDraft(); lawStatus(); }
+});
+
+/* Drag a row of the ranking list by its handle (touch) or anywhere on it (mouse). */
+let drag = null;
+function commitRank(movedId) {
+  const list = $("rankList"); if (!list) return;
+  local["sort.order"] = Array.from(list.children).map((el) => el.dataset.id);
+  if (movedId === "LINE") local["sort.lineMoved"] = true;
+  lastHTML = null; render();
+}
+document.addEventListener("pointerdown", (e) => {
+  const t = e.target; if (!t || !t.closest) return;
+  const row = t.closest(".rk"); if (!row || t.closest("button")) return;
+  if (!(t.closest(".grip") || e.pointerType === "mouse")) return;
+  e.preventDefault();
+  drag = { el: row, id: e.pointerId, y: e.clientY };
+  row.classList.add("dragging");
+  requestAnimationFrame(dragLoop);
+  try { row.setPointerCapture(e.pointerId); } catch (err) {}
+});
+function placeDrag() {
+  if (!drag) return;
+  const list = drag.el.parentNode, y = drag.y;
+  // Count the other rows whose middle is above the finger, then shuffle neighbours past the dragged row.
+  // The dragged row itself is never re-inserted, so a touch that started on it keeps reporting.
+  let want = 0, cur = 0, seen = false;
+  for (const sib of list.children) {
+    if (sib === drag.el) { seen = true; continue; }
+    if (!seen) cur++;
+    const b = sib.getBoundingClientRect(); if (b.top + b.height / 2 < y) want++;
+  }
+  for (; cur < want && drag.el.nextElementSibling; cur++) list.insertBefore(drag.el.nextElementSibling, drag.el);
+  for (; cur > want && drag.el.previousElementSibling; cur--) list.insertBefore(drag.el.previousElementSibling, drag.el.nextElementSibling);
+}
+function dragLoop() {
+  if (!drag) return;
+  // Holding a row near the top or bottom edge scrolls the page so long lists work on a phone.
+  if (drag.y < 80) window.scrollBy(0, -9); else if (drag.y > window.innerHeight - 80) window.scrollBy(0, 9);
+  placeDrag();
+  requestAnimationFrame(dragLoop);
+}
+document.addEventListener("pointermove", (e) => {
+  if (!drag || e.pointerId !== drag.id) return;
+  e.preventDefault();
+  drag.y = e.clientY; placeDrag();
+}, { passive: false });
+function endDrag(e) {
+  if (!drag || (e && e.pointerId !== drag.id)) return;
+  const id = drag.el.dataset.id; drag.el.classList.remove("dragging"); drag = null;
+  commitRank(id);
+}
+document.addEventListener("pointerup", endDrag);
+document.addEventListener("pointercancel", endDrag);
+
+function render() {
+  if (!ctx) return;
+  if (drag) return;
+  $("who").innerHTML = ctx.role === "host"
+    ? `Instructor · session ${esc(ctx.code)} · <a href="#" onclick="A.leave();return false">exit</a>`
+    : `${esc(ctx.name)} · ${esc(ctx.code)} · <a href="#" onclick="A.leave();return false">leave</a>`;
+  if (ctx.role === "host") paint(hostHTML(), true); else paint(studentHTML(), false);
+  if (ctx.role === "student" && curRound() === "law") lawStatus();
+}
+
+/* =====================================================================
+   SHARED RESULT VIEWS
+   ===================================================================== */
+function bars(rows, total) {
+  return rows.map(([label, n]) => `<div class="bar"><div>${esc(label)}</div><div class="track"><div class="fill" style="width:${pct(n, total)}%"></div></div><div class="num">${n} · ${pct(n, total)}%</div></div>`).join("");
+}
+function pollCount(r, q) { const c = {}; let n = 0; Object.values(resp(r)).forEach((v) => { if (v && v[q]) { c[v[q]] = (c[v[q]] || 0) + 1; n++; } }); return { c, n }; }
+function pollResults(r) {
+  return POLL.map((q) => { const { c, n } = pollCount(r, q.id); return `<h3>${esc(q.q)}</h3>${bars(q.opts.map(([k, l]) => [l, c[k] || 0]), n)}`; }).join("");
+}
+function revoteResults() {
+  const a = resp("poll1"), b = resp("poll2");
+  const both = Object.keys(b).filter((p) => a[p]);
+  const moved = both.filter((p) => POLL.some((q) => a[p][q.id] !== b[p][q.id])).length;
+  let h = POLL.map((q) => {
+    const x = pollCount("poll1", q.id), y = pollCount("poll2", q.id);
+    return `<h3>${esc(q.q)}</h3><div class="two"><div><div class="tag">Opening (${x.n})</div>${bars(q.opts.map(([k, l]) => [l, x.c[k] || 0]), x.n)}</div><div><div class="tag">Now (${y.n})</div>${bars(q.opts.map(([k, l]) => [l, y.c[k] || 0]), y.n)}</div></div>`;
+  }).join("");
+  if (both.length) h += `<p style="margin-top:1rem"><b>${moved} of ${both.length}</b> students who voted both times changed at least one answer.</p>`;
+  return h;
+}
+function sortStats() {
+  const ids = CASES.map((c) => c.id);
+  const R = Object.values(resp("sort")).filter((v) => v && typeof v.o === "string").map((v) => ({ o: v.o.split(","), line: Math.max(0, Math.min(ids.length, +v.line || 0)) }));
+  const rows = CASES.map((c, i) => {
+    let sum = 0, n = 0, f = 0;
+    R.forEach((v) => { const k = v.o.indexOf(c.id); if (k < 0) return; n++; sum += k + 1; if (k < v.line) f++; });
+    return { c, i, n, f, u: n - f, avg: n ? sum / n : 0 };
+  }).sort((a, b) => (a.n ? a.avg : 99) - (b.n ? b.avg : 99) || a.i - b.i);
+  const L = R.map((v) => v.line).sort((a, b) => a - b), m = L.length;
+  return { rows, n: m, med: m ? Math.round((L[Math.floor((m - 1) / 2)] + L[Math.floor(m / 2)]) / 2) : 0, lo: m ? L[0] : 0, hi: m ? L[m - 1] : 0 };
+}
+function sortResults(mine) {
+  const T = sortStats(); if (!T.n) return `<p class="muted">No answers yet.</p>`;
+  const myO = mine && typeof mine.o === "string" ? mine.o.split(",") : null;
+  const lineRow = `<div class="classline">The class line · the typical student called ${T.med} of ${CASES.length} fair</div>`;
+  let h = `<p>In the class's average order, fairest first. Each bar shows how many students put that practice on the fair side of their own line.</p>
+    <div class="legend"><span><i style="background:var(--teal)"></i>Fair side</span><span><i style="background:var(--orange)"></i>Unfair side</span></div>`;
+  T.rows.forEach(({ c, f, u, n, avg }, k) => {
+    if (k === T.med) h += lineRow;
+    const pf = pct(f, n), mk = myO ? myO.indexOf(c.id) : -1;
+    const you = mk >= 0 ? ` · you ranked it ${mk + 1}, ${mk < +mine.line ? "fair" : "unfair"}` : "";
+    h += `<div class="split"><div class="name"><b>${k + 1}. ${esc(c.t)}</b><span>${esc(c.d)}</span><span>Average position ${avg.toFixed(1)}${you}</span></div><div class="stack">${f ? `<div class="f" style="flex:${f}">${pf}%</div>` : ""}${u ? `<div class="u" style="flex:${u}">${100 - pf}%</div>` : ""}</div></div>`;
+  });
+  if (T.med >= T.rows.length) h += lineRow;
+  return h + `<p class="muted small" style="margin-top:.6rem">Individual lines ranged from ${T.lo} to ${T.hi} of the ${CASES.length} on the fair side.</p>`;
+}
+function frameStats(v) {
+  const xs = Object.values(resp("frame")).filter((r) => r && r.v === v && r.rating).map((r) => +r.rating);
+  const d = [0, 0, 0, 0, 0]; xs.forEach((x) => d[x - 1]++);
+  return { n: xs.length, mean: xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : 0, d };
+}
+function frameResults() {
+  const card = (v) => {
+    const s = frameStats(v), mx = Math.max(1, ...s.d);
+    return `<div class="panel" style="margin:0"><div class="tag">${esc(FRAMES[v].label)} · ${plural(s.n, "student")}</div><div class="quote">${esc(FRAMES[v].text)}</div>
+      <div class="mean">${s.n ? s.mean.toFixed(1) : "–"}<small>average fairness, 1 to 5</small></div>
+      <div class="dist">${s.d.map((k, i) => `<div><i style="height:${Math.round((100 * k) / mx)}%"></i>${i + 1}</div>`).join("")}</div></div>`;
+  };
+  return `<div class="two">${card("A")}${card("B")}</div><p style="margin-top:1rem"><b>${esc(FRAME_SAME)}</b> Half the room read each version.</p>`;
+}
+function clauses(fid, all) {
+  const L = resp("law"), off = (S.off && S.off[fid]) || {};
+  return Object.keys(L).sort().filter((p) => /^\w+$/.test(p) && L[p] && String(L[p][fid] || "").trim()).filter((p) => all || !off[p])
+    .map((p) => ({ pid: p, text: String(L[p][fid]).trim(), off: !!off[p] }));
+}
+function voteTally(fid) {
+  const V = resp("vote"), voters = Object.keys(V).length;
+  return { voters, rows: clauses(fid).map((c) => ({ ...c, yes: Object.values(V).filter((b) => b && b[fid] && b[fid][c.pid]).length })).sort((a, b) => b.yes - a.yes) };
+}
+const verdict = (yes, n) => (!n ? "" : yes / n >= 2 / 3 ? "in" : yes / n <= 1 / 3 ? "out" : "split");
+const VERDICT = { in: "Consensus", split: "Split", out: "Rejected" };
+function voteResults() {
+  return FIELDS.map((f) => {
+    const t = voteTally(f.id);
+    return `<h3>${esc(f.t)}</h3>` + (t.rows.length ? t.rows.map((c) => { const v = verdict(c.yes, t.voters); return `<div class="clause"><div class="txt">${esc(c.text)}</div><div><span class="pct">${pct(c.yes, t.voters)}%</span><span class="pill ${v}">${VERDICT[v] || ""}</span></div></div>`; }).join("") : `<p class="muted">No clauses on the ballot.</p>`);
+  }).join("") + `<p class="muted small" style="margin-top:.8rem">Share of ballots that kept each clause. Consensus is two thirds or more, rejected is one third or fewer.</p>`;
+}
+function mostDivided() {
+  const all = [];
+  FIELDS.forEach((f) => { const t = voteTally(f.id); t.rows.forEach((c) => { if (t.voters) all.push({ f, c, gap: Math.abs(c.yes / t.voters - 0.5), share: pct(c.yes, t.voters) }); }); });
+  return all.sort((a, b) => a.gap - b.gap).slice(0, 3).filter((x) => x.gap <= 1 / 6);
+}
+function loopholes() {
+  const out = [];
+  Object.keys(resp("red")).forEach((p) => Object.values(resp("red")[p] || {}).forEach((x) => { if (x && x.text) out.push({ pid: p, text: x.text, t: x.t || 0 }); }));
+  return out.sort((a, b) => a.t - b.t);
+}
+function classEvidence() {
+  const out = [];
+  const poll = (r, when) => {
+    const a = pollCount(r, "fair"), b = pollCount(r, "ban"); if (!a.n) return;
+    out.push(`${when} (${a.n} students): ${a.c.unfair || 0} called personalized pricing unfair, ${a.c.depends || 0} said it depends, ${a.c.fair || 0} called it fair. ${b.c.yes || 0} wanted it banned, ${b.c.no || 0} did not, ${b.c.unsure || 0} were not sure.`);
+  };
+  poll("poll1", "Poll at the start of the lesson"); poll("poll2", "The same poll at the end of the lesson");
+  const T = sortStats();
+  if (T.n) out.push(`${T.n} students ranked eight pricing practices from most to least fair and marked where fair ends. The class's average order, with the share who put each on the fair side of their line: ` + T.rows.map((x, k) => `${k + 1}. ${x.c.t} (${pct(x.f, x.n)}%)`).join("; ") + `. The typical student called ${T.med} of the eight fair.`);
+  const a = frameStats("A"), b = frameStats("B");
+  if (a.n && b.n) out.push(`Wording test: ${a.n} students read "${FRAMES.A.text}" and rated its fairness ${a.mean.toFixed(1)} out of 5 on average. ${b.n} students read "${FRAMES.B.text}" and rated it ${b.mean.toFixed(1)}. The prices in the two versions are identical.`);
+  return out;
+}
+function buildPrompt() {
+  const voters = Object.keys(resp("vote")).length, oped = fmt() === "oped";
+  const WHY = FIELDS.find((f) => f.id === "why"), LAW = FIELDS.filter((f) => f.id !== "why");
+  const list = (f) => {
+    const rows = voters ? voteTally(f.id).rows : clauses(f.id);
+    return rows.length ? rows.map((c) => `- ${voters ? "[" + c.yes + "/" + voters + "] " : ""}${c.text.replace(/\s+/g, " ")}`).join("\n") : "(none submitted)";
+  };
+  const P = [];
+  P.push(`You are helping a first-year seminar at Brandeis University (FYS 7b, "Big Tech Under Fire") write ${oped ? "an op-ed to submit to the Boston Globe" : "an email to their state legislators"}. It proposes a law on personalized pricing: prices set for an individual consumer using that consumer's personal data. The authors are the students, writing as individuals and not on behalf of the university.`);
+  P.push(voters
+    ? `Everything below came from the students. The number in brackets is how many of the ${voters} students who voted wanted that item kept.`
+    : "Everything below came from the students. The class has not voted on these items yet, so treat ideas that recur as having more support.");
+  P.push("WHY THE STUDENTS SAY A LAW IS NEEDED\n" + list(WHY));
+  LAW.forEach((f, i) => P.push(`THE LAW, PART ${i + 1}: ${f.t.toUpperCase()}\n` + list(f)));
+  const ev = classEvidence();
+  if (ev.length) P.push("WHAT THE CLASS FOUND IN ITS OWN VOTES\n" + ev.map((x) => "- " + x).join("\n"));
+  const follow = voters ? "Follow the vote: build on the items most students kept and leave out the ones most students rejected." : "Build on the ideas that appear most often.";
+  const steps = oped ? [
+    "A headline.",
+    "An opening that a general reader will recognize from their own shopping, followed by the argument in one or two sentences.",
+    "Why this law is needed. Build the case from the students' own reasons above, giving most weight to the best-supported ones. You may cite the class's own results.",
+    "What the law would do. Describe its four parts (what is covered, the rule, the exemptions, the enforcement) in plain sentences, not in statute language. " + follow,
+    "Why the class made these choices. For the main choices, say what the students chose, what alternative they considered and rejected, and why. Use the vote counts.",
+    "The strongest objection, answered honestly, and where the class itself disagreed, including the view that no new law is needed if the votes show support for it.",
+    "A closing request to lawmakers. Do not add a byline or an author note. The authors' names are added separately.",
+  ] : [
+    "A subject line, then the greeting \"Dear Senator / Representative [name],\".",
+    "An opening of two or three sentences: who is writing and what they are asking for.",
+    "Why this law is needed. Build the case from the students' own reasons above, giving most weight to the best-supported ones. You may cite the class's own results.",
+    "The proposed law: one coherent text of at most 300 words in four numbered sections (Scope and definitions, Rule, Exemptions, Enforcement). " + follow,
+    "Why we made these choices. For each section, one or two sentences on what the class chose, what alternative it considered and rejected, and why. Use the vote counts.",
+    "Where we disagreed: a short, honest paragraph on the items that split the class, including the view that no new law is needed if the votes show support for it.",
+    "A specific request, then the single line \"Sincerely,\" and nothing after it. The signatures are added separately.",
+  ];
+  P.push(`YOUR TASK\nWrite the full ${oped ? "op-ed, ready to submit, in about 700 words" : "email, ready to send, in about 600 to 750 words"}. Include, in this order:\n` + steps.map((x, i) => `${i + 1}. ${x}`).join("\n"));
+  P.push("RULES\n- Write as \"we\", in plain English that a first-year student could read aloud.\n- Do not average away disagreement, and do not add policy ideas of your own.\n- Do not invent facts, statistics, quotations, company practices or claims about existing laws. Use only what is given above.\n" +
+    `- After the ${oped ? "op-ed" : "email"}, add a line of dashes and then three short lists for the class to discuss. They are not part of the ${oped ? "op-ed" : "email"}. "Where the class split": each place where well-supported items conflict, which way you resolved it, and why. "Gaps": things a workable law needs that no student covered, such as definitions or penalties. "Facts to check": any outside fact that would strengthen the piece and that someone should verify before it is added.`);
+  return P.join("\n\n");
+}
+function signers() {
+  const R = resp("sign"), last = (x) => x.trim().split(/\s+/).pop().toLowerCase();
+  return Object.keys(R).filter((p) => /^\w+$/.test(p) && R[p] && R[p].sign === true && R[p].name && (R[p].v || 0) === draftV())
+    .map((p) => ({ pid: p, name: String(R[p].name).trim() }))
+    .sort((a, b) => last(a.name).localeCompare(last(b.name)) || a.name.localeCompare(b.name));
+}
+function signedText() { const g = signers(); return (S.draft || "") + (g.length ? "\n\n" + g.map((x) => x.name).join("\n") : ""); }
+function ccList() { return signers().map((x) => (CC[x.pid] || {}).email).filter(Boolean); }
+
+/* =====================================================================
+   STUDENT
+   ===================================================================== */
+function seed(r) {
+  if (seeded[r]) return; seeded[r] = true;
+  const me = resp(r)[ctx.pid];
+  if (r === "sort") {
+    const ids = CASES.map((c) => c.id);
+    if (me && typeof me.o === "string") {
+      const o = me.o.split(",").filter((x) => ids.includes(x)); ids.forEach((x) => { if (!o.includes(x)) o.push(x); });
+      o.splice(Math.max(0, Math.min(o.length, +me.line || 0)), 0, "LINE");
+      local["sort.order"] = o; local["sort.lineMoved"] = true;
+    } else local["sort.order"] = ["LINE"].concat(ids.sort(() => Math.random() - 0.5));
+  } else if (r === "sign") {
+    if (me && me.name) local["sign.name"] = me.name;
+    store.get(ccPath() + "/" + ctx.pid).then((c) => { if (c && c.email && !local["sign.email"]) { local["sign.email"] = c.email; lastHTML = null; render(); } }).catch(() => {});
+  } else if (r === "law") {
+    const d = lsGet(LS_LAW);
+    const src = d && d.code === ctx.code && d.pid === ctx.pid ? d.v : me;
+    FIELDS.forEach((f) => { local["law." + f.id] = (src && src[f.id]) || ""; });
+  } else if (r === "vote") {
+    if (me) FIELDS.forEach((f) => Object.keys(me[f.id] || {}).forEach((p) => { local["vote." + f.id + "." + p] = true; }));
+  } else if (me) Object.keys(me).forEach((k) => { local[r + "." + k] = me[k]; });
+}
+function saveLawDraft() { const v = {}; FIELDS.forEach((f) => { v[f.id] = local["law." + f.id] || ""; }); lsSet(LS_LAW, { code: ctx.code, pid: ctx.pid, v }); }
+function lawDirty() { const me = resp("law")[ctx.pid]; return FIELDS.some((f) => (local["law." + f.id] || "").trim() !== ((me && me[f.id]) || "")); }
+function lawStatus() {
+  const el = $("lawStatus"); if (!el) return;
+  const me = resp("law")[ctx.pid], filled = FIELDS.filter((f) => (local["law." + f.id] || "").trim()).length;
+  el.innerHTML = !me ? `<span class="muted">${filled} of ${FIELDS.length} answers written. Nothing sent yet.</span>` : lawDirty() ? `<span class="warn">You have changes that are not saved.</span>` : `<span class="ok">Saved. You can edit and save again until the vote opens.</span>`;
+  const b = $("lawBtn"); if (b) { b.disabled = filled < FIELDS.length; b.textContent = me ? "Save changes" : "Submit my law"; }
+}
+const waitMsg = (t) => `<section class="panel teal"><h2>Answer in</h2><p>${t || "You can change it until your instructor shows the results."}</p></section>`;
+
+function studentHTML() {
+  const r = curRound(), me = resp(r)[ctx.pid], shown = revealed(r);
+  const meta = ROUNDS.find((x) => x.id === r), n = ROUNDS.indexOf(meta) + 1;
+  const head = meta ? `<div class="tag">Round ${n} of ${ROUNDS.length}</div><h1>${esc(meta.name)}</h1>` : "";
+  if (r === "lobby") return `<section class="panel gold"><h1>You're in, ${esc(ctx.name)}.</h1><p>Keep this page open. The first round starts when your instructor opens it.</p></section>`;
+  seed(r);
+
+  if (r === "poll1" || r === "poll2") {
+    if (shown) return head + `<section class="panel"><h2>Class results</h2>${r === "poll2" ? revoteResults() : pollResults(r)}</section>`;
+    const done = POLL.every((q) => local[r + "." + q.id]);
+    const same = me && POLL.every((q) => me[q.id] === local[r + "." + q.id]);
+    return head + (r === "poll2" ? `<p>Same two questions as the start of class. Answer for how you see it now.</p>` : `<p>Go with your gut. There is no right answer yet.</p>`) +
+      `<section class="panel">${POLL.map((q) => `<h3>${esc(q.q)}</h3><div class="opts">${q.opts.map(([k, l]) => `<button class="opt ${local[r + "." + q.id] === k ? "on" : ""}" onclick="A.pick('${r}.${q.id}','${k}')">${esc(l)}</button>`).join("")}</div>`).join("")}
+      <p style="margin-top:1rem"><button class="big go" ${done && !same ? "" : "disabled"} onclick="A.sendPoll('${r}')">${me ? "Change my answer" : "Submit"}</button></p></section>` + (me && same ? waitMsg() : "");
+  }
+
+  if (r === "sort") {
+    if (shown) return head + `<section class="panel"><h2>Class results</h2>${sortResults(me)}</section>`;
+    const order = local["sort.order"], li = order.indexOf("LINE"), ready = !!local["sort.lineMoved"] || li !== 0;
+    const same = me && me.o === order.filter((x) => x !== "LINE").join(",") && +me.line === li;
+    let k = 0;
+    return head + `<p><b>1.</b> Put these eight in order, with the one you find <b>most fair at the top</b>. Drag a row by its handle, or use the arrows.</p><p><b>2.</b> Move the dark line to where fair ends and unfair begins.</p>
+      <div class="rankEnd">Most fair</div><ol class="rank" id="rankList">` + order.map((id, i) => {
+        const mv = `<span class="mv"><button aria-label="Move up" ${i === 0 ? "disabled" : ""} onclick="A.move('${id}',-1)">▲</button><button aria-label="Move down" ${i === order.length - 1 ? "disabled" : ""} onclick="A.move('${id}',1)">▼</button></span>`;
+        if (id === "LINE") return `<li class="rk line" data-id="LINE"><span class="grip" aria-hidden="true">⋮⋮</span><span><b>▲ Fair above this line</b><span class="d">▼ Unfair below it</span></span>${mv}</li>`;
+        const c = CASES.find((x) => x.id === id); k++;
+        return `<li class="rk ${i > li ? "below" : ""}" data-id="${id}"><span class="grip" aria-hidden="true">⋮⋮</span><span><b><span class="no">${k}</span>${esc(c.t)}</b><span class="d">${esc(c.d)}</span></span>${mv}</li>`;
+      }).join("") + `</ol><div class="rankEnd">Least fair</div>
+      <p style="margin-top:.8rem"><button class="big go" ${!ready || same ? "disabled" : ""} onclick="A.sendSort()">${!ready ? "Move the line to finish" : me ? "Change my answer" : "Submit"}</button></p>` + (me && same ? waitMsg() : "");
+  }
+
+  if (r === "frame") {
+    if (shown) return head + `<section class="panel"><h2>What the room saw</h2>${frameResults()}</section>`;
+    const v = (S.frameAssign || {})[ctx.pid];
+    if (!v) { A.assignMe(); return head + `<p class="muted">Getting your version…</p>`; }
+    const pickd = local["frame.rating"], same = me && +me.rating === +pickd;
+    return head + `<p>Read this pricing policy. Keep your screen to yourself for now.</p><div class="quote">${esc(FRAMES[v].text)}</div>
+      <section class="panel"><h3>How fair is this pricing?</h3><div class="opts scale">${[1, 2, 3, 4, 5].map((k) => `<button class="opt ${+pickd === k ? "on" : ""}" onclick="A.pick('frame.rating',${k})">${k}</button>`).join("")}</div>
+      <div class="scaleEnds"><span>1 = very unfair</span><span>5 = very fair</span></div>
+      <p style="margin-top:1rem"><button class="big go" ${pickd && !same ? "" : "disabled"} onclick="A.sendFrame()">${me ? "Change my rating" : "Submit"}</button></p></section>` + (me && same ? waitMsg() : "");
+  }
+
+  if (r === "law") {
+    return head + `<p>Say why a law on personalized pricing is needed, then write the law in four short sections. One or two sentences each is plenty. The class will vote on these, without names, next session.</p><section class="panel">` +
+      FIELDS.map((f, i) => `<h3>${i + 1}. ${esc(f.t)}</h3><p class="muted small">${esc(f.q)}</p><textarea id="law_${f.id}" data-bind="law.${f.id}" maxlength="${MAXLEN}" placeholder="${esc(f.ph)}"></textarea>`).join("") +
+      `<p id="lawStatus" class="small" style="margin-top:.8rem"></p><button id="lawBtn" class="big go" onclick="A.sendLaw()">Submit my law</button></section>`;
+  }
+
+  if (r === "vote") {
+    if (shown) return head + `<section class="panel"><h2>Class results</h2>${voteResults()}</section>`;
+    const total = FIELDS.reduce((a, f) => a + clauses(f.id).length, 0);
+    if (!total) return head + `<p class="muted">No clauses have been submitted yet.</p>`;
+    return head + `<p>Tick every reason and every clause you want the class to use. Tick as many or as few as you like in each section.</p>` +
+      FIELDS.map((f) => `<section class="panel"><h2>${esc(f.t)}</h2>${clauses(f.id).map((c) => { const k = "vote." + f.id + "." + c.pid, on = !!local[k]; return `<label class="pick ${on ? "on" : ""}"><input type="checkbox" ${on ? "checked" : ""} onchange="A.tick('${k}',this.checked)"><span>${esc(c.text)}</span></label>`; }).join("") || `<p class="muted">Nothing submitted for this section.</p>`}</section>`).join("") +
+      `<button class="big go" onclick="A.sendVote()">${me ? "Update my ballot" : "Submit my ballot"}</button>` + (me ? `<p class="ok" style="margin-top:.6rem">Ballot in. You can change it until results are shown.</p>` : "");
+  }
+
+  if (r === "prompt") {
+    return head + (S.draft ? `<p>The class ${pieceName()}, drafted by AI from your reasons, your clauses and your votes. Read it with a critical eye: what did it leave out or smooth over?</p><div class="draft">${esc(S.draft)}</div>` : `<section class="panel teal"><p>Your instructor is turning the class's reasons, clauses and votes into one ${pieceName()}. It will appear here.</p></section>`);
+  }
+
+  if (r === "red") {
+    const mine = Object.values(resp("red")[ctx.pid] || {}).filter((x) => x && x.text);
+    const all = shown ? loopholes() : [];
+    return head + `<p><b>You now work for the seller's pricing team.</b> Find a way to keep charging different people different prices while obeying every word of this law.</p>` +
+      (S.draft ? `<details open><summary><b>The class draft</b></summary><div class="draft" style="margin-top:.5rem">${esc(S.draft)}</div></details>` : `<p class="muted">The class draft has not been posted yet.</p>`) +
+      `<section class="panel" style="margin-top:1rem"><h3>Our loophole</h3><textarea id="redText" data-bind="red.text" maxlength="${MAXLEN}" placeholder="The law says… so we would…"></textarea><p style="margin-top:.6rem"><button class="go" onclick="A.sendLoop()">Add loophole</button></p>` +
+      (mine.length ? `<p class="small muted">Sent from this device:</p><ul class="loops">${mine.map((x) => `<li>${esc(x.text)}</li>`).join("")}</ul>` : "") + `</section>` +
+      (shown ? `<section class="panel"><h2>Every loophole the class found (${all.length})</h2><ul class="loops">${all.map((x) => `<li>${esc(x.text)}</li>`).join("")}</ul></section>` : "");
+  }
+  if (r === "sign") {
+    if (!S.draft) return head + `<section class="panel teal"><p>The final text has not been posted yet.</p></section>`;
+    const names = signers(), cur = me && (me.v || 0) === draftV() ? me : null, stale = me && !cur && me.sign === true;
+    let box;
+    if (cur && cur.sign === true) box = `<section class="panel teal"><h2>You signed</h2><p>Your name appears under the ${pieceName()} as <b>${esc(cur.name)}</b>, and you will be copied when it is sent.</p><button class="secondary" onclick="A.unsign()">Remove my signature</button></section>`;
+    else if (cur && cur.sign === false) box = `<section class="panel"><h2>You chose not to sign</h2><p>That is a legitimate choice, and it is not shown to the class.</p><button class="secondary" onclick="A.unsign()">I changed my mind</button></section>`;
+    else box = `<section class="panel gold"><h2>Will you put your name on this?</h2>${stale ? `<p class="warn">The text changed after you signed. Read it again, then sign again if you still agree.</p>` : ""}
+      <p>Signing is your choice. You sign as yourself, not for Brandeis. If you sign, your name goes under the text and your email address is copied when it is sent.</p>
+      <h3>Your full name, as it should appear</h3><input id="signName" type="text" maxlength="60" data-bind="sign.name" autocomplete="name">
+      <h3>Your email address</h3><input id="signEmail" type="text" inputmode="email" maxlength="100" data-bind="sign.email" autocomplete="email" autocapitalize="off">
+      <p id="signErr" class="warn small"></p><div class="row"><button class="go" onclick="A.sign(true)">Sign it</button><button class="secondary" onclick="A.sign(false)">I'd rather not sign</button></div></section>`;
+    return head + `<p>Read the final ${pieceName()} before you decide.</p><div class="draft">${esc(signedText())}</div><div style="height:1rem"></div>` + box;
+  }
+  return head;
+}
+
+/* =====================================================================
+   INSTRUCTOR
+   ===================================================================== */
+function joinURL() { return (location.host + location.pathname).replace(/\/index\.html$/, "/") + "?code=" + ctx.code; }
+function hostHTML() {
+  const r = curRound(), P = players(), n = Object.keys(P).length, i = ROUNDS.findIndex((x) => x.id === r);
+  let h = "";
+  if (ctx.demo) h += `<div class="panel gold row spread"><span><b>Preview with a simulated class.</b> Nothing here is saved or shared.</span><span class="row"><button class="secondary" onclick="A.demoStudent()">See the student view</button><button class="secondary" onclick="A.leave()">Exit preview</button></span></div>`;
+  h += `<section class="hero ${r === "lobby" ? "lobby" : ""}"><div><div class="lab">Join at</div><div class="url">${esc(joinURL())}</div></div><div style="text-align:right"><div class="lab">Session code</div><div class="bigcode">${esc(ctx.code)}</div></div></section>`;
+  h += `<nav class="rounds" aria-label="Rounds"><button class="${r === "lobby" ? "on" : ""}" onclick="A.go('lobby')">Lobby</button>${ROUNDS.map((x, k) => `<button class="${x.id === r ? "on" : ""}" onclick="A.go('${x.id}')"><span class="n">${k + 1}</span>${esc(x.name)}</button>`).join("")}</nav>`;
+  h += `<section class="panel">${hostPanel(r, n)}</section>`;
+  const next = ROUNDS[i + 1];
+  h += `<div class="row spread">${next ? `<button onclick="A.go('${next.id}')">${r === "lobby" ? "Start round 1" : "Next round"}: ${esc(next.name)} →</button>` : "<span></span>"}<span class="row">${r !== "lobby" && r !== "prompt" ? `<button class="link small" onclick="A.clearRound('${r}')">Clear this round's answers</button>` : ""}<button class="link small" onclick="A.exportData()">Download session data</button></span></div>`;
+  return h;
+}
+function statusLine(r, n) {
+  const got = Object.keys(resp(r)).length, miss = Object.keys(players()).filter((p) => !resp(r)[p]).map((p) => players()[p].name);
+  return `<div class="row spread" style="margin:.6rem 0"><div class="count">${got}<small>of ${n} in</small></div><div class="row">${miss.length && got ? `<button class="link small" onclick="A.ui('missing')">${hostUI.missing ? "Hide" : "Who's missing?"}</button>` : ""}<button class="${revealed(r) ? "secondary" : "go"}" onclick="A.reveal('${r}',${!revealed(r)})">${revealed(r) ? "Hide results" : "Show results"}</button></div></div>` +
+    (hostUI.missing && miss.length && got ? `<p class="small muted">Not in yet: ${miss.map(esc).join(", ")}</p>` : "");
+}
+function ballotEditor() {
+  return `<p class="muted small">Untick duplicates or blanks to keep them off the ballot. Students never see names.</p><p><button class="link small" onclick="A.ui('names')">${hostUI.names ? "Hide names" : "Show names"}</button></p>` +
+    FIELDS.map((f) => { const cs = clauses(f.id, true); return `<h3>${esc(f.t)} <span class="muted small">(${cs.filter((c) => !c.off).length} on the ballot)</span></h3>` + (cs.map((c) => `<div class="clause ${c.off ? "off" : ""}"><div><div class="txt">${esc(c.text)}</div>${hostUI.names ? `<div class="who">${esc((players()[c.pid] || {}).name || "?")}</div>` : ""}</div><label class="small"><input type="checkbox" ${c.off ? "" : "checked"} onchange="A.ballot('${f.id}','${c.pid}',this.checked)"> on ballot</label></div>`).join("") || `<p class="muted">None yet.</p>`); }).join("");
+}
+function hostPanel(r, n) {
+  const meta = ROUNDS.find((x) => x.id === r), k = ROUNDS.indexOf(meta) + 1;
+  const head = meta ? `<div class="tag">Round ${k} of ${ROUNDS.length}</div><h1>${esc(meta.name)}</h1>` : "";
+  if (r === "lobby") return `<h1>Join the session</h1><div class="count">${n}<small>${n === 1 ? "student has" : "students have"} joined</small></div><p class="muted" style="margin-top:.6rem">${Object.values(players()).map((p) => esc(p.name)).join(" · ") || "Students open the address above on a phone or laptop and enter the code."}</p>`;
+  if (r === "poll1") return head + `<p>Is personalized pricing unfair? Should we ban it?</p>` + statusLine(r, n) + (revealed(r) ? pollResults(r) : "");
+  if (r === "poll2") return head + `<p>The same two questions as the opening poll.</p>` + statusLine(r, n) + (revealed(r) ? revoteResults() : "");
+  if (r === "sort") return head + `<p>Students drag eight kinds of price differences into order, fairest first, then mark where fair ends and unfair begins.</p>` + statusLine(r, n) + (revealed(r) ? sortResults() : `<p class="muted">${CASES.map((c) => esc(c.t)).join(" · ")}</p>`);
+  if (r === "frame") {
+    const as = Object.values(S.frameAssign || {}), a = as.filter((v) => v === "A").length, b = as.filter((v) => v === "B").length;
+    return head + `<p>Each student is rating one pricing policy on a 1 to 5 fairness scale.</p>` + statusLine(r, n) + (revealed(r) ? frameResults() : `<p class="muted">The room is split into two groups of ${a} and ${b}. What each group is reading stays hidden until you show results.</p>`);
+  }
+  if (r === "law") {
+    const got = Object.keys(resp(r)).length;
+    return head + `<p>Each student says why a law is needed, then writes it in four sections: what's covered, the rule, exemptions, enforcement. This round can stay open between classes; students rejoin with the same code and name.</p>
+      <div class="row spread" style="margin:.6rem 0"><div class="count">${got}<small>of ${n} drafts in</small></div><button class="secondary" onclick="A.ui('drafts')">${hostUI.drafts ? "Hide drafts" : "Review drafts and build the ballot"}</button></div>` + (hostUI.drafts ? ballotEditor() : "");
+  }
+  if (r === "vote") {
+    const div = revealed(r) ? mostDivided() : [];
+    return head + `<p>Students tick every reason and clause they want the class to use.</p>` + statusLine(r, n) +
+      (revealed(r) ? (div.length ? `<div class="panel gold"><div class="tag">Most divided</div>${div.map((x) => `<p style="margin:.4rem 0"><b>${x.share}% kept it</b> · ${esc(x.f.t)}: ${esc(x.c.text)}</p>`).join("")}</div>` : "") + voteResults()
+        : `<p class="muted">${FIELDS.map((f) => esc(f.t) + ": " + clauses(f.id).length).join(" · ")} clauses on the ballot.</p><p><button class="link small" onclick="A.ui('drafts')">${hostUI.drafts ? "Hide ballot editor" : "Edit the ballot"}</button></p>` + (hostUI.drafts ? ballotEditor() : ""));
+  }
+  if (r === "prompt") {
+    const oped = fmt() === "oped";
+    return head + `<p><b>Step 1.</b> Choose what the class is writing.</p><div class="seg"><button class="${oped ? "" : "on"}" onclick="A.format('email')">Email to our legislators</button><button class="${oped ? "on" : ""}" onclick="A.format('oped')">Op-ed for the Boston Globe</button></div>
+      <p style="margin-top:1.2rem"><b>Step 2.</b> Copy this prompt and paste it into the AI of your choice. This page builds it from the students' reasons and clauses, the round 6 vote counts, and the class results from rounds 1 to 4.</p><pre class="prompt" id="promptBox">${esc(buildPrompt())}</pre><p><button onclick="A.copy('prompt')">Copy prompt</button> <span id="copied_prompt" class="ok"></span></p>
+      <p style="margin-top:1.2rem"><b>Step 3.</b> Paste the AI's ${pieceName()} here to put it on every student's screen. Leave out the discussion lists the AI adds after it.</p><textarea id="draftText" data-bind="h.draft" style="min-height:9rem" placeholder="Paste the ${pieceName()} here"></textarea>
+      <p style="margin-top:.6rem"><button class="go" onclick="A.postDraft()">${S.draft ? "Replace the class draft" : "Show draft to the class"}</button></p>` +
+      (S.draft ? `<h3>The class draft</h3><div class="draft">${esc(S.draft)}</div>` : "");
+  }
+  if (r === "red") {
+    const all = loopholes();
+    return head + `<p>Students play the seller's pricing team: obey every word of the law and still charge people different prices.</p>
+      <div class="row spread" style="margin:.6rem 0"><div class="count">${all.length}<small>${all.length === 1 ? "loophole" : "loopholes"} found</small></div><button class="${revealed(r) ? "secondary" : "go"}" onclick="A.reveal('red',${!revealed(r)})">${revealed(r) ? "Hide loopholes" : "Show loopholes"}</button></div>` +
+      (revealed(r) ? `<ul class="loops">${all.map((x) => `<li>${esc(x.text)}</li>`).join("")}</ul>` : "") +
+      (S.draft ? `<details ${revealed(r) ? "" : "open"}><summary><b>The class draft</b></summary><div class="draft" style="margin-top:.5rem">${esc(S.draft)}</div></details>` : `<p class="warn">No class draft posted yet. Go back to round 7 to paste one in.</p>`);
+  }
+  if (r === "sign") {
+    const g = signers(), R = resp("sign"), answered = Object.keys(R).filter((p) => R[p] && (R[p].v || 0) === draftV()).length, cc = ccList();
+    return head + `<p>Students read the final ${pieceName()} on their phones and decide whether to add their name. Signing is optional, and the screen never shows who declined.</p>
+      <div class="row spread" style="margin:.6rem 0"><div class="count">${g.length}<small>signed · ${answered} of ${n} have answered</small></div><button class="secondary" onclick="A.ui('edit')">${hostUI.edit ? "Close the editor" : "Edit the text"}</button></div>` +
+      (hostUI.edit ? `<textarea id="draftText" data-bind="h.draft" style="min-height:9rem"></textarea><p style="margin:.6rem 0 1rem"><button class="go" onclick="A.postDraft()">Replace the text</button> <span class="muted small">Changing the text clears every signature. Students are asked to read it and sign again.</span></p>` : "") +
+      (S.draft ? `<div class="draft" id="signedBox">${esc(signedText())}</div>
+        <p style="margin-top:.6rem"><button onclick="A.copy('signed')">Copy text with signatures</button> <span id="copied_signed" class="ok"></span></p>
+        <h3>Addresses to cc (${cc.length})</h3><p class="muted small">The signers' email addresses, ready to paste into the cc line. They stay hidden unless you show them, because this screen is usually projected.</p>
+        <p><button onclick="A.copy('cc')">Copy cc list</button> <button class="secondary" onclick="A.ui('cc')">${hostUI.cc ? "Hide addresses" : "Show addresses"}</button> <span id="copied_cc" class="ok"></span></p>` +
+        (hostUI.cc ? `<pre class="prompt" id="ccBox">${esc(cc.join(", ")) || "No signatures yet."}</pre>` : "")
+        : `<p class="warn">No text posted yet. Go back to round 7 to paste one in.</p>`);
+  }
+  return head;
+}
+
+/* =====================================================================
+   SCREENS BEFORE A SESSION
+   ===================================================================== */
+function landing(msg) {
+  ctx = null; S = {}; lastHTML = null; $("who").innerHTML = "";
+  const code = (new URLSearchParams(location.search).get("code") || "").toUpperCase().replace(/[^A-Z]/g, "").slice(0, 4);
+  $("app").className = "";
+  $("app").innerHTML = `<h1>Is that a fair price?</h1><p>A class activity on personalized pricing: vote, compare, then write the law yourselves.</p>
+    ${msg ? `<p class="warn">${esc(msg)}</p>` : ""}
+    <section class="panel gold"><h2>Join your class</h2>
+      <div class="row"><input id="joinCode" class="code" type="text" maxlength="4" placeholder="CODE" value="${esc(code)}" autocomplete="off" autocapitalize="characters" style="max-width:8.5em" aria-label="Session code">
+      <input id="joinName" type="text" maxlength="24" placeholder="First name and last initial" autocomplete="off" style="flex:1;min-width:11em" aria-label="Your name"></div>
+      <p id="joinErr" class="warn small"></p><button class="big go" onclick="A.join()">Join</button>
+      <p class="small muted" style="margin-top:.6rem">Coming back for another class? Use the same code and the same name to pick up where you left off.</p></section>
+    <div class="row spread"><button class="secondary" onclick="A.hostSetup()">Run a session (instructor)</button><button class="secondary" onclick="A.demo()">Preview with a simulated class</button></div>`;
+}
+function hostSetupScreen(msg) {
+  const last = lsGet(LS_HOST);
+  $("app").innerHTML = `<h1>Run a session</h1>${msg ? `<p class="warn">${esc(msg)}</p>` : ""}
+    <section class="panel"><h2>Start a new session</h2><p>You get a four-letter code. Students open this same page, enter the code and their name, and you decide when each of the nine rounds opens and when results appear.</p><button class="go" onclick="A.hostNew()">Start a new session</button></section>
+    <section class="panel"><h2>Reopen an earlier session</h2><p>For the second class, or after closing this tab. Everything students submitted is still there.</p>
+      <div class="row"><input id="resumeCode" class="code" type="text" maxlength="4" placeholder="CODE" value="${esc(last || "")}" autocomplete="off" autocapitalize="characters" style="max-width:8.5em" aria-label="Session code"><button onclick="A.hostResume()">Reopen</button></div></section>
+    <button class="link" onclick="A.leave()">← Back</button>`;
+}
+
+/* =====================================================================
+   ACTIONS
+   ===================================================================== */
+const A = {
+  /* ---- joining and hosting ---- */
+  async join() {
+    const code = $("joinCode").value.toUpperCase().replace(/[^A-Z]/g, ""), name = $("joinName").value.trim().replace(/\s+/g, " ");
+    const err = (m) => { $("joinErr").textContent = m; };
+    if (code.length !== 4) return err("Enter the four-letter code on the screen.");
+    if (name.length < 2) return err("Enter your first name and last initial.");
+    try {
+      store = fbStore();
+      const path = "games/" + PREFIX + code;
+      if (!(await store.get(path + "/created"))) return err("No session with the code " + code + ". Check the screen and try again.");
+      const P = (await store.get(path + "/players")) || {};
+      let pid = Object.keys(P).find((p) => P[p] && P[p].key === norm(name));
+      if (!pid) { pid = rid("p"); await store.set(path + "/players/" + pid, { name, key: norm(name), joined: Date.now() }); }
+      ctx = { role: "student", code, pid, name: (P[pid] && P[pid].name) || name };
+      lsSet(LS_STU, ctx);
+      connect();
+    } catch (e) { err("Couldn't join: " + e.message); }
+  },
+  hostSetup() { hostSetupScreen(); },
+  async hostNew() {
+    try {
+      store = fbStore();
+      const L = "ABCDEFGHJKMNPQRSTUVWXYZ"; let code = "";
+      for (let t = 0; t < 30 && !code; t++) { const c = Array.from({ length: 4 }, () => L[Math.floor(Math.random() * L.length)]).join(""); if (!(await store.get("games/" + PREFIX + c + "/created"))) code = c; }
+      if (!code) throw new Error("couldn't find a free code");
+      ctx = { role: "host", code };
+      await store.set(base(), { created: Date.now(), round: "lobby" });
+      lsSet(LS_HOST, code);
+      connect();
+    } catch (e) { hostSetupScreen("Couldn't start a session: " + e.message); }
+  },
+  async hostResume(auto) {
+    const code = (auto || $("resumeCode").value).toUpperCase().replace(/[^A-Z]/g, "");
+    try {
+      store = fbStore();
+      if (code.length !== 4 || !(await store.get("games/" + PREFIX + code + "/created"))) { lsDel(LS_HOST); return hostSetupScreen("No session with the code " + (code || "(blank)") + "."); }
+      ctx = { role: "host", code }; lsSet(LS_HOST, code); connect();
+    } catch (e) { hostSetupScreen("Couldn't reopen: " + e.message); }
+  },
+  leave(msg) {
+    if (unsub) unsub(); unsub = null;
+    if (unsubCC) unsubCC(); unsubCC = null; CC = {};
+    if (ctx && !ctx.demo) { if (ctx.role === "student") lsDel(LS_STU); }
+    Object.keys(local).forEach((k) => delete local[k]); Object.keys(seeded).forEach((k) => delete seeded[k]);
+    const wasHost = ctx && ctx.role === "host" && !ctx.demo;
+    ctx = null; banner("");
+    if (wasHost) { sessionStorage.setItem("fairprice.noresume", "1"); }
+    landing(typeof msg === "string" ? msg : "");
+  },
+
+  /* ---- instructor controls ---- */
+  async go(r) {
+    const up = { round: r };
+    if (r === "frame") {
+      const have = S.frameAssign || {}, need = Object.keys(players()).filter((p) => !have[p]);
+      let a = Object.values(have).filter((v) => v === "A").length, b = Object.values(have).filter((v) => v === "B").length;
+      need.sort(() => Math.random() - 0.5).forEach((p) => { const v = a < b ? "A" : b < a ? "B" : Math.random() < 0.5 ? "A" : "B"; up["frameAssign/" + p] = v; v === "A" ? a++ : b++; });
+    }
+    hostUI.missing = false; hostUI.drafts = false; hostUI.edit = false; hostUI.cc = false;
+    if ((r === "prompt" || r === "sign") && S.draft) local["h.draft"] = S.draft;
+    await store.update(base(), up);
+    window.scrollTo(0, 0);
+  },
+  reveal(r, on) { store.set(base() + "/reveal/" + r, on ? true : null); },
+  ui(k) { hostUI[k] = !hostUI[k]; render(); },
+  ballot(f, pid, on) { store.set(base() + "/off/" + f + "/" + pid, on ? null : true); },
+  async clearRound(r) {
+    if (!confirm("Delete every answer in this round for the whole class?")) return;
+    const up = { ["r/" + r]: null, ["reveal/" + r]: null };
+    if (r === "frame") up.frameAssign = null;
+    if (r === "law") up.off = null;
+    if (r === "sign") await store.set(ccPath(), null);
+    await store.update(base(), up);
+    if (r === "frame") A.go("frame");
+  },
+  async copy(kind) {
+    const t = kind === "cc" ? ccList().join(", ") : kind === "signed" ? signedText() : buildPrompt();
+    try { await navigator.clipboard.writeText(t); }
+    catch (e) { const ta = document.createElement("textarea"); ta.value = t; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); ta.remove(); }
+    const el = $("copied_" + kind); if (el) el.textContent = "Copied.";
+  },
+  format(f) { store.set(base() + "/format", f === "oped" ? "oped" : "email"); },
+  async postDraft() {
+    const t = (local["h.draft"] || "").trim().slice(0, 9000); if (!t || t === S.draft) return;
+    if (signers().length && !confirm("Changing the text clears every signature. Students will be asked to sign again. Continue?")) return;
+    await store.update(base(), { draft: t, draftV: draftV() + 1 });
+    hostUI.edit = false; render();
+  },
+  exportData() {
+    const blob = new Blob([JSON.stringify(S, null, 2)], { type: "application/json" });
+    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "fair-price-" + ctx.code + ".json"; document.body.appendChild(a); a.click(); a.remove();
+  },
+
+  /* ---- student answers ---- */
+  pick(k, v) { local[k] = v; lastHTML = null; render(); },
+  tick(k, on) { if (on) local[k] = true; else delete local[k]; lastHTML = null; render(); },
+  sendPoll(r) { const v = {}; POLL.forEach((q) => { v[q.id] = local[r + "." + q.id]; }); store.set(base() + "/r/" + r + "/" + ctx.pid, v); },
+  move(id, d) {
+    const o = local["sort.order"], i = o.indexOf(id), j = i + d; if (i < 0 || j < 0 || j >= o.length) return;
+    o.splice(i, 1); o.splice(j, 0, id); if (id === "LINE") local["sort.lineMoved"] = true;
+    lastHTML = null; render();
+  },
+  sendSort() { const o = local["sort.order"]; store.set(base() + "/r/sort/" + ctx.pid, { o: o.filter((x) => x !== "LINE").join(","), line: o.indexOf("LINE") }); },
+  async sign(yes) {
+    const name = (local["sign.name"] || "").trim().replace(/\s+/g, " ").slice(0, 60), email = (local["sign.email"] || "").trim();
+    if (yes) {
+      const err = (m) => { const e = $("signErr"); if (e) e.textContent = m; };
+      if (name.length < 3) return err("Enter your full name.");
+      if (!/^[^\s@,;]+@[^\s@,;]+\.[^\s@,;]+$/.test(email)) return err("Enter a valid email address.");
+      await store.set(ccPath() + "/" + ctx.pid, { email });
+      await store.set(base() + "/r/sign/" + ctx.pid, { sign: true, name, v: draftV(), t: Date.now() });
+    } else {
+      await store.set(ccPath() + "/" + ctx.pid, null);
+      await store.set(base() + "/r/sign/" + ctx.pid, { sign: false, v: draftV(), t: Date.now() });
+    }
+  },
+  async unsign() { await store.set(ccPath() + "/" + ctx.pid, null); await store.set(base() + "/r/sign/" + ctx.pid, null); },
+  sendFrame() { store.set(base() + "/r/frame/" + ctx.pid, { v: S.frameAssign[ctx.pid], rating: +local["frame.rating"] }); },
+  async assignMe() {
+    if (A._assigning) return; A._assigning = true;
+    const as = Object.values(S.frameAssign || {}), a = as.filter((v) => v === "A").length, b = as.length - a;
+    try { await store.set(base() + "/frameAssign/" + ctx.pid, a < b ? "A" : b < a ? "B" : Math.random() < 0.5 ? "A" : "B"); } finally { A._assigning = false; }
+  },
+  async sendLaw() {
+    const v = { t: Date.now() }; FIELDS.forEach((f) => { v[f.id] = (local["law." + f.id] || "").trim().slice(0, MAXLEN); });
+    if (FIELDS.some((f) => !v[f.id])) return;
+    await store.set(base() + "/r/law/" + ctx.pid, v);
+    lsDel(LS_LAW); lawStatus();
+  },
+  sendVote() {
+    const v = { t: Date.now() };
+    FIELDS.forEach((f) => { clauses(f.id).forEach((c) => { if (local["vote." + f.id + "." + c.pid]) { (v[f.id] = v[f.id] || {})[c.pid] = true; } }); });
+    store.set(base() + "/r/vote/" + ctx.pid, v);
+  },
+  async sendLoop() {
+    const t = (local["red.text"] || "").trim().slice(0, MAXLEN); if (!t) return;
+    local["red.text"] = "";
+    await store.set(base() + "/r/red/" + ctx.pid + "/" + rid("k"), { text: t, t: Date.now() });
+    lastHTML = null; render();
+  },
+
+  /* ---- preview ---- */
+  demo() {
+    store = memStore(); ctx = { role: "host", code: "DEMO", demo: true };
+    const d = demoData(); store.set(base(), d.D); store.set(ccPath(), d.cc); connect();
+  },
+  demoStudent() {
+    ctx = { role: "student", code: "DEMO", pid: "you", name: "You (student view)", demo: true };
+    if (!players().you) store.set(base() + "/players/you", { name: "You", key: "you", joined: Date.now() });
+    banner(`Preview: this is what a student sees in the current round. <button onclick="A.demoHost()">Back to the instructor view</button>`, "info");
+    lastHTML = null; render();
+  },
+  demoHost() { ctx = { role: "host", code: "DEMO", demo: true }; banner(""); lastHTML = null; render(); }
+};
+
+/* =====================================================================
+   SIMULATED CLASS FOR THE PREVIEW
+   ===================================================================== */
+function demoData() {
+  let s = 7; const rnd = () => ((s = (s * 16807) % 2147483647) - 1) / 2147483646;
+  const choose = (pairs) => { let x = rnd(); for (const [k, p] of pairs) { if ((x -= p) < 0) return k; } return pairs[pairs.length - 1][0]; };
+  const names = ["Ava", "Ben", "Carlos", "Dana", "Eli", "Fatima", "Grace", "Hiro", "Imani", "Jack", "Keisha", "Liam", "Maya", "Noah", "Olivia", "Priya", "Quinn", "Rosa"];
+  const surnames = ["Thompson", "Okafor", "Reyes", "Whitfield", "Katz", "Rahman", "Lindqvist", "Tanaka", "Mbeki", "Sullivan", "Brooks", "Nguyen", "Patel", "Goldberg", "Castillo", "Iyer", "Abbott", "Delgado"];
+  const D = { created: Date.now(), round: "lobby", format: "email", draftV: 1, players: {}, r: { poll1: {}, sort: {}, frame: {}, poll2: {}, law: {}, vote: {}, red: {}, sign: {} }, frameAssign: {} }, cc = {};
+  const pf = { senior: .9, student: .85, military: .8, bulk: .95, coupon: .9, zip: .3, browse: .1, aid: .7 };
+  const whys = ["Shoppers cannot tell when a price was set just for them, so they cannot shop around.", "Sellers can use what they know about you to charge the most you would pay.", "People in a hurry or in need get charged more, which is gouging one person at a time.", "Prices on necessities should not depend on who is asking.", "Personal data was collected for other reasons and should not be turned against the shopper.", "No new law is needed. Competition already punishes sellers who overcharge."];
+  const laws = [
+    ["Any business that sets a price for one shopper using that shopper's personal data.", "Covered sellers must show every shopper the same base price before any discount.", "Discounts open to a whole group, such as seniors, students and veterans.", "The attorney general can fine a seller $1,000 for each shopper affected."],
+    ["Online sellers with more than $10 million in yearly sales.", "A seller may not raise a price because of a shopper's browsing history or location.", "Coupons anyone can find and use, and need-based financial aid.", "Shoppers can sue for three times what they were overcharged."],
+    ["All sellers, online and in stores, that use an algorithm to set prices.", "A seller must tell the shopper when a price was set using personal data, and say which data.", "Loyalty programs a shopper chose to join.", "A state agency audits pricing code once a year."],
+    ["Sellers of necessities: groceries, housing, medicine and transportation.", "No personalized prices on necessities, ever.", "None.", "Fines equal to 5% of the seller's yearly revenue."],
+    ["Any company that buys data about shoppers from a data broker.", "Shoppers can switch off personalized pricing and get the standard price.", "Prices that are lower than the standard price.", "The attorney general, after one warning letter."],
+    ["Any business that sets a price for one shopper using personal data, except small businesses.", "Sellers may personalize discounts but may never charge above the posted price.", "Financial aid at colleges and sliding-scale fees at clinics.", "A public database where shoppers report the prices they were shown."]
+  ];
+  const approve = [[.85, .8, .6, .45, .5, .2], [.8, .35, .6, .3, .25, .55], [.5, .7, .85, .45, .75, .4], [.8, .75, .5, .15, .45, .7], [.7, .4, .3, .2, .55, .5]];
+  names.forEach((nm, i) => {
+    const p = "p" + String(i + 1).padStart(2, "0");
+    D.players[p] = { name: nm, key: nm.toLowerCase(), joined: Date.now() };
+    D.r.poll1[p] = { fair: choose([["unfair", .6], ["depends", .3], ["fair", .1]]), ban: choose([["yes", .45], ["unsure", .35], ["no", .2]]) };
+    D.r.poll2[p] = { fair: choose([["unfair", .3], ["depends", .55], ["fair", .15]]), ban: choose([["yes", .15], ["unsure", .35], ["no", .5]]) };
+    const sc = {}; CASES.forEach((c) => { sc[c.id] = 1 - pf[c.id] + (rnd() - 0.5) * 0.5; });
+    const ord = CASES.map((c) => c.id).sort((a, b) => sc[a] - sc[b]);
+    D.r.sort[p] = { o: ord.join(","), line: ord.filter((x) => sc[x] < 0.42 + (rnd() - 0.5) * 0.3).length };
+    const v = i % 2 ? "B" : "A"; D.frameAssign[p] = v;
+    D.r.frame[p] = { v, rating: v === "A" ? choose([[5, .4], [4, .4], [3, .15], [2, .05]]) : choose([[4, .2], [3, .35], [2, .3], [1, .15]]) };
+    if (i < laws.length) D.r.law[p] = { why: whys[i], scope: laws[i][0], rule: laws[i][1], exempt: laws[i][2], enforce: laws[i][3], t: Date.now() };
+    if (i < 11) { D.r.sign[p] = { sign: true, name: nm + " " + surnames[i], v: 1, t: i }; cc[p] = { email: (nm + "." + surnames[i]).toLowerCase() + "@example.edu" }; }
+    else if (i < 14) D.r.sign[p] = { sign: false, v: 1, t: i };
+  });
+  names.forEach((nm, i) => {
+    const p = "p" + String(i + 1).padStart(2, "0"), b = { t: Date.now() };
+    FIELDS.forEach((f, fi) => laws.forEach((_, li) => { if (rnd() < approve[fi][li]) (b[f.id] = b[f.id] || {})["p" + String(li + 1).padStart(2, "0")] = true; }));
+    D.r.vote[p] = b;
+  });
+  D.draft = "Subject: A proposal on personalized pricing from Brandeis students\n\nDear Senator / Representative [name],\n\nWe are students in a first-year seminar at Brandeis University, writing as individuals. We spent two classes studying personalized pricing, and we are writing to propose a law.\n\nWhy it is needed. Shoppers cannot tell when a price was set just for them, so they cannot shop around. Sellers can use what they know about a person to charge the most that person would pay.\n\nOur proposal.\n1. Scope. This law applies to any business that sets a price for an individual shopper using that shopper's personal data.\n2. Rule. A covered seller must say, next to the price, that it was set using personal data and which data. A shopper may switch personalized pricing off and get the standard price.\n3. Exemptions. Discounts offered to a whole group, coupons anyone can use, and need-based financial aid.\n4. Enforcement. The attorney general may fine a seller $1,000 for each shopper affected.\n\nWhy we made these choices. We chose disclosure and an opt-out over a ban because most of us think some personalized discounts help people.\n\nWhere we disagreed. Some of us think no new law is needed, and we split on whether loyalty programs should be exempt.\n\nWe ask that you consider these ideas as the legislature takes up surveillance pricing.\n\nSincerely,";
+  [["p03", "Raise the standard price for everyone, then send personal coupons. Coupons are exempt."], ["p08", "Use the type of phone instead of personal data. A phone model isn't linked to one person."], ["p11", "Keep prices equal but show richer shoppers the expensive products first."], ["p15", "Call every shopper a 'group of one' and offer each group its own discount."]]
+    .forEach(([p, t], i) => { D.r.red[p] = { ["k" + i]: { text: t, t: i } }; });
+  return { D, cc };
+}
+
+/* =====================================================================
+   START
+   ===================================================================== */
+(function start() {
+  const stu = lsGet(LS_STU), host = lsGet(LS_HOST), q = new URLSearchParams(location.search).get("code");
+  let noResume = false; try { noResume = sessionStorage.getItem("fairprice.noresume") === "1"; } catch (e) {}
+  if (stu && stu.code && stu.pid && (!q || q.toUpperCase() === stu.code)) {
+    try {
+      store = fbStore(); ctx = { role: "student", code: stu.code, pid: stu.pid, name: stu.name };
+      store.get(base() + "/players/" + stu.pid).then((p) => { if (p) connect(); else { lsDel(LS_STU); landing(); } }).catch((e) => landing("Couldn't reconnect: " + e.message));
+      return;
+    } catch (e) { landing("Couldn't reach the class database: " + e.message); return; }
+  }
+  if (host && !q && !noResume) { A.hostResume(host); return; }
+  landing();
+  try { fbStore(); } catch (e) { banner("This page can't reach the class database: " + esc(e.message) + ". The preview still works."); }
+})();
+</script>
+</body>
+</html>
