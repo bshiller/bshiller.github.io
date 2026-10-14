@@ -166,6 +166,43 @@ details.tools summary{font-size:13px;color:var(--ink-soft)}
 .sv-bar select{padding:8px 10px;font-size:14px;border:1.5px solid var(--line);border-radius:8px;background:#fff;color:var(--ink);font-family:var(--font-body)}
 .phone{width:min(100%,410px);border:10px solid var(--navy-deep);border-radius:30px;background:var(--navy-deep);margin-top:12px;box-shadow:0 12px 30px rgba(34,48,63,.25)}
 .phone iframe{display:block;width:100%;height:740px;border:0;border-radius:20px;background:#fff}
+/* ---- the story of one table: student end screen, host drill-down, all-tables grid ---- */
+.modal{position:fixed;inset:0;background:rgba(34,48,63,.55);z-index:40;overflow:auto;padding:28px 14px}
+.modal-card{background:var(--card);border-radius:var(--radius);max-width:800px;margin:0 auto;padding:22px;position:relative;box-shadow:0 18px 50px rgba(34,48,63,.35)}
+.modal-x{position:absolute;top:8px;right:10px;border:none;background:transparent;font-size:28px;line-height:1;color:var(--ink-soft);cursor:pointer;padding:4px 8px}
+.modal-nav{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px;padding-right:36px}
+.story .head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.story .head .t{font-family:var(--font-display);font-size:19px;color:var(--navy)}
+table.res.people td{vertical-align:top}
+table.res.people tr.you td{background:var(--gold-soft)}
+table.res.people td.num>b,table.res.people td.num{white-space:nowrap}
+table.res.people td.num .sub{white-space:normal}
+table.res.people .sub{display:block;font-size:12px;color:var(--ink-soft);font-family:var(--font-body);font-weight:400;line-height:1.3}
+.steps{margin-top:12px;font-size:14.5px}
+.steps>div{padding:8px 0;border-top:1px dashed var(--line)}
+.steps .k{display:inline-block;font-family:var(--font-mono);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--teal-deep);min-width:84px}
+.steps .verdict{border-radius:8px;padding:10px 12px;border:1px solid var(--line);margin-top:8px}
+.steps .verdict.ok{background:var(--green-soft);border-color:#BFDCC8}
+.steps .verdict.miss{background:#FFF4D6;border-color:#EAD48A}
+.steps .verdict.bad{background:var(--red-soft);border-color:#E6BDB9}
+.steps .verdict .k{color:var(--ink-soft)}
+table.res tr.click{cursor:pointer}
+table.res tr.click:hover td{background:#EEF6F6!important}
+table.res td.click{cursor:pointer;color:var(--teal-deep);text-decoration:underline dotted}
+table.res td.click:hover{background:#EEF6F6}
+.tbl.click{cursor:pointer} .tbl.click:hover{border-color:var(--teal);box-shadow:0 4px 14px rgba(44,62,80,.12)}
+.rgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:12px}
+@media(max-width:860px){.rgrid{grid-template-columns:1fr}}
+.rgrid h3{margin-bottom:4px}
+.tcard{display:block;width:100%;text-align:left;background:var(--paper);border:1px solid var(--line);border-left:5px solid #B9BEC4;border-radius:10px;padding:9px 11px;margin-top:8px;font-size:13.5px;color:var(--ink);font-family:var(--font-body);line-height:1.4}
+.tcard:hover{box-shadow:0 4px 14px rgba(44,62,80,.12);border-color:var(--teal)}
+.tcard .t{font-family:var(--font-display);font-weight:700;color:var(--navy);display:flex;justify-content:space-between;gap:8px;align-items:center}
+.tcard .m{color:var(--ink-soft);font-size:13px;margin-top:3px}
+.tcard.ok{border-left-color:var(--green)} .tcard.miss{border-left-color:var(--gold);background:#FFFBEA} .tcard.bad{border-left-color:var(--red);background:#FBF1F0} .tcard.open{border-left-style:dashed}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--ink-soft);margin-top:10px}
+.legend span::before{content:"";display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px;background:var(--green)}
+.legend span.miss::before{background:var(--gold)} .legend span.bad::before{background:var(--red)} .legend span.open::before{background:#B9BEC4}
+.done-sum .hist .hrow{grid-template-columns:90px 1fr 90px}
 </style>
 </head>
 <body>
@@ -299,14 +336,15 @@ details.tools summary{font-size:13px;color:var(--ink-soft)}
 </div>
 
 <!-- ============ DONE (student) ============ -->
-<div id="viewDone" class="shell narrow hidden">
+<div id="viewDone" class="shell mid hidden">
   <div class="card">
     <div class="eyebrow">Game over</div>
     <h2>Your results</h2>
     <div class="kv" id="doneKv"></div>
     <div id="doneDraw"></div>
-    <p class="sub" id="doneLine">The question was never who got rich. It was whether the data ended up in the right hands.</p>
+    <p class="sub" id="doneLine">The question was never who got rich. It was whether the data ended up in the right hands. Below is what happened at each of your tables; everyone's cards are revealed now that the game is over.</p>
   </div>
+  <div id="doneRounds"></div>
 </div>
 
 <!-- ============ HOST: CREATE ============ -->
@@ -387,6 +425,10 @@ details.tools summary{font-size:13px;color:var(--ink-soft)}
   </div>
 </div>
 
+<div id="modal" class="modal hidden" onclick="if(event.target===this)App.closeModal()">
+  <div class="modal-card"><button class="modal-x" aria-label="Close" onclick="App.closeModal()">×</button><div id="modalBody"></div></div>
+</div>
+
 <div id="toast" class="toast hidden"></div>
 
 <!-- Firebase compat SDK -->
@@ -459,6 +501,8 @@ function analyze(T, round) {
     out.ask = T.public.offer && !T.public.offer.none ? T.public.offer.p : null;
     out.refused = T.public.offer && T.public.offer.none ? true : false;
     out.efficient = R ? out.used === out.shouldUse : null;
+    // "beneficial": the trade on offer (User sells, or User buys deletion) would raise total value; "dealt": it happened
+    out.beneficial = go ? vu > vg : vg > vu; out.dealt = R ? R.traded : null;
     out.realized = R ? (out.used ? vg : vu) : null; out.max = Math.max(vu, vg);
     out.pay = {}; if (R) { if (!go) { out.pay[u] = out.used ? R.p : vu; out.pay[g] = out.used ? vg - R.p : 0; } else { out.pay[u] = out.used ? 0 : vu - R.p; out.pay[g] = out.used ? vg : R.p; } }
     out.ownerVal = go ? vg : vu; out.otherVal = go ? vu : vg;
@@ -470,6 +514,7 @@ function analyze(T, round) {
   out.sold = R ? R.traded : null; out.ask = T.public.offer && !T.public.offer.none ? T.public.offer.p : null; out.sisterCut = T.public.offer && !T.public.offer.none ? (T.public.offer.s || 0) : null;
   out.refused = !!(T.public.offer && T.public.offer.none);
   out.efficient = R ? out.sold === out.shouldSell : null; out.harmful = R ? (out.sold && !out.shouldSell) : null; out.missed = R ? (!out.sold && out.shouldSell) : null;
+  out.beneficial = out.shouldSell; out.dealt = out.sold;
   out.realized = R ? (out.sold ? vg - L : vb) : null; out.max = Math.max(vg - L, vb); out.harm = R && out.sold ? L : 0;
   out.pay = {};
   if (R) {
@@ -492,6 +537,7 @@ const App = (() => {
   let myAssign = null, myTable = null, myPriv = null, curRound = null, lastScored = null;
   let hostRounds = {}, resTab = "lobby", timerH = null;
   let leaving = false, botTimers = {}, botScored = {}, botsPaused = false, viewAs = null, svSig = "";
+  let doneRounds = null, modalKey = null; // doneRounds: every round, fetched once for the student's end screen; modalKey: the host's open drill-down
   const QS = new URLSearchParams(location.search), TEST_ID = !!(QS.get("u") || QS.get("as")); // ?u=x / ?as=uid: a test identity that never touches this browser's saved session
 
   const $ = id => document.getElementById(id);
@@ -514,6 +560,7 @@ const App = (() => {
   /* ---------- boot ---------- */
   function boot(){
     uid = getUid();
+    document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
     if (!hasDb()){ show("viewSetup"); return; }
     firebase.initializeApp(FIREBASE_CONFIG); db = firebase.database();
     const qs = QS;
@@ -592,7 +639,7 @@ const App = (() => {
     const ph = state.phase;
     if (leaving) return;
     if (ph === "closed"){ leaving = true; toast("The host closed this session. Rejoin with the new code."); setTimeout(leave, 1500); return; }
-    if (ph === "lobby"){ curRound = null; clearRoundListeners(); clearTableListeners(); $("waitTitle").textContent = "Waiting for the host to start Round 1…"; show("viewWait"); return; }
+    if (ph === "lobby"){ curRound = null; doneRounds = null; clearRoundListeners(); clearTableListeners(); $("waitTitle").textContent = "Waiting for the host to start Round 1…"; show("viewWait"); return; }
     if (ph === "done"){ curRound = null; clearRoundListeners(); clearTableListeners(); renderDone(); return; }
     if (ph !== curRound){ curRound = ph; myAssign = null; myTable = null; myPriv = null; lastScored = null; listenRound(ph); }
   }
@@ -607,7 +654,7 @@ const App = (() => {
   }
   function leave(){
     clearListeners(); clearRoundListeners(); clearTableListeners(); clearInterval(timerH); clearLocal();
-    state = null; players = {}; code = null; myName = null; myAssign = null; myTable = null; myPriv = null; curRound = null; lastScored = null; leaving = false;
+    state = null; players = {}; code = null; myName = null; myAssign = null; myTable = null; myPriv = null; curRound = null; lastScored = null; leaving = false; doneRounds = null;
     $("topTag").textContent = "FYS 7b · classroom game"; $("btnLeave").classList.add("hidden");
     $("joinCode").value = ""; $("joinName").value = ""; $("joinErr").textContent = "";
     show("viewLanding");
@@ -626,6 +673,91 @@ const App = (() => {
     });
   }
   const roleName = r => ({ user: "User", google: "Google", brother: "Brother", sister: "Sister", observer: "Observer" }[r] || r);
+
+  /* ---------- the story of one table, in words ----------
+     Used three ways: each student's end screen (their own tables, cards revealed), the host's
+     drill-down when a table is clicked, and the one-line cards on the "All tables" tab. */
+  function tableObj(t){ const values = {}; for (const u in (t.private || {})) values[u] = t.private[u].value; return { public: t.public, values }; }
+  function story(T, r, me){
+    const a = analyze(T, r), p = T.public, names = p.names || {}, roles = p.roles || {}, v = T.values || {}, R = a.R, o = p.offer, resp = p.responses || {};
+    const go = r === "r1" && p.owner === "google", gU = roleOf(T, "google"), S = sisters(T), nS = S.length;
+    const ownerU = r === "r1" ? roleOf(T, go ? "google" : "user") : roleOf(T, "brother");
+    const nm = u => `<b>${esc(names[u] || "?")}</b>${u === me ? " (you)" : ""}`;
+    const who = u => `${nm(u)} (${roleName(roles[u])})`;
+    const need = responders(T, r);
+    const st = { a, r, n: p.n, solo: !gU || !ownerU, done: !!R, people: [], offer: "", answers: "", outcome: "", verdict: null, myPay: null };
+    st.status = st.solo ? "no partner" : R ? "decided" : o ? "answering" : "deciding";
+    if (st.solo){ st.offer = "Only one person sat at this table, so there was no bargain."; return st; }
+    const cardOf = u => { const val = v[u], role = roles[u]; if (role === "observer") return ["—", ""]; if (val == null) return ["…", ""]; return [$$(val), role === "google" ? (r === "r1" ? "ad value" : "value of the results") : role === "sister" ? "harm if sold" : "privacy value"]; };
+    Object.keys(roles).forEach(u => {
+      const role = roles[u], [card, cardSub] = cardOf(u);
+      let did = "—";
+      if (role === "observer") did = "watched";
+      else if (u === ownerU) did = o ? (o.none ? "refused any deal" : "made the offer") : "deciding…";
+      else if (need.includes(u)) did = !o ? "waiting for the offer" : o.none ? "—" : resp[u] == null ? "answering…" : resp[u] ? "accepted" : "refused";
+      const pay = R && role !== "observer" ? a.pay[u] : null;
+      st.people.push({ u, name: names[u] || "?", role, card, cardSub, did, pay, payWhy: pay == null ? "" : payWhy(a, r, role, v[u] || 0, nS) });
+      if (u === me) st.myPay = pay;
+    });
+    if (r === "r2") st.people.push({ u: null, name: "Sister", role: "not here", card: $$(ECON.r2.sisterHarm), cardSub: "harm if sold", did: "no say", pay: R && a.sold ? -ECON.r2.sisterHarm : null, payWhy: !R ? "" : a.sold ? "loses this because the results were sold" : "unharmed" });
+    const oName = nm(ownerU);
+    if (!o) st.offer = `${oName} hasn't made the offer yet.`;
+    else if (o.none) st.offer = go ? `${oName} (Google) refused to delete the data at any price.` : `${oName} refused to sell at any price.`;
+    else if (r === "r1" && !go) st.offer = `${oName} asked Google for ${$$(o.p)} to use the data.`;
+    else if (go) st.offer = `${oName} (Google) asked the User for ${$$(o.p)} to delete the data.`;
+    else if (r === "r2") st.offer = `${oName} asked Google for ${$$(o.p)} for the results.`;
+    else st.offer = `${oName} asked Google for ${$$(o.p)} for the results, with ${$$(o.s || 0)} of it going to ${nS > 1 ? "each sister" : "Sister"}.`;
+    if (!o) st.answers = "";
+    else if (o.none) st.answers = "No answer was needed.";
+    else st.answers = need.map(u => `${who(u)} ${resp[u] == null ? "hasn't answered yet" : resp[u] ? "accepted" : "refused"}`).join(" · ") + ".";
+    if (!R) st.outcome = "Still open.";
+    else if (r === "r1") st.outcome = R.none ? (go ? "No deal: Google keeps the data and uses them." : "No deal: the data stay private.") : go ? (R.traded ? `Deal: the User pays ${$$(R.p)} and Google deletes the data.` : "Refused: Google keeps the data and uses them.") : (R.traded ? `Deal: Google pays ${$$(R.p)} and uses the data.` : "Refused: the data stay private.");
+    else st.outcome = a.sold ? `Sold for ${$$(R.p)}.` + (r === "r2" ? ` The sister who isn't here loses ${$$(a.L)}.` : ` ${nS > 1 ? "Each sister" : "Sister"} gets ${$$(R.s)} and loses her harm (${$$(a.L)} in all).`) : "No sale: the results stay private.";
+    if (R){
+      const vals = r === "r1"
+        ? (go ? `The User's privacy was worth ${$$(a.vu)}; the data were worth ${$$(a.vg)} to Google.` : `The data were worth ${$$(a.vg)} to Google; the User's privacy was worth ${$$(a.vu)}.`)
+        : `The results were worth ${$$(a.vg)} to Google, against ${$$(a.vb)} for Brother plus ${$$(a.L)} of harm to ${r === "r2" ? "the absent sister" : nS > 1 ? "the sisters" : "Sister"} (${$$(a.vb + a.L)} together).`;
+      if (a.beneficial && a.dealt) st.verdict = { cls: "ok", text: `✓ Right call. ${vals} The deal was worth making, and it happened.` };
+      else if (!a.beneficial && !a.dealt) st.verdict = { cls: "ok", text: `✓ Right call. ${vals} ${r === "r1" ? (go ? "Google using the data was the better outcome" : "Keeping the data private was the better outcome") : "Keeping the results private was the better outcome"}, and that's what happened.` };
+      else if (a.beneficial && !a.dealt) st.verdict = { cls: "miss", text: `✗ A good deal died. ${vals} ${diedWhy(a, r, T)}` };
+      else st.verdict = { cls: "bad", text: `✗ ${r === "r1" ? "The data went the wrong way." : "A harmful sale."} ${vals} ${r === "r1" ? "Someone traded below their own card value." : "Brother and Google both gained, but the family as a whole lost."}` };
+    }
+    return st;
+  }
+  function diedWhy(a, r, T){
+    const R = a.R, go = r === "r1" && T.public.owner === "google";
+    if (R.none) return go ? "Google wouldn't delete at any price." : `${r === "r1" ? "The User" : "Brother"} wouldn't sell at any price.`;
+    if (r === "r1"){ const other = go ? a.vu : a.vg; return R.p > other ? `The price (${$$(R.p)}) was more than ${go ? "privacy was worth to the User" : "the data were worth to Google"} (${$$(other)}), so it was refused.` : `${go ? "The User" : "Google"} refused a price below ${go ? "their" : "its"} own card value.`; }
+    const parts = [];
+    if (a.googleNo) parts.push(R.p > a.vg ? `Google refused: the price (${$$(R.p)}) was more than the results were worth to it (${$$(a.vg)}).` : `Google refused a price below its own value (${$$(a.vg)}).`);
+    if (a.sisterNo) sisters(T).filter(u => R.accepted[u] === false).forEach(u => { const hv = T.values[u] || 0, sn = esc(T.public.names[u] || "Sister"); parts.push(R.s >= hv ? `${sn} refused even though the cut (${$$(R.s)}) covered her harm (${$$(hv)}).` : `${sn} refused: her cut (${$$(R.s)}) didn't cover her harm (${$$(hv)}).`); });
+    return parts.join(" ") || "It was refused.";
+  }
+  function payWhy(a, r, role, val, nS){
+    const R = a.R, p = R.p, s = R.s || 0, go = r === "r1" && a.owner === "google";
+    if (r === "r1"){
+      if (role === "user") return go ? (R.traded ? `paid ${$$(p)}, kept privacy worth ${$$(val)}` : "privacy gone, nothing received") : (R.traded ? `received ${$$(p)}, privacy gone` : `kept privacy worth ${$$(val)}`);
+      return go ? (R.traded ? `received ${$$(p)}, deleted the data` : `used the data, worth ${$$(val)}`) : (R.traded ? `data worth ${$$(val)}, minus ${$$(p)} paid` : "no data, nothing earned");
+    }
+    if (role === "brother") return a.sold ? `received ${$$(p)}${s * nS ? `, passed ${$$(s * nS)} to ${nS > 1 ? "the sisters" : "Sister"}` : ""}, privacy gone` : `kept privacy worth ${$$(val)}`;
+    if (role === "google") return a.sold ? `results worth ${$$(val)}, minus ${$$(p)} paid` : "no sale, nothing earned";
+    return a.sold ? `${$$(ECON.r3.endow)} stake, minus ${$$(val)} harm${s ? `, plus ${$$(s)} cut` : ""}` : `${$$(ECON.r3.endow)} stake, unharmed`;
+  }
+  function storyHtml(st, opts){
+    opts = opts || {};
+    const R = ROUNDS[st.r];
+    const badge = st.status !== "decided" ? `<span class="pill wait">${st.status}</span>` : st.verdict ? `<span class="pill ${st.verdict.cls === "ok" ? "ok" : "bad"}">${st.verdict.cls === "ok" ? "right outcome" : st.verdict.cls === "miss" ? "good deal died" : st.r === "r1" ? "wrong way" : "harmful sale"}</span>` : "";
+    let h = `<div class="story"><div class="head"><div class="t">${opts.title || `${R.short} · Table ${st.n}`}</div>${badge}</div>`;
+    if (opts.sub) h += `<p class="small">${opts.sub}</p>`;
+    if (st.solo) return h + `<p class="small" style="margin-top:8px">${st.offer}</p></div>`;
+    h += `<table class="res people"><tr><th>Who</th><th class="num">Card</th><th>Did</th><th class="num">Dollars</th></tr>` +
+      st.people.map(x => `<tr class="${x.u && x.u === opts.me ? "you" : ""}"><td><b>${esc(x.name)}</b>${x.u && x.u === opts.me ? " (you)" : ""}<span class="sub">${esc(roleName(x.role))}</span></td><td class="num">${x.card}${x.cardSub ? `<span class="sub">${x.cardSub}</span>` : ""}</td><td>${x.did}</td><td class="num">${x.pay == null ? "" : `<b class="${x.pay >= 0 ? "pos" : "neg"}">${$$(x.pay)}</b>`}${x.payWhy ? `<span class="sub">${x.payWhy}</span>` : ""}</td></tr>`).join("") + `</table>`;
+    h += `<div class="steps"><div><span class="k">Offer</span> ${st.offer}</div>`;
+    if (st.answers) h += `<div><span class="k">Answers</span> ${st.answers}</div>`;
+    h += `<div><span class="k">Outcome</span> ${st.outcome}</div>`;
+    if (st.verdict) h += `<div class="verdict ${st.verdict.cls}"><span class="k">Right call?</span> ${st.verdict.text}</div>`;
+    return h + `</div></div>`;
+  }
 
   function renderRound(){
     if (!myAssign || !myTable) return;
@@ -754,15 +886,31 @@ const App = (() => {
     if (mine != null && lastScored !== r){ lastScored = r; db.ref(path("players", uid, "scores", r)).set(Math.round(mine * 100) / 100).catch(() => {}); }
   }
   function renderDone(){
-    db.ref(path("players", uid)).get().then(s => {
-      const p = s.val() || {}, sc = p.scores || {};
-      const rows = ["r1","r2","r3"].filter(k => sc[k] != null).map(k => `<div class="k">${ROUNDS[k].short}: ${ROUNDS[k].title}</div><div class="v ${sc[k] >= 0 ? "pos" : "neg"}">${$$(sc[k])}</div>`).join("");
-      $("doneKv").innerHTML = rows + `<div class="k tot">Total over three rounds</div><div class="v tot">${$$(sum(Object.values(sc)))}</div>`;
+    // my scores, plus every round once (cards are revealed at the end: each table's full story is shown)
+    Promise.all([db.ref(path("players", uid)).get(), doneRounds ? Promise.resolve(null) : db.ref(path("rounds")).get()]).then(([ps, rs]) => {
+      if (!state || state.phase !== "done") return;
+      if (rs) doneRounds = rs.val() || {};
+      const p = ps.val() || {}, sc = Object.assign({}, p.scores || {}), fix = {};
+      let head = "", cards = "";
+      ["r1","r2","r3"].forEach(r => {
+        const RR = doneRounds[r]; if (!RR || !RR.tables) return;
+        const a = RR.assign && RR.assign[uid], t = a && RR.tables["t" + a.table];
+        if (!t || !t.public){ head += `<div class="k">${ROUNDS[r].short}</div><div class="v">—</div>`; cards += `<div class="card"><div class="eyebrow">${ROUNDS[r].short} · ${ROUNDS[r].title}</div><p class="small">You weren't at a table this round.</p></div>`; return; }
+        const st = story(tableObj(t), r, uid);
+        if (sc[r] == null && st.myPay != null){ sc[r] = Math.round(st.myPay * 100) / 100; fix[r] = sc[r]; } // a phone that missed the result still gets scored
+        head += `<div class="k">${ROUNDS[r].short} · Table ${a.table} · ${roleName(a.role)}</div><div class="v ${sc[r] == null ? "" : sc[r] >= 0 ? "pos" : "neg"}">${sc[r] == null ? "—" : $$(sc[r])}</div>`;
+        cards += `<div class="card">${storyHtml(st, { me: uid, title: `${ROUNDS[r].short} · Table ${a.table}`, sub: ROUNDS[r].title })}</div>`;
+      });
+      Object.keys(fix).forEach(r => db.ref(path("players", uid, "scores", r)).set(fix[r]).catch(() => {}));
+      const tot = sum(Object.values(sc).filter(x => x != null));
+      $("doneKv").innerHTML = head + `<div class="k tot">Total over three rounds</div><div class="v tot">${$$(tot)}</div>`;
       const d = state.draw;
       $("doneDraw").innerHTML = !d ? `<p class="small" style="margin-top:12px"><span class="pulse-dot"></span>The host hasn't drawn the paying table yet.</p>`
         : (d.payouts && d.payouts[uid] != null)
           ? `<div class="draw"><div class="big">Your table was drawn!</div><div class="d">${ROUNDS[d.round].short}, Table ${d.table}. You get <b>${$$(d.payouts[uid])}</b> in cash.</div></div>`
-          : `<div class="draw" style="background:var(--paper);color:var(--ink)"><div class="big" style="color:var(--navy)">The draw</div><div class="d">${ROUNDS[d.round].short}, Table ${d.table}: ${esc(d.who)}. Not you this time. Your three rounds were worth ${$$(sum(Object.values(sc)))} on paper.</div></div>`;
+          : `<div class="draw" style="background:var(--paper);color:var(--ink)"><div class="big" style="color:var(--navy)">The draw</div><div class="d">${ROUNDS[d.round].short}, Table ${d.table}: ${esc(d.who)}. Not you this time. Your three rounds were worth ${$$(tot)} on paper.</div></div>`;
+      const cls = dealSummaryHtml(doneRounds, true);
+      $("doneRounds").innerHTML = cards + (cls ? `<div class="card tint done-sum"><div class="eyebrow">The whole class</div>${cls}</div>` : "");
       show("viewDone");
     });
   }
@@ -862,17 +1010,17 @@ const App = (() => {
     $("btnDone").classList.toggle("hidden", phase !== "r3");
     $("btnDraw").classList.toggle("hidden", !(phase === "done" && !state.draw));
     $("btnRedeal").classList.toggle("hidden", !ROUNDS[phase]);
-    renderResults();
+    renderResults(); renderModal();
     botTick();
   }
   function tab(id){ resTab = id; renderResults(); botTick(); }
-  function tablesOf(r){
-    const R = hostRounds[r]; if (!R || !R.tables) return [];
-    return Object.values(R.tables).filter(Boolean).map(t => { const values = {}; for (const u in (t.private || {})) values[u] = t.private[u].value; return { public: t.public, values }; });
+  function tablesOf(r, src){
+    const R = (src || hostRounds)[r]; if (!R || !R.tables) return [];
+    return Object.values(R.tables).filter(t => t && t.public).map(tableObj).sort((x, y) => x.public.n - y.public.n);
   }
-  function rows(r){ return tablesOf(r).map(T => Object.assign({ T }, analyze(T, r))).filter(a => a.T.public.roles && Object.values(a.T.public.roles).includes("google")); }
+  function rows(r, src){ return tablesOf(r, src).map(T => Object.assign({ T }, analyze(T, r))).filter(a => a.T.public.roles && Object.values(a.T.public.roles).includes("google")); }
   function renderResults(){
-    const tabs = [["lobby","Tables"],["r1","Round 1"],["r2","Round 2"],["r3","Round 3"],["cmp","Compare"],["lead","Scoreboard & draw"],["sv","Student view"]];
+    const tabs = [["lobby","Tables"],["r1","Round 1"],["r2","Round 2"],["r3","Round 3"],["all","All tables"],["cmp","Compare"],["lead","Scoreboard & draw"],["sv","Student view"]];
     $("resTabs").innerHTML = tabs.map(t => `<button class="${t[0]===resTab?"sel":""}" onclick="App.tab('${t[0]}')">${t[1]}</button>`).join("");
     const b = $("resBody");
     $("svPanel").classList.toggle("hidden", resTab !== "sv");
@@ -881,15 +1029,16 @@ const App = (() => {
     if (resTab === "lobby") b.innerHTML = renderTables(ROUNDS[state.phase] ? state.phase : null);
     else if (resTab === "r1") b.innerHTML = renderR1();
     else if (resTab === "r2" || resTab === "r3") b.innerHTML = renderR23(resTab);
+    else if (resTab === "all") b.innerHTML = renderAll();
     else if (resTab === "cmp") b.innerHTML = renderCompare();
     else b.innerHTML = renderLead();
   }
   function renderTables(r){
     if (!r) return `<p class="small" style="margin-top:10px">Once a round starts, this shows who sits with whom (handy on the projector).</p>`;
-    return `<h3 style="margin-top:10px">${ROUNDS[r].short}: who sits where</h3><div class="tables-grid">` + tablesOf(r).map(T => {
+    return `<h3 style="margin-top:10px">${ROUNDS[r].short}: who sits where</h3><p class="small">Click a table to see its cards, offer and answers (private until the round is over).</p><div class="tables-grid">` + tablesOf(r).map(T => {
       const p = T.public, done = !!resolve(T, r);
       const who = Object.keys(p.roles).map(u => `${esc(p.names[u])} <span class="m">(${roleName(p.roles[u])})</span>`).join(", ");
-      return `<div class="tbl ${done ? "done" : ""}"><div class="t">Table ${p.n} ${done ? "✓" : p.offer ? "· answering" : "· deciding"}</div><div>${who}</div></div>`;
+      return `<div class="tbl click ${done ? "done" : ""}" onclick="App.showTable('${r}',${p.n})"><div class="t">Table ${p.n} ${done ? "✓" : p.offer ? "· answering" : "· deciding"}</div><div>${who}</div></div>`;
     }).join("") + `</div>`;
   }
   const bar = (label, frac, cls, txt) => `<div class="hrow"><div>${label}</div><div class="bar"><span class="${cls}" style="width:${Math.round(100 * Math.max(0, Math.min(1, frac || 0)))}%"></span></div><div class="n">${txt}</div></div>`;
@@ -912,8 +1061,8 @@ const App = (() => {
       bar(`Google owned (${go.length}): right outcome`, eff(go) / (go.length || 1), "navy", pct(eff(go), go.length)) +
       bar(`User owned: Google got the data`, uo.filter(a => a.used).length / (uo.length || 1), "gold", pct(uo.filter(a => a.used).length, uo.length) + " (should: " + pct(uo.filter(a => a.shouldUse).length, uo.length) + ")") +
       bar(`Google owned: Google got the data`, go.filter(a => a.used).length / (go.length || 1), "gold", pct(go.filter(a => a.used).length, go.length) + " (should: " + pct(go.filter(a => a.shouldUse).length, go.length) + ")") + `</div>`;
-    h += `<details><summary>Every table: the offer against the other side's true value</summary><table class="res"><tr><th>Table</th><th>Owner</th><th class="num">User value</th><th class="num">Google value</th><th class="num">Asked</th><th>Answer</th><th>Should</th><th>Did</th><th>Right?</th></tr>` +
-      A.map(a => `<tr class="${a.R && !a.efficient ? (missed.includes(a) ? "miss" : "bad") : ""}"><td>${a.T.public.n}</td><td>${a.owner}</td><td class="num">${$$(a.vu)}</td><td class="num">${$$(a.vg)}</td><td class="num">${a.refused ? "no sale" : a.ask == null ? "…" : $$(a.ask)}</td><td>${!a.R ? "…" : a.R.none ? "—" : a.R.traded ? "accepted" : "refused"}</td><td>${a.shouldUse ? "use" : "private"}</td><td>${a.used === null ? "…" : a.used ? "use" : "private"}</td><td>${a.efficient === null ? "" : a.efficient ? "✓" : "✗"}</td></tr>`).join("") + `</table><p class="small">Yellow: a good deal that died. Red: the data went the wrong way.</p></details>`;
+    h += `<details><summary>Every table: the offer against the other side's true value (click a row for the full story)</summary><table class="res"><tr><th>Table</th><th>Owner</th><th class="num">User value</th><th class="num">Google value</th><th class="num">Asked</th><th>Answer</th><th>Should</th><th>Did</th><th>Right?</th></tr>` +
+      A.map(a => `<tr class="click ${a.R && !a.efficient ? (missed.includes(a) ? "miss" : "bad") : ""}" onclick="App.showTable('r1',${a.T.public.n})"><td>${a.T.public.n}</td><td>${a.owner}</td><td class="num">${$$(a.vu)}</td><td class="num">${$$(a.vg)}</td><td class="num">${a.refused ? "no sale" : a.ask == null ? "…" : $$(a.ask)}</td><td>${!a.R ? "…" : a.R.none ? "—" : a.R.traded ? "accepted" : "refused"}</td><td>${a.shouldUse ? "use" : "private"}</td><td>${a.used === null ? "…" : a.used ? "use" : "private"}</td><td>${a.efficient === null ? "" : a.efficient ? "✓" : "✗"}</td></tr>`).join("") + `</table><p class="small">Yellow: a good deal that died. Red: the data went the wrong way.</p></details>`;
     h += `<ul class="discuss"><li>Coase's prediction: who starts with the data shouldn't matter. Did the two owner columns come out the same?</li><li>Why did good deals die? Nobody knew the other side's card. What did the owners do with that?</li><li>Who ended up with the money, and did that depend on who started with the data?</li></ul>`;
     return h;
   }
@@ -924,6 +1073,7 @@ const App = (() => {
       sold: done.filter(a => a.sold).length, shouldSell: done.filter(a => a.shouldSell).length, privateSell: done.filter(a => a.privateSell).length,
       harmful: done.filter(a => a.harmful).length, missed: done.filter(a => a.missed).length, eff: done.filter(a => a.efficient).length,
       refused: done.filter(a => a.refused).length, googleNo: done.filter(a => a.googleNo).length, sisterNo: done.filter(a => a.sisterNo).length,
+      ben: done.filter(a => a.beneficial).length, reached: done.filter(a => a.beneficial && a.dealt).length,
       realized: sum(done.map(a => a.realized)), max: sum(done.map(a => a.max)), harm: sum(done.map(a => a.harm)), toSisters: sum(done.map(a => a.toSisters || 0)),
       markup: asks.length ? sum(asks.map(a => a.ask - a.vb)) / asks.length : null,
       avgAsk: asks.length ? sum(asks.map(a => a.ask)) / asks.length : null };
@@ -945,8 +1095,8 @@ const App = (() => {
       bar("Brother alone gains from selling", S.privateSell / (S.n || 1), "gold", pct(S.privateSell, S.n)) +
       bar("Family as a whole gains from selling", S.shouldSell / (S.n || 1), "green", pct(S.shouldSell, S.n)) +
       bar("Actually sold", S.sold / (S.n || 1), "navy", pct(S.sold, S.n)) + `</div>`;
-    h += `<details><summary>Every table</summary><table class="res"><tr><th>Table</th><th class="num">Brother</th><th class="num">Google</th><th class="num">Sister harm</th><th class="num">Asked</th>${r === "r3" ? "<th class=\"num\">Sister's cut</th>" : ""}<th>Answer</th><th>Should</th><th>Did</th><th>Right?</th></tr>` +
-      S.A.map(a => `<tr class="${a.harmful ? "bad" : a.missed ? "miss" : ""}"><td>${a.T.public.n}</td><td class="num">${$$(a.vb)}</td><td class="num">${$$(a.vg)}</td><td class="num">${$$(a.L)}${a.nS > 1 ? " (" + a.nS + ")" : ""}</td><td class="num">${a.refused ? "no sale" : a.ask == null ? "…" : $$(a.ask)}</td>${r === "r3" ? `<td class="num">${a.sisterCut == null ? "" : $$(a.sisterCut)}</td>` : ""}<td>${!a.R ? "…" : a.R.none ? "—" : a.sold ? "accepted" : a.sisterNo && a.googleNo ? "both refused" : a.sisterNo ? "sister refused" : "Google refused"}</td><td>${a.shouldSell ? "sell" : "keep"}</td><td>${a.sold === null ? "…" : a.sold ? "sold" : "kept"}</td><td>${a.efficient === null ? "" : a.efficient ? "✓" : "✗"}</td></tr>`).join("") + `</table></details>`;
+    h += `<details><summary>Every table (click a row for the full story)</summary><table class="res"><tr><th>Table</th><th class="num">Brother</th><th class="num">Google</th><th class="num">Sister harm</th><th class="num">Asked</th>${r === "r3" ? "<th class=\"num\">Sister's cut</th>" : ""}<th>Answer</th><th>Should</th><th>Did</th><th>Right?</th></tr>` +
+      S.A.map(a => `<tr class="click ${a.harmful ? "bad" : a.missed ? "miss" : ""}" onclick="App.showTable('${r}',${a.T.public.n})"><td>${a.T.public.n}</td><td class="num">${$$(a.vb)}</td><td class="num">${$$(a.vg)}</td><td class="num">${$$(a.L)}${a.nS > 1 ? " (" + a.nS + ")" : ""}</td><td class="num">${a.refused ? "no sale" : a.ask == null ? "…" : $$(a.ask)}</td>${r === "r3" ? `<td class="num">${a.sisterCut == null ? "" : $$(a.sisterCut)}</td>` : ""}<td>${!a.R ? "…" : a.R.none ? "—" : a.sold ? "accepted" : a.sisterNo && a.googleNo ? "both refused" : a.sisterNo ? "sister refused" : "Google refused"}</td><td>${a.shouldSell ? "sell" : "keep"}</td><td>${a.sold === null ? "…" : a.sold ? "sold" : "kept"}</td><td>${a.efficient === null ? "" : a.efficient ? "✓" : "✗"}</td></tr>`).join("") + `</table></details>`;
     h += r === "r2"
       ? `<ul class="discuss"><li>Did knowing about the sister change anyone's price? Compare the asking prices with Round 1 on the Compare tab.</li><li>How many brothers sold even though the family lost overall? She wasn't here to object. Who was supposed to count her ${$$(ECON.r2.sisterHarm)}?</li></ul>`
       : `<ul class="discuss"><li>Fewer harmful sales? Fewer sales overall? How many good deals died because a third person had to say yes?</li><li>What did sisters get paid, and did it cover their harm?</li></ul>`;
@@ -958,7 +1108,8 @@ const App = (() => {
     const asks1 = A1.filter(a => a.ask != null), m1 = asks1.length ? sum(asks1.map(a => a.ask - a.vu)) / asks1.length : null;
     const r1sold = A1.filter(a => a.used).length, r1should = A1.filter(a => a.shouldUse).length, r1priv = A1.filter(a => a.vg > a.vu).length;
     const row = (k, a, b, c) => `<tr><td>${k}</td><td class="num">${a}</td><td class="num">${b}</td><td class="num">${c}</td></tr>`;
-    let h = `<p class="small" style="margin-top:10px">Round 1 here counts only the pairs where the User owned the data (the brother's situation).</p>`;
+    const ben1 = A1.filter(a => a.beneficial).length, reached1 = A1.filter(a => a.beneficial && a.dealt).length, frac = (re, be) => be ? `${re} of ${be} (${pct(re, be)})` : "none possible";
+    let h = `<div class="done-sum">${dealSummaryHtml()}</div><h3 style="margin-top:18px">Round by round</h3><p class="small">Round 1 here counts only the pairs where the User owned the data (the brother's situation).</p>`;
     h += `<table class="res"><tr><th></th><th class="num">Round 1<br><span class="small">no one else affected</span></th><th class="num">Round 2<br><span class="small">sister not here</span></th><th class="num">Round 3<br><span class="small">sister must agree</span></th></tr>` +
       row("Tables decided", A1.length, S2.n, S3.n) +
       row("Owner's price above own card value, on average", m1 == null ? "—" : $$(m1), S2.markup == null ? "—" : $$(S2.markup), S3.markup == null ? "—" : $$(S3.markup)) +
@@ -966,6 +1117,7 @@ const App = (() => {
       row("Sold", pct(r1sold, A1.length), pct(S2.sold, S2.n), pct(S3.sold, S3.n)) +
       row("Owner alone gains from selling", pct(r1priv, A1.length), pct(S2.privateSell, S2.n), pct(S3.privateSell, S3.n)) +
       row("Everyone counted gains from selling", pct(r1should, A1.length), pct(S2.shouldSell, S2.n), pct(S3.shouldSell, S3.n)) +
+      row("Beneficial deals that were reached", frac(reached1, ben1), frac(S2.reached, S2.ben), frac(S3.reached, S3.ben)) +
       row("Harmful sales", "—", S2.harmful, S3.harmful) +
       row("Good deals that died", A1.filter(a => a.shouldUse && !a.used).length, S2.missed, S3.missed) +
       row("Right outcome", pct(A1.filter(a => a.efficient).length, A1.length), pct(S2.eff, S2.n), pct(S3.eff, S3.n)) +
@@ -981,8 +1133,67 @@ const App = (() => {
     if (d) h += `<div class="draw"><div class="big">The paying table: ${ROUNDS[d.round].short}, Table ${d.table}</div><div class="d">${esc(d.who)}</div><div class="d">${Object.entries(d.payouts).map(([u, x]) => `<b>${esc((players[u] || {}).name || "?")}</b> gets ${$$(x)}`).join(" · ")} &nbsp; (total ${$$(sum(Object.values(d.payouts)))})</div></div>`;
     else if (state.phase === "done") h += `<p class="small" style="margin-top:10px">Press "Draw the paying table" to pick one table from one round at random. Everyone at it is paid their dollars from that round.</p>`;
     if (!list.length) return h + `<p class="small" style="margin-top:10px">No scores yet.</p>`;
-    return h + `<p class="small" style="margin-top:10px">Dollars are each player's card value kept plus money received, minus money paid (sisters start from ${$$(ECON.r3.endow)}). High totals reward sharp bargaining, not good outcomes. That's the point.</p><table class="res"><tr><th>#</th><th>Name</th><th class="num">R1</th><th class="num">R2</th><th class="num">R3</th><th class="num">Total</th></tr>` +
-      list.map((p, i) => `<tr class="${i === 0 ? "top" : ""}"><td>${i + 1}</td><td>${esc(p.name)}</td><td class="num">${p.sc.r1 == null ? "" : $$(p.sc.r1)}</td><td class="num">${p.sc.r2 == null ? "" : $$(p.sc.r2)}</td><td class="num">${p.sc.r3 == null ? "" : $$(p.sc.r3)}</td><td class="num"><b>${$$(p.tot)}</b></td></tr>`).join("") + `</table>`;
+    return h + `<p class="small" style="margin-top:10px">Dollars are each player's card value kept plus money received, minus money paid (sisters start from ${$$(ECON.r3.endow)}). High totals reward sharp bargaining, not good outcomes. That's the point. Click a round's dollars to see what happened at that player's table.</p><table class="res"><tr><th>#</th><th>Name</th><th class="num">R1</th><th class="num">R2</th><th class="num">R3</th><th class="num">Total</th></tr>` +
+      list.map((p, i) => `<tr class="${i === 0 ? "top" : ""}"><td>${i + 1}</td><td>${esc(p.name)}</td><td class="num click" onclick="App.showPlayer('${p.id}','r1')">${p.sc.r1 == null ? "" : $$(p.sc.r1)}</td><td class="num click" onclick="App.showPlayer('${p.id}','r2')">${p.sc.r2 == null ? "" : $$(p.sc.r2)}</td><td class="num click" onclick="App.showPlayer('${p.id}','r3')">${p.sc.r3 == null ? "" : $$(p.sc.r3)}</td><td class="num"><b>${$$(p.tot)}</b></td></tr>`).join("") + `</table>`;
+  }
+  /* ---------- "All tables": every round side by side, one card per table, click for the story ---------- */
+  function renderAll(){
+    const Rs = ["r1","r2","r3"].filter(r => tablesOf(r).length);
+    if (!Rs.length) return `<p class="small" style="margin-top:10px">Once Round 1 starts, every table from every round shows here, side by side. Click any table to see its cards, the offer, the answers and the dollars.</p>`;
+    let h = `<div class="done-sum" style="margin-top:10px">${dealSummaryHtml()}</div>`;
+    h += `<h3 style="margin-top:20px">Every table, every round</h3><p class="small">Click a table for the full story: cards, offer, answers, dollars. Cards of a table that is still deciding are private.</p>`;
+    h += `<div class="legend"><span>right outcome</span><span class="miss">good deal died</span><span class="bad">harmful sale / wrong way</span><span class="open">still open</span></div>`;
+    h += `<div class="rgrid">` + Rs.map(r => `<div><h3>${ROUNDS[r].short}: ${ROUNDS[r].title}</h3>` + tablesOf(r).map(T => tcard(T, r)).join("") + `</div>`).join("") + `</div>`;
+    return h;
+  }
+  function tcard(T, r){
+    const st = story(T, r, null), p = T.public, cls = st.solo || !st.done ? "open" : st.verdict.cls;
+    const who = Object.keys(p.roles).map(u => `${esc(p.names[u])} <span class="m">(${roleName(p.roles[u])})</span>`).join(", ");
+    const pillTxt = st.solo ? "no partner" : !st.done ? st.status + "…" : cls === "ok" ? "✓ right" : cls === "miss" ? "good deal died" : r === "r1" ? "wrong way" : "harmful sale";
+    return `<button class="tcard ${cls}" onclick="App.showTable('${r}',${p.n})"><div class="t"><span>Table ${p.n}</span><span class="pill ${cls === "ok" ? "ok" : cls === "bad" ? "bad" : "wait"}">${pillTxt}</span></div><div>${who}</div><div class="m">${oneLine(st, T, r)}</div></button>`;
+  }
+  function oneLine(st, T, r){
+    if (st.solo) return "no bargain";
+    const a = st.a, R = a.R, o = T.public.offer, parts = [];
+    if (r === "r1") parts.push(T.public.owner === "google" ? "Google owned" : "User owned");
+    if (!o) parts.push("no offer yet");
+    else if (o.none) parts.push("no deal at any price");
+    else parts.push(`asked ${$$(o.p)}${r === "r3" ? ` (${$$(o.s || 0)} to Sister)` : ""}`);
+    if (o && !o.none) parts.push(!R ? "waiting for answers" : r === "r1" ? (R.traded ? "accepted" : "refused") : a.sold ? "accepted" : a.sisterNo && a.googleNo ? "both refused" : a.sisterNo ? "Sister refused" : "Google refused");
+    if (R) parts.push(r === "r1" ? (a.used ? "Google uses the data" : "data stay private") : a.sold ? "sold" : "kept private");
+    return parts.join(" · ");
+  }
+  /* ---------- beneficial deals reached, by round (host "All tables" and "Compare"; students' end screen) ---------- */
+  function dealStats(r, src){
+    const done = rows(r, src).filter(a => a.R), ben = done.filter(a => a.beneficial), nb = done.filter(a => !a.beneficial);
+    return { n: done.length, ben: ben.length, reached: ben.filter(a => a.dealt).length, nb: nb.length, harmful: nb.filter(a => a.dealt).length, eff: done.filter(a => a.efficient).length };
+  }
+  function dealSummaryHtml(src, brief){
+    const S = ["r1","r2","r3"].map(r => [r, dealStats(r, src)]).filter(x => x[1].n);
+    if (!S.length) return "";
+    let h = `<h3>Beneficial deals that were reached</h3><p class="small">A deal was beneficial when the data were worth more to the buyer than to the owner, counting the sister's harm where there is one. The bar is the share of those tables where the deal actually happened.</p><div class="hist">` +
+      S.map(([r, s]) => bar(ROUNDS[r].short, s.reached / (s.ben || 1), "green", s.ben ? `${s.reached} of ${s.ben}` : "none to reach")).join("") + `</div>`;
+    if (brief) return h + `<p class="small" style="margin-top:8px">` + S.map(([r, s]) => `<b>${ROUNDS[r].short}:</b> ${s.n} tables decided, ${s.harmful} deal${s.harmful === 1 ? "" : "s"} that shouldn't have happened, right outcome at ${pct(s.eff, s.n)}`).join("<br>") + `</p>`;
+    return h + `<table class="res"><tr><th></th><th class="num">Tables decided</th><th class="num">Deal was beneficial</th><th class="num">…and was reached</th><th class="num">Deal was not beneficial</th><th class="num">…but happened anyway</th><th class="num">Right outcome</th></tr>` +
+      S.map(([r, s]) => `<tr><td>${ROUNDS[r].short}: ${ROUNDS[r].title}</td><td class="num">${s.n}</td><td class="num">${s.ben}</td><td class="num">${s.ben ? `<b>${s.reached}</b> (${pct(s.reached, s.ben)})` : "—"}</td><td class="num">${s.nb}</td><td class="num"><b>${s.harmful}</b>${s.nb ? ` (${pct(s.harmful, s.nb)})` : ""}</td><td class="num">${pct(s.eff, s.n)}</td></tr>`).join("") + `</table>`;
+  }
+  /* ---------- drill-down: one table's story in a panel over the host screen ---------- */
+  function showTable(r, n){ modalKey = { r, n }; renderModal(); }
+  function showPlayer(u, r){
+    const RR = hostRounds[r], a = RR && RR.assign && RR.assign[u];
+    if (!a){ toast(`${(players[u] || {}).name || "That player"} wasn't at a table in ${ROUNDS[r].short}.`); return; }
+    showTable(r, a.table);
+  }
+  function closeModal(){ modalKey = null; $("modal").classList.add("hidden"); }
+  function renderModal(){
+    if (!modalKey) return;
+    const { r, n } = modalKey, RR = hostRounds[r], t = RR && RR.tables && RR.tables["t" + n];
+    if (!t || !t.public){ closeModal(); return; }
+    const ns = tablesOf(r).map(T => T.public.n), i = ns.indexOf(n), st = story(tableObj(t), r, null);
+    let h = `<div class="modal-nav"><button class="btn btn-ghost btn-sm" style="visibility:${i > 0 ? "visible" : "hidden"}" onclick="App.showTable('${r}',${i > 0 ? ns[i - 1] : n})">← Table ${i > 0 ? ns[i - 1] : ""}</button><button class="btn btn-ghost btn-sm" style="visibility:${i < ns.length - 1 ? "visible" : "hidden"}" onclick="App.showTable('${r}',${i < ns.length - 1 ? ns[i + 1] : n})">Table ${i < ns.length - 1 ? ns[i + 1] : ""} →</button><span class="small">${ROUNDS[r].title} · ${i + 1} of ${ns.length} tables</span></div>`;
+    if (state && state.phase === r && !st.done) h += `<p class="small" style="color:var(--red);margin-bottom:8px">This table is still deciding. The cards below are private: keep this off the projector until the round is over.</p>`;
+    h += storyHtml(st, {});
+    $("modalBody").innerHTML = h; $("modal").classList.remove("hidden");
   }
   async function drawTable(){
     // one table from one round, chosen uniformly among decided tables; paid in dollars from that round
@@ -1108,7 +1319,7 @@ const App = (() => {
 
   document.addEventListener("DOMContentLoaded", boot);
   return { showLanding, showJoin, showHost, join, createGame, setPhase, openRound, redeal, startTimer, removePlayer, tab, sendOffer, sendNoOffer, answer, drawTable,
-           leaveAsk, toggleStartOver, resetSession, newSession, addBots, removeBots, toggleBots, botsNow, svChange, svReload };
+           leaveAsk, toggleStartOver, resetSession, newSession, addBots, removeBots, toggleBots, botsNow, svChange, svReload, showTable, showPlayer, closeModal };
 })();
 </script>
 </body>
