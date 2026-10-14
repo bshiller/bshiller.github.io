@@ -154,12 +154,24 @@ summary{cursor:pointer;font-weight:600;color:var(--navy);font-size:14px}
 .draw .big{font-family:var(--font-display);font-size:28px;color:var(--gold);line-height:1.1}
 .draw .d{font-size:15px;margin-top:8px}
 .draw .d b{color:var(--gold)}
+.hdr-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.hdr-btn{background:transparent;border:1px solid rgba(255,255,255,.45);color:#fff;border-radius:8px;padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer}
+.hdr-btn:hover{background:rgba(255,255,255,.12)}
+.roster .p.bot{border-style:dashed;border-color:var(--purple);background:var(--purple-soft)}
+.danger{margin-top:14px}
+.danger h3{color:var(--red)}
+details.tools{margin-top:16px;border-top:1px dashed var(--line);padding-top:10px}
+details.tools summary{font-size:13px;color:var(--ink-soft)}
+.sv-bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px}
+.sv-bar select{padding:8px 10px;font-size:14px;border:1.5px solid var(--line);border-radius:8px;background:#fff;color:var(--ink);font-family:var(--font-body)}
+.phone{width:min(100%,410px);border:10px solid var(--navy-deep);border-radius:30px;background:var(--navy-deep);margin-top:12px;box-shadow:0 12px 30px rgba(34,48,63,.25)}
+.phone iframe{display:block;width:100%;height:740px;border:0;border-radius:20px;background:#fff}
 </style>
 </head>
 <body>
 <header class="top"><div class="shell">
   <div class="brand">THE DATA BARGAIN <span class="accent">/ can the market handle privacy?</span></div>
-  <div class="session-tag" id="topTag">FYS 7b · classroom game</div>
+  <div class="hdr-right"><span class="session-tag" id="topTag">FYS 7b · classroom game</span><button class="hdr-btn hidden" id="btnLeave" onclick="App.leaveAsk()">Leave session</button></div>
 </div></header>
 
 <!-- ============ SETUP ============ -->
@@ -333,12 +345,45 @@ summary{cursor:pointer;font-weight:600;color:var(--navy);font-size:14px}
       <button class="btn btn-gold hidden" id="btnDraw" onclick="App.drawTable()">Draw the paying table</button>
       <button class="btn btn-ghost btn-sm hidden" id="btnRedeal" onclick="App.redeal()">Re-form groups (this round)</button>
       <span class="small" id="hostTimerBtns"><button class="btn btn-ghost btn-sm" onclick="App.startTimer(120)">2-min timer</button> <button class="btn btn-ghost btn-sm" onclick="App.startTimer(180)">3-min</button> <button class="btn btn-ghost btn-sm" onclick="App.startTimer(0)">clear</button></span>
+      <button class="btn btn-ghost btn-sm" id="btnStartOver" onclick="App.toggleStartOver()" style="margin-left:auto;color:var(--red);border-color:var(--red)">Start over…</button>
     </div>
+    <div class="card warn danger hidden" id="hostStartOver">
+      <div class="eyebrow" style="color:var(--red)">Start over</div>
+      <h3>Careful: this can't be undone</h3>
+      <p class="small" id="startOverNote"></p>
+      <div class="btn-row">
+        <button class="btn btn-red btn-sm" onclick="App.resetSession()">Reset to the lobby (keep the code and roster)</button>
+        <button class="btn btn-ghost btn-sm" onclick="App.newSession()">Close this session and create a new one</button>
+        <button class="btn btn-ghost btn-sm" onclick="App.toggleStartOver()">Cancel</button>
+      </div>
+    </div>
+    <details class="tools" id="hostTools">
+      <summary id="toolsSummary">Testing tools: fake players and a student view</summary>
+      <div class="btn-row" style="margin-top:8px">
+        <button class="btn btn-ghost btn-sm" onclick="App.addBots(1)">+1 fake player</button>
+        <button class="btn btn-ghost btn-sm" onclick="App.addBots(5)">+5 fake players</button>
+        <button class="btn btn-ghost btn-sm" id="btnRemoveBots" onclick="App.removeBots()">Remove fake players</button>
+        <button class="btn btn-ghost btn-sm" id="btnBotsPause" onclick="App.toggleBots()">Pause fake players</button>
+        <button class="btn btn-ghost btn-sm" onclick="App.botsNow()">Make them act now</button>
+        <button class="btn btn-ghost btn-sm" onclick="App.tab('sv')">Student view →</button>
+      </div>
+      <p class="small" style="margin-top:8px">Fake players join the roster and get dealt in like anyone else. A few seconds after a round opens they make their offers and answers on their own: they ask a bit above their own card, accept any deal that doesn't lose them money, and make the occasional mistake. The Student view tab shows the game from a phone.</p>
+    </details>
   </div>
 
   <div class="card">
     <div class="tabs" id="resTabs"></div>
     <div id="resBody"></div>
+    <div id="svPanel" class="hidden">
+      <div class="sv-bar">
+        <span class="small">Show the phone of</span>
+        <select id="svWho" onchange="App.svChange()"></select>
+        <button class="btn btn-ghost btn-sm" onclick="App.svReload()">Reload</button>
+        <a class="btn btn-ghost btn-sm" id="svOpen" href="#" target="_blank" rel="noopener">Open in a new tab</a>
+      </div>
+      <p class="small" style="margin-top:8px">"A test student" is you: join with any name and play along with the class or the fake players. Pick a fake player to see its screen instead; while you're looking at one here, it stops acting on its own so you can answer for it.</p>
+      <div class="phone"><iframe id="svFrame" title="Student view"></iframe></div>
+    </div>
   </div>
 </div>
 
@@ -446,12 +491,14 @@ const App = (() => {
   let state = null, players = {}, listeners = [], roundListeners = [], tableListeners = [];
   let myAssign = null, myTable = null, myPriv = null, curRound = null, lastScored = null;
   let hostRounds = {}, resTab = "lobby", timerH = null;
+  let leaving = false, botTimers = {}, botScored = {}, botsPaused = false, viewAs = null, svSig = "";
+  const QS = new URLSearchParams(location.search), TEST_ID = !!(QS.get("u") || QS.get("as")); // ?u=x / ?as=uid: a test identity that never touches this browser's saved session
 
   const $ = id => document.getElementById(id);
   const views = ["viewSetup","viewLanding","viewJoin","viewWait","viewRound","viewDone","viewHostCreate","viewHost"];
   function show(v){ views.forEach(x => $(x).classList.toggle("hidden", x !== v)); if (v !== "viewRound") window.scrollTo(0,0); }
   function toast(msg){ const t=$("toast"); t.textContent=msg; t.classList.remove("hidden"); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.add("hidden"),2800); }
-  function getUid(){ const tu = new URLSearchParams(location.search).get("u"); if (tu) return "test-" + tu; let u=null; try{u=localStorage.getItem("barg_uid");}catch(e){} if(!u){u=(crypto.randomUUID?crypto.randomUUID():"u"+Date.now()+Math.random().toString(36).slice(2)); try{localStorage.setItem("barg_uid",u);}catch(e){}} return u; }
+  function getUid(){ const as = QS.get("as"); if (as) return as; const tu = QS.get("u"); if (tu) return "test-" + tu; let u=null; try{u=localStorage.getItem("barg_uid");}catch(e){} if(!u){u=(crypto.randomUUID?crypto.randomUUID():"u"+Date.now()+Math.random().toString(36).slice(2)); try{localStorage.setItem("barg_uid",u);}catch(e){}} return u; }
   function clearListeners(){ listeners.forEach(([r,e,c])=>r.off(e,c)); listeners=[]; }
   function on(ref,ev,cb){ ref.on(ev,cb); listeners.push([ref,ev,cb]); }
   function clearRoundListeners(){ roundListeners.forEach(([r,e,c])=>r.off(e,c)); roundListeners=[]; }
@@ -460,29 +507,54 @@ const App = (() => {
   function esc(s){ return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
   const path = (...p) => ["games", "barg-" + code, ...p].join("/");
   const hasDb = () => !!(FIREBASE_CONFIG && FIREBASE_CONFIG.apiKey && !FIREBASE_CONFIG.apiKey.startsWith("PASTE"));
-  function saveLocal(){ try{ localStorage.setItem("barg_game", JSON.stringify({ code, myName, isHost })); }catch(e){} }
+  function saveLocal(){ if (TEST_ID) return; try{ localStorage.setItem("barg_game", JSON.stringify({ code, myName, isHost })); }catch(e){} }
   function loadLocal(){ try{ return JSON.parse(localStorage.getItem("barg_game")||"null"); }catch(e){ return null; } }
-  function clearLocal(){ try{ localStorage.removeItem("barg_game"); }catch(e){} }
+  function clearLocal(){ if (TEST_ID) return; try{ localStorage.removeItem("barg_game"); }catch(e){} }
 
   /* ---------- boot ---------- */
   function boot(){
     uid = getUid();
     if (!hasDb()){ show("viewSetup"); return; }
     firebase.initializeApp(FIREBASE_CONFIG); db = firebase.database();
-    const qs = new URLSearchParams(location.search);
+    const qs = QS;
     const saved = loadLocal();
-    if (saved && saved.code && qs.get("host") == null && !qs.get("g")){
+    if (qs.get("g") && TEST_ID){ resumeAs(qs.get("g").toUpperCase()); return; }
+    if (qs.get("g") && qs.get("host") != null){ resumeHost(qs.get("g").toUpperCase()); return; }
+    bootDefault();
+  }
+  function bootDefault(){
+    const qs = new URLSearchParams(location.search), saved = loadLocal();
+    if (saved && saved.code && qs.get("host") == null && !qs.get("g") && !TEST_ID){
       db.ref(`games/barg-${saved.code}/state`).get().then(s => {
-        if (!s.exists() || (s.val().phase === "done" && !saved.isHost)){ clearLocal(); show("viewLanding"); return; }
+        const st = s.exists() ? s.val() : null;
+        if (!st || st.phase === "closed" || (st.phase === "done" && !saved.isHost)){ clearLocal(); show("viewLanding"); return; }
         code = saved.code; myName = saved.myName; isHost = !!saved.isHost;
         if (isHost){ $("hostCode").textContent = code; hostUrl(); $("topTag").innerHTML = `Hosting session <b>${code}</b>`; listenGame(); show("viewHost"); }
-        else { $("topTag").innerHTML = `Session <b>${code}</b> · ${esc(myName)}`; listenGame(); }
+        else { $("topTag").innerHTML = `Session <b>${code}</b> · ${esc(myName)}`; $("btnLeave").classList.remove("hidden"); listenGame(); }
       });
       return;
     }
     if (qs.get("g")){ show("viewJoin"); $("joinCode").value = qs.get("g").toUpperCase(); $("joinName").focus(); }
     else if (qs.get("host") != null){ show("viewHostCreate"); }
     else show("viewLanding");
+  }
+  // ?host&g=CODE re-enters an existing session as its host (another laptop, or a browser that forgot the session)
+  async function resumeHost(c){
+    const st = (await db.ref(`games/barg-${c}/state`).get()).val();
+    if (!st || st.phase === "closed"){ toast(st ? `Session ${c} was closed.` : `No session ${c}.`); dropQuery(); bootDefault(); return; }
+    code = c; isHost = true; saveLocal(); $("hostCode").textContent = code; hostUrl();
+    $("topTag").innerHTML = `Hosting session <b>${code}</b>`; listenGame(); show("viewHost"); dropQuery();
+  }
+  // once the host is in a session, a plain reload should resume it rather than land on "Create session"
+  function dropQuery(){ try{ if (location.search) history.replaceState(null, "", location.pathname); }catch(e){} }
+  // A test identity (?g=CODE&u=x or ?g=CODE&as=UID) that is already in the session goes straight to its phone;
+  // otherwise it gets the join screen. The host's student view uses this for fake players and for the test student.
+  async function resumeAs(c){
+    const p = (await db.ref(`games/barg-${c}/players/${uid}`).get()).val();
+    if (!p){ show("viewJoin"); $("joinCode").value = c; $("joinName").focus(); return; }
+    code = c; myName = p.name; isHost = false;
+    $("topTag").innerHTML = `Session <b>${code}</b> · ${esc(myName)}`; $("btnLeave").classList.remove("hidden");
+    listenGame();
   }
   function showLanding(){ show(db ? "viewLanding" : "viewSetup"); }
   function showJoin(){ show("viewJoin"); }
@@ -498,9 +570,10 @@ const App = (() => {
     err.textContent = "";
     const snap = await db.ref(`games/barg-${c}/state`).get();
     if (!snap.exists()){ err.textContent = "No session with that code — check the projector."; return; }
+    if (snap.val().phase === "closed"){ err.textContent = "The host closed that session. Check the screen for the new code."; return; }
     code = c; myName = n; isHost = false; saveLocal();
     await db.ref(path("players", uid)).update({ name: n, joinedAt: Date.now() });
-    $("topTag").innerHTML = `Session <b>${code}</b> · ${esc(n)}`;
+    $("topTag").innerHTML = `Session <b>${code}</b> · ${esc(n)}`; $("btnLeave").classList.remove("hidden");
     listenGame();
   }
   function listenGame(){
@@ -511,15 +584,33 @@ const App = (() => {
       on(db.ref(path("rounds")), "value", s => { hostRounds = s.val() || {}; renderHost(); });
     } else {
       let seen = false;
-      on(db.ref(path("players", uid)), "value", s => { const p = s.val(); if (p) seen = true; else if (seen){ clearLocal(); toast("The host removed you from the session."); setTimeout(() => location.search = "", 1500); } });
+      on(db.ref(path("players", uid)), "value", s => { const p = s.val(); if (p) seen = true; else if (seen){ toast("The host removed you from the session."); setTimeout(leave, 1200); } });
     }
     tick();
   }
   function route(){
     const ph = state.phase;
+    if (leaving) return;
+    if (ph === "closed"){ leaving = true; toast("The host closed this session. Rejoin with the new code."); setTimeout(leave, 1500); return; }
     if (ph === "lobby"){ curRound = null; clearRoundListeners(); clearTableListeners(); $("waitTitle").textContent = "Waiting for the host to start Round 1…"; show("viewWait"); return; }
     if (ph === "done"){ curRound = null; clearRoundListeners(); clearTableListeners(); renderDone(); return; }
     if (ph !== curRound){ curRound = ph; myAssign = null; myTable = null; myPriv = null; lastScored = null; listenRound(ph); }
+  }
+  /* ---------- leaving (student) ---------- */
+  function leaveAsk(){
+    if (!code || isHost) return;
+    const inLobby = state && state.phase === "lobby";
+    if (!confirm(inLobby ? "Leave this session? You can rejoin with the code." : "Leave this session? Your table keeps your seat: rejoin with the same code and name to pick up where you left off.")) return;
+    const me = db.ref(path("players", uid));
+    leave();
+    if (inLobby) me.remove().catch(() => {});
+  }
+  function leave(){
+    clearListeners(); clearRoundListeners(); clearTableListeners(); clearInterval(timerH); clearLocal();
+    state = null; players = {}; code = null; myName = null; myAssign = null; myTable = null; myPriv = null; curRound = null; lastScored = null; leaving = false;
+    $("topTag").textContent = "FYS 7b · classroom game"; $("btnLeave").classList.add("hidden");
+    $("joinCode").value = ""; $("joinName").value = ""; $("joinErr").textContent = "";
+    show("viewLanding");
   }
   function listenRound(r){
     clearRoundListeners(); clearTableListeners();
@@ -699,12 +790,14 @@ const App = (() => {
     $("hostUrlHint").innerHTML = `Students open <b>${esc(base)}</b> and enter the code, or use the link <span class="mono">${esc(url)}</span>`;
   }
   async function createGame(){
-    isHost = true;
+    isHost = true; stopBots(); players = {}; hostRounds = {}; state = null; resTab = "lobby"; viewAs = null; svSig = "";
+    const f = $("svFrame"); f.dataset.src = ""; f.src = "about:blank";
+    $("hostStartOver").classList.add("hidden"); $("btnLeave").classList.add("hidden");
     code = Array.from({length:4}, () => "ABCDEFGHJKLMNPQRSTUVWXYZ"[Math.floor(Math.random()*24)]).join("");
     await db.ref(path()).set({ meta: { createdAt: Date.now() }, state: { phase: "lobby", createdAt: Date.now() } });
     saveLocal(); $("hostCode").textContent = code; hostUrl();
     $("topTag").innerHTML = `Hosting session <b>${code}</b>`;
-    listenGame(); show("viewHost");
+    listenGame(); show("viewHost"); dropQuery();
   }
   async function setPhase(p){ await db.ref(path("state")).update({ phase: p, changedAt: Date.now(), deadline: null }); resTab = p === "done" ? "lead" : p; }
   async function startTimer(sec){ await db.ref(path("state")).update({ deadline: sec ? Date.now() + sec * 1000 : null }); }
@@ -746,7 +839,10 @@ const App = (() => {
       upd.tables["t" + t.n] = { public: { n: t.n, names, roles: t.roles, owner: t.owner, offer: null, responses: null }, private: {} };
       t.members.forEach(u => { upd.tables["t" + t.n].private[u] = { value: t.values[u] == null ? null : t.values[u] }; upd.assign[u] = { table: t.n, role: t.roles[u] }; });
     });
+    stopBots();
+    const su = {}; ids.forEach(u => { su[`${u}/scores/${r}`] = null; });
     await db.ref(path("rounds", r)).set(upd);
+    await db.ref(path("players")).update(su);
   }
   async function redeal(){
     const r = state.phase; if (!ROUNDS[r]) return;
@@ -758,7 +854,8 @@ const App = (() => {
     const phase = state.phase, list = Object.entries(players);
     $("hostCount").textContent = list.length;
     $("hostPhaseNote").textContent = { lobby: "waiting in the lobby", r1: "Round 1 open", r2: "Round 2 open", r3: "Round 3 open", done: "game over" }[phase] || "";
-    $("hostRoster").innerHTML = list.map(([id, p]) => `<span class="p in">${esc(p.name)}${phase === "lobby" ? ` <button title="remove" onclick="App.removePlayer('${id}')">×</button>` : ""}</span>`).join("");
+    $("hostRoster").innerHTML = list.map(([id, p]) => `<span class="p in${p.bot ? " bot" : ""}">${esc(p.name)}${phase === "lobby" ? ` <button title="remove" onclick="App.removePlayer('${id}')">×</button>` : ""}</span>`).join("");
+    const nb = botIds().length; $("toolsSummary").textContent = `Testing tools: fake players${nb ? ` (${nb} in the roster)` : ""} and a student view`; $("btnRemoveBots").disabled = !nb;
     $("btnR1").classList.toggle("hidden", phase !== "lobby");
     $("btnR2").classList.toggle("hidden", phase !== "r1");
     $("btnR3").classList.toggle("hidden", phase !== "r2");
@@ -766,17 +863,21 @@ const App = (() => {
     $("btnDraw").classList.toggle("hidden", !(phase === "done" && !state.draw));
     $("btnRedeal").classList.toggle("hidden", !ROUNDS[phase]);
     renderResults();
+    botTick();
   }
-  function tab(id){ resTab = id; renderResults(); }
+  function tab(id){ resTab = id; renderResults(); botTick(); }
   function tablesOf(r){
     const R = hostRounds[r]; if (!R || !R.tables) return [];
     return Object.values(R.tables).filter(Boolean).map(t => { const values = {}; for (const u in (t.private || {})) values[u] = t.private[u].value; return { public: t.public, values }; });
   }
   function rows(r){ return tablesOf(r).map(T => Object.assign({ T }, analyze(T, r))).filter(a => a.T.public.roles && Object.values(a.T.public.roles).includes("google")); }
   function renderResults(){
-    const tabs = [["lobby","Tables"],["r1","Round 1"],["r2","Round 2"],["r3","Round 3"],["cmp","Compare"],["lead","Scoreboard & draw"]];
+    const tabs = [["lobby","Tables"],["r1","Round 1"],["r2","Round 2"],["r3","Round 3"],["cmp","Compare"],["lead","Scoreboard & draw"],["sv","Student view"]];
     $("resTabs").innerHTML = tabs.map(t => `<button class="${t[0]===resTab?"sel":""}" onclick="App.tab('${t[0]}')">${t[1]}</button>`).join("");
     const b = $("resBody");
+    $("svPanel").classList.toggle("hidden", resTab !== "sv");
+    if (resTab !== "sv") viewAs = null;
+    if (resTab === "sv"){ b.innerHTML = ""; svSync(); return; }
     if (resTab === "lobby") b.innerHTML = renderTables(ROUNDS[state.phase] ? state.phase : null);
     else if (resTab === "r1") b.innerHTML = renderR1();
     else if (resTab === "r2" || resTab === "r3") b.innerHTML = renderR23(resTab);
@@ -896,8 +997,118 @@ const App = (() => {
     resTab = "lead";
   }
 
+  /* ---------- starting over (host) ---------- */
+  function toggleStartOver(){
+    const p = $("hostStartOver"); p.classList.toggle("hidden");
+    const n = Object.keys(players).length;
+    $("startOverNote").textContent = `Session ${code} has ${n} player${n === 1 ? "" : "s"} joined. "Reset to the lobby" erases every round, offer, score and the draw, and puts everyone back on the waiting screen under the same code. "Close this session" throws everyone out: they will need the new code to rejoin.`;
+    if (!p.classList.contains("hidden")) p.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+  async function resetSession(){
+    if (!confirm(`Reset session ${code} to the lobby?\n\nEvery round, offer, score and the draw will be erased. Students stay joined. This cannot be undone.`)) return;
+    stopBots(); hostRounds = {}; // drop the cached rounds first: the listeners update one at a time, and a tick in between must not re-score old tables
+    const upd = { rounds: null, "state/phase": "lobby", "state/draw": null, "state/deadline": null, "state/changedAt": Date.now() };
+    Object.keys(players).forEach(u => { upd[`players/${u}/scores`] = null; });
+    await db.ref(path()).update(upd);
+    resTab = "lobby"; $("hostStartOver").classList.add("hidden"); toast("Session reset: everyone is back in the lobby.");
+  }
+  async function newSession(){
+    if (!confirm(`Close session ${code} and create a new one?\n\nStudents on this code will be sent back to the start screen and must rejoin with the new code. This cannot be undone.`)) return;
+    await db.ref(path("state")).update({ phase: "closed", changedAt: Date.now(), deadline: null });
+    await createGame(); toast(`New session ${code} created.`);
+  }
+
+  /* ---------- fake players (bots run on the host's screen, for testing) ----------
+     They sit in players/ like anyone else (bot: true). Once a round is open, each bot at a table
+     acts a few seconds later: the owner asks a little above its card (occasionally refuses to sell),
+     responders accept whenever the deal doesn't lose them money, with a 10% chance of a mistake.
+     The host also writes each bot's score when its table resolves. */
+  const BOT_NAMES = ["Ada","Ben","Cleo","Dev","Eli","Fay","Gus","Hana","Ike","Jun","Kit","Lou","Mo","Nia","Oz","Pia","Quin","Rae","Sol","Tam"];
+  const isBot = u => !!(players[u] && players[u].bot);
+  const botIds = () => Object.keys(players).filter(isBot);
+  function stopBots(){ Object.values(botTimers).forEach(t => clearTimeout(t.h)); botTimers = {}; botScored = {}; }
+  async function addBots(n){
+    const upd = {}; let k = 1;
+    for (let i = 0; i < n; i++){
+      while (players["bot-" + k] || upd["bot-" + k]) k++;
+      const nm = BOT_NAMES[(k - 1) % BOT_NAMES.length] + (k > BOT_NAMES.length ? " " + Math.ceil(k / BOT_NAMES.length) : "");
+      upd["bot-" + k] = { name: nm + " (bot)", bot: true, joinedAt: Date.now() };
+    }
+    await db.ref(path("players")).update(upd); toast(`${n} fake player${n > 1 ? "s" : ""} added.`);
+  }
+  async function removeBots(){
+    const ids = botIds(); if (!ids.length){ toast("No fake players to remove."); return; }
+    if (state && ROUNDS[state.phase] && !confirm(`A round is open. Removing ${ids.length} fake players leaves their tables stuck until you re-form groups. Remove them anyway?`)) return;
+    stopBots(); const upd = {}; ids.forEach(u => { upd[u] = null; }); await db.ref(path("players")).update(upd); toast("Fake players removed.");
+  }
+  function toggleBots(){
+    botsPaused = !botsPaused; $("btnBotsPause").textContent = botsPaused ? "Resume fake players" : "Pause fake players";
+    if (botsPaused){ Object.values(botTimers).forEach(t => clearTimeout(t.h)); botTimers = {}; toast("Fake players paused."); } else botTick();
+  }
+  function botsNow(){ const ts = botTimers; botTimers = {}; Object.values(ts).forEach(t => { clearTimeout(t.h); t.fn(); }); if (!Object.keys(ts).length) toast("Nothing pending for the fake players."); }
+  function botSchedule(key, fn){ if (botTimers[key]) return; botTimers[key] = { fn, h: setTimeout(() => { delete botTimers[key]; fn(); }, 2000 + Math.random() * 5000) }; }
+  function botTable(r, u){
+    const R = hostRounds[r], a = R && R.assign && R.assign[u], t = a && R.tables && R.tables["t" + a.table];
+    if (!t || !t.public) return null;
+    const values = {}; for (const x in (t.private || {})) values[x] = t.private[x].value;
+    return { a, t, T: { public: t.public, values } };
+  }
+  function botTick(){
+    if (!state || !ROUNDS[state.phase]) return;
+    const r = state.phase;
+    botIds().forEach(u => {
+      const x = botTable(r, u); if (!x) return;
+      const pub = x.t.public, res = resolve(x.T, r), key = r + ":" + u;
+      if (res){
+        if (!botScored[key] && !(players[u].scores && players[u].scores[r] != null)){
+          const mine = analyze(x.T, r).pay[u];
+          if (mine != null){ botScored[key] = true; db.ref(path("players", u, "scores", r)).set(Math.round(mine * 100) / 100).catch(() => {}); }
+        }
+        return;
+      }
+      if (botsPaused || u === viewAs) return;
+      if (ownerOf(pub, r) === u){ if (!pub.offer) botSchedule(key, () => botOffer(r, u)); return; }
+      if (pub.offer && !pub.offer.none && responders(x.T, r).includes(u) && (pub.responses || {})[u] == null) botSchedule(key, () => botAnswer(r, u));
+    });
+  }
+  function botOffer(r, u){
+    const x = botTable(r, u); if (!x || x.t.public.offer || !state || state.phase !== r) return;
+    const v = x.T.values[u] || 0; let o;
+    if (Math.random() < 0.08) o = { none: true };
+    else { const p = Math.round(v + 1 + Math.random() * (r === "r1" ? 5 : 7)); o = { p }; if (r === "r3") o.s = Math.round(p * pick([0, 0.2, 0.35, 0.5])); }
+    o.by = u; o.at = Date.now();
+    return db.ref(path("rounds", r, "tables", "t" + x.a.table, "public", "offer")).set(o).catch(() => {});
+  }
+  function botAnswer(r, u){
+    const x = botTable(r, u); if (!x || !state || state.phase !== r) return;
+    const o = x.t.public.offer; if (!o || o.none || (x.t.public.responses || {})[u] != null) return;
+    const role = x.t.public.roles[u], v = x.T.values[u] || 0;
+    let yes = role === "sister" ? (o.s || 0) >= v : o.p <= v;
+    if (Math.random() < 0.1) yes = !yes;
+    return db.ref(path("rounds", r, "tables", "t" + x.a.table, "public", "responses", u)).set(yes).catch(() => {});
+  }
+
+  /* ---------- student view (a phone-sized frame of this session on the host screen) ---------- */
+  function svUrl(who){ const base = location.pathname; return who === "preview" ? `${base}?g=${code}&u=preview` : `${base}?g=${code}&as=${encodeURIComponent(who)}`; }
+  function svSync(){
+    const sel = $("svWho"), bots = botIds(), sig = code + "|" + bots.map(u => u + players[u].name).join(",");
+    if (sig !== svSig){
+      svSig = sig; const cur = sel.value || "preview";
+      sel.innerHTML = `<option value="preview">A test student (you)</option>` + bots.map(u => `<option value="${u}">${esc(players[u].name)}</option>`).join("");
+      sel.value = bots.includes(cur) ? cur : "preview";
+    }
+    const who = sel.value || "preview", url = svUrl(who);
+    viewAs = who === "preview" ? null : who;
+    if (viewAs && state){ const k = state.phase + ":" + viewAs; if (botTimers[k]){ clearTimeout(botTimers[k].h); delete botTimers[k]; } }
+    $("svOpen").href = url;
+    const f = $("svFrame"); if (f.dataset.src !== url){ f.dataset.src = url; f.src = url; }
+  }
+  function svChange(){ svSync(); botTick(); }
+  function svReload(){ const f = $("svFrame"); if (f.dataset.src) f.src = f.dataset.src; }
+
   document.addEventListener("DOMContentLoaded", boot);
-  return { showLanding, showJoin, showHost, join, createGame, setPhase, openRound, redeal, startTimer, removePlayer, tab, sendOffer, sendNoOffer, answer, drawTable };
+  return { showLanding, showJoin, showHost, join, createGame, setPhase, openRound, redeal, startTimer, removePlayer, tab, sendOffer, sendNoOffer, answer, drawTable,
+           leaveAsk, toggleStartOver, resetSession, newSession, addBots, removeBots, toggleBots, botsNow, svChange, svReload };
 })();
 </script>
 </body>
