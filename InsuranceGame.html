@@ -1,0 +1,1021 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Who Gets Insured?</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;0,900;1,400&family=Lora:ital,wght@0,500;1,500&display=swap">
+<style>
+/* Layout: FYS 7b deck look — navy title band + gold stripe, one centered column of step cards, teal callouts, gold discussion boxes */
+:root{
+  --band:#2f3f55; --band-fg:#ffffff; --gold:#e3b23c; --gold-ink:#7a5a12; --gold-wash:#fbf3dd;
+  --teal:#2b8a80; --teal-ink:#1e6b63; --teal-wash:#e4f2f0;
+  --bg:#f3f5f8; --surface:#ffffff; --ink:#1f2733; --muted:#5a6575; --line:#d8dee6; --soft:#eef1f5;
+  --sara:#2b8a80; --bob:#c08a1e; --sam:#b0503c;
+  --good:#2c7a4b; --good-wash:#e3f2e8; --bad:#b03f37; --bad-wash:#f8e5e2;
+  --btn:#2f3f55; --btn-fg:#ffffff;
+  --display:"Lato","Helvetica Neue",Arial,sans-serif;
+  --body:"Lato","Helvetica Neue",Arial,sans-serif;
+  --story:"Lora",Georgia,"Times New Roman",serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --band:#1b2636; --band-fg:#f1f4f8; --gold:#e6bb52; --gold-ink:#f0d48e; --gold-wash:#352c17;
+  --teal:#56b7ac; --teal-ink:#8fd6cd; --teal-wash:#173230;
+  --bg:#111821; --surface:#19222e; --ink:#e6eaf0; --muted:#a2acba; --line:#2d3947; --soft:#212c3a;
+  --sara:#56b7ac; --bob:#e0ac45; --sam:#e07a64;
+  --good:#6cc493; --good-wash:#173025; --bad:#ec8378; --bad-wash:#3a1d1b;
+  --btn:#e6bb52; --btn-fg:#1b2636; color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --band:#1b2636; --band-fg:#f1f4f8; --gold:#e6bb52; --gold-ink:#f0d48e; --gold-wash:#352c17;
+  --teal:#56b7ac; --teal-ink:#8fd6cd; --teal-wash:#173230;
+  --bg:#111821; --surface:#19222e; --ink:#e6eaf0; --muted:#a2acba; --line:#2d3947; --soft:#212c3a;
+  --sara:#56b7ac; --bob:#e0ac45; --sam:#e07a64;
+  --good:#6cc493; --good-wash:#173025; --bad:#ec8378; --bad-wash:#3a1d1b;
+  --btn:#e6bb52; --btn-fg:#1b2636; color-scheme:dark;}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.55;margin:0}
+.gut{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.col{max-width:780px;margin:0 auto}
+header.band{background:var(--band);color:var(--band-fg)}
+header.band .col{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-block:18px 14px}
+header.band h1{font:900 clamp(1.35rem,4vw,1.8rem)/1.15 var(--display);margin:0;letter-spacing:.01em}
+header.band .who{font-size:.85rem;opacity:.85}
+.stripe{height:7px;background:var(--gold)}
+.eyebrow{font-size:.75rem;letter-spacing:.09em;text-transform:uppercase;font-weight:700;color:var(--teal-ink)}
+h2{font:900 clamp(1.35rem,3.6vw,1.75rem)/1.2 var(--display);margin:.2rem 0 .6rem;text-wrap:balance}
+h3{font:700 1.08rem/1.3 var(--display);margin:0 0 .4rem}
+p{margin:0 0 .8rem}
+.muted{color:var(--muted)}
+.small{font-size:.88rem}
+b,strong{font-weight:700}
+main{padding-block:20px 120px}
+.stage{display:flex;flex-direction:column;gap:18px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px}
+.callout{background:var(--teal-wash);border:1px solid var(--teal);border-radius:8px;padding:14px 16px}
+.callout p:last-child,.discuss p:last-child,.card p:last-child{margin-bottom:0}
+.discuss{background:var(--gold-wash);border:1px solid var(--gold);border-radius:8px;padding:14px 16px}
+.discuss .lab{font-weight:900;color:var(--gold-ink)}
+.num{font-variant-numeric:tabular-nums}
+
+/* progress */
+.prog{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;padding-block:12px 0}
+.prog div{height:6px;border-radius:3px;background:var(--line)}
+.prog div.on{background:var(--teal)}
+.prog div.cur{background:var(--gold)}
+.progl{display:flex;justify-content:space-between;font-size:.78rem;color:var(--muted);padding-top:6px;gap:8px}
+
+/* buttons */
+button{font:inherit;cursor:pointer}
+.btn{background:var(--btn);color:var(--btn-fg);border:0;border-radius:8px;padding:11px 18px;font-weight:700}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn.teal{background:var(--teal);color:var(--surface)}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+
+/* people */
+.people{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media (max-width:620px){.people{grid-template-columns:1fr}}
+.pc{border:1px solid var(--line);border-radius:10px;padding:14px;background:var(--surface);display:flex;flex-direction:column;gap:8px;min-width:0}
+.pc .top{display:flex;align-items:center;gap:10px}
+.av{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-weight:900;color:var(--surface);flex:none}
+.p-sara .av,.av.p-sara{background:var(--sara)} .p-bob .av,.av.p-bob{background:var(--bob)} .p-sam .av,.av.p-sam{background:var(--sam)}
+.pc .nm{font-weight:900;font-size:1.05rem;line-height:1.1}
+.pc .rk{font-size:.8rem;color:var(--muted)}
+.kv{display:grid;grid-template-columns:1fr auto;gap:2px 10px;font-size:.92rem}
+.kv span:nth-child(odd){color:var(--muted)}
+.kv span:nth-child(even){font-weight:700;font-variant-numeric:tabular-nums;text-align:right}
+.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:3px 10px 3px 3px;font-weight:700;font-size:.9rem;background:var(--surface)}
+.chip .av{width:24px;height:24px;font-size:.75rem}
+.chip.gone{opacity:.4;text-decoration:line-through}
+.pool{display:flex;gap:8px;flex-wrap:wrap}
+
+/* ledger */
+.ledger{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+.ledger td{padding:7px 0;border-bottom:1px solid var(--line)}
+.ledger td:last-child{text-align:right;font-weight:700}
+.ledger tr.tot td{border-bottom:0;border-top:2px solid var(--ink);font-size:1.05rem}
+.pos{color:var(--good)} .neg{color:var(--bad)}
+
+/* slider */
+.slider{display:flex;flex-direction:column;gap:8px}
+.slider .big{font:900 2rem/1 var(--display);font-variant-numeric:tabular-nums}
+.slider input[type=range]{width:100%;accent-color:var(--teal);height:28px}
+.nudge{display:flex;gap:6px;flex-wrap:wrap}
+.nudge button{border:1px solid var(--line);background:var(--soft);color:var(--ink);border-radius:6px;padding:4px 10px;font-size:.85rem;font-variant-numeric:tabular-nums}
+.status{border-radius:8px;padding:10px 12px;font-weight:700;font-size:.95rem}
+.status.ok{background:var(--good-wash);color:var(--good)}
+.status.no{background:var(--soft);color:var(--muted)}
+.status.warn{background:var(--bad-wash);color:var(--bad)}
+
+/* choices */
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;flex-wrap:wrap}
+.seg button{border:0;background:var(--surface);color:var(--ink);padding:8px 12px;font-size:.9rem;font-weight:700;border-right:1px solid var(--line)}
+.seg button:last-child{border-right:0}
+.seg button.sel{background:var(--btn);color:var(--btn-fg)}
+.seg button:disabled{cursor:default}
+.fb{border-radius:8px;padding:10px 12px;font-size:.93rem}
+.fb.ok{background:var(--good-wash)} .fb.no{background:var(--bad-wash)} .fb.info{background:var(--soft)}
+.fb.ok b:first-child{color:var(--good)} .fb.no b:first-child{color:var(--bad)}
+.mc .q{font-weight:700;margin-bottom:10px}
+.opts{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
+.opt{text-align:left;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:10px 14px}
+.opt:hover:not(:disabled){border-color:var(--teal)}
+.opt.sel{border-color:var(--btn);box-shadow:inset 0 0 0 2px var(--btn);background:var(--soft)}
+.opt.right{border-color:var(--good);background:var(--good-wash)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-wash)}
+.opt:disabled{cursor:default;color:var(--ink)}
+
+/* tables */
+.tw{overflow-x:auto}
+table.cmp{width:100%;border-collapse:collapse;font-size:.95rem}
+table.cmp th,table.cmp td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+table.cmp th{font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.tag{display:inline-block;border-radius:999px;padding:1px 9px;font-size:.8rem;font-weight:700}
+.tag.y{background:var(--good-wash);color:var(--good)} .tag.n{background:var(--bad-wash);color:var(--bad)}
+
+/* timeline */
+.tl{display:flex;flex-direction:column;gap:10px}
+.tl .yr{display:grid;grid-template-columns:72px 1fr auto;gap:10px;align-items:center;border-bottom:1px dashed var(--line);padding-bottom:10px}
+.tl .yr:last-child{border-bottom:0}
+.tl .lab{font-weight:900;font-size:.85rem;color:var(--muted)}
+@media (max-width:520px){.tl .yr{grid-template-columns:1fr}}
+
+/* rank */
+.rank{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.rank li{display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:center;border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:var(--surface)}
+.rank li.drag{opacity:.5}
+.rank .n{font:900 1.1rem/1 var(--display);color:var(--teal-ink);text-align:center;font-variant-numeric:tabular-nums}
+.rank .t{font-weight:700;line-height:1.2}
+.rank .d{font-size:.83rem;color:var(--muted)}
+.rank .mv{display:flex;gap:4px}
+.rank .mv button{width:34px;height:34px;border:1px solid var(--line);background:var(--soft);color:var(--ink);border-radius:6px;font-weight:900}
+.rank .mv button:disabled{opacity:.3}
+.ends{display:flex;justify-content:space-between;font-size:.8rem;color:var(--muted);font-weight:700}
+
+/* rate rows */
+.rate{display:flex;flex-direction:column}
+.rr{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 16px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.rr:last-child{border-bottom:0}
+.rr .ctl{display:flex;flex-direction:column;gap:6px;align-items:flex-end}
+.rr .ctl .lab{font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:700}
+.rr .ctl > div{display:flex;align-items:center;gap:8px}
+@media (max-width:640px){.rr{grid-template-columns:1fr}.rr .ctl{align-items:flex-start}}
+.rr input[type=text]{width:100%;border:1px solid var(--line);border-radius:6px;padding:8px 10px;font:inherit;background:var(--surface);color:var(--ink)}
+textarea{width:100%;min-height:80px;border:1px solid var(--line);border-radius:8px;padding:10px;font:inherit;background:var(--surface);color:var(--ink);resize:vertical}
+
+/* map */
+.map{display:grid;grid-template-columns:76px repeat(3,minmax(0,1fr));gap:4px;font-size:.85rem}
+.map .h{font-weight:900;font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);padding:4px;text-align:center}
+.map .rh{font-weight:900;font-size:.8rem;display:flex;align-items:center;padding:4px}
+.map .cell{background:var(--soft);border-radius:6px;min-height:70px;padding:6px;display:flex;flex-wrap:wrap;gap:4px;align-content:flex-start}
+.map .cell span{background:var(--surface);border:1px solid var(--line);border-radius:5px;padding:2px 6px;font-size:.78rem;font-weight:700;line-height:1.25}
+.map .rh.f{color:var(--good)} .map .rh.u{color:var(--bad)}
+@media (max-width:520px){.map{grid-template-columns:52px repeat(3,minmax(0,1fr))}.map .cell span{font-size:.7rem}}
+
+/* two columns */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:620px){.two{grid-template-columns:1fr}}
+.two > div{min-width:0}
+
+/* story */
+.story{font-family:var(--story);font-size:1.15rem;line-height:1.6}
+.story em{font-style:italic}
+.coop{width:100%;max-width:360px;display:block;margin:0 auto}
+.coop .ground{fill:var(--line)} .coop .wall{fill:var(--gold-wash);stroke:var(--gold-ink);stroke-width:2}
+.coop .roof{fill:var(--sam)} .coop .door{fill:var(--band)} .coop .ramp{fill:var(--gold-ink)}
+.coop .hen{fill:var(--surface);stroke:var(--ink);stroke-width:1.5} .coop .comb{fill:var(--bad)} .coop .beak{fill:var(--gold)}
+.coop .snow{fill:var(--muted);opacity:.5}
+.pull{font:900 1.35rem/1.3 var(--display);text-wrap:balance;border-left:0;margin:0}
+
+/* nav */
+nav.foot{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);z-index:5}
+nav.foot .col{display:flex;justify-content:space-between;align-items:center;gap:10px;padding-block:10px}
+nav.foot .why{font-size:.85rem;color:var(--muted);text-align:center;flex:1;min-width:0}
+
+/* join / host */
+.join{display:flex;flex-direction:column;gap:14px}
+.field{display:flex;flex-direction:column;gap:4px}
+.field label{font-weight:700;font-size:.9rem}
+.field input{border:1px solid var(--line);border-radius:8px;padding:10px 12px;font:inherit;background:var(--surface);color:var(--ink)}
+.code{font:900 2.6rem/1 var(--display);letter-spacing:.18em;color:var(--teal-ink)}
+.err{color:var(--bad);font-weight:700;font-size:.92rem}
+.bars{display:flex;flex-direction:column;gap:6px}
+.bar{display:grid;grid-template-columns:minmax(0,190px) 1fr 52px;gap:8px;align-items:center;font-size:.88rem}
+.bar .lbl{overflow-wrap:anywhere}
+.bar .trk{background:var(--soft);border-radius:4px;height:16px;overflow:hidden}
+.bar .fill{background:var(--teal);height:100%}
+.bar .fill.g{background:var(--gold)} .bar .fill.r{background:var(--sam)}
+.bar .v{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+@media (max-width:520px){.bar{grid-template-columns:minmax(0,120px) 1fr 46px}}
+.hgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr));gap:14px}
+.texts{display:flex;flex-direction:column;gap:6px;max-height:320px;overflow:auto}
+.texts div{background:var(--soft);border-radius:6px;padding:6px 10px;font-size:.9rem}
+.texts div b{color:var(--muted);font-weight:700;margin-right:6px}
+.gates{display:flex;gap:6px;flex-wrap:wrap}
+.gates button{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:8px 12px;font-weight:700;font-size:.88rem}
+.gates button.open{background:var(--teal);border-color:var(--teal);color:var(--surface)}
+svg text{fill:var(--ink)}
+svg .axis{stroke:var(--muted);stroke-width:1}
+svg .grid{stroke:var(--line);stroke-width:1}
+svg .dot{fill:var(--teal)}
+@media (prefers-reduced-motion:no-preference){.stage>*{animation:rise .35s ease both}@keyframes rise{from{transform:translateY(6px);opacity:.6}to{transform:none;opacity:1}}}
+</style>
+</head>
+<body>
+
+
+<header class="band"><div class="col gut"><h1>Who Gets Insured?</h1><span class="who" id="who">FYS 7b · Adverse selection</span></div></header>
+<div class="stripe"></div>
+<div class="gut" id="progwrap" hidden><div class="col"><div class="prog" id="prog"></div><div class="progl"><span id="partname"></span><span id="partnum"></span></div></div></div>
+<main class="gut"><div class="col stage" id="stage"></div></main>
+<nav class="foot gut" id="nav" hidden><div class="col"><button class="btn ghost" id="back">Back</button><span class="why" id="why"></span><button class="btn" id="next">Next</button></div></nav>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
+/* =====================================================================
+   FIREBASE CONFIG (same project as the other class games)
+   Sessions live under games/ins-CODE, so the existing rules apply.
+   ===================================================================== */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyDQ8gn5w_Jj4OzcXFBz2lY2SKuaKEo2wbk",
+  authDomain: "obfuscationgame.firebaseapp.com",
+  databaseURL: "https://obfuscationgame-default-rtdb.firebaseio.com",
+  projectId: "obfuscationgame",
+  storageBucket: "obfuscationgame.firebasestorage.app",
+  messagingSenderId: "443679460937",
+  appId: "1:443679460937:web:d6b2806717894b3c923998"
+};
+const PREFIX = "ins-";
+
+/* ---------------- helpers ---------------- */
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const money = x => (x < -0.5 ? "−" : "") + "$" + Math.round(Math.abs(x)).toLocaleString("en-US");
+const signed = x => (x > 0.5 ? "+" : "") + money(x);
+const pct = (a, b) => b ? Math.round(100 * a / b) + "%" : "–";
+function el(tag, cls, html) { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
+function lsGet(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } }
+function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+function rid(n, abc) { abc = abc || "abcdefghijkmnpqrstuvwxyz23456789"; let s = ""; for (let i = 0; i < n; i++) s += abc[Math.floor(Math.random() * abc.length)]; return s; }
+
+/* ---------------- Firebase (optional) ---------------- */
+let db = null;
+try { if (window.firebase && FIREBASE_CONFIG.databaseURL) { firebase.initializeApp(FIREBASE_CONFIG); db = firebase.database(); } } catch (e) { db = null; }
+const CLASS_OK = !!db;
+
+/* ---------------- the economy (from the lecture slides) ---------------- */
+const PEOPLE = {
+  sara: { id: "sara", name: "Sara", pro: "she", pos: "her", obj: "her", cost: 4000, wtp: 8000, income: 55000, risk: "Low risk", note: "Rarely needs a doctor." },
+  bob:  { id: "bob",  name: "Bob",  pro: "he",  pos: "his", obj: "him", cost: 25000, wtp: 35000, income: 55000, risk: "Medium risk", note: "Some prescriptions and specialist visits." },
+  sam:  { id: "sam",  name: "Samantha", pro: "she", pos: "her", obj: "her", cost: 75000, wtp: 55000, income: 55000, risk: "High risk", note: "A chronic condition that needs ongoing care." }
+};
+const ORDER = ["sara", "bob", "sam"];
+const claims = pool => pool.reduce((s, id) => s + PEOPLE[id].cost, 0);
+const breakEven = pool => pool.length ? claims(pool) / pool.length : 0;
+const buyersAt = (pool, priceOf) => pool.filter(id => PEOPLE[id].wtp >= priceOf(id));
+function yearPool(y) { let pool = ORDER.slice(); for (let i = 1; i < y; i++) { const p = breakEven(pool); pool = buyersAt(pool, () => p); } return pool; }
+const TAILORED = id => PEOPLE[id].cost;
+
+/* ---------------- content lists ---------------- */
+const RANK_ITEMS = [
+  { id: "age", t: "Age", d: "Older people pay more" },
+  { id: "tobacco", t: "Tobacco use", d: "Smokers pay more" },
+  { id: "geo", t: "Geography", d: "Where you live (zip code, region)" },
+  { id: "sky", t: "Skydiving", d: "Risky hobbies" },
+  { id: "parent", t: "Parent died young", d: "Family health history" },
+  { id: "search", t: "Search history", d: "e.g., searches about depression" },
+  { id: "grocery", t: "Grocery history", d: "What you buy at the store" },
+  { id: "genes", t: "Genetics", d: "Results of a DNA test" }
+];
+const ACA = { age: ["y", "Allowed, but the oldest can pay at most 3× the youngest"], tobacco: ["y", "Allowed, up to 1.5× the non-smoker price"], geo: ["y", "Allowed"],
+  sky: ["n", "Not allowed (but life insurers often ask)"], parent: ["n", "Not allowed (health history)"], search: ["n", "Not allowed"], grocery: ["n", "Not allowed"],
+  genes: ["n", "Not allowed (ACA and GINA)"] };
+
+const SHARE = [
+  { id: "tracker", t: "Fitness tracker", d: "steps, heart rate, sleep" },
+  { id: "grocery", t: "Grocery purchases", d: "your loyalty-card history" },
+  { id: "search", t: "Search history", d: "everything you've typed into Google" },
+  { id: "dna", t: "DNA test", d: "your full genetic results" }
+];
+
+const FACTORS = [
+  { id: "pre", t: "Pre-existing condition", d: "Diabetes diagnosed before applying" },
+  { id: "genes", t: "Genetic risk", d: "A gene variant that raises cancer risk" },
+  { id: "family", t: "Family history", d: "A parent died young of heart disease" },
+  { id: "age", t: "Age", d: "Older people cost more on average" },
+  { id: "sex", t: "Sex", d: "Men and women have different average costs" },
+  { id: "zip", t: "Zip code", d: "Neighborhoods differ in prices and health" },
+  { id: "job", t: "Occupation", d: "Roofer vs. accountant" },
+  { id: "weight", t: "Body weight", d: "BMI from your last checkup" },
+  { id: "smoke", t: "Smoking", d: "Smokes a pack a day" },
+  { id: "sky", t: "Skydiving", d: "Jumps out of planes on weekends" },
+  { id: "steps", t: "Daily steps", d: "Tracker shows 2,000 steps a day" },
+  { id: "checkups", t: "Skips checkups", d: "No preventive care in five years" },
+  { id: "grocery", t: "Grocery purchases", d: "Buys a lot of soda and chips" }
+];
+const FAIR_OPTS = [{ v: 1, l: "Fair" }, { v: 0, l: "Unsure" }, { v: -1, l: "Unfair" }];
+const CTRL_OPTS = [{ v: 0, l: "None" }, { v: 1, l: "Some" }, { v: 2, l: "A lot" }];
+
+const PRINCIPLES = [
+  { id: "control", t: "Control: the person chose it or can change it" },
+  { id: "luck", t: "Luck: they were born with it, or it just happened to them" },
+  { id: "accuracy", t: "Accuracy: it truly predicts cost, rather than being a rough proxy" },
+  { id: "privacy", t: "Privacy: how the insurer got the data" },
+  { id: "stigma", t: "Stigma: pricing on it would shame or label people" },
+  { id: "size", t: "Size: how big the price difference is" },
+  { id: "solidarity", t: "Solidarity: we should share the costs of illness" },
+  { id: "proxy", t: "Proxy: it stands in for race, income, or another protected trait" }
+];
+
+const CLASSIFY = [
+  { id: "genes", t: "Genetic test shows high cancer risk", ok: ["as"], ex: "A trait you were born with. Pricing it sorts people but can't change anything they do." },
+  { id: "pre", t: "Diabetes diagnosed before signing up", ok: ["as"], ex: "It already happened. The insurer is pricing a hidden type, not an action it can influence." },
+  { id: "family", t: "A parent died young", ok: ["as"], ex: "Nobody chooses their parents. Pure sorting." },
+  { id: "checkups", t: "Skips preventive checkups", ok: ["mh", "both"], ex: "A choice, often made because insurance will pay later anyway. Rewarding checkups changes behavior. That's moral hazard." },
+  { id: "sky", t: "Skydives on weekends", ok: ["mh", "both"], ex: "A choice. Charging for it makes the jumper bear the cost of the risk. Risk-lovers may also be a type, so “both” is defensible." },
+  { id: "smoke", t: "Smokes a pack a day", ok: ["both", "mh"], ex: "Both. The price gives a reason to quit (moral hazard), but nicotine is addictive and most smokers started as teens, so it is partly a trait (adverse selection)." }
+];
+const CL_OPTS = [{ v: "as", l: "Adverse selection (trait)" }, { v: "mh", l: "Moral hazard (choice)" }, { v: "both", l: "Both" }];
+
+const COOP_OPTS = [
+  { v: "loan", label: "Took out a bank loan and rebuilt" },
+  { v: "relatives", label: "Moved in with relatives in town" },
+  { v: "coop", label: "Moved into the chicken coop for the winter" },
+  { v: "west", label: "Sold the farm and moved west" }
+];
+
+const PARTS = [
+  { n: 1, t: "The traditional market" },
+  { n: 2, t: "The data-rich future" },
+  { n: 3, t: "Life without insurance" },
+  { n: 4, t: "Which data are fair game?" },
+  { n: 5, t: "What makes a price fair?" },
+  { n: 6, t: "Wrap-up" }
+];
+
+/* ---------------- student state ---------------- */
+const LSKEY = "wgi.student";
+let S = null;          // {mode, code, pid, name, step, A}
+let A = {};            // answers
+let GATE = 99;
+let saveTimer = null;
+function save() {
+  if (!S) return;
+  S.A = A; lsSet(LSKEY, S);
+  if (S.mode === "class" && db) {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => {
+      db.ref("games/" + PREFIX + S.code + "/players/" + S.pid).set({ name: S.name || "", step: S.step, part: STEPS[S.step].part, a: A, t: Date.now() }).catch(() => {});
+    }, 300);
+  }
+}
+
+/* ---------------- shared UI pieces ---------------- */
+function chip(id, gone) { const p = PEOPLE[id]; return `<span class="chip p-${id}${gone ? " gone" : ""}"><span class="av p-${id}">${p.name[0]}</span>${p.name}</span>`; }
+function poolLine(pool) { return `<div class="pool">${ORDER.map(id => chip(id, !pool.includes(id))).join("")}</div>`; }
+function personCard(id, extra) {
+  const p = PEOPLE[id];
+  return `<div class="pc p-${id}"><div class="top"><span class="av">${p.name[0]}</span><div><div class="nm">${p.name}</div><div class="rk">${p.risk}</div></div></div>
+  <div class="kv"><span>Expected health costs</span><span>${money(p.cost)}</span><span>Willing to pay for insurance</span><span>${money(p.wtp)}</span><span>Income</span><span>${money(p.income)}</span></div>${extra || ""}</div>`;
+}
+
+function mc(parent, o) {
+  const box = el("div", "mc");
+  const ok = v => Array.isArray(o.correct) ? o.correct.includes(v) : v === o.correct;
+  const draw = () => {
+    const v = A[o.key]; const answered = v != null; const lock = answered && !o.poll;
+    box.innerHTML = `<p class="q">${o.q}</p><div class="opts">${o.opts.map(x => {
+      let c = "opt"; if (v === x.v) c += " sel";
+      if (lock) { if (ok(x.v)) c += " right"; else if (v === x.v) c += " wrong"; }
+      return `<button class="${c}" data-v="${esc(x.v)}" ${lock ? "disabled" : ""}>${x.label}</button>`; }).join("")}</div>
+      ${answered && o.explain ? `<div class="fb ${o.poll ? "info" : ok(v) ? "ok" : "no"}">${o.poll ? "" : ok(v) ? "<b>Right.</b> " : "<b>Not quite.</b> "}${typeof o.explain === "function" ? o.explain(v) : o.explain}</div>` : ""}`;
+    box.querySelectorAll(".opt").forEach(b => b.onclick = () => { A[o.key] = b.dataset.v; save(); draw(); renderNav(); if (o.after) o.after(); });
+  };
+  draw(); parent.appendChild(box); return box;
+}
+
+function priceSlider(o) {
+  // o: {value, max, step, onChange, disabled, label}
+  const w = el("div", "slider");
+  w.innerHTML = `<div class="row" style="justify-content:space-between;align-items:baseline"><span class="muted small">${o.label || "Your price per policy"}</span><span class="big num"></span></div>
+    <input type="range" min="0" max="${o.max || 80000}" step="${o.step || 100}" value="${o.value}" ${o.disabled ? "disabled" : ""} aria-label="${esc(o.label || "Price")}">
+    <div class="nudge">${[-5000, -1000, -100, 100, 1000, 5000].map(d => `<button data-d="${d}" ${o.disabled ? "disabled" : ""}>${d > 0 ? "+" : "−"}${Math.abs(d).toLocaleString()}</button>`).join("")}</div>`;
+  const r = w.querySelector("input"), big = w.querySelector(".big");
+  const set = v => { v = Math.max(0, Math.min(+r.max, v)); r.value = v; big.textContent = money(v); o.onChange(v); };
+  r.oninput = () => set(+r.value);
+  w.querySelectorAll(".nudge button").forEach(b => b.onclick = () => set(+r.value + +b.dataset.d));
+  big.textContent = money(o.value);
+  w.setValue = v => { r.value = v; big.textContent = money(v); };
+  return w;
+}
+
+function ledgerHTML(rows, totLabel, tot) {
+  return `<table class="ledger">${rows.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join("")}<tr class="tot"><td>${totLabel}</td><td class="${tot >= -0.5 ? (tot > 0.5 ? "pos" : "") : "neg"}">${signed(tot)}</td></tr></table>`;
+}
+
+/* ---------- Part 1/2 building blocks ---------- */
+function priceStep(stage, y) {
+  const key = "y" + y + "price";
+  const pool = yearPool(y); const be = breakEven(pool); const tot = claims(pool);
+  const prevLoss = y > 1 ? (() => { const pp = yearPool(y - 1), pb = breakEven(pp), b = buyersAt(pp, () => pb); return pb * b.length - claims(b); })() : 0;
+  const c = el("div", "card");
+  c.innerHTML = `<div class="eyebrow">Year ${y} · You are the insurer</div>
+    <h2>${y === 1 ? "Set a price for everyone" : y === 2 ? "Reprice for the customers you have left" : "Reprice again"}</h2>
+    ${y === 1 ? `<p>Three people apply. You can't tell who is healthy and who is sick: everyone looks the same on the application. You only know what the group costs on average.</p>`
+      : `<p>Last year you lost <b class="neg">${money(-prevLoss)}</b>. Your claims showed who actually bought, so this year you expect only these customers to apply:</p>`}
+    <div style="margin:10px 0 14px">${poolLine(pool)}</div>
+    <p class="small muted">Many insurers compete. Charge more than break-even and a rival undercuts you. Charge less and you lose money. So the price ends up where premiums just cover expected claims.</p>`;
+  const task = el("div", "callout"); task.innerHTML = `<p><b>Your task:</b> slide the price until you break even${pool.length > 1 ? `, assuming all ${pool.length} people buy` : ", assuming she buys"}.</p>`;
+  c.appendChild(task);
+  const led = el("div"); const st = el("div", "status no");
+  const locked = () => A[key] === true;
+  let cur = locked() ? Math.round(be) : (A[key + "_v"] != null ? A[key + "_v"] : (y === 1 ? 15000 : Math.round(breakEven(yearPool(y - 1)) / 100) * 100));
+  const draw = v => {
+    const prem = v * pool.length, prof = prem - tot;
+    led.innerHTML = ledgerHTML([
+      [`Premiums: ${pool.length} × ${money(v)}`, money(prem)],
+      [`Expected claims: ${pool.map(id => PEOPLE[id].name + " " + money(PEOPLE[id].cost)).join(" + ")}`, money(tot)]
+    ], "Expected profit", prof);
+    if (locked()) { st.className = "status ok"; st.innerHTML = `Price locked at ${money(be)}: the average expected cost of ${pool.length > 1 ? "this pool" : "your only customer"}.`; lockBtn.hidden = true; }
+    else if (v - be >= -100 && v - be <= 1000) { st.className = "status ok"; st.textContent = Math.abs(v - be) < 1 ? "That's break-even. Lock it in." : `Close enough. Rivals will shave the price down to exact break-even, ${money(be)}. Lock it in.`; lockBtn.hidden = false; }
+    else { st.className = "status " + (prof < 0 ? "warn" : "no"); st.textContent = prof < 0 ? "You'd lose money at this price." : "A rival would undercut this price."; lockBtn.hidden = true; }
+  };
+  const sl = priceSlider({ value: cur, disabled: locked(), onChange: v => { cur = v; A[key + "_v"] = v; draw(v); } });
+  const lockBtn = el("button", "btn teal", `Lock in ${money(be)}`); lockBtn.hidden = true;
+  lockBtn.onclick = () => { A[key] = true; save(); sl.setValue(Math.round(be)); sl.querySelectorAll("input,button").forEach(b => b.disabled = true); draw(be); renderNav(); };
+  const hint = el("button", "btn ghost", "Hint"); const hintBox = el("div", "fb info"); hintBox.hidden = true;
+  hintBox.innerHTML = `Break-even means premiums = expected claims. So the price = total expected claims ÷ number of customers = ${money(tot)} ÷ ${pool.length}.`;
+  hint.onclick = () => { hintBox.hidden = false; hint.hidden = true; };
+  const box = el("div", "card"); box.style.display = "flex"; box.style.flexDirection = "column"; box.style.gap = "12px";
+  box.append(sl, led, st); const r = el("div", "row"); r.append(lockBtn, hint); box.append(r, hintBox);
+  stage.append(c, box); draw(cur);
+}
+
+function decisionStep(stage, o) {
+  // o: {key, pool, price(id), eyebrow, title, intro, result(buyers)}
+  const key = o.key;
+  const d = A[key] || { c: {} }; A[key] = d; d.c = d.c || {};
+  const head = el("div", "card");
+  head.innerHTML = `<div class="eyebrow">${o.eyebrow}</div><h2>${o.title}</h2>${o.intro}`;
+  stage.appendChild(head);
+  const grid = el("div", "people"); stage.appendChild(grid);
+  const fb = el("div"); stage.appendChild(fb);
+  const verdict = id => PEOPLE[id].wtp >= o.price(id) ? "buy" : "no";
+  const reason = id => {
+    const p = PEOPLE[id], pr = o.price(id);
+    if (verdict(id) === "buy") return `${p.name} buys: ${money(pr)} is no more than the ${money(p.wtp)} ${p.pro} is willing to pay.`;
+    return `${p.name} walks away: ${money(pr)} is more than the ${money(p.wtp)} ${p.pro} is willing to pay.${pr > p.income ? ` It's more than ${p.pos} entire income.` : ""}`;
+  };
+  const draw = () => {
+    grid.innerHTML = o.pool.map(id => {
+      const ch = d.c[id], done = d.done, right = done && ch === verdict(id);
+      return personCard(id, `<div class="kv" style="border-top:1px solid var(--line);padding-top:6px"><span>${o.priceLabel || "Price"}</span><span>${money(o.price(id))}</span></div>
+        <div class="seg" role="group" aria-label="${PEOPLE[id].name}'s choice"><button data-id="${id}" data-v="buy" class="${ch === "buy" ? "sel" : ""}" ${done ? "disabled" : ""}>Buys</button><button data-id="${id}" data-v="no" class="${ch === "no" ? "sel" : ""}" ${done ? "disabled" : ""}>Doesn't buy</button></div>
+        ${done ? `<div class="fb ${right ? "ok" : "no"}"><b>${right ? "Right." : "Not quite."}</b> ${reason(id)}</div>` : ""}`);
+    }).join("");
+    grid.querySelectorAll(".seg button").forEach(b => b.onclick = () => { d.c[b.dataset.id] = b.dataset.v; save(); draw(); });
+    fb.innerHTML = "";
+    if (!d.done) {
+      const ready = o.pool.every(id => d.c[id]);
+      const btn = el("button", "btn", "Check my answers"); btn.disabled = !ready; btn.onclick = () => { d.done = true; save(); draw(); renderNav(); };
+      fb.appendChild(btn);
+    } else {
+      const buyers = o.pool.filter(id => verdict(id) === "buy");
+      fb.appendChild(o.result(buyers, verdict));
+    }
+  };
+  draw();
+}
+
+function yearResultCard(y, buyers) {
+  const pool = yearPool(y), p = breakEven(pool);
+  const prem = p * buyers.length, cl = claims(buyers), prof = prem - cl;
+  const c = el("div", "card");
+  if (!buyers.length) {
+    c.innerHTML = `<h3>Nobody buys.</h3><p>The market has unraveled. Samantha would gladly take insurance at any price up to ${money(PEOPLE.sam.wtp)}, but covering her costs ${money(PEOPLE.sam.cost)} on average. No insurer will sell at a loss.</p>`;
+    return c;
+  }
+  const gone = pool.filter(id => !buyers.includes(id));
+  c.innerHTML = `<h3>What actually happened in year ${y}</h3>
+    <div style="margin:6px 0 10px">${poolLine(buyers)}</div>
+    ${ledgerHTML([[`Premiums: ${buyers.length} × ${money(p)}`, money(prem)], [`Claims: ${buyers.map(id => PEOPLE[id].name + " " + money(PEOPLE[id].cost)).join(" + ")}`, money(cl)]], "Insurer's profit", prof)}
+    <div class="callout" style="margin-top:12px"><p>The price was built for a pool that included ${gone.map(id => PEOPLE[id].name).join(" and ")}. The lowest-cost customer${gone.length > 1 ? "s" : ""} left, so the average cost of the people still buying went <b>up</b>.</p></div>`;
+  return c;
+}
+
+/* ---------------- steps ---------------- */
+const STEPS = [
+  /* ---------- PART 1 ---------- */
+  { part: 1, id: "intro", done: () => !!A.warm, render(stage) {
+    const c = el("div", "card");
+    c.innerHTML = `<div class="eyebrow">Part 1 · The traditional market</div><h2>Meet the customers</h2>
+      <p>A health insurer sells one plan. Three people might buy it. Each of them knows more about their own health than the insurer does.</p>`;
+    stage.appendChild(c);
+    const g = el("div", "people", ORDER.map(id => personCard(id, `<div class="small muted">${PEOPLE[id].note}</div>`)).join("")); stage.appendChild(g);
+    const n = el("div", "callout", `<p>Each “expected” number is an average. Actual bills are random: a good year costs little, a bad year (a car crash, a cancer diagnosis) can cost far more.</p>`); stage.appendChild(n);
+    const q = el("div", "card"); stage.appendChild(q);
+    mc(q, { key: "warm", q: "Why would Sara pay up to $8,000 for insurance when she expects only $4,000 in medical bills?",
+      opts: [{ v: "risk", label: "A rare huge bill could wipe her out, so she'll pay extra to remove that risk." }, { v: "mistake", label: "She's overpaying by mistake." }, { v: "law", label: "The law requires her to buy it." }],
+      correct: "risk", explain: "People dislike risk. Paying a bit more than the average cost to avoid a catastrophe is a good deal for them. Bob is the same. Samantha would value coverage even more, but she can't pay more than she has: $55,000 is her whole income." });
+  } },
+  { part: 1, id: "y1price", done: () => A.y1price === true, render: s => priceStep(s, 1) },
+  { part: 1, id: "y1buy", done: () => A.y1buy && A.y1buy.done, render: s => decisionStep(s, { key: "y1buy", pool: yearPool(1), price: () => breakEven(yearPool(1)),
+      eyebrow: "Year 1 · Now you are each customer", title: `The price is ${money(breakEven(yearPool(1)))}. Who buys?`,
+      intro: `<p>Each person knows their own expected costs. Decide what each one does.</p>`, result: b => yearResultCard(1, b) }) },
+  { part: 1, id: "y2price", done: () => A.y2price === true, render: s => priceStep(s, 2) },
+  { part: 1, id: "y2buy", done: () => A.y2buy && A.y2buy.done, render: s => decisionStep(s, { key: "y2buy", pool: yearPool(2), price: () => breakEven(yearPool(2)),
+      eyebrow: "Year 2 · Customers decide", title: `The price is now ${money(breakEven(yearPool(2)))}. Who buys?`,
+      intro: `<p>Sara is gone: if ${money(breakEven(yearPool(1)))} was too much for her, ${money(breakEven(yearPool(2)))} certainly is.</p>`, result: b => yearResultCard(2, b) }) },
+  { part: 1, id: "y3price", done: () => A.y3price === true, render: s => priceStep(s, 3) },
+  { part: 1, id: "y3buy", done: () => A.y3buy && A.y3buy.done, render: s => decisionStep(s, { key: "y3buy", pool: yearPool(3), price: () => breakEven(yearPool(3)),
+      eyebrow: "Year 3 · One customer left", title: `The price is now ${money(breakEven(yearPool(3)))}. Does Samantha buy?`,
+      intro: `<p>Only Samantha is left in the pool.</p>`, result: b => yearResultCard(3, b) }) },
+  { part: 1, id: "unravel", done: () => !!A.whySeen, render(stage) {
+    const c = el("div", "card");
+    const rows = [1, 2, 3].map(y => { const pool = yearPool(y), p = breakEven(pool), b = buyersAt(pool, () => p);
+      return `<div class="yr"><span class="lab">YEAR ${y}</span><div>${poolLine(b)}</div><span class="num"><b>${money(p)}</b> → ${b.length ? b.length + (b.length === 1 ? " buys" : " buy") : "nobody buys"}</span></div>`; }).join("");
+    c.innerHTML = `<div class="eyebrow">Part 1 · The death spiral</div><h2>The market unraveled</h2><div class="tl">${rows}</div>`;
+    stage.appendChild(c);
+    const sb = el("div", "card"); sb.style.display = "flex"; sb.style.flexDirection = "column"; sb.style.gap = "12px";
+    sb.innerHTML = `<h3>Can you save this market?</h3><p>With one price for everyone, find any price where somebody buys and the insurer doesn't lose money.</p>`;
+    const led = el("div"), st = el("div", "status no");
+    const draw = v => {
+      const b = buyersAt(ORDER, () => v), prem = v * b.length, cl = claims(b), prof = prem - cl;
+      led.innerHTML = `<div style="margin-bottom:8px">${poolLine(b)}</div>` + ledgerHTML([[`Premiums: ${b.length} × ${money(v)}`, money(prem)], [`Claims of those who buy`, money(cl)]], "Insurer's profit", prof);
+      if (!b.length) { st.className = "status no"; st.textContent = "Nobody buys at this price."; }
+      else if (prof >= 0) { st.className = "status ok"; st.textContent = "Profitable!"; }
+      else { st.className = "status warn"; st.textContent = `${b.length} buy, and the insurer loses ${money(-prof)}.`; }
+    };
+    const v0 = A.sandbox_v != null ? A.sandbox_v : 20000;
+    const sl = priceSlider({ value: v0, step: 500, onChange: v => { A.sandbox_v = v; draw(v); } });
+    sb.append(sl, led, st);
+    const why = el("div");
+    const showWhy = () => { why.innerHTML = `<div class="tw"><table class="cmp"><tr><th>Price range</th><th>Who buys</th><th>Their average cost</th><th>Result</th></tr>
+      <tr><td class="num">$0 – $8,000</td><td>Everyone</td><td class="num">$34,667</td><td class="neg">Loss</td></tr>
+      <tr><td class="num">$8,001 – $35,000</td><td>Bob, Samantha</td><td class="num">$50,000</td><td class="neg">Loss</td></tr>
+      <tr><td class="num">$35,001 – $55,000</td><td>Samantha</td><td class="num">$75,000</td><td class="neg">Loss</td></tr>
+      <tr><td class="num">Above $55,000</td><td>Nobody</td><td>–</td><td>No market</td></tr></table></div>
+      <div class="discuss" style="margin-top:12px"><p>Sara would pay ${money(8000)} for coverage that costs ${money(4000)} to provide. Bob would pay ${money(35000)} for coverage that costs ${money(25000)}. Both deals are good for everyone, and both vanish anyway. That is <b>adverse selection</b>: the people who know they are low risk leave first, and every exit raises the price for whoever is left.</p></div>`; };
+    const wb = el("button", "btn", "Show why no single price works"); wb.onclick = () => { A.whySeen = true; save(); wb.hidden = true; showWhy(); renderNav(); };
+    if (A.whySeen) { wb.hidden = true; showWhy(); }
+    sb.append(wb, why); stage.appendChild(sb); draw(v0);
+  } },
+
+  /* ---------- PART 2 ---------- */
+  { part: 2, id: "tailprice", done: () => A.tailLocked === true, render(stage) {
+    const c = el("div", "card");
+    c.innerHTML = `<div class="eyebrow">Part 2 · A hypothetical future</div><h2>The insurer knows everything</h2>
+      <p>Fast forward. Insurers can now see medical records, wearable data, pharmacy purchases, maybe your genome, and an AI model turns it all into a prediction of each person's expected cost.</p>
+      <p>Suppose the prediction is perfect. The insurer knows exactly what Sara, Bob and Samantha will cost on average, and it can charge each person a <b>different price</b>.</p>
+      <div class="callout"><p><b>Your task:</b> you're the insurer again, and rivals still compete for every customer. Pick a price for each person, then press <b>Submit my prices</b>. You'll see how close you got.</p></div>`;
+    stage.appendChild(c);
+    A.tail = A.tail || {}; A.tailGuess = A.tailGuess || null;
+    const locked = () => A.tailLocked === true;
+    const list = el("div"); list.style.display = "flex"; list.style.flexDirection = "column"; list.style.gap = "12px"; stage.appendChild(list);
+    const parts = {};
+    const verdict = id => {
+      const p = PEOPLE[id], g = A.tailGuess && A.tailGuess[id], d = g - p.cost;
+      if (g == null) return "";
+      if (Math.abs(d) <= 1000) return `<div class="fb ok"><b>${d === 0 ? "Exactly right." : "Close."}</b> You picked ${money(g)}. Break-even for ${p.name} is ${money(p.cost)}, ${p.pos} expected cost.</div>`;
+      if (d > 0) return `<div class="fb no"><b>Too high.</b> You picked ${money(g)}. A rival can offer ${p.name} anything down to ${money(p.cost)} and still break even, so ${p.pro} would switch. Competition pushes ${p.pos} price to ${money(p.cost)}.</div>`;
+      return `<div class="fb no"><b>Too low.</b> You picked ${money(g)}, but ${p.name} costs ${money(p.cost)} on average, so you'd lose ${money(-d)} on ${p.obj} every year. The lowest price an insurer can survive on is ${money(p.cost)}.</div>`;
+    };
+    ORDER.forEach(id => {
+      const p = PEOPLE[id]; const card = el("div", "pc p-" + id);
+      card.innerHTML = `<div class="top"><span class="av">${p.name[0]}</span><div><div class="nm">${p.name}</div><div class="rk">Expected cost ${money(p.cost)}</div></div></div>`;
+      const led = el("div", "small"), fb = el("div");
+      const v0 = locked() ? (A.tailGuess ? A.tailGuess[id] : p.cost) : (A.tail[id] ?? 30000);
+      const drawLed = v => { const pr = v - p.cost; led.innerHTML = `Insurer's profit if ${p.pro} buys at this price: <b class="${pr < -0.5 ? "neg" : pr > 0.5 ? "pos" : ""} num">${signed(pr)}</b>`; };
+      const sl = priceSlider({ value: v0, step: 500, label: p.name + "'s price", disabled: locked(), onChange: v => { A.tail[id] = v; drawLed(v); save(); } });
+      card.append(sl, led, fb); list.appendChild(card); drawLed(v0); fb.innerHTML = verdict(id);
+      parts[id] = { sl, led, fb, drawLed };
+      if (A.tail[id] == null) A.tail[id] = v0;
+    });
+    const w = el("div", "card"); w.style.display = "flex"; w.style.flexDirection = "column"; w.style.gap = "10px";
+    const btn = el("button", "btn", "Submit my prices"); btn.style.alignSelf = "flex-start";
+    const st = el("div");
+    const showDone = () => {
+      btn.hidden = true;
+      const nRight = ORDER.filter(id => Math.abs(A.tailGuess[id] - PEOPLE[id].cost) <= 1000).length;
+      st.innerHTML = `<div class="callout"><p><b>${nRight === 3 ? "All three right." : nRight + " of 3 close to break-even."}</b> With perfect information, competition sets each person's price at <b>their own expected cost</b>: Sara ${money(4000)}, Bob ${money(25000)}, Samantha ${money(75000)}. Those are the prices customers face on the next screen. Press <b>Next</b> to continue.</p></div>`;
+    };
+    btn.onclick = () => {
+      A.tailGuess = {}; ORDER.forEach(id => A.tailGuess[id] = A.tail[id]);
+      A.tailLocked = true; save();
+      ORDER.forEach(id => { const q = parts[id]; q.sl.querySelectorAll("input,button").forEach(b => b.disabled = true); q.fb.innerHTML = verdict(id); });
+      showDone(); renderNav();
+    };
+    w.append(btn, st, el("p", "small muted", "Real insurers add a markup for administration and profit, so actual prices would sit a little higher. The logic is the same."));
+    stage.appendChild(w);
+    if (locked()) { if (!A.tailGuess) { A.tailGuess = {}; ORDER.forEach(id => A.tailGuess[id] = PEOPLE[id].cost); } showDone(); ORDER.forEach(id => parts[id].fb.innerHTML = verdict(id)); }
+  } },
+  { part: 2, id: "tailbuy", done: () => A.tailbuy && A.tailbuy.done, render: s => decisionStep(s, { key: "tailbuy", pool: ORDER, price: TAILORED, priceLabel: "Personal price",
+      eyebrow: "Part 2 · Customers decide", title: "Everyone gets a personal price. Who buys?", intro: "<p>Compare each person's personal price with what they are willing to pay.</p>",
+      result: b => { const c = el("div", "card"); const prem = b.reduce((s, id) => s + TAILORED(id), 0);
+        c.innerHTML = `<h3>The market survives</h3><div style="margin:6px 0 10px">${poolLine(b)}</div>${ledgerHTML([["Premiums: Sara $4,000 + Bob $25,000", money(prem)], ["Claims: Sara $4,000 + Bob $25,000", money(claims(b))]], "Insurer's profit", prem - claims(b))}
+        <div class="callout" style="margin-top:12px"><p>Nobody leaves because of someone else's risk, so there is no spiral. But Samantha is priced out. Her price, ${money(75000)}, is more than her entire income.</p></div>`; return c; } }) },
+  { part: 2, id: "compare", done: () => !!A.compare, render(stage) {
+    const c = el("div", "card");
+    c.innerHTML = `<div class="eyebrow">Part 2 · Side by side</div><h2>Two markets, two different victims</h2>
+      <div class="tw"><table class="cmp"><tr><th></th><th>One price for all<br>(insurer can't see risk)</th><th>Personal prices<br>(insurer sees everything)</th></tr>
+      <tr><td><b>People insured</b></td><td class="num">0 of 3</td><td class="num">2 of 3</td></tr>
+      <tr><td><b>Who is left out</b></td><td>Everyone. The low-risk leave first.</td><td>Samantha, the sickest</td></tr>
+      <tr><td><b>Gains from trade</b><br><span class="small muted">willingness to pay − cost, for those insured</span></td><td class="num">$0</td><td class="num">$14,000<br><span class="small muted">Sara $4,000 + Bob $10,000</span></td></tr></table></div>
+      <div class="callout" style="margin-top:14px"><p>Usually adverse selection pushes the <b>low-risk</b> out of the market. Better data can flip it: the market survives, but the <b>high-risk</b> are pushed out.</p></div>
+      <p style="margin-top:12px" class="small">Economists would call Samantha's exclusion “efficient” in a narrow sense: what she can pay (${money(55000)}) is less than what she costs (${money(75000)}). But her willingness to pay is low because her income is low, not because she needs care less.</p>`;
+    stage.appendChild(c);
+    const q = el("div", "card"); stage.appendChild(q);
+    mc(q, { key: "compare", poll: true, q: "Which market is better for society?",
+      opts: [{ v: "single", label: "One price for all. At least it doesn't single out the sick." }, { v: "tailored", label: "Personal prices. More people are insured." }, { v: "neither", label: "Neither. We need a policy fix (mandates, subsidies, public coverage)." }],
+      explain: "The Affordable Care Act takes the third road: it bans pricing on pre-existing conditions (one price, like Part 1), then uses subsidies and, for some years, a mandate to keep healthy people like Sara in the pool so it doesn't unravel." });
+  } },
+  { part: 2, id: "reclass", done: () => !!A.reclass, render(stage) {
+    const c = el("div", "card"); stage.appendChild(c);
+    c.innerHTML = `<div class="eyebrow">Part 2 · One more year</div><h2>Sara gets sick</h2>
+      <p>Stay in the personal-price world. Sara has been paying ${money(4000)} a year. Then she is diagnosed with a chronic illness, and her expected cost jumps to ${money(75000)}, the same as Samantha's. Her policy is up for renewal.</p>`;
+    mc(c, { key: "reclass", q: "What does the insurer charge Sara next year?",
+      opts: [{ v: "same", label: "$4,000. She's a loyal customer." }, { v: "jump", label: "$75,000. That's her new expected cost." }, { v: "mid", label: "Somewhere in between, to be fair." }],
+      correct: "jump", explain: "With perfect information and one-year contracts, the price follows the prediction. Sara was insured against this year's bills, but not against <b>becoming</b> high-risk. Economists call that <b>reclassification risk</b>." });
+    const d = el("div", "discuss", `<p><span class="lab">Discussion:</span> At 22 and healthy, you may dislike subsidizing others. What would you want the rule to be after a diagnosis? If your premium jumps right after you get sick, what exactly were you insured against?</p>`);
+    stage.appendChild(d);
+  } },
+
+  /* ---------- PART 3 ---------- */
+  { part: 3, id: "coop", done: () => !!A.coop, render(stage) {
+    const c = el("div", "card"); stage.appendChild(c);
+    c.innerHTML = `<div class="eyebrow">Part 3 · A true story</div><h2>Life without insurance</h2>
+      <p class="story">In the 1800s, Professor Shiller's family worked a farm. Their house was everything they had. Then it burned down, and they had no insurance. No payout. Nothing to rebuild with.</p>`;
+    mc(c, { key: "coop", q: "What do you think they did?", opts: COOP_OPTS, correct: "coop", after: () => reveal(),
+      explain: "They moved into the chicken coop, and they lived there through the winter." });
+    const more = el("div"); more.style.display = "flex"; more.style.flexDirection = "column"; more.style.gap = "18px"; stage.appendChild(more);
+    const reveal = () => {
+      if (!A.coop) return;
+      more.innerHTML = `<div class="card">${COOP_SVG}<p class="pull" style="margin-top:14px">When insurance works, nobody notices. When it doesn't exist, you sleep in the chicken coop.</p></div>
+        <div class="two"><div class="callout"><p><b>Part 1, one price for all:</b> the market unravels, and <b>everyone</b> is back in the chicken-coop world. One fire, one illness, one accident can ruin a family.</p></div>
+        <div class="callout"><p><b>Part 2, personal prices:</b> the market survives, but <b>Samantha</b>, the person most likely to need it, is the one left in the coop.</p></div></div>
+        <div class="card"><h3>A Brandeis connection</h3><p>In 1907, Louis Brandeis, the university's namesake, created savings bank life insurance in Massachusetts so working families could buy honest, affordable coverage instead of being exploited by predatory insurers.</p></div>`;
+    };
+    reveal();
+  } },
+
+  /* ---------- PART 4 ---------- */
+  { part: 4, id: "share", done: () => !!A.shareDone, render(stage) {
+    const c = el("div", "card"); stage.appendChild(c);
+    A.share = A.share || {};
+    c.innerHTML = `<div class="eyebrow">Part 4 · Which data are fair game?</div><h2>What would you trade for cheaper health insurance?</h2>
+      <p>Your insurer makes an offer: <b>save 35% on your premium</b> if you share your data. Pick everything you'd share.</p><div class="opts" id="shareopts"></div>`;
+    const box = c.querySelector("#shareopts");
+    const draw = () => {
+      box.innerHTML = SHARE.map(x => `<button class="opt ${A.share[x.id] ? "sel" : ""}" data-id="${x.id}" ${A.shareDone ? "disabled" : ""} aria-pressed="${!!A.share[x.id]}"><b>${A.share[x.id] ? "✓ " : ""}${x.t}</b> <span class="muted small">· ${x.d}</span></button>`).join("");
+      box.querySelectorAll(".opt").forEach(b => b.onclick = () => { A.share[b.dataset.id] = !A.share[b.dataset.id]; save(); draw(); });
+    };
+    draw();
+    const btn = el("button", "btn", A.shareDone ? "Submitted" : "Submit"); btn.disabled = !!A.shareDone;
+    const after = el("div");
+    const showAfter = () => { after.innerHTML = `<div class="discuss"><p><span class="lab">Think about it:</span> a discount for you can become a sorting tool for them. If the people who share get 35% off, what happens to the price for people who don't share?</p></div>`; };
+    btn.onclick = () => { A.shareDone = true; save(); btn.disabled = true; btn.textContent = "Submitted"; draw(); showAfter(); renderNav(); };
+    c.append(btn); stage.appendChild(after); if (A.shareDone) showAfter();
+  } },
+  { part: 4, id: "rank", done: () => !!A.rankDone, render(stage) {
+    const c = el("div", "card"); stage.appendChild(c);
+    if (!Array.isArray(A.rank) || A.rank.length !== RANK_ITEMS.length) { A.rank = RANK_ITEMS.map(x => x.id).sort(() => Math.random() - .5); save(); }
+    c.innerHTML = `<div class="eyebrow">Part 4 · Rank them</div><h2>What risk-based pricing is acceptable?</h2>
+      <p>Each of these predicts health costs. Rank them from <b>most acceptable</b> for an insurer to use in setting your price (top) to <b>least acceptable</b> (bottom). Drag rows or use the arrows.</p>
+      <div class="ends"><span>↑ Most acceptable</span></div><ol class="rank" id="rk"></ol><div class="ends"><span>↓ Least acceptable</span></div>`;
+    const ol = c.querySelector("#rk"); let dragIdx = null;
+    const draw = () => {
+      const lock = !!A.rankDone;
+      ol.innerHTML = A.rank.map((id, i) => { const it = RANK_ITEMS.find(x => x.id === id);
+        return `<li draggable="${!lock}" data-i="${i}"><span class="n">${i + 1}</span><div><div class="t">${it.t}</div><div class="d">${it.d}</div></div>
+          <span class="mv"><button data-u="${i}" ${lock || i === 0 ? "disabled" : ""} aria-label="Move ${it.t} up">↑</button><button data-dn="${i}" ${lock || i === A.rank.length - 1 ? "disabled" : ""} aria-label="Move ${it.t} down">↓</button></span></li>`; }).join("");
+      const mv = (i, j) => { const r = A.rank.slice(); const [x] = r.splice(i, 1); r.splice(j, 0, x); A.rank = r; save(); draw(); };
+      ol.querySelectorAll("[data-u]").forEach(b => b.onclick = () => mv(+b.dataset.u, +b.dataset.u - 1));
+      ol.querySelectorAll("[data-dn]").forEach(b => b.onclick = () => mv(+b.dataset.dn, +b.dataset.dn + 1));
+      if (!lock) ol.querySelectorAll("li").forEach(li => {
+        li.ondragstart = e => { dragIdx = +li.dataset.i; li.classList.add("drag"); try { e.dataTransfer.setData("text/plain", li.dataset.i); } catch (x) {} };
+        li.ondragend = () => li.classList.remove("drag");
+        li.ondragover = e => e.preventDefault();
+        li.ondrop = e => { e.preventDefault(); const to = +li.dataset.i; if (dragIdx != null && dragIdx !== to) mv(dragIdx, to); dragIdx = null; };
+      });
+    };
+    draw();
+    const btn = el("button", "btn", A.rankDone ? "Ranking submitted" : "Submit my ranking"); btn.disabled = !!A.rankDone;
+    btn.onclick = () => { A.rankDone = true; save(); btn.disabled = true; btn.textContent = "Ranking submitted"; draw(); renderNav(); };
+    c.appendChild(btn);
+  } },
+  { part: 4, id: "rankreveal", done: () => true, render(stage) {
+    const c = el("div", "card"); stage.appendChild(c);
+    c.innerHTML = `<div class="eyebrow">Part 4 · What the law says</div><h2>Your ranking vs. U.S. health insurance law</h2>
+      <p>Under the Affordable Care Act, individual health plans may set prices using only age, location, tobacco use, and whether the plan covers a family. Your health, your medical history, and your sex can't affect your premium.</p>
+      <div class="tw"><table class="cmp"><tr><th>Your rank</th><th>Factor</th><th>ACA health plans</th></tr>
+      ${(A.rank || []).map((id, i) => { const it = RANK_ITEMS.find(x => x.id === id); const a = ACA[id];
+        return `<tr><td class="num"><b>${i + 1}</b></td><td><b>${it.t}</b><br><span class="small muted">${it.d}</span></td><td><span class="tag ${a[0]}">${a[0] === "y" ? "Allowed" : "Banned"}</span><br><span class="small muted">${a[1]}</span></td></tr>`; }).join("")}</table></div>
+      <p class="small" style="margin-top:12px">Other insurance is different. Life insurers routinely ask about medical history, family history and hobbies like skydiving. The Genetic Information Nondiscrimination Act (2008) bans genetic discrimination in health insurance and employment, but not in life, disability, or long-term care insurance.</p>
+      <div class="discuss"><p><span class="lab">Discussion:</span> The hard question is not whether to screen. It's where to draw the line. Did the law draw it where you did?</p></div>`;
+  } },
+
+  /* ---------- PART 5 ---------- */
+  { part: 5, id: "rate", done: () => FACTORS.every(f => A.rate && A.rate[f.id] && A.rate[f.id].f != null && A.rate[f.id].c != null), render(stage) {
+    A.rate = A.rate || {}; A.custom = A.custom || {};
+    const c = el("div", "card"); stage.appendChild(c);
+    c.innerHTML = `<div class="eyebrow">Part 5 · What makes a price fair?</div><h2>Rate each reason for a higher price</h2>
+      <p>Imagine the law let insurers charge people more for each of these. For each one, decide two things: <b>is a higher price fair?</b> And <b>how much control</b> does the person have over it?</p>`;
+    const list = el("div", "rate"); c.appendChild(list);
+    const seg = (key, field, opts) => `<div class="seg" role="group">${opts.map(o => `<button data-k="${key}" data-f="${field}" data-v="${o.v}" class="${A.rate[key] && A.rate[key][field] === o.v ? "sel" : ""}">${o.l}</button>`).join("")}</div>`;
+    const row = (key, title, desc) => `<div class="rr"><div><div class="t" style="font-weight:700">${title}</div><div class="small muted">${desc}</div></div>
+      <div class="ctl"><div><span class="lab">Fair?</span>${seg(key, "f", FAIR_OPTS)}</div><div><span class="lab">Control</span>${seg(key, "c", CTRL_OPTS)}</div></div></div>`;
+    const draw = () => {
+      list.innerHTML = FACTORS.map(f => row(f.id, f.t, f.d)).join("") +
+        ["c1", "c2"].map((k, i) => `<div class="rr"><div><label class="small" for="cust-${k}" style="font-weight:700">Fill in the blank ${i + 1}: insurers could also charge more based on…</label><input type="text" id="cust-${k}" data-c="${k}" maxlength="80" placeholder="e.g., ${i ? "how many hours you sleep" : "your credit score"}" value="${esc(A.custom[k] || "")}"></div>
+          <div class="ctl"><div><span class="lab">Fair?</span>${seg(k, "f", FAIR_OPTS)}</div><div><span class="lab">Control</span>${seg(k, "c", CTRL_OPTS)}</div></div></div>`).join("");
+      list.querySelectorAll(".seg button").forEach(b => b.onclick = () => { const k = b.dataset.k; A.rate[k] = A.rate[k] || {}; A.rate[k][b.dataset.f] = +b.dataset.v; save(); b.parentElement.querySelectorAll("button").forEach(x => x.classList.toggle("sel", x === b)); renderNav(); });
+      list.querySelectorAll("input[data-c]").forEach(inp => inp.oninput = () => { A.custom[inp.dataset.c] = inp.value.slice(0, 80); save(); });
+    };
+    draw();
+    stage.appendChild(el("p", "small muted", "Both blanks are optional, but try at least one: what else could predict what you'll cost an insurer?"));
+  } },
+  { part: 5, id: "map", done: () => A.principles && Object.values(A.principles).some(Boolean), render(stage) {
+    A.principles = A.principles || {};
+    const c = el("div", "card"); stage.appendChild(c);
+    const items = FACTORS.map(f => ({ t: f.t, r: A.rate && A.rate[f.id] })).concat(["c1", "c2"].filter(k => A.custom && A.custom[k] && A.rate && A.rate[k] && A.rate[k].f != null && A.rate[k].c != null).map(k => ({ t: "“" + A.custom[k] + "”", r: A.rate[k] })));
+    const cell = (f, ct) => `<div class="cell">${items.filter(x => x.r && x.r.f === f && x.r.c === ct).map(x => `<span>${esc(x.t)}</span>`).join("")}</div>`;
+    c.innerHTML = `<div class="eyebrow">Part 5 · Your fairness map</div><h2>Where did your answers land?</h2>
+      <div class="tw"><div class="map"><div></div><div class="h">No control</div><div class="h">Some</div><div class="h">A lot</div>
+      ${FAIR_OPTS.map(fo => `<div class="rh ${fo.v === 1 ? "f" : fo.v === -1 ? "u" : ""}">${fo.l}</div>${[0, 1, 2].map(ct => cell(fo.v, ct)).join("")}`).join("")}</div></div>
+      <div class="field" style="margin-top:14px"><label for="pattern">What do the ones you called fair have in common?</label><textarea id="pattern" maxlength="400" placeholder="Write a sentence or two">${esc(A.pattern || "")}</textarea></div>`;
+    c.querySelector("#pattern").oninput = e => { A.pattern = e.target.value.slice(0, 400); save(); };
+    const p = el("div", "card"); stage.appendChild(p);
+    p.innerHTML = `<h3>Which principles should decide where the line goes?</h3><p class="small muted">Pick up to three.</p><div class="opts" id="pr"></div>`;
+    const box = p.querySelector("#pr");
+    const draw = () => {
+      const n = Object.values(A.principles).filter(Boolean).length;
+      box.innerHTML = PRINCIPLES.map(x => { const on = !!A.principles[x.id]; return `<button class="opt ${on ? "sel" : ""}" data-id="${x.id}" aria-pressed="${on}" ${!on && n >= 3 ? "disabled" : ""}>${on ? "✓ " : ""}${x.t}</button>`; }).join("");
+      box.querySelectorAll(".opt").forEach(b => b.onclick = () => { A.principles[b.dataset.id] = !A.principles[b.dataset.id]; save(); draw(); renderNav(); });
+    };
+    draw();
+  } },
+  { part: 5, id: "choice", done: () => true, render(stage) {
+    const c = el("div", "card"); stage.appendChild(c);
+    c.innerHTML = `<div class="eyebrow">Part 5 · Choices vs. traits</div><h2>Two different reasons to price on a characteristic</h2>
+      <div class="two"><div class="callout"><h3>Traits</h3><p class="small muted">Born with it, or it already happened</p><p>Genetics, family history, a pre-existing condition, age, sex.</p>
+        <p>This is <b>adverse selection</b> (hidden type). Pricing on a trait <b>sorts</b> people. It can't change what anyone does. The price difference just moves money between the lucky and the unlucky.</p></div>
+      <div class="discuss"><h3>Choices</h3><p class="small muted">Something the person does</p><p>Smoking, skydiving, daily steps, skipping checkups.</p>
+        <p>This is closer to <b>moral hazard</b> (hidden action). Once insured, you bear less of the cost of risky behavior, so you do more of it. Pricing the behavior puts some of that cost back on you, so it can <b>change what you do</b>.</p></div></div>
+      <p style="margin-top:14px">That's one reason pricing on smoking feels different from pricing on genes: a smoker can respond to the price; a person with a risky gene can't.</p>
+      <div class="callout"><p><b>But choice is rarely all-or-nothing.</b> Nicotine is addictive and most smokers started as teenagers. Daily steps depend on your job, your neighborhood and whether you have a disability. Many “choices” are partly traits.</p></div>`;
+  } },
+  { part: 5, id: "classify", done: () => CLASSIFY.every(x => A.cl && A.cl[x.id]), render(stage) {
+    A.cl = A.cl || {};
+    const c = el("div", "card"); stage.appendChild(c);
+    c.innerHTML = `<div class="eyebrow">Part 5 · Classify</div><h2>Adverse selection, moral hazard, or both?</h2><p>For each, which problem would pricing on it mainly address?</p>`;
+    const list = el("div", "rate"); c.appendChild(list);
+    const draw = () => {
+      list.innerHTML = CLASSIFY.map(x => { const v = A.cl[x.id]; const right = v && x.ok.includes(v);
+        return `<div style="padding:12px 0;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:8px"><b>${x.t}</b>
+          <div class="seg">${CL_OPTS.map(o => `<button data-id="${x.id}" data-v="${o.v}" class="${v === o.v ? "sel" : ""}" ${v ? "disabled" : ""}>${o.l}</button>`).join("")}</div>
+          ${v ? `<div class="fb ${right ? "ok" : "no"}"><b>${right ? "Good call." : "Think again."}</b> ${x.ex}</div>` : ""}</div>`; }).join("");
+      list.querySelectorAll(".seg button").forEach(b => b.onclick = () => { A.cl[b.dataset.id] = b.dataset.v; save(); draw(); renderNav(); });
+    };
+    draw();
+  } },
+
+  /* ---------- PART 6 ---------- */
+  { part: 6, id: "final", done: () => !!A.finalDone, render(stage) {
+    const c = el("div", "card"); stage.appendChild(c);
+    c.innerHTML = `<div class="eyebrow">Part 6 · Wrap-up</div><h2>Too little information, or too much?</h2>
+      <p class="pull" style="margin-bottom:14px">Too little information can make markets unravel. Too much information can make solidarity unravel.</p>`;
+    mc(c, { key: "danger", poll: true, q: "Which danger worries you more?",
+      opts: [{ v: "little", label: "Too little: the market unravels and nobody can buy insurance" }, { v: "much", label: "Too much: the high-risk get priced out" }],
+      explain: "Hold on to your answer for the discussion." });
+    const f = el("div", "field"); f.innerHTML = `<label for="rule">Write your rule in one sentence. “Insurers may charge more based on a characteristic only if…”</label><textarea id="rule" maxlength="300">${esc(A.rule || "")}</textarea>`;
+    c.appendChild(f);
+    const btn = el("button", "btn", A.finalDone ? "Submitted" : "Submit"); btn.style.marginTop = "12px";
+    const ta = f.querySelector("textarea"); const upd = () => { btn.disabled = !!A.finalDone || !(A.danger && (A.rule || "").trim().length > 5); };
+    ta.oninput = () => { A.rule = ta.value.slice(0, 300); save(); upd(); };
+    btn.onclick = () => { A.finalDone = true; save(); btn.textContent = "Submitted"; upd(); renderNav(); };
+    c.appendChild(btn); upd();
+    const mo = new MutationObserver(upd); mo.observe(c, { subtree: true, childList: true });
+  } },
+  { part: 6, id: "summary", done: () => true, render(stage) {
+    const decKeys = [["y1buy", yearPool(1), () => breakEven(yearPool(1))], ["y2buy", yearPool(2), () => breakEven(yearPool(2))], ["y3buy", yearPool(3), () => breakEven(yearPool(3))], ["tailbuy", ORDER, TAILORED]];
+    let right = 0, tot = 0;
+    decKeys.forEach(([k, pool, pr]) => pool.forEach(id => { tot++; if (A[k] && A[k].c && A[k].c[id] === (PEOPLE[id].wtp >= pr(id) ? "buy" : "no")) right++; }));
+    const c = el("div", "card"); stage.appendChild(c);
+    const top = (A.rank || []).slice(0, 3).map(id => RANK_ITEMS.find(x => x.id === id).t);
+    c.innerHTML = `<div class="eyebrow">Done</div><h2>${S && S.name ? esc(S.name) + ", here's" : "Here's"} your summary</h2>
+      <div class="kv" style="font-size:1rem;max-width:520px"><span>Customer decisions predicted correctly</span><span>${right} of ${tot}</span>
+      <span>Most acceptable data (your top 3)</span><span style="text-align:right">${top.map(esc).join(", ") || "–"}</span>
+      <span>Principles you chose</span><span style="text-align:right">${PRINCIPLES.filter(p => A.principles && A.principles[p.id]).map(p => p.t.split(":")[0]).join(", ") || "–"}</span></div>
+      ${A.rule ? `<div class="callout" style="margin-top:14px"><p><b>Your rule:</b> Insurers may charge more based on a characteristic only if ${esc(A.rule)}</p></div>` : ""}
+      <p class="small muted" style="margin-top:12px">${S && S.mode === "class" ? "Your answers were sent to the class results. " : ""}Use Back to revisit any part.</p>`;
+  } }
+];
+
+/* ---------------- navigation ---------------- */
+function renderProgress() {
+  const st = STEPS[S.step];
+  $("prog").innerHTML = PARTS.map(p => `<div class="${p.n < st.part ? "on" : p.n === st.part ? "cur" : ""}"></div>`).join("");
+  $("partname").textContent = PARTS[st.part - 1].t;
+  $("partnum").textContent = `Part ${st.part} of ${PARTS.length}`;
+}
+function renderNav() {
+  if (!S) return;
+  const st = STEPS[S.step], nx = STEPS[S.step + 1];
+  $("back").disabled = S.step === 0;
+  const n = $("next"), why = $("why");
+  if (!nx) { n.hidden = true; why.textContent = ""; return; }
+  n.hidden = false;
+  if (!st.done()) { n.disabled = true; why.textContent = "Finish this step to continue"; return; }
+  if (nx.part > GATE) { n.disabled = true; why.textContent = `Waiting for your professor to open Part ${nx.part}`; return; }
+  n.disabled = false; why.textContent = "";
+}
+function go(i) {
+  S.step = Math.max(0, Math.min(STEPS.length - 1, i)); save();
+  const stage = $("stage"); stage.innerHTML = ""; STEPS[S.step].render(stage);
+  renderProgress(); renderNav(); window.scrollTo(0, 0);
+}
+$("back").onclick = () => go(S.step - 1);
+$("next").onclick = () => { if (!$("next").disabled) go(S.step + 1); };
+
+/* ---------------- join screen ---------------- */
+function startStudent(s) {
+  S = s; A = s.A || {};
+  $("progwrap").hidden = false; $("nav").hidden = false;
+  $("who").textContent = (s.name ? s.name + " · " : "") + (s.mode === "class" ? "Session " + s.code : "Solo play");
+  if (s.mode === "class" && db) {
+    GATE = 1;
+    db.ref("games/" + PREFIX + s.code + "/meta/gate").on("value", snap => { GATE = snap.val() || 1; renderNav(); });
+  } else GATE = 99;
+  go(s.step || 0);
+}
+function joinScreen(msg) {
+  const stage = $("stage"); stage.innerHTML = "";
+  const qp = new URLSearchParams(location.search);
+  const saved = lsGet(LSKEY);
+  const c = el("div", "card join");
+  c.innerHTML = `<div class="eyebrow">FYS 7b · Big Tech Under Fire</div><h2>Can better data fix insurance, or just pick new victims?</h2>
+    <p>You'll run a health insurer, then step into the shoes of its customers, and watch what happens when the insurer knows too little, and then everything.</p>
+    ${saved && saved.A ? `<button class="btn teal" id="resume">Continue where you left off (${saved.mode === "class" ? "session " + esc(saved.code) : "solo"}, Part ${STEPS[saved.step || 0].part})</button>` : ""}
+    ${CLASS_OK ? `<div class="field"><label for="code">Session code</label><input id="code" autocomplete="off" autocapitalize="characters" maxlength="6" placeholder="e.g. K7QM" value="${esc(qp.get("code") || "")}"></div>
+    <div class="field"><label for="name">First name</label><input id="name" autocomplete="given-name" maxlength="30"></div>
+    <div class="row"><button class="btn" id="join">Join class session</button><button class="btn ghost" id="solo">Play solo</button></div>
+    <div class="err" id="err">${msg ? esc(msg) : ""}</div>`
+    : `<div class="row"><button class="btn" id="solo">Start</button></div><p class="small muted">Class sessions with shared results run from the copy on the course website.</p>`}`;
+  stage.appendChild(c);
+  if (CLASS_OK) {
+    const h = el("p", "small muted", `Instructor? <a href="#" id="hostlink">Start a class session</a>`); stage.appendChild(h);
+    h.querySelector("#hostlink").onclick = e => { e.preventDefault(); hostScreen(); };
+  }
+  if ($("resume")) $("resume").onclick = () => startStudent(saved);
+  $("solo").onclick = () => startStudent({ mode: "solo", pid: rid(10), name: CLASS_OK ? ($("name").value || "").trim() : "", step: 0, A: {} });
+  if ($("join")) $("join").onclick = async () => {
+    const code = ($("code").value || "").trim().toUpperCase(), name = ($("name").value || "").trim();
+    if (!code) { $("err").textContent = "Enter the session code on the screen."; return; }
+    if (!name) { $("err").textContent = "Enter your first name."; return; }
+    $("err").textContent = "Joining…";
+    try {
+      const m = (await db.ref("games/" + PREFIX + code + "/meta").get()).val();
+      if (!m) { $("err").textContent = `No session with code ${code}. Check the code on the screen.`; return; }
+      const prev = saved && saved.code === code ? saved : null;
+      startStudent(prev ? Object.assign(prev, { name }) : { mode: "class", code, pid: rid(10), name, step: 0, A: {} });
+      save();
+    } catch (e) { $("err").textContent = "Couldn't reach the class database. Check your connection and try again."; }
+  };
+}
+
+/* ---------------- host dashboard ---------------- */
+const HOSTKEY = "wgi.host";
+function hostScreen() {
+  const stage = $("stage"); stage.innerHTML = "";
+  const prev = lsGet(HOSTKEY);
+  const c = el("div", "card join");
+  c.innerHTML = `<div class="eyebrow">Instructor</div><h2>Start a class session</h2>
+    <p>Students open this page, enter the code and their first name. You control which parts are open.</p>
+    <div class="row"><button class="btn" id="new">Create new session</button>${prev ? `<button class="btn ghost" id="old">Resume session ${esc(prev)}</button>` : ""}<button class="btn ghost" id="cancel">Back</button></div><div class="err" id="herr"></div>`;
+  stage.appendChild(c);
+  $("cancel").onclick = () => joinScreen();
+  $("new").onclick = async () => {
+    const code = rid(4, "ABCDEFGHJKLMNPQRSTUVWXYZ23456789");
+    try { await db.ref("games/" + PREFIX + code + "/meta").set({ created: Date.now(), gate: 1 }); lsSet(HOSTKEY, code); runHost(code); }
+    catch (e) { $("herr").textContent = "Couldn't create the session: " + e.message; }
+  };
+  if ($("old")) $("old").onclick = () => runHost(prev);
+}
+
+function bars(rows, opts) {
+  opts = opts || {}; const max = opts.max || Math.max(1, ...rows.map(r => r[1]));
+  return `<div class="bars">${rows.map(r => `<div class="bar"><span class="lbl">${r[0]}</span><span class="trk"><span class="fill ${r[2] || ""}" style="display:block;width:${Math.max(0, Math.min(100, 100 * r[1] / max))}%"></span></span><span class="v">${opts.fmt ? opts.fmt(r[1]) : r[1]}</span></div>`).join("")}</div>`;
+}
+function countBy(players, get, opts) { const out = {}; opts.forEach(o => out[o.v] = 0); players.forEach(p => { const v = get(p); if (v != null && out[v] != null) out[v]++; }); return opts.map(o => [o.label || o.l, out[o.v]]); }
+
+function runHost(code) {
+  $("progwrap").hidden = true; $("nav").hidden = true;
+  $("who").textContent = "Instructor · Session " + code;
+  const base = "games/" + PREFIX + code;
+  const stage = $("stage"); stage.innerHTML = "";
+  const top = el("div", "card");
+  const url = location.origin + location.pathname + "?code=" + code;
+  top.innerHTML = `<div class="row" style="justify-content:space-between;align-items:flex-end"><div><div class="eyebrow">Session code</div><div class="code">${code}</div><div class="small muted" style="overflow-wrap:anywhere">${esc(url)}</div></div><div style="text-align:right"><div class="eyebrow">Students</div><div class="code" id="hn" style="letter-spacing:0">0</div></div></div>
+    <h3 style="margin-top:16px">Open parts</h3><div class="gates" id="gates"></div><div class="small muted" style="margin-top:6px">Students can work up to the last open part and wait there.</div>
+    <div class="bars" id="where" style="margin-top:14px"></div>`;
+  stage.appendChild(top);
+  const res = el("div", "hgrid"); stage.appendChild(res);
+  let gate = 1;
+  const drawGates = () => { $("gates").innerHTML = PARTS.map(p => `<button data-g="${p.n}" class="${p.n <= gate ? "open" : ""}">${p.n}. ${p.t}</button>`).join("");
+    $("gates").querySelectorAll("button").forEach(b => b.onclick = () => db.ref(base + "/meta/gate").set(+b.dataset.g)); };
+  db.ref(base + "/meta/gate").on("value", s => { gate = s.val() || 1; drawGates(); });
+  db.ref(base + "/players").on("value", s => drawResults(Object.values(s.val() || {})));
+
+  function drawResults(P) {
+    $("hn").textContent = P.length;
+    $("where").innerHTML = bars(PARTS.map(p => [`Part ${p.n}`, P.filter(x => x.part === p.n).length]), { max: Math.max(1, P.length) });
+    const card = (title, body) => `<div class="card"><h3>${title}</h3>${body}</div>`;
+    const A_ = P.map(p => p.a || {});
+    const out = [];
+    // Part 1
+    const decRows = [];
+    [["y1buy", 1], ["y2buy", 2], ["y3buy", 3]].forEach(([k, y]) => { const pool = yearPool(y), pr = breakEven(pool);
+      pool.forEach(id => { const ans = A_.filter(a => a[k] && a[k].done); const ok = ans.filter(a => a[k].c && a[k].c[id] === (PEOPLE[id].wtp >= pr ? "buy" : "no")).length;
+        decRows.push([`Yr ${y} · ${PEOPLE[id].name} at ${money(pr)}`, ans.length ? ok / ans.length : 0, "", `${ok}/${ans.length}`]); }); });
+    out.push(card("Part 1 · Predicted each customer correctly", bars(decRows.map(r => [r[0], r[1]]), { max: 1, fmt: v => Math.round(v * 100) + "%" }) +
+      `<p class="small muted" style="margin-top:8px">Warm-up (why Sara pays extra) correct: ${pct(A_.filter(a => a.warm === "risk").length, A_.filter(a => a.warm).length)} · Saw the “no price works” table: ${A_.filter(a => a.whySeen).length}</p>`));
+    // Part 2
+    const tRows = ORDER.map(id => { const ans = A_.filter(a => a.tailbuy && a.tailbuy.done); const ok = ans.filter(a => a.tailbuy.c && a.tailbuy.c[id] === (PEOPLE[id].wtp >= TAILORED(id) ? "buy" : "no")).length; return [`${PEOPLE[id].name} at ${money(TAILORED(id))}`, ans.length ? ok / ans.length : 0]; });
+    out.push(card("Part 2 · Personal prices", bars(tRows, { max: 1, fmt: v => Math.round(v * 100) + "%" }) +
+      `<p class="small muted" style="margin-top:8px">Set all three personal prices near break-even: ${pct(A_.filter(a => a.tailGuess && ORDER.every(id => Math.abs(a.tailGuess[id] - PEOPLE[id].cost) <= 1000)).length, A_.filter(a => a.tailGuess).length)}</p>` + `<h3 style="margin-top:14px">Which market is better for society?</h3>` + bars(countBy(A_, a => a.compare, [{ v: "single", l: "One price for all" }, { v: "tailored", l: "Personal prices" }, { v: "neither", l: "Neither: policy fix" }])) +
+      `<p class="small muted" style="margin-top:8px">Sara's renewal price answered $75,000: ${pct(A_.filter(a => a.reclass === "jump").length, A_.filter(a => a.reclass).length)}</p>`));
+    // Part 3
+    out.push(card("Part 3 · What did the family do?", bars(countBy(A_, a => a.coop, COOP_OPTS))));
+    // Part 4
+    out.push(card("Part 4 · Would share for 35% off", bars(SHARE.map(x => [x.t, A_.filter(a => a.shareDone && a.share && a.share[x.id]).length]), { max: Math.max(1, A_.filter(a => a.shareDone).length) }) + `<p class="small muted" style="margin-top:8px">${A_.filter(a => a.shareDone).length} responses</p>`));
+    const ranked = A_.filter(a => a.rankDone && Array.isArray(a.rank));
+    const avgRank = RANK_ITEMS.map(it => [it.t, ranked.length ? ranked.reduce((s, a) => s + a.rank.indexOf(it.id) + 1, 0) / ranked.length : 0, ACA[it.id][0] === "y" ? "" : "r"]).sort((x, y) => x[1] - y[1]);
+    out.push(card("Part 4 · Average rank (1 = most acceptable)", bars(avgRank, { max: RANK_ITEMS.length, fmt: v => v ? v.toFixed(1) : "–" }) + `<p class="small muted" style="margin-top:8px">${ranked.length} rankings · teal = allowed in ACA plans, red = banned</p>`));
+    // Part 5
+    const keys = FACTORS.map(f => ({ id: f.id, t: f.t }));
+    const stats = keys.map(k => { const r = A_.map(a => a.rate && a.rate[k.id]).filter(x => x && x.f != null && x.c != null);
+      return { t: k.t, n: r.length, f: r.length ? r.reduce((s, x) => s + x.f, 0) / r.length : 0, c: r.length ? r.reduce((s, x) => s + x.c, 0) / r.length : 0 }; });
+    out.push(card("Part 5 · Fairness vs. control (class average)", scatterSVG(stats.filter(s => s.n)) + `<p class="small muted">Fair = +1, Unsure = 0, Unfair = −1. Control: None = 0, Some = 1, A lot = 2.</p>
+      <div class="tw"><table class="cmp"><tr><th>Factor</th><th>Fairness</th><th>Control</th></tr>${stats.filter(s => s.n).sort((a, b) => b.f - a.f).map(s => `<tr><td>${esc(s.t)}</td><td class="num ${s.f > 0.2 ? "pos" : s.f < -0.2 ? "neg" : ""}">${s.f > 0 ? "+" : ""}${s.f.toFixed(2)}</td><td class="num">${s.c.toFixed(2)}</td></tr>`).join("")}</table></div>`));
+    out.push(card("Part 5 · Principles chosen", bars(PRINCIPLES.map(p => [p.t.split(":")[0], A_.filter(a => a.principles && a.principles[p.id]).length]))));
+    const clRows = CLASSIFY.map(x => { const ans = A_.filter(a => a.cl && a.cl[x.id]); return `<tr><td>${x.t}</td>${CL_OPTS.map(o => `<td class="num">${ans.filter(a => a.cl[x.id] === o.v).length}</td>`).join("")}</tr>`; }).join("");
+    out.push(card("Part 5 · Adverse selection or moral hazard?", `<div class="tw"><table class="cmp"><tr><th></th><th>AS</th><th>MH</th><th>Both</th></tr>${clRows}</table></div>`));
+    const cust = []; P.forEach(p => { const a = p.a || {}; ["c1", "c2"].forEach(k => { if (a.custom && a.custom[k] && a.custom[k].trim()) { const r = a.rate && a.rate[k]; cust.push(`<div><b>${esc(p.name)}</b>${esc(a.custom[k])}${r && r.f != null ? ` <span class="tag ${r.f === 1 ? "y" : r.f === -1 ? "n" : ""}">${r.f === 1 ? "fair" : r.f === -1 ? "unfair" : "unsure"}</span>` : ""}</div>`); } }); });
+    out.push(card("Part 5 · Students' fill-in-the-blank factors", cust.length ? `<div class="texts">${cust.join("")}</div>` : `<p class="muted small">None yet.</p>`));
+    const pats = P.filter(p => p.a && p.a.pattern && p.a.pattern.trim()).map(p => `<div><b>${esc(p.name)}</b>${esc(p.a.pattern)}</div>`);
+    out.push(card("Part 5 · What the fair ones have in common", pats.length ? `<div class="texts">${pats.join("")}</div>` : `<p class="muted small">None yet.</p>`));
+    // Part 6
+    out.push(card("Part 6 · Which danger worries you more?", bars(countBy(A_, a => a.danger, [{ v: "little", l: "Too little information" }, { v: "much", l: "Too much information" }]))));
+    const rules = P.filter(p => p.a && p.a.rule && p.a.rule.trim()).map(p => `<div><b>${esc(p.name)}</b>…only if ${esc(p.a.rule)}</div>`);
+    out.push(card("Part 6 · Students' rules", rules.length ? `<div class="texts">${rules.join("")}</div>` : `<p class="muted small">None yet.</p>`));
+    res.innerHTML = out.join("");
+  }
+}
+
+function scatterSVG(pts) {
+  const W = 420, H = 300, L = 46, R = 14, T = 14, B = 40;
+  const x = c => L + (W - L - R) * c / 2, y = f => T + (H - T - B) * (1 - (f + 1) / 2);
+  let g = `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Average fairness versus control for each factor">`;
+  [-1, 0, 1].forEach(f => g += `<line class="grid" x1="${L}" x2="${W - R}" y1="${y(f)}" y2="${y(f)}"/><text x="${L - 6}" y="${y(f) + 4}" font-size="11" text-anchor="end">${f === 1 ? "Fair" : f === 0 ? "Unsure" : "Unfair"}</text>`);
+  [0, 1, 2].forEach(c => g += `<line class="grid" y1="${T}" y2="${H - B}" x1="${x(c)}" x2="${x(c)}"/><text x="${x(c)}" y="${H - B + 16}" font-size="11" text-anchor="middle">${["No control", "Some", "A lot"][c]}</text>`);
+  g += `<text x="${(L + W - R) / 2}" y="${H - 4}" font-size="11" text-anchor="middle">How much control the person has →</text>`;
+  // group points that land close together so their labels stack instead of overprinting
+  const groups = [];
+  pts.forEach(p => { const px = x(p.c), py = y(p.f); const gp = groups.find(q => Math.abs(q.px - px) < 30 && Math.abs(q.py - py) < 14);
+    if (gp) gp.items.push(p); else groups.push({ px, py, items: [p] }); });
+  groups.forEach(gp => {
+    const anchor = gp.px > W * 0.62 ? "end" : "start", dx = anchor === "end" ? -8 : 8, lh = 12;
+    const y0 = Math.max(T + 9, Math.min(H - B - 4 - lh * (gp.items.length - 1), gp.py + 4 - lh * (gp.items.length - 1) / 2));
+    gp.items.forEach(p => g += `<circle class="dot" cx="${x(p.c)}" cy="${y(p.f)}" r="4.5"/>`);
+    gp.items.forEach((p, i) => g += `<text x="${gp.px + dx}" y="${y0 + i * lh}" font-size="10.5" text-anchor="${anchor}">${esc(p.t)}</text>`);
+  });
+  return g + `</svg>`;
+}
+
+const COOP_SVG = `<svg class="coop" viewBox="0 0 360 200" role="img" aria-label="A small wooden chicken coop in winter with a hen at the door">
+  <rect class="ground" x="0" y="172" width="360" height="28"/>
+  <circle class="snow" cx="40" cy="30" r="3"/><circle class="snow" cx="300" cy="50" r="3"/><circle class="snow" cx="90" cy="70" r="2.5"/><circle class="snow" cx="330" cy="20" r="2"/><circle class="snow" cx="200" cy="18" r="2.5"/><circle class="snow" cx="20" cy="110" r="2"/>
+  <rect class="wall" x="90" y="80" width="180" height="92"/>
+  <polygon class="roof" points="76,84 180,30 284,84"/>
+  <rect class="wall" x="120" y="102" width="34" height="26"/>
+  <rect class="door" x="200" y="124" width="34" height="48"/>
+  <polygon class="ramp" points="200,172 234,172 262,190 172,190"/>
+  <ellipse class="hen" cx="300" cy="160" rx="18" ry="13"/><circle class="hen" cx="316" cy="146" r="8"/>
+  <path class="comb" d="M312 138 q3 -7 6 0 q3 -6 5 2 z"/><polygon class="beak" points="324,145 332,148 324,151"/>
+</svg>`;
+
+/* ---------------- boot ---------------- */
+(function boot() {
+  const qp = new URLSearchParams(location.search);
+  if (qp.has("host") && CLASS_OK) hostScreen(); else joinScreen();
+})();
+</script>
+
+</body>
+</html>
