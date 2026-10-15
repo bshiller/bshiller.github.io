@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#2C3E50">
 <title>Who Goes First? — a coordination game</title>
-<meta name="description" content="A classroom game on network effects and excess inertia: everyone starts on Platform A, Platform B is better only if enough people switch, and only half the class can reconsider on any given day.">
+<meta name="description" content="A classroom game on network effects and excess inertia: everyone starts on Platform A, Platform B is better only if enough people switch, and only half the class can reconsider on any given day: the two halves take turns.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -96,6 +96,18 @@ table.pay th:first-child,table.pay td:first-child{text-align:left}
 table.pay td{padding:5px 6px;border-bottom:1px solid var(--line);text-align:right;font-family:var(--font-mono)}
 table.pay tr.now td{background:#FFF8D6;font-weight:600}
 .pledgebox{background:#FFF8D6;border:1.5px solid var(--gold);border-radius:var(--radius);padding:14px 16px;margin-top:14px}
+/* ---------- who-acts-when ---------- */
+.groupbadge{display:inline-block;font-family:var(--font-mono);font-size:13px;font-weight:600;letter-spacing:.5px;padding:4px 11px;border-radius:999px;border:2px solid var(--line);background:#fff;color:var(--navy)}
+.groupbadge.g1{border-color:var(--teal)} .groupbadge.g2{border-color:var(--gold)}
+.sched{display:flex;flex-wrap:wrap;gap:4px;margin-top:10px}
+.sched .sd{display:flex;flex-direction:column;align-items:center;min-width:40px;padding:4px 6px;border-radius:8px;border:2px solid var(--line);background:#fff;font-family:var(--font-mono);font-size:11px;line-height:1.15;color:var(--ink-soft)}
+.sched .sd b{font-size:14px;color:var(--navy);font-weight:600}
+.sched .sd.g1{border-color:var(--teal)} .sched .sd.g2{border-color:var(--gold)}
+.sched .sd.today{background:var(--navy);border-color:var(--navy);color:#fff} .sched .sd.today b{color:var(--gold)}
+.sched .sd.past{opacity:.55} .sched .sd.off{opacity:.35} .sched .sd.today{opacity:1}
+.sched-key{font-size:12.5px;color:var(--ink-soft);margin-top:6px}
+.turnbanner{font-family:var(--font-display);font-size:22px;color:var(--navy);line-height:1.2;font-weight:700}
+.turnbanner small{display:block;font-family:var(--font-body);font-size:14px;font-weight:400;color:var(--ink-soft);margin-top:3px}
 /* ---------- host ---------- */
 .daybar{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
 .daynum{font-family:var(--font-display);font-size:48px;color:var(--navy);line-height:1}
@@ -138,7 +150,7 @@ ul.disc li{margin-bottom:8px}
   <div class="land-hero">
     <div class="eyebrow">A live classroom game</div>
     <h1>Everyone is on Platform A. Platform B is better — if enough of you are on it.</h1>
-    <p class="sub">Ten days. Each day, half the class gets a chance to reconsider: stay, switch, or switch back. Your score each day depends on how many of the others are on the same platform as you — and being alone on B pays nothing. Who goes first?</p>
+    <p class="sub">Ten days. The class is split into two groups that take turns: on day 1 only Group 1 can act, on day 2 only Group 2, on day 3 Group 1 again, and so on. On your turn you can stay, switch, or switch back; on the other days you're stuck where you are. Your score each day depends on how many of the others are on the same platform as you — and being alone on B pays nothing. Who goes first?</p>
   </div>
   <div class="role-grid">
     <button class="role-card" onclick="App.showJoin()"><h3>Join the class session</h3><p>Enter the 4-letter code on the screen and play from your phone.</p><div class="go">Join →</div></button>
@@ -165,7 +177,10 @@ ul.disc li{margin-bottom:8px}
   <div class="card" id="stuWait" style="text-align:center;padding:36px 22px">
     <div class="eyebrow" id="swEyebrow">You're in</div>
     <h2 id="swTitle">Waiting for the host to start…</h2>
-    <p class="sub" style="margin:8px auto 0"><span class="pulse-dot"></span>Keep this page open.</p>
+    <div class="groupbadge hidden" id="swGroup"></div>
+    <div class="turn on hidden" id="swRule" style="text-align:left"></div>
+    <div class="sched hidden" id="swSched" style="justify-content:center"></div>
+    <p class="sub" style="margin:14px auto 0"><span class="pulse-dot"></span>Keep this page open.</p>
   </div>
   <div id="stuPledge" class="card hidden">
     <div class="eyebrow">Before day 1 · Pledge</div>
@@ -176,8 +191,11 @@ ul.disc li{margin-bottom:8px}
   </div>
   <div id="stuPlay" class="hidden">
     <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px"><div class="eyebrow" id="stDay">Day 1 of 10</div><div class="small" id="stGroup">Group 1</div></div>
-      <div class="grid2" style="margin-top:6px">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px"><div class="eyebrow" id="stDay" style="margin:0">Day 1 of 10</div><div class="groupbadge" id="stGroup">Group 1</div></div>
+      <div class="turn" id="turnBox"></div>
+      <div class="sched" id="stSched"></div>
+      <div class="sched-key">Group 1 acts on odd days, Group 2 on even days. Faded days are not yours.</div>
+      <div class="grid2" style="margin-top:14px">
         <div class="platform" id="myPlat"><div class="lab">You are on</div><div class="nm" id="myPlatName">Platform A</div></div>
         <div>
           <div class="stat"><span>Your score so far</span><b id="myScore">0</b></div>
@@ -186,7 +204,6 @@ ul.disc li{margin-bottom:8px}
           <div class="stat"><span id="shareLab">Class on B right now</span><b id="shareB">0%</b></div>
         </div>
       </div>
-      <div class="turn" id="turnBox"></div>
       <div id="actBox" class="hidden" style="margin-top:12px">
         <button class="btn btn-teal btn-block btn-big" id="btnSwitch" onclick="App.choose('B')">Switch to B</button>
         <button class="btn btn-ghost btn-block" id="btnStay" style="margin-top:8px" onclick="App.choose('stay')">Stay where I am</button>
@@ -211,7 +228,7 @@ ul.disc li{margin-bottom:8px}
 <div id="viewHostCreate" class="shell mid hidden">
   <div class="card settings">
     <div class="eyebrow">Host</div><h2>Create a session</h2>
-    <p class="sub">Students start on A. Each day only one of two groups may act (limited attention: not everyone reconsiders on the same day). You can change the rules between rounds.</p>
+    <p class="sub">Students start on A and are split evenly into two groups as they join. Only one group may act on any given day, and the groups alternate: Group 1 on day 1, Group 2 on day 2, Group 1 on day 3, and so on. (Limited attention: nobody reconsiders their app every day.) You can change the rules between rounds.</p>
     <div class="row">
       <div><label class="f" for="setDays">Days per round</label><input class="f" id="setDays" type="number" value="10" min="3" max="30"></div>
       <div><label class="f" for="setExp">Network effect strength (exponent)</label><select class="f" id="setExp"><option value="2">2 — convex</option><option value="3" selected>3 — very convex</option><option value="4">4 — extreme</option></select></div>
@@ -236,8 +253,11 @@ ul.disc li{margin-bottom:8px}
     <div class="eyebrow">Students join with this code</div>
     <div class="join-code" id="hostCode">····</div>
     <p class="sub" id="hostUrlHint"></p>
-    <h3 style="margin-top:14px">In the room: <span id="hostCount">0</span> <span class="small">· group 1 acts on odd days, group 2 on even days</span></h3>
+    <h3 style="margin-top:14px">In the room: <span id="hostCount">0</span></h3>
     <div class="roster" id="hostRoster"></div>
+    <div class="turn on" id="hostLobbyRule"></div>
+    <div class="sched" id="hostLobbySched"></div>
+    <div class="sched-key">Group 1 (teal) acts on odd days · Group 2 (gold) acts on even days</div>
   </div>
   <div class="host-bar">
     <button class="btn btn-gold hidden" id="btnStart" onclick="App.startRound()">Start round <span id="btnStartN"></span></button>
@@ -270,14 +290,17 @@ ul.disc li{margin-bottom:8px}
   <div class="card hidden" id="hostPledgeCard" style="text-align:center">
     <div class="eyebrow">Pledge stage</div>
     <div class="big-count"><span id="hostPledgeN">0</span><small> pledged · need <span id="hostPledgeNeed">0</span></small></div>
-    <p class="sub" style="margin:8px auto 0">If the threshold is met when you close pledges, all pledgers move to B on day 1 together.</p>
+    <p class="sub" style="margin:8px auto 0">If the threshold is met when you close pledges, all pledgers move to B on day 1 together, whichever group they're in. Day 1 then opens for Group 1 only; Group 2 waits until day 2.</p>
   </div>
   <div class="card hidden" id="hostPlayCard">
     <div class="daybar">
       <div class="daynum"><span id="hostDay">1</span><small> of <span id="hostDays">10</span></small></div>
-      <div><div class="eyebrow" id="hostTurn">Group 1 may act today</div><div class="small" id="hostActed">0 acted</div></div>
+      <div class="turnbanner" id="hostTurn">Only Group 1 may act today</div>
       <div style="margin-left:auto" class="small" id="hostRuleTags"></div>
     </div>
+    <div class="small" id="hostActed" style="margin-top:6px">0 acted</div>
+    <div class="sched" id="hostSched"></div>
+    <div class="sched-key">Group 1 (teal) acts on odd days · Group 2 (gold) acts on even days · dark = today</div>
     <div class="sharebar" id="hostShare"><div class="b" style="width:0%"></div><div class="a">everyone on A</div></div>
     <div class="grid2" style="margin-top:12px">
       <div><h3>Moved today</h3><div class="movers" id="hostMovers"><span class="small">Day still open.</span></div></div>
@@ -375,6 +398,18 @@ const App = (() => {
   const N = () => Object.keys(players).length;
   const groupOf = id => (players[id] && players[id].group) || 1;
   const turnGroup = day => (day % 2 === 1) ? 1 : 2;
+  const otherGroup = g => g === 1 ? 2 : 1;
+  const groupDays = g => g === 1 ? "odd days (1, 3, 5…)" : "even days (2, 4, 6…)";
+  /* day-by-day strip of who may act. today = current day (0 = round not started); mine = viewer's group (null on the projector) */
+  function schedule(days, today, mine){
+    let h = "";
+    for (let d = 1; d <= days; d++){
+      const g = turnGroup(d);
+      const cls = ["sd", "g" + g, d === today ? "today" : "", today && d < today ? "past" : "", mine && g !== mine ? "off" : ""].filter(Boolean).join(" ");
+      h += `<span class="${cls}" title="Day ${d}: only Group ${g} may act"><b>${d}</b>G${g}</span>`;
+    }
+    return h;
+  }
 
   /* =====================================================================
      STUDENT
@@ -410,8 +445,18 @@ const App = (() => {
     vis("stuWait", phase === "lobby" || phase === "between");
     vis("stuPledge", phase === "pledge"); vis("stuPlay", phase === "play"); vis("stuDone", phase === "done");
     const r = curRound();
-    if (phase === "lobby"){ $("swEyebrow").textContent = "You're in"; $("swTitle").textContent = `Waiting for the host to start. You're in group ${groupOf(uid)}.`; return; }
-    if (phase === "between"){ $("swEyebrow").textContent = "Between rounds"; $("swTitle").textContent = "The host is changing the rules. Hang on."; return; }
+    if (phase === "lobby" || phase === "between"){
+      const lobby = phase === "lobby", g = groupOf(uid);
+      vis("swGroup", lobby); vis("swRule", lobby); vis("swSched", lobby);
+      if (!lobby){ $("swEyebrow").textContent = "Between rounds"; $("swTitle").textContent = "The host is changing the rules. Hang on."; return; }
+      $("swEyebrow").textContent = "You're in"; $("swTitle").textContent = "Waiting for the host to start…";
+      $("swGroup").textContent = `You're in Group ${g}`; $("swGroup").classList.remove("g1", "g2"); $("swGroup").classList.add("g" + g);
+      $("swRule").innerHTML = `<b>Only half the class can act on any given day.</b> Group 1 acts on ${groupDays(1)}; Group 2 acts on ${groupDays(2)}. ` +
+        (g === 1 ? `On day 1 <b>your group goes</b> — the other half of the class can't do anything until day 2.`
+                 : `On day 1 <b>you can't act</b> — only Group 1 can. Your first turn is day 2.`);
+      $("swSched").innerHTML = schedule(settings.days, 0, g);
+      return;
+    }
     if (phase === "pledge"){
       const n = Object.keys(r.pledges || {}).length, need = Math.ceil(settings.pledgeThr / 100 * N());
       $("pledgeNeed").textContent = `${settings.pledgeThr}% (${need} people)`;
@@ -425,8 +470,10 @@ const App = (() => {
       const tot = (r.totals && r.totals[uid]) || 0;
       const yday = r.days && r.days[day - 1];
       const last = yday && yday.score ? yday.score[uid] : null;
+      const g = groupOf(uid), tg = turnGroup(day), lastDay = day >= settings.days;
       $("stDay").textContent = `Day ${day} of ${settings.days}`;
-      $("stGroup").textContent = `You're in group ${groupOf(uid)}`;
+      $("stGroup").textContent = `Group ${g} · ${groupDays(g)}`; $("stGroup").className = "groupbadge g" + g;
+      $("stSched").innerHTML = schedule(settings.days, day, g);
       $("myPlat").className = "platform " + me; $("myPlatName").textContent = "Platform " + me;
       $("myScore").textContent = f1(tot);
       $("myLast").innerHTML = last == null ? "—" : `<span class="${last < 3 ? "neg" : last > 10 ? "pos" : ""}">${f1(last)}</span>`;
@@ -437,12 +484,12 @@ const App = (() => {
       if (settings.lag === 99){ $("shareLab").textContent = "Class on B"; $("shareB").textContent = "not shown"; }
       else if (shownDay < 0){ $("shareLab").textContent = `Class on B (as of day ${Math.max(0, day - 1 - settings.lag)})`; $("shareB").textContent = settings.lag ? "no data yet" : "0%"; }
       else { const p = positionsAt(r, shownDay); const nB = Object.values(p).filter(x => x === "B").length; $("shareLab").textContent = settings.lag ? `Class on B (as of day ${shownDay})` : "Class on B right now"; $("shareB").textContent = `${pct(nB / N())} (${nB} of ${N()})`; }
-      const myTurn = groupOf(uid) === turnGroup(day);
+      const myTurn = g === tg;
       const acted = r.intents && r.intents[day] && r.intents[day][uid];
       $("turnBox").className = "turn " + (myTurn ? "on" : "off");
-      if (!myTurn) $("turnBox").innerHTML = `<b>Not your turn today.</b> You're busy — you don't reconsider your app every day. Group ${turnGroup(day)} decides today; you decide tomorrow.`;
+      if (!myTurn) $("turnBox").innerHTML = `<b>Day ${day}: not your turn.</b> Only Group ${tg} — half the class — can act today. You're in Group ${g}, so you stay on ${me}${lastDay ? " for the final day" : `; your turn is tomorrow, day ${day + 1}`}. (You're busy — nobody reconsiders their app every day.)`;
       else if (acted) $("turnBox").innerHTML = `<b>Decision locked for day ${day}:</b> ${acted === "stay" ? "stay on " + me : "switch to " + acted}. Watch the screen for the count.`;
-      else $("turnBox").innerHTML = `<b>Your turn.</b> Stay on ${me}, or switch to ${me === "A" ? "B" : "A"}${settings.cost ? ` (costs ${settings.cost} points)` : ""}. If you don't choose, you stay.`;
+      else $("turnBox").innerHTML = `<b>Day ${day}: your turn.</b> Only Group ${g} — your half of the class — can act today; Group ${otherGroup(g)} ${lastDay ? "doesn't get another turn: this is the last day" : `can't move until tomorrow, day ${day + 1}`}. Stay on ${me}, or switch to ${me === "A" ? "B" : "A"}${settings.cost ? ` (costs ${settings.cost} points)` : ""} — choose below. If you don't choose, you stay.`;
       vis("actBox", myTurn && !acted);
       $("btnSwitch").textContent = me === "A" ? "Switch to B" : "Switch back to A";
       $("btnSwitch").className = "btn btn-block btn-big " + (me === "A" ? "btn-teal" : "btn-ghost");
@@ -675,8 +722,11 @@ const App = (() => {
   }
   function renderRoster(){
     const list = Object.entries(players);
+    const g1 = list.filter(([, p]) => p.group === 1).length, g2 = list.length - g1;
     $("hostCount").textContent = list.length;
     $("hostRoster").innerHTML = list.map(([id, p]) => `<span class="p g${p.group}">${esc(p.name)} <span class="small">g${p.group}</span></span>`).join("");
+    $("hostLobbyRule").innerHTML = `<b>Only half the class can act on any given day — the two groups take turns.</b> Group 1 (${g1} ${g1 === 1 ? "player" : "players"}, teal) acts on day 1 and every odd day. Group 2 (${g2} ${g2 === 1 ? "player" : "players"}, gold) acts on day 2 and every even day. So on day 1, Group 2 can only watch.`;
+    $("hostLobbySched").innerHTML = schedule(settings.days, 0, null);
   }
   function ruleTags(S){
     const t = [`k=${S.exp}`, S.lag === 99 ? "no count" : S.lag ? `${S.lag}-day lag` : "live count", S.interop ? `interop ${Math.round(S.interop * 100)}%` : "walled gardens", S.cost ? `switch cost ${S.cost}` : "free switching", S.pledge ? `pledge ${S.pledgeThr}%` : ""].filter(Boolean);
@@ -685,10 +735,13 @@ const App = (() => {
   function renderPlay(){
     const r = curRound(), day = state.day;
     $("hostDay").textContent = day; $("hostDays").textContent = settings.days;
-    $("hostTurn").textContent = `Group ${turnGroup(day)} may act today`;
+    const tg = turnGroup(day), og = otherGroup(tg), tot = N();
+    const gN = Object.keys(players).filter(id => groupOf(id) === tg).length;
+    $("hostTurn").innerHTML = `Day ${day}: only Group ${tg} may act<small>${gN} of ${tot} players. Group ${og} (${tot - gN}) sits out today${day >= settings.days ? " — this is the last day" : ` and acts tomorrow, day ${day + 1}`}.</small>`;
+    $("hostSched").innerHTML = schedule(settings.days, day, null);
     const intents = (r.intents && r.intents[day]) || {};
-    const eligible = Object.keys(players).filter(id => groupOf(id) === turnGroup(day) && !players[id].bot).length;
-    $("hostActed").textContent = `${Object.keys(intents).length} of ${eligible} students have decided`;
+    const eligible = Object.keys(players).filter(id => groupOf(id) === tg && !players[id].bot).length;
+    $("hostActed").textContent = `${Object.keys(intents).length} of ${eligible} students in Group ${tg} have decided`;
     $("hostRuleTags").innerHTML = ruleTags(settings);
     const pos = positionsAt(r, day - 1), nB = Object.values(pos).filter(x => x === "B").length, n = N();
     $("hostShare").innerHTML = `<div class="b" style="width:${100 * nB / Math.max(n, 1)}%">${nB ? `${nB} on B (${pct(nB / n)})` : ""}</div><div class="a">${n - nB} on A</div>`;
@@ -714,7 +767,7 @@ const App = (() => {
       const dd = r.days && r.days[d];
       if (dd && d <= upto){ const h = (H - T - B) * dd.nB / Math.max(dd.N, 1); g += `<rect x="${x(d) - 14}" y="${H - B - h}" width="28" height="${h}" fill="#E4F1F0" stroke="#5EA8A7"/>`; }
       g += `<text x="${x(d)}" y="${H - B + 16}" font-size="11" text-anchor="middle" fill="#5A6A79" font-family="IBM Plex Mono">d${d}</text>`;
-      g += `<text x="${x(d)}" y="${H - B + 29}" font-size="9" text-anchor="middle" fill="#B6B0A2" font-family="IBM Plex Mono">g${turnGroup(d)}</text>`;
+      g += `<text x="${x(d)}" y="${H - B + 29}" font-size="9" text-anchor="middle" fill="#8E9AA8" font-family="IBM Plex Mono">G${turnGroup(d)}</text>`;
     }
     const pts = k => { const a = []; for (let d = 1; d <= upto; d++){ const dd = r.days && r.days[d]; if (dd) a.push(`${x(d)},${y(dd[k])}`); } return a; };
     const pa = pts("scoreA"), pb = pts("scoreB");
@@ -753,7 +806,7 @@ const App = (() => {
     const tips = [];
     if (!tipDay) tips.push(`<li>B was worth <b>${f1(PAY.B(1, S.exp))}</b> a day with everyone on it and A only <b>${f1(PAY.A(1, S.exp))}</b>, yet the class stayed. Ask: was staying a mistake? Each person who stayed was right <i>given what everyone else did</i>. That's excess inertia — a bad equilibrium, not bad decisions.</li>`);
     if (tipDay){ tips.push(`<li>The tip happened on day ${tipDay}. ${early.length ? `The ${early.length} people who moved before it averaged <b>${f1(early.reduce((s, x) => s + x.tot, 0) / early.length)}</b>; the ${late.length} who moved at or after it averaged <b>${late.length ? f1(late.reduce((s, x) => s + x.tot, 0) / late.length) : "—"}</b>.` : ""} Who paid for the tip, and who cashed in? Why would anyone go first?</li>`); }
-    tips.push(`<li>Only half the class could act each day. What's the real-world version — and why does it stop a network from flipping overnight even when the better option is obvious?</li>`);
+    tips.push(`<li>Only half the class could act on any given day — Group 1 on odd days, Group 2 on even days. What's the real-world version — and why does it stop a network from flipping overnight even when the better option is obvious?</li>`);
     tips.push(`<li>What would have let this class move together? A pledge (Kickstarter, a group chat deciding at once), a big anchor user moving first, or interoperability so that early movers aren't alone. Which of those is a policy, and which is a business strategy?</li>`);
     $("resDiscuss").innerHTML = tips.join("");
   }
