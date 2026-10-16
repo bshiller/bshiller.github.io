@@ -459,9 +459,40 @@ const App = (() => {
   }
   function watch(render){
     if (unsub) unsub();
+    lastStudentKey = null;
     unsub = store.on(pathOf(), v => { game = v || {}; render(); });
   }
+  // A student's screen depends only on the round, the phase and this team's own
+  // entries. Other teams joining or bidding change the database but not this key,
+  // so they no longer wipe a slider the student is in the middle of moving.
+  let lastStudentKey = null;
+  function studentKey(){
+    const m = meta();
+    if (!m) return "gone";
+    const n = m.round || 0;
+    const b1 = bidsFor(n)[uid], pr = pairsFor(n)[uid], b2 = bids2For(n)[uid], rs = resultsFor(n)[uid];
+    return JSON.stringify([m.status, n,
+      b1 ? b1.p1 : null,
+      pr ? [pr.iWon, pr.tie, pr.oppP1, pr.oppName] : null,
+      b2 ? b2.p2 : null,
+      rs ? [rs.myTotal, rs.marketP2] : null]);
+  }
+  // The host screen is meant to update live, but rebuilding it between the press
+  // and release of a button swallows the click. Hold renders while a host button
+  // is pressed and catch up as soon as it is released.
+  let hostHold = false, hostPending = false;
+  document.addEventListener("pointerdown", e => {
+    if (e.target.closest && e.target.closest("#viewHost button")) hostHold = true;
+  }, true);
+  const releaseHost = () => {
+    if (!hostHold) return;
+    hostHold = false;
+    if (hostPending) { hostPending = false; setTimeout(() => { if (isHost && game) renderHost(); }, 0); }
+  };
+  document.addEventListener("pointerup", releaseHost, true);
+  document.addEventListener("pointercancel", releaseHost, true);
   function leave(){
+    lastStudentKey = null;
     if (unsub) { unsub(); unsub = null; }
     lsDel("pw_student"); lsDel("pw_host");
     code = null; game = null; isHost = false; show("viewLanding");
@@ -1013,6 +1044,9 @@ const App = (() => {
      ===================================================================== */
   function renderStudent(){
     if (solo.on) return renderSolo();
+    const key = studentKey();
+    if (key === lastStudentKey) return;   // nothing this team sees has changed
+    lastStudentKey = key;
     const host = $("viewStudent");
     const m = meta();
     host.innerHTML = "";
@@ -1189,6 +1223,7 @@ const App = (() => {
      HOST VIEW
      ===================================================================== */
   function renderHost(){
+    if (hostHold) { hostPending = true; return; }
     const host = $("viewHost"); host.innerHTML = "";
     const m = meta();
     if (!m) { host.append(el(`<div class="card">This session is gone. <a href="#" onclick="App.leave();return false">Start another</a>.</div>`)); return; }
