@@ -63,8 +63,21 @@ input.code{text-transform:uppercase;letter-spacing:.3em;font-weight:800;text-ali
 .seg button{padding:.55em .2em;font-size:.78em;font-weight:600;background:var(--navy3);color:var(--muted);border:1px solid var(--line);border-radius:8px;line-height:1.15}
 .seg button.on{background:var(--gold);color:var(--navy3);border-color:var(--gold)}
 .seg button .n{display:block;font-size:1.25em;font-weight:800}
-.stakes{display:flex;gap:.8rem;flex-wrap:wrap;font-size:.8em;margin-top:.45rem;color:#c9d5df}
-.stakes b{color:var(--gold)}
+.fx{display:grid;grid-template-columns:auto 1fr auto;gap:.2rem .6rem;align-items:center;margin-top:.6rem;font-size:.82em;color:#c9d5df}
+.fx .lab{white-space:nowrap}
+.fx .tris{display:flex;gap:3px;flex-wrap:wrap;align-items:center;min-height:16px}
+.fx .num{font-weight:800;font-variant-numeric:tabular-nums;text-align:right;min-width:2.6em;color:var(--muted)}
+.fx .num.good{color:var(--green)} .fx .num.bad{color:var(--red)}
+.fx .none{color:var(--muted);font-style:italic}
+svg.tri{width:17px;height:15px;display:block;overflow:visible}
+svg.tri .to{fill:none;stroke:rgba(234,240,244,.55);stroke-width:1.1;stroke-linejoin:round}
+svg.tri .tf{transform-box:fill-box;transform-origin:0 50%;transition:transform .35s ease-out}
+svg.tri .tf.good{fill:var(--green)} svg.tri .tf.bad{fill:var(--red)}
+@media(prefers-reduced-motion:reduce){svg.tri .tf{transition:none}}
+.howto{font-size:.88em}
+.howto .ex{display:flex;gap:1rem;flex-wrap:wrap;margin:.5rem 0 .2rem}
+.howto .ex span{display:flex;align-items:center;gap:.35rem;color:var(--muted)}
+.howto summary{cursor:pointer;color:var(--gold);font-weight:700}
 
 /* ---------- choice cards (rounds 2/3) ---------- */
 .choice{display:grid;gap:.5rem}
@@ -158,6 +171,7 @@ table.two th{color:var(--muted);font-weight:600;font-size:.85em;text-transform:u
 <body>
 <div id="diag"></div>
 <div id="toast" class="toast hidden"></div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><clipPath id="triClip" clipPathUnits="userSpaceOnUse"><polygon points="8.5,1 16,14 1,14"/></clipPath></defs></svg>
 
 <div class="top">
   <div class="brand">DECOUPLE? <span>You run U.S.–China policy</span></div>
@@ -799,17 +813,51 @@ const App = (() => {
   }
   function sumG(...parts) { const o = { jobsP: 0, sec: 0, col: 0, innov: 0, jobsO: 0 }; for (const p of parts) for (const k in o) o[k] += (p[k] || 0); return o; }
 
+  /* ---------- round-1 effect triangles ---------- */
+  // Every triangle is the same size effect on a gauge, so rows and industries are comparable.
+  const TRI_UNIT = 2.5;
+  const FX = [["sec", "Security & resilience", true, 1], ["jobs", "Visible jobs", true, 1], ["col", "Prices", false, 1], ["innov", "Innovation lost", false, -1]];
+  function triSvg(f, good) {
+    return '<svg class="tri" viewBox="0 0 17 15" aria-hidden="true"><g clip-path="url(#triClip)"><rect class="tf ' + (good ? "good" : "bad") + '" x="0" y="0" width="17" height="15" style="transform:scaleX(' + f.toFixed(3) + ')"/></g><polygon class="to" points="8.5,1 16,14 1,14"/></svg>';
+  }
+  function fxVal(ind, key, sign, d) { return sign * ind[key][d]; }
+  function fxHtml(ind, d) {
+    return '<div class="fx" id="fx-' + ind.id + '">' + FX.map(([key, label, good, sign]) => {
+      const max = fxVal(ind, key, sign, 4); const v = fxVal(ind, key, sign, d);
+      if (max <= 0) return '<span class="lab">' + label + '</span><span class="tris none">no effect</span><span class="num"></span>';
+      const n = Math.ceil(max / TRI_UNIT - 1e-9);
+      let tris = ""; for (let i = 0; i < n; i++) tris += triSvg(Math.max(0, Math.min(1, v / TRI_UNIT - i)), good);
+      return '<span class="lab">' + label + '</span><span class="tris" data-k="' + key + '">' + tris + '</span><span class="num ' + (v > 0 ? (good ? "good" : "bad") : "") + '" data-n="' + key + '">' + (v > 0 ? (good ? "+" : (key === "innov" ? "−" : "+")) + fmt(v, false) : "0") + "</span>";
+    }).join("") + "</div>";
+  }
+  function fxUpdate(ind, d) {
+    const box = $("fx-" + ind.id); if (!box) return;
+    for (const [key, , good, sign] of FX) {
+      const t = box.querySelector('[data-k="' + key + '"]'); if (!t) continue;
+      const v = fxVal(ind, key, sign, d);
+      t.querySelectorAll(".tf").forEach((r, i) => { r.style.transform = "scaleX(" + Math.max(0, Math.min(1, v / TRI_UNIT - i)).toFixed(3) + ")"; });
+      const nEl = box.querySelector('[data-n="' + key + '"]');
+      nEl.textContent = v > 0 ? (good ? "+" : (key === "innov" ? "−" : "+")) + fmt(v, false) : "0";
+      nEl.className = "num " + (v > 0 ? (good ? "good" : "bad") : "");
+    }
+  }
+  const HOWTO = '<details class="panel howto" open><summary>How to read the triangles</summary>' +
+    '<p>Under each industry, the <b>outlined triangles</b> show the most that industry can move each gauge if you choose full separation. As you move the dial, they <b>fill in</b> to show your advisers\' projection at that level — including part of a triangle.</p>' +
+    '<div class="ex"><span>' + triSvg(0, true) + ' no effect yet</span><span>' + triSvg(0.5, true) + ' half</span><span>' + triSvg(1, true) + ' full</span><span>' + triSvg(1, false) + ' a cost</span></div>' +
+    '<p><b class="green">Green</b> moves a gauge in your favor (more security, more jobs in that industry). <b class="red">Red</b> is a cost (higher prices, less innovation). Every triangle is the same size — about ' + TRI_UNIT + ' points on a gauge — so you can compare rows and industries directly: chips can buy a lot of security; clothing can buy almost none.</p>' +
+    '<p class="muted small">These are direct effects assuming China does nothing. It won\'t.</p></details>';
+
   /* ---------- player screens ---------- */
   function renderPlayer() {
     const M = $("playerMain");
-    const stakes = (ind) => '<div class="stakes"><span>Security <b>' + "▲".repeat(Math.max(1, Math.round(ind.sec[4] / 5))) + '</b></span><span>Prices <b>' + "▲".repeat(Math.max(1, Math.round(ind.col[4] / 2.5))) + '</b></span><span>Visible jobs <b>' + "▲".repeat(Math.max(1, Math.round(ind.jobs[4] / 2))) + "</b></span></div>";
     if (phase === "lobby") { $("gauges").classList.add("hidden"); M.innerHTML = '<div class="panel gold"><h2>You\'re in, ' + esc(name) + '.</h2><p class="lede">Waiting for the instructor to open Round 1.</p></div><div class="panel"><h3>Your job</h3><p>For the next 15 simulated years you run U.S. economic policy toward China. Four gauges will sit at the top of your screen: <b>jobs in protected industries</b>, <b>national security & resilience</b>, <b>cost of living</b>, and <b>innovation</b>.</p><p>There is no combined score. Nobody will tell you whether you won. You will have to decide what a good tradeoff looks like.</p><p class="muted small">This is a model, not a forecast. The numbers illustrate mechanisms; economists disagree about their magnitudes.</p></div>'; return; }
 
     if (phase === "r1") {
       const p = pending.dials; const proj = Engine.direct(Object.assign({ semi: 0, batt: 0, pharma: 0, elec: 0, basic: 0 }, p));
       setGauges(proj, "advisers' projection", false);
       M.innerHTML = '<div class="step"><span class="era">Round 1 · Today</span><h2>Where do you cut ties — and how far?</h2><p>Set a level for each of five industries. Your economic advisers project the direct effects at the top of the screen <i>assuming China does nothing</i>.</p></div>' +
-        Engine.INDUSTRIES.map(ind => '<div class="ind"><h3>' + esc(ind.name) + '</h3><div class="why">' + esc(ind.why) + '</div><div class="seg">' + Engine.LEVELS.map((l, k) => '<button class="' + (p[ind.id] === k ? "on" : "") + '" onclick="App.dial(\'' + ind.id + "'," + k + ')"><span class="n">' + k + "</span>" + l + "</button>").join("") + "</div>" + stakes(ind) + "</div>").join("") +
+        HOWTO +
+        Engine.INDUSTRIES.map(ind => '<div class="ind"><h3>' + esc(ind.name) + '</h3><div class="why">' + esc(ind.why) + '</div><div class="seg" id="seg-' + ind.id + '">' + Engine.LEVELS.map((l, k) => '<button class="' + (p[ind.id] === k ? "on" : "") + '" onclick="App.dial(\'' + ind.id + "'," + k + ')"><span class="n">' + k + "</span>" + l + "</button>").join("") + "</div>" + fxHtml(ind, p[ind.id] || 0) + "</div>").join("") +
         '<button class="big" id="submit1" ' + (Object.keys(p).length < 5 ? "disabled" : "") + ' onclick="App.submit1()">Enact this policy</button><p class="muted small" style="text-align:center">Pick a level for all five industries.</p>';
       return;
     }
@@ -913,7 +961,15 @@ const App = (() => {
   }
 
   /* ---------- actions ---------- */
-  function dial(id, k) { pending.dials[id] = k; renderPlayer(); }
+  function dial(id, k) {
+    pending.dials[id] = k;
+    const seg = $("seg-" + id);
+    if (!seg || phase !== "r1") { renderPlayer(); return; }
+    seg.querySelectorAll("button").forEach((b, i) => b.classList.toggle("on", i === k));
+    fxUpdate(Engine.INDUSTRIES.find(i => i.id === id), k);
+    setGauges(Engine.direct(Object.assign({ semi: 0, batt: 0, pharma: 0, elec: 0, basic: 0 }, pending.dials)), "advisers' projection", false);
+    const btn = $("submit1"); if (btn) btn.disabled = Object.keys(pending.dials).length < 5;
+  }
   function pick(dec, field, v) { pending[dec][field] = v; renderPlayer(); }
   async function submit1() { if (Object.keys(pending.dials).length < 5) return; const dials = Object.assign({}, pending.dials); phase = "initwait"; await store.update(pathOf("choices", uid), { dials }); myChoice.dials = dials; recompute(); phase = "r1res"; renderPlayer(); }
   async function submit2() { const dec2 = Object.assign({}, pending.dec2); phase = "initwait"; await store.update(pathOf("choices", uid), { dec2 }); myChoice.dec2 = dec2; recompute(); phase = "r2res"; renderPlayer(); }
