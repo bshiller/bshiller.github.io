@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#2C3E50">
-<title>Decouple? — You Run U.S.–China Policy</title>
+<title>Decouple? — U.S. vs. China</title>
 <style>
 :root{--navy:#2C3E50;--navy2:#22303f;--navy3:#1a2530;--gold:#F1C40F;--gold2:#c99f0b;--teal:#5EA8A7;--teal2:#3f8b8a;--ink:#EAF0F4;--muted:#9FB0BE;--red:#E0665C;--green:#4CC08A;--line:rgba(255,255,255,.12);--font:"Segoe UI",Calibri,system-ui,-apple-system,Helvetica,Arial,sans-serif}
 *{box-sizing:border-box}
@@ -44,7 +44,8 @@ input.code{text-transform:uppercase;letter-spacing:.3em;font-weight:800;text-ali
 #diag .bar code{background:rgba(0,0,0,.25);padding:.1em .3em;border-radius:4px}
 
 /* ---------- gauges ---------- */
-.gauges{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;position:sticky;top:0;z-index:5;background:var(--navy3);padding:.5rem 0;border-bottom:1px solid var(--line)}
+.gauges.pin{position:sticky}
+.gauges{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;position:static;top:0;z-index:5;background:var(--navy3);padding:.5rem 0;border-bottom:1px solid var(--line)}
 @media(max-width:700px){.gauges{grid-template-columns:repeat(2,1fr);gap:.35rem;padding:.35rem 0}.gauge{padding:.3rem .5rem}.gauge .val{font-size:1.1em}.gauge .proj{display:none}.gauge .bar{margin-top:.15rem;height:4px}}
 .gauge{background:var(--navy2);border:1px solid var(--line);border-radius:10px;padding:.45rem .6rem}
 .gauge .lbl{font-size:.72em;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -165,6 +166,29 @@ table.two th{color:var(--muted);font-weight:600;font-size:.85em;text-transform:u
 .tabs{display:flex;gap:.4rem;flex-wrap:wrap;margin:.5rem 0}
 .tabs button{background:var(--navy2);color:var(--muted);border:1px solid var(--line);font-weight:600;padding:.45em .8em}
 .tabs button.on{background:var(--gold);color:var(--navy3);border-color:var(--gold)}
+.rolebadge{display:inline-flex;align-items:center;gap:.4rem;font-weight:800;padding:.25em .7em;border-radius:999px;font-size:.9em}
+.rolebadge.us{background:#1f3b63;color:#cfe2ff;border:1px solid #4b78b8} .rolebadge.cn{background:#5a1f1c;color:#ffd9d2;border:1px solid #b8524b}
+.vs{width:100%;border-collapse:collapse;font-size:.9em} .vs th,.vs td{padding:.35em .4em;border-bottom:1px solid var(--line);text-align:center} .vs td:first-child,.vs th:first-child{text-align:left}
+.vs th{color:var(--muted);font-weight:600;font-size:.8em;text-transform:uppercase;letter-spacing:.04em}
+.lvl{display:inline-block;min-width:1.7em;padding:.05em .35em;border-radius:6px;font-weight:800;background:var(--navy3);border:1px solid var(--line)}
+.lvl.hi{background:var(--gold);color:var(--navy3);border-color:var(--gold)}
+.powerbar{position:relative;height:16px;border-radius:8px;background:linear-gradient(90deg,#5a1f1c,#22303f 50%,#1f3b63);margin:.4rem 0;border:1px solid var(--line)}
+.powerbar i{position:absolute;top:-4px;width:6px;height:22px;border-radius:3px;background:var(--gold);transform:translateX(-50%);transition:left .6s}
+.powerlbl{display:flex;justify-content:space-between;font-size:.78em;color:var(--muted)}
+.meter{height:10px;border-radius:5px;background:rgba(255,255,255,.08);overflow:hidden;margin:.25rem 0 .55rem}
+.meter i{display:block;height:100%;background:var(--teal);transition:width .6s}
+.meter.weak i{background:var(--red)}
+.callout{border-radius:12px;padding:.8rem .9rem;margin:.6rem 0;font-size:.98em}
+.callout.empty{background:rgba(224,102,92,.12);border:1px solid var(--red)} .callout.full{background:rgba(94,168,167,.12);border:1px solid var(--teal)}
+.cost{font-size:.85em;color:#c9d5df;margin-top:.35rem;display:block}
+.choice button .cost b{display:inline;margin:0;color:var(--ink)}
+.strip{width:100%;height:auto;background:var(--navy3);border-radius:12px;border:1px solid var(--line)}
+.strip text{font-family:var(--font);fill:var(--muted);font-size:12px}
+.strip .lane{fill:rgba(255,255,255,.03)} .strip .lane.alt{fill:rgba(255,255,255,.06)}
+.strip .dot{stroke:#0b1218;stroke-width:1}
+.strip .win{fill:var(--red)} .strip .lose{fill:var(--teal)} .strip .hold{fill:#9FB0BE}
+.strip .lbl{fill:var(--ink);font-weight:700;font-size:13px}
+.choice button.dis{opacity:.5}
 .foot{color:var(--muted);font-size:.8em;text-align:center;margin:1.5rem 0}
 </style>
 </head>
@@ -174,7 +198,7 @@ table.two th{color:var(--muted);font-weight:600;font-size:.85em;text-transform:u
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><clipPath id="triClip" clipPathUnits="userSpaceOnUse"><polygon points="8.5,1 16,14 1,14"/></clipPath></defs></svg>
 
 <div class="top">
-  <div class="brand">DECOUPLE? <span>You run U.S.–China policy</span></div>
+  <div class="brand">DECOUPLE? <span>U.S. vs. China</span></div>
   <div id="topRight" class="row"></div>
 </div>
 
@@ -190,13 +214,13 @@ table.two th{color:var(--muted);font-weight:600;font-size:.85em;text-transform:u
     </ol>
   </div>
   <p class="muted">The same project you use for the other class games works. Sessions are stored under <code>games/dec-CODE</code>.</p>
-  <button class="secondary" onclick="App.solo()">Play solo without a database</button>
+  <button class="secondary" data-act="soloPick">Play solo without a database</button>
 </section>
 
 <!-- ===== landing ===== -->
 <section id="viewLanding" class="shell narrow hidden">
   <h1>Decouple?</h1>
-  <p class="lede">The United States and China are deeply economically intertwined. For the next 15 simulated years, <b>you</b> run U.S. economic policy toward China. Not "decouple or don't" — <b>where, how much, and why.</b></p>
+  <p class="lede">The United States and China are deeply economically intertwined. You and a partner will each run one of them for 15 simulated years. Not "decouple or don't" — <b>where, how much, and why</b> — and what that leaves to hold either side back.</p>
   <div class="panel gold">
     <h3>Join the class session</h3>
     <div class="row">
@@ -207,7 +231,7 @@ table.two th{color:var(--muted);font-weight:600;font-size:.85em;text-transform:u
   </div>
   <div class="row" style="justify-content:space-between">
     <button class="secondary" onclick="App.hostSetup()">Run a session (instructor)</button>
-    <button class="secondary" onclick="App.solo()">Play solo / preview</button>
+    <button class="secondary" data-act="soloPick">Play solo / preview</button>
   </div>
   <p class="foot">This is a model, not a forecast. The numbers illustrate economic mechanisms; economists disagree about their magnitudes.</p>
 </section>
@@ -216,7 +240,7 @@ table.two th{color:var(--muted);font-weight:600;font-size:.85em;text-transform:u
 <section id="viewHostSetup" class="shell narrow hidden">
   <h1>Run a session</h1>
   <div class="panel">
-    <p>Students open this same page, enter the 4-letter code and their name. You control when each round opens; students see their own results the moment they submit. At the end, the projector shows the whole class.</p>
+    <p>Students open this same page, enter the 4-letter code and their name. When you open Round 1 the game pairs them at random — one runs the <b>United States</b>, one runs <b>China</b> — and an odd student gets a computer partner. Partners should sit together and may talk; moves are still sealed. You open each round; a pair sees its results as soon as both partners submit.</p>
     <label class="row"><input id="optTimer" type="checkbox" checked> Show a decision timer on the projector (3 min for round 1, 2 min after)</label>
   </div>
   <button class="big" onclick="App.createSession()">Open the lobby</button>
@@ -269,311 +293,393 @@ const FIREBASE_CONFIG = {
 };
 /* ===================================================================== */
 /* =====================================================================
-   DECOUPLE? — game engine (pure functions, no DOM)
+   DECOUPLE? (pairs edition) — game engine. Pure functions, no DOM.
    ---------------------------------------------------------------------
-   This is a model, not a forecast. Every number below is an illustrative
-   parameter chosen so the mechanisms show up clearly in 35 minutes.
-   Tune freely in PARAMS; nothing else needs to change.
+   One student runs the United States, one runs China. Each round both
+   seal their moves at the same time. An industry is as separated as
+   whichever side cut deeper. At the end China decides on Taiwan, and
+   what restrains it is whatever economic ties are left.
+
+   This is a model, not a forecast. Every number is an illustrative
+   parameter chosen so the mechanisms show up clearly. Tune in PARAMS
+   and the INDUSTRIES table; nothing else needs to change.
    ===================================================================== */
 const Engine = (() => {
 
 const LEVELS = ["Stay integrated", "Diversify somewhat", "De-risk", "Mostly decouple", "Full separation"];
+const CN_LEVELS = ["Stay integrated", "Hedge a little", "Cut back", "Mostly cut", "Full separation"];
 
+/* U.S. tables (sec/jobs/col/innov) are indexed by level 0–4.
+   cn.* are China's tables. exportW = how much of China's leverage-at-risk
+   (sales to the U.S.) sits in this industry. */
 const INDUSTRIES = [
-  { id: "semi",   name: "Advanced chips & AI hardware",
+  { id: "semi", name: "Advanced chips & AI hardware",
     why: "Highest national-security stakes. Also where U.S. firms earn the export revenue that funds their R&D.",
-    sec:   [0, 5, 10, 14, 16],  jobs: [0, 1, 2, 3, 3.5],   col: [0, 0.5, 1, 2, 3],   innov: [0, 0, -1, -2, -3],
-    rw: 3, reroute: 0.1 },
-  { id: "batt",   name: "Batteries, solar & critical minerals",
+    sec: [0, 5, 10, 14, 16], jobs: [0, 1, 2, 3, 3.5], col: [0, 0.5, 1, 2, 3], innov: [0, 0, -1, -2, -3], rw: 3, reroute: 0.1, supply: false,
+    cn: { why: "Replace American chips, software and tools with Chinese ones. Painful now; independence later.",
+          secOwn: [0, 1, 2, 3, 4], jobs: [0, 1, 2, 3, 3.5], col: [0, 0.5, 1, 1.5, 2], innov: [0, -1.5, -3, -4.5, -5.5], exportW: 0 } },
+  { id: "batt", name: "Batteries, solar & critical minerals",
     why: "Resilience matters — and China refines most of the world's minerals. Costs land on EVs and the grid.",
-    sec:   [0, 2.5, 5, 7, 8],  jobs: [0, 1.5, 3, 4.5, 5.5], col: [0, 1, 2, 3.5, 5], innov: [0, 0, 0, -0.5, -1],
-    rw: 2, reroute: 0.4 },
+    sec: [0, 2.5, 5, 7, 8], jobs: [0, 1.5, 3, 4.5, 5.5], col: [0, 1, 2, 3.5, 5], innov: [0, 0, 0, -0.5, -1], rw: 2, reroute: 0.4, supply: true, shockCol: 0.8, shockSec: 1.5,
+    cn: { why: "Restrict exports of rare earths, graphite and battery materials. Leverage over America — and sales you lose.",
+          secOwn: [0, 1, 2, 2.5, 3], jobs: [0, -1, -2, -3, -4], col: [0, 0, 0, 0, 0], innov: [0, 0, -0.5, -1, -1], exportW: 1.5 } },
   { id: "pharma", name: "Pharmaceuticals & medical inputs",
     why: "No military use, but a country that makes your antibiotics can stop shipping them. Costs land on drug prices.",
-    sec:   [0, 2, 4, 5.5, 6.5], jobs: [0, 0.5, 1, 1.5, 2], col: [0, 1, 2, 3.5, 5], innov: [0, 0, 0, 0, 0],
-    rw: 1.5, reroute: 0.3 },
-  { id: "elec",   name: "Consumer electronics",
+    sec: [0, 2, 4, 5.5, 6.5], jobs: [0, 0.5, 1, 1.5, 2], col: [0, 1, 2, 3.5, 5], innov: [0, 0, 0, 0, 0], rw: 1.5, reroute: 0.3, supply: true, shockCol: 0.8, shockSec: 1.5,
+    cn: { why: "Restrict exports of drug ingredients. A lever over American medicine cabinets — and lost sales.",
+          secOwn: [0, 0.5, 1, 1.5, 2], jobs: [0, -0.5, -1, -1.5, -2], col: [0, 0, 0, 0, 0], innov: [0, 0, 0, 0, 0], exportW: 1 } },
+  { id: "elec", name: "Consumer electronics",
     why: "Phones, TVs, laptops. Big price effects, weak direct security case.",
-    sec:   [0, 0.5, 1, 1.5, 2], jobs: [0, 1, 2, 3, 4],     col: [0, 1.5, 3, 5, 7.5], innov: [0, 0, -0.5, -1, -1.5],
-    rw: 1, reroute: 0.5 },
-  { id: "basic",  name: "Clothing, toys & basic goods",
+    sec: [0, 0.5, 1, 1.5, 2], jobs: [0, 1, 2, 3, 4], col: [0, 1.5, 3, 5, 7.5], innov: [0, 0, -0.5, -1, -1.5], rw: 1, reroute: 0.5, supply: true, shockCol: 0.6, shockSec: 0,
+    cn: { why: "Steer electronics exports away from the U.S. Your factories lose their best customer.",
+          secOwn: [0, 0.5, 1, 1, 1], jobs: [0, -2, -4, -6, -8], col: [0, 0.5, 1, 1.5, 2], innov: [0, 0, -0.5, -1, -1.5], exportW: 3 } },
+  { id: "basic", name: "Clothing, toys & basic goods",
     why: "Lots of visible jobs to 'bring back'. Almost no security case. Costs land on everyone's shopping cart.",
-    sec:   [0, 0, 0.5, 0.5, 0.5], jobs: [0, 1.5, 3, 4.5, 6], col: [0, 1.5, 3, 5, 7.5], innov: [0, 0, 0, 0, 0],
-    rw: 0.5, reroute: 0.6 },
+    sec: [0, 0, 0.5, 0.5, 0.5], jobs: [0, 1.5, 3, 4.5, 6], col: [0, 1.5, 3, 5, 7.5], innov: [0, 0, 0, 0, 0], rw: 0.5, reroute: 0.6, supply: true, shockCol: 0.6, shockSec: 0,
+    cn: { why: "Shift clothing and toy exports away from America. Millions of factory jobs depend on American shoppers.",
+          secOwn: [0, 0, 0, 0, 0], jobs: [0, -2, -4, -5.5, -7], col: [0, 0, 0, 0, 0], innov: [0, 0, 0, 0, 0], exportW: 2.5 } },
 ];
-const MAX_AGG = INDUSTRIES.reduce((s, i) => s + 4 * i.rw, 0); // 32
+const IDS = INDUSTRIES.map(i => i.id);
+const IND = Object.fromEntries(INDUSTRIES.map(i => [i.id, i]));
+const MAX_AGG = INDUSTRIES.reduce((s, i) => s + 4 * i.rw, 0);
+
+const CUT = { semi: [0, .2, .45, .7, .9], batt: [0, .2, .4, .65, .85], pharma: [0, .2, .4, .65, .85], elec: [0, .2, .45, .7, .9], basic: [0, .2, .45, .7, .9] };
 
 const PARAMS = {
-  // Round 1: China responds
-  mineralControlsSecHit: 1.5, mineralControlsCol: 1,
-  aggFarmThreshold: 6, aggPressureThreshold: 16,
-  frontRunSecDiscount: 0.15,
-  // Round 2
+  frontRunSecDiscount: 0.15, cnSelfRelianceCol: 0.4,
+  semiWalkInnov: 1, semiWalkJobsO: 0.5, cutOffCnInnov: 1, cutOffCnSec: 1,
+  // round 2
   rerouteColRebate: 0.3, extendColMult: 1.2, enforcementCol: 1, extendAllInnov: -0.5,
-  aloneInnov: -2, aloneJobs: -1, aloneSecLeak: 0.2, coordCol: 0.5,
-  // Round 3
-  reallocShare: 0.7, purchasingPowerShare: 0.3,
-  catchUpSecErosion: 0.2, catchUpInnov: -1,
-  maturedJobs: 1, maturedSec: 1,
-  subsidy: {
-    none:     { jobs: 0, sec: 0,   col: 0, innov: 0,  secLeak: 0 },
-    targeted: { jobs: 3, sec: 2,   col: 2, innov: 0,  secLeak: 0 },
-    broad:    { jobs: 5, sec: 2.5, col: 5, innov: -1, secLeak: 1 },
-  },
-  subsidyPermanentCol: 1,
+  aloneInnov: -2, aloneJobs: -1, aloneSecLeak: 0.2, coordCol: 0.5, cnAloneInnov: 1.5, cnCoordInnov: -1,
+  cnRerouteJobsShare: 0.5, cnRerouteCol: 1, cnRetaliateCol: 1, cnRetaliateSec: 0.5,
+  // round 3
+  reallocShare: 0.7, purchasingPowerShare: 0.3, catchUpSecErosion: 0.2, catchUpAllIn: 0.4, catchUpInnov: -1, maturedJobs: 1, maturedSec: 1,
+  subsidy: { none: { jobs: 0, sec: 0, col: 0, innov: 0, secLeak: 0 }, targeted: { jobs: 3, sec: 2, col: 2, innov: 0, secLeak: 0 }, broad: { jobs: 5, sec: 2.5, col: 5, innov: -1, secLeak: 1 } },
   stockpileCol: 1.5, stockpileDamageMult: 0.4,
-  // Crisis
-  crisisBase: 0.30, crisisSlope: 0.20,
-  crisisPharmaSec: 12, crisisPharmaCol: 4, crisisBattSec: 5, crisisBattCol: 3,
-  crisisExportInnov: 1.5, crisisExportJobsO: 1.5,
-  // Tangibles
+  cnAllInCol: 3, cnAllInSec: 3, cnAllInInnov: 3, cnModestInnov: 1, cnMarketsShare: 0.3, cnMarketsCol: 1, cnMarketsExportMult: 0.6,
+  cnReallocShare: 0.6, cnPurchasingShare: 0.3,
+  // restraint & crisis
+  restraintExportW: 0.6, restraintTechW: 0.4, aloneTechMult: 0.7, allInTechMult: 0.6, ambiguousBite: 0.5,
+  move: { hold: 0, blockade: 0.6, invade: 1 },
+  success: { blockade: 0.55, invade: 0.45 },
+  cnWin: { blockade: 8, invade: 15 }, cnLose: { blockade: -5, invade: -12 },
+  usLose: { blockade: -8, invade: -12 }, usWin: 2,
+  sanctionCnJobs: 16, sanctionCnInnov: 8, sanctionCnCol: 4, sanctionUsCol: 3, sanctionUsJobsO: 2,
+  warCn: { blockade: { jobsP: -2, col: 1, innov: 0 }, invade: { jobsP: -4, col: 2, innov: -1 } },
+  cutoffPharmaSec: 12, cutoffPharmaCol: 4, cutoffBattSec: 5, cutoffBattCol: 3,
+  tsmcInnov: 4, tsmcCol: 3, tsmcCnInnov: 2,
   tvBase: 500, drugBase: 100, dollarsPerColPoint: 9,
 };
 
-const CUT = {           // share of dependence actually removed at each level (before rerouting)
-  semi: [0, .2, .45, .7, .9], batt: [0, .2, .4, .65, .85], pharma: [0, .2, .4, .65, .85],
-  elec: [0, .2, .45, .7, .9], basic: [0, .2, .45, .7, .9]
+/* ---------- helpers ---------- */
+const zeroG = () => ({ jobsP: 0, sec: 0, col: 0, innov: 0, jobsO: 0 });
+const addG = (a, b) => { for (const k in b) a[k] = (a[k] || 0) + b[k]; return a; };
+const r1 = x => Math.round(x * 10) / 10;
+const roundG = g => { const o = {}; for (const k in g) o[k] = r1(g[k]); return o; };
+const zeros = () => ({ semi: 0, batt: 0, pharma: 0, elec: 0, basic: 0 });
+const D = (U, C) => ({ u: Object.assign(zeros(), U && U.dials), c: Object.assign(zeros(), C && C.dials) });
+const DEF = {
+  us2: { extend: "no", allies: "alone" }, us3: { subsidy: "none", stockpile: false }, usThreat: "ambiguous",
+  cn2: { reroute: "no", retaliate: "no" }, cn3: { chips: "modest", markets: "no" }, cnTaiwan: "hold",
 };
-
-function zeroG() { return { jobsP: 0, sec: 0, col: 0, innov: 0, jobsO: 0 }; }
-function addG(a, b) { for (const k in b) a[k] = (a[k] || 0) + b[k]; return a; }
-function r1(x) { return Math.round(x * 10) / 10; }
-function roundG(g) { const o = {}; for (const k in g) o[k] = r1(g[k]); return o; }
-
-function direct(dials) {
-  const g = zeroG();
-  for (const ind of INDUSTRIES) { const d = dials[ind.id] || 0; g.sec += ind.sec[d]; g.jobsP += ind.jobs[d]; g.col += ind.col[d]; g.innov += ind.innov[d]; }
-  return roundG(g);
+function norm(U, C) {
+  U = U || {}; C = C || {};
+  return {
+    U: { dials: Object.assign(zeros(), U.dials), dec2: Object.assign({}, DEF.us2, U.dec2), dec3: Object.assign({}, DEF.us3, U.dec3), threat: U.threat || DEF.usThreat },
+    C: { dials: Object.assign(zeros(), C.dials), dec2: Object.assign({}, DEF.cn2, C.dec2), dec3: Object.assign({}, DEF.cn3, C.dec3), taiwan: C.taiwan || DEF.cnTaiwan },
+  };
 }
-function botPolicy(R) {
-  const persona = R() < 0.3 ? "dove" : R() < 0.6 ? "hawk" : "mixed";
-  const pick = (lo, hi) => lo + Math.floor(R() * (hi - lo + 1));
-  const dials = {};
-  for (const ind of INDUSTRIES) dials[ind.id] = persona === "dove" ? pick(0, 1) : persona === "hawk" ? pick(2, 4) : pick(0, 4);
-  const dec2 = { extend: ["no", "security", "all"][pick(0, 2)], allies: R() < 0.5 ? "alone" : "coordinate" };
-  const dec3 = { subsidy: ["none", "targeted", "broad"][pick(0, 2)], stockpile: R() < 0.5 };
-  return { dials, dec2, dec3 };
-}
-function aggression(dials) { return INDUSTRIES.reduce((s, i) => s + i.rw * (dials[i.id] || 0), 0); }
+const aggression = d => INDUSTRIES.reduce((s, i) => s + i.rw * (d[i.id] || 0), 0);
+const extendSetOf = ext => ext === "all" ? IDS.slice() : ext === "security" ? ["semi", "batt", "pharma"] : [];
 
-/* ---------- Round 1: you act, China responds ---------- */
-function round1(dials) {
-  const g = zeroG(); const notes = []; const surprises = []; const chinaCosts = {};
-  const perInd = {};
-  for (const ind of INDUSTRIES) {
-    const d = dials[ind.id] || 0;
-    let sec = ind.sec[d];
-    if (ind.id === "semi" && d >= 2) sec *= (1 - PARAMS.frontRunSecDiscount);
-    perInd[ind.id] = { sec, jobs: ind.jobs[d], col: ind.col[d], innov: ind.innov[d] };
-    g.sec += sec; g.jobsP += ind.jobs[d]; g.col += ind.col[d]; g.innov += ind.innov[d];
-  }
-  const A = aggression(dials);
+/* Adviser projections (direct effects, holding the other side fixed at 0) */
+function directUS(d) { const g = zeroG(); for (const i of INDUSTRIES) { const k = d[i.id] || 0; g.sec += i.sec[k]; g.jobsP += i.jobs[k]; g.col += i.col[k]; g.innov += i.innov[k]; } return roundG(g); }
+function directCN(d) { const g = zeroG(); for (const i of INDUSTRIES) { const k = d[i.id] || 0; g.sec += i.cn.secOwn[k]; g.jobsP += i.cn.jobs[k]; g.col += i.cn.col[k] + PARAMS.cnSelfRelianceCol * k; g.innov += i.cn.innov[k]; } return roundG(g); }
 
-  if (dials.semi >= 2) {
-    surprises.push({ title: "The rule shaped the product", text: "Before your controls took effect, Chinese buyers stockpiled a year of chips. Then U.S. chipmakers designed a slower China-only model that sits just under your performance threshold. Your regulation became a design spec." });
-    notes.push("Security rose less than the dial suggested (front-running and threshold-gaming).");
+/* ---------- Round 1: both set dials ---------- */
+function round1(U, C) {
+  const { u, c } = D(U, C);
+  const us = zeroG(), cn = zeroG(), sep = {}, per = {};
+  const usS = [], cnS = [], usN = [], cnN = [];
+  for (const i of INDUSTRIES) {
+    const a = u[i.id], b = c[i.id], s = Math.max(a, b); sep[i.id] = s;
+    // United States
+    let sec = i.sec[a]; if (i.id === "semi" && a >= 2) sec *= (1 - PARAMS.frontRunSecDiscount);
+    const jobs = i.supply ? i.jobs[s] : i.jobs[a];
+    let col = i.supply ? i.col[s] : i.col[a];
+    us.sec += sec; us.jobsP += jobs; us.innov += i.innov[s];
+    if (b > a && i.supply) { col += i.shockCol * (b - a); us.sec -= i.shockSec * (b - a); }
+    if (b > a && !i.supply) { us.innov -= PARAMS.semiWalkInnov * (b - a); us.jobsO -= PARAMS.semiWalkJobsO * (b - a); }
+    us.col += col;
+    // China
+    const k = i.cn;
+    const cjobs = i.supply ? k.jobs[s] : k.jobs[b];
+    const ccol = k.col[s] + PARAMS.cnSelfRelianceCol * b;
+    cn.sec += k.secOwn[b]; cn.jobsP += cjobs; cn.col += ccol; cn.innov += k.innov[s];
+    if (a > b && !i.supply) { cn.innov -= PARAMS.cutOffCnInnov * (a - b); cn.sec -= PARAMS.cutOffCnSec * (a - b); }
+    per[i.id] = { usSec: sec, usCol: col, cnJobs: cjobs };
   }
-  if (dials.semi >= 2) {
-    g.sec -= PARAMS.mineralControlsSecHit; g.col += PARAMS.mineralControlsCol;
-    surprises.push({ title: "China hits your weak spot", text: "Beijing answers chip controls with export licenses on gallium, germanium and graphite — inputs your battery and chip plants need. Your battery resilience just fell, and you never touched that dial." });
+  // ---- surprises (the incentive filter) ----
+  if (u.semi >= 2) {
+    usS.push({ title: "The rule shaped the product", text: "Before your controls took effect, Chinese buyers stockpiled a year of chips. Then U.S. chipmakers designed a slower China-only model that sits just under your performance threshold. Your regulation became a design spec." });
+    cnS.push({ title: "Cut off from frontier chips", text: "Washington's export controls hit your AI labs. Your firms stockpiled what they could and bought the slower China-only chips Nvidia designed to fit under the rule — but the frontier just moved out of reach." });
   }
-  if (A >= PARAMS.aggFarmThreshold) {
-    const hit = 1 + A / 8;
-    g.jobsO -= hit;
-    surprises.push({ title: "Retaliation lands on people you never chose", text: "China shifts soybean purchases to Brazil and delays Boeing orders. Iowa farmers and Seattle aerospace workers pay for a policy about chips and toys." , hidden: r1(hit) });
-  }
-  if (A >= PARAMS.aggPressureThreshold) {
-    g.innov -= 1; g.jobsO -= 1;
-    surprises.push({ title: "Pressure on U.S. firms in China", text: "Regulators in Beijing open investigations into Apple, Tesla and GM. Profits earned in China — which funded U.S. engineering jobs — shrink." });
-  }
-  if (dials.basic >= 2 || dials.elec >= 2) {
-    notes.push("Some sourcing shifted to Vietnam, Mexico and India. Watch this space.");
-  }
-  // China's own costs (illustrative, for the two-column table)
-  chinaCosts.consumer = r1(0.6 * (INDUSTRIES.reduce((s, i) => s + i.col[dials[i.id] || 0], 0)));
-  chinaCosts.exports = r1(A / 32 * 20);
-  chinaCosts.tech = r1(perInd.semi.sec);
-  chinaCosts.protected = r1(A / 32 * 12);
-
-  return { gauges: roundG(g), perInd, A, notes, surprises, chinaCosts };
+  if (c.batt >= 2 && c.batt > u.batt) usS.push({ title: "China hits your weak spot", text: "Beijing put export licenses on gallium, germanium and graphite. You hadn't diversified, so battery and chip plants scrambled for supply. You never chose this — your counterpart did." });
+  if (c.pharma >= 2 && c.pharma > u.pharma) usS.push({ title: "The pharmacy problem", text: "China restricted exports of drug ingredients. You hadn't built other suppliers, so generic prices jumped and some went into shortage." });
+  if (c.semi >= 2 && c.semi > u.semi) usS.push({ title: "Your best chip customer walked away", text: "China ordered its firms to replace American chips and software. U.S. chipmakers lost their biggest market — and the revenue that pays for the next generation of research." });
+  if ((c.elec >= 2 && c.elec > u.elec) || (c.basic >= 2 && c.basic > u.basic)) usS.push({ title: "Shelves emptied — and China chose it", text: "China steered its exports away from the U.S. Prices rose before anyone could build replacements at home." });
+  if (c.semi >= 2) cnS.push({ title: "Self-reliance is expensive", text: "Your domestic chips are two generations behind. AI labs complain, subsidies balloon, and engineers are poached by every province's new 'national champion.'" });
+  if (c.batt >= 2) cnS.push({ title: "Leverage expires when you use it", text: "Your mineral restrictions worked: American plants scrambled. But Washington, Tokyo and Brussels launched crash programs to find other suppliers. The day you used the lever, it started wearing out." });
+  if (c.elec >= 2 || c.basic >= 2) cnS.push({ title: "You fired your best customer", text: "Factory towns in Guangdong lost their American orders. Nobody in Washington asked you to do this. Who in China gains?" });
+  if (u.elec >= 2 || u.basic >= 2) cnS.push({ title: "Orders cancelled", text: "U.S. restrictions on electronics and consumer goods hit your export factories. Some owners are already scouting sites in Vietnam and Mexico." });
+  usN.push("An industry is as separated as whichever side cut deeper.");
+  cnN.push("An industry is as separated as whichever side cut deeper.");
+  return { us: { gauges: roundG(us), surprises: usS, notes: usN }, cn: { gauges: roundG(cn), surprises: cnS, notes: cnN }, sep, per, aggUS: aggression(u), aggCN: aggression(c) };
 }
 
 /* ---------- Round 2: supply chains adapt ---------- */
-// dec2 = { extend: "no" | "security" | "all", allies: "alone" | "coordinate" }
-function round2(dials, dec2, s1) {
-  const g = zeroG(); const notes = []; const surprises = []; const rerouted = [];
-  for (const ind of INDUSTRIES) {
-    const d = dials[ind.id] || 0; if (d < 2) continue;
-    const r = ind.reroute;
-    const secIllusory = r * s1.perInd[ind.id].sec;
-    g.sec -= secIllusory;
-    g.col -= PARAMS.rerouteColRebate * s1.perInd[ind.id].col;
-    rerouted.push({ id: ind.id, name: ind.name, share: Math.round(r * 100) });
-  }
-  if (rerouted.length) {
-    surprises.push({ title: "Cheaper than you feared — for a reason", text: "Direct imports from China fell sharply. But imports from Vietnam and Mexico jumped, and a large share of those new factories are Chinese-owned or run on Chinese parts. Prices rose less than expected because your decoupling was partly a change of address." });
-  } else {
-    notes.push("You restricted little, so there was little to reroute.");
-  }
-  // Decision A: extend to Chinese-content goods
-  const extendSet = dec2.extend === "all" ? INDUSTRIES.map(i => i.id) : dec2.extend === "security" ? ["semi", "batt", "pharma"] : [];
+function round2(U, C, s1) {
+  const { u } = D(U, C);
+  const us = zeroG(), cn = zeroG(), usS = [], cnS = [], usN = [], cnN = [];
+  const ext = extendSetOf(U.dec2.extend); const reroute = C.dec2.reroute === "yes";
+  const rerouted = [], closed = [];
   let extendedAny = false;
-  for (const ind of INDUSTRIES) {
-    const d = dials[ind.id] || 0; if (d < 2 || !extendSet.includes(ind.id)) continue;
-    extendedAny = true;
-    g.sec += ind.reroute * s1.perInd[ind.id].sec;
-    g.col += ind.reroute * s1.perInd[ind.id].col * PARAMS.extendColMult;
-    g.jobsP += 0.5;
-  }
-  if (extendedAny) {
-    g.col += PARAMS.enforcementCol;
-    surprises.push({ title: "Enforcement has a price tag", text: "Customs can't easily tell a Vietnamese shirt from a Chinese one sewn in Vietnam. Every importer now files origin paperwork; Mexico and Vietnam complain to the WTO. The rerouting shrinks — and so does your purchasing power." });
-    if (dec2.extend === "all") { g.innov += PARAMS.extendAllInnov; notes.push("Applying content rules to toys and TVs strained ties with the very partners you need for chips."); }
-  } else if (rerouted.length) {
-    surprises.push({ title: "Your statistics look better than your dependence", text: "Bilateral trade with China is down. The share of your goods that still contain Chinese inputs is not. If Beijing ever squeezes, the squeeze travels through Hanoi." });
-  }
-  // Decision B: allies
-  const chipsMatter = dials.semi >= 2 || dials.batt >= 2;
-  if (chipsMatter) {
-    if (dec2.allies === "alone") {
-      g.innov += PARAMS.aloneInnov; g.jobsP += PARAMS.aloneJobs;
-      const leak = PARAMS.aloneSecLeak * (s1.perInd.semi.sec + 0.5 * s1.perInd.batt.sec);
-      g.sec -= leak;
-      surprises.push({ title: "Going alone handed the sale to a competitor", text: "You banned U.S. chip tools. Chinese fabs bought Dutch and Japanese tools instead. China still got equipment; American firms lost the revenue that funded their next generation of research." });
+  for (const i of INDUSTRIES) {
+    const a = u[i.id]; if (a < 2) continue;
+    const extended = ext.includes(i.id); if (extended) extendedAny = true;
+    if (!reroute) continue;
+    const r = i.reroute, p = s1.per[i.id];
+    if (extended) {
+      us.col += r * p.usCol * PARAMS.extendColMult; us.jobsP += 0.5; closed.push(i.name);
     } else {
-      g.col += PARAMS.coordCol;
-      surprises.push({ title: "Coalitions are slow and leaky", text: "The Netherlands and Japan matched your controls — after eighteen months of negotiation and an exemption for existing contracts. It worked, but later and with holes." });
+      us.sec -= r * p.usSec; us.col -= PARAMS.rerouteColRebate * p.usCol;
+      cn.jobsP += PARAMS.cnRerouteJobsShare * r * Math.abs(Math.min(0, p.cnJobs));
+      rerouted.push({ id: i.id, name: i.name, share: Math.round(r * 100) });
     }
-  } else {
-    notes.push("With chips and batteries left mostly integrated, the allies decision changed little.");
   }
-  return { gauges: roundG(g), rerouted, notes, surprises };
+  if (reroute) cn.col += PARAMS.cnRerouteCol;
+  if (extendedAny) {
+    us.col += PARAMS.enforcementCol;
+    if (U.dec2.extend === "all") { us.innov += PARAMS.extendAllInnov; usN.push("Applying content rules to toys and TVs strained ties with the very partners you need for chips."); }
+  }
+  // US surprises
+  if (rerouted.length) {
+    usS.push({ title: "Your statistics look better than your dependence", text: "Direct imports from China fell. Imports from Vietnam and Mexico jumped — many from Chinese-owned plants running on Chinese parts. Prices rose less than feared because your decoupling was partly a change of address." });
+  }
+  if (closed.length) usS.push({ title: "You closed the back door — and paid for it", text: "China tried to route around you through Vietnam and Mexico. Your content rules caught it in " + closed.length + " industr" + (closed.length === 1 ? "y" : "ies") + ". Every importer now files origin paperwork, and prices rose again." });
+  if (extendedAny && !reroute) usS.push({ title: "Paperwork for a problem you didn't have", text: "China kept its factories at home, so there was little rerouting to catch. Your content rules still cost every importer money. Was that insurance or waste? You couldn't know in advance." });
+  if (!reroute && u.elec + u.basic + u.batt + u.pharma >= 4) usN.push("China didn't reroute, so the separation you chose is real — and so are the higher prices.");
+  // China surprises
+  if (reroute && rerouted.length) cnS.push({ title: "Made in Vietnam", text: "Your firms opened plants in Vietnam and Mexico and kept selling to America. It saved some of the business — but the jobs went abroad with the factories." });
+  if (reroute && closed.length) cnS.push({ title: "Washington closed the back door", text: "The U.S. started checking for Chinese parts and Chinese owners. Your new plants abroad lost much of their American business in " + closed.length + " industr" + (closed.length === 1 ? "y" : "ies") + "." });
+  if (reroute && !rerouted.length && !closed.length) cnN.push("You built plants abroad, but the U.S. hadn't restricted much — there was little to route around.");
+  if (!reroute && u.elec + u.basic + u.batt + u.pharma >= 4) cnS.push({ title: "Your factories stayed home — and lost the market", text: "You kept production in China. Where the U.S. restricted imports, those sales are simply gone." });
+  // Allies
+  const chipsMatter = u.semi >= 2 || u.batt >= 2;
+  if (chipsMatter) {
+    if (U.dec2.allies === "alone") {
+      us.innov += PARAMS.aloneInnov; us.jobsP += PARAMS.aloneJobs; us.sec -= PARAMS.aloneSecLeak * (s1.per.semi.usSec + 0.5 * s1.per.batt.usSec);
+      cn.innov += PARAMS.cnAloneInnov;
+      usS.push({ title: "Going alone handed the sale to a competitor", text: "You banned U.S. chip tools. Chinese fabs bought Dutch and Japanese tools instead. China still got equipment; American firms lost the revenue that funded their next generation of research." });
+      cnS.push({ title: "The Dutch and Japanese were happy to sell", text: "America acted alone, so your fabs bought equipment from ASML and Tokyo Electron instead. The controls leaked." });
+    } else {
+      us.col += PARAMS.coordCol; cn.innov += PARAMS.cnCoordInnov;
+      usS.push({ title: "Coalitions are slow and leaky", text: "The Netherlands and Japan matched your controls — after eighteen months of negotiation and an exemption for existing contracts. It worked, but later and with holes." });
+      cnS.push({ title: "The coalition closed ranks", text: "The Netherlands and Japan joined the U.S. controls. Your fabs lost access to the tools they needed for the next generation." });
+    }
+  }
+  // China retaliation
+  if (C.dec2.retaliate === "yes") {
+    const hit = 1 + s1.aggUS / 8;
+    us.jobsO -= hit; cn.col += PARAMS.cnRetaliateCol; cn.sec += PARAMS.cnRetaliateSec;
+    usS.push({ title: "Retaliation lands on people you never chose", text: "China shifted soybean purchases to Brazil and froze Boeing orders. Iowa farmers and Seattle aerospace workers paid for a policy about chips and toys." });
+    cnS.push({ title: "Retaliation has a price at home too", text: "You punished American farmers and Boeing. Soybeans from Brazil cost more, and your airlines waited longer for planes. It sent a message — and it cost you." });
+  }
+  return { us: { gauges: roundG(us), surprises: usS, notes: usN }, cn: { gauges: roundG(cn), surprises: cnS, notes: cnN }, rerouted, closed };
 }
 
 /* ---------- Round 3: the long run ---------- */
-// dec3 = { subsidy: "none" | "targeted" | "broad", stockpile: true|false }
-function round3(dials, dec2, dec3, s1, s2) {
-  const g = zeroG(); const notes = []; const surprises = [];
-  const jobsPSoFar = s1.gauges.jobsP + s2.gauges.jobsP;
-  const colSoFar = s1.gauges.col + s2.gauges.col;
-  // Comparative advantage bill comes due
-  const realloc = PARAMS.reallocShare * jobsPSoFar;
-  const pp = PARAMS.purchasingPowerShare * Math.max(0, colSoFar);
-  g.jobsO -= realloc + pp;
-  const breakdown = { retaliation: r1(-s1.gauges.jobsO), realloc: r1(-realloc), purchasing: r1(-pp) };
+function round3(U, C, s1, s2) {
+  const { u } = D(U, C);
+  const us = zeroG(), cn = zeroG(), usS = [], cnS = [], usN = [], cnN = [];
+  const sepSemi = s1.sep.semi;
+  // US: comparative-advantage bill
+  const jobsSoFar = s1.us.gauges.jobsP + s2.us.gauges.jobsP, colSoFar = s1.us.gauges.col + s2.us.gauges.col;
+  const realloc = PARAMS.reallocShare * Math.max(0, jobsSoFar), pp = PARAMS.purchasingPowerShare * Math.max(0, colSoFar);
+  us.jobsO -= realloc + pp;
+  const usBreak = { retaliation: r1(-(s1.us.gauges.jobsO + s2.us.gauges.jobsO)), realloc: r1(-realloc), purchasing: r1(-pp) };
   // China catches up
-  if (dials.semi >= 2) {
-    g.sec -= PARAMS.catchUpSecErosion * s1.perInd.semi.sec; g.innov += PARAMS.catchUpInnov;
-    surprises.push({ title: "Your leverage had a half-life", text: "Cut off from U.S. chips, China poured money into its own. Its chips are now a generation behind instead of three. Every year, the thing you withheld matters a little less — and U.S. firms sell into a smaller world." });
+  const allIn = C.dec3.chips === "allin";
+  if (u.semi >= 2) {
+    us.sec -= (allIn ? PARAMS.catchUpAllIn : PARAMS.catchUpSecErosion) * s1.per.semi.usSec;
+    us.innov += PARAMS.catchUpInnov;
+    usS.push({ title: "Your leverage had a half-life", text: allIn ? "China went all-in on its own chips. It is now barely a generation behind. The thing you withheld matters less every year — and U.S. firms sell into a smaller world." : "Cut off from U.S. chips, China kept building its own. It is closing the gap, slowly. Every year, the thing you withheld matters a little less." });
   }
-  // Domestic capacity matured
   let matured = 0;
-  for (const ind of INDUSTRIES) if ((dials[ind.id] || 0) >= 3) { g.jobsP += PARAMS.maturedJobs; g.sec += PARAMS.maturedSec; matured++; }
-  if (matured) notes.push(`Domestic capacity matured in ${matured} industr${matured === 1 ? "y" : "ies"}: real factories, real engineers, real resilience.`);
-  // Targeted + coordinated chips ecosystem bonus
-  if (dials.semi >= 1 && dials.semi <= 2 && dec2.allies === "coordinate") { g.innov += 1; notes.push("Targeted chip controls plus allies left U.S. firms a big enough market to keep innovating."); }
-  // Decision A: subsidies
-  const sub = PARAMS.subsidy[dec3.subsidy];
-  addG(g, { jobsP: sub.jobs, sec: sub.sec - sub.secLeak, col: sub.col, innov: sub.innov });
-  if (dec3.subsidy !== "none") {
-    surprises.push({ title: "Subsidies attract exactly who you'd expect", text: dec3.subsidy === "broad"
-      ? "A Chinese battery maker licenses its technology to a U.S. plant to qualify for your subsidy. The EU, Korea and Japan launch matching subsidies, so the race gets expensive fast. And the 'temporary' program now has a lobby that will not let it end."
-      : "The EU, Korea and Japan launch matching subsidies, so your edge shrinks and the race gets expensive. The 'temporary' program now has a lobby that will not let it end." });
+  for (const i of INDUSTRIES) if (u[i.id] >= 3) { us.jobsP += PARAMS.maturedJobs; us.sec += PARAMS.maturedSec; matured++; }
+  if (matured) usN.push(`Domestic capacity matured in ${matured} industr${matured === 1 ? "y" : "ies"}: real factories, real engineers, real resilience — fifteen years after you set the dial.`);
+  if (u.semi >= 1 && u.semi <= 2 && U.dec2.allies === "coordinate") { us.innov += 1; usN.push("Targeted chip controls plus allies left U.S. firms a big enough market to keep innovating."); }
+  const sub = PARAMS.subsidy[U.dec3.subsidy];
+  addG(us, { jobsP: sub.jobs, sec: sub.sec - sub.secLeak, col: sub.col, innov: sub.innov });
+  if (U.dec3.subsidy !== "none") usS.push({ title: "Subsidies attract exactly who you'd expect", text: U.dec3.subsidy === "broad" ? "A Chinese battery maker licensed its technology to a U.S. plant to qualify for your subsidy. The EU, Korea and Japan launched matching subsidies. And the 'temporary' program now has a lobby that will not let it end." : "The EU, Korea and Japan launched matching subsidies, so your edge shrank and the race got expensive. The 'temporary' program now has a lobby that will not let it end." });
+  if (U.dec3.stockpile) { us.col += PARAMS.stockpileCol; usN.push("You built a strategic stockpile of medicines and minerals. Drugs expire; rotating them costs money every year. Whether it pays depends on a future you cannot see."); }
+  // China
+  if (allIn) {
+    cn.col += PARAMS.cnAllInCol;
+    if (sepSemi >= 2) { cn.sec += PARAMS.cnAllInSec; cn.innov += PARAMS.cnAllInInnov; cnS.push({ title: "The Big Fund delivered — at a price", text: "Hundreds of billions later, your chips are barely a generation behind. You no longer need American technology. Which also means America has one less thing it can threaten to take away." }); }
+    else { cn.sec += 1; cn.innov += 1; cnS.push({ title: "Paying for independence you weren't denied", text: "You poured money into domestic chips, but you still had access to American ones. Some of it built capability; a lot of it built empty fabs and fraud cases." }); }
+  } else if (sepSemi >= 2) { cn.innov += PARAMS.cnModestInnov; cnN.push("Your chip industry kept improving on its own, slowly."); }
+  if (C.dec3.markets === "yes") {
+    const lost = Math.abs(Math.min(0, s1.cn.gauges.jobsP + s2.cn.gauges.jobsP));
+    cn.jobsP += PARAMS.cnMarketsShare * lost; cn.col += PARAMS.cnMarketsCol;
+    cnS.push({ title: "New customers — and fewer reasons for restraint", text: "Trade deals and loans across Southeast Asia, Africa and Latin America replaced some American orders. Your dependence on American shoppers fell. So did the price of a fight with America." });
   }
-  // Decision B: stockpile
-  if (dec3.stockpile) {
-    g.col += PARAMS.stockpileCol;
-    notes.push("You built a strategic stockpile of medicines and minerals. Drugs expire; rotating them costs money every year. Whether it pays depends on a future you cannot see.");
-  }
-  return { gauges: roundG(g), breakdown, notes, surprises };
+  const cnJobsSoFar = s1.cn.gauges.jobsP + s2.cn.gauges.jobsP + cn.jobsP, cnColSoFar = s1.cn.gauges.col + s2.cn.gauges.col + cn.col;
+  const cnRealloc = PARAMS.cnReallocShare * Math.max(0, s1.per.semi.cnJobs + (allIn ? 1 : 0)), cnPP = PARAMS.cnPurchasingShare * Math.max(0, cnColSoFar);
+  cn.jobsO -= cnRealloc + cnPP;
+  const cnBreak = { realloc: r1(-cnRealloc), purchasing: r1(-cnPP), soFar: r1(cnJobsSoFar) };
+  return { us: { gauges: roundG(us), surprises: usS, notes: usN, breakdown: usBreak }, cn: { gauges: roundG(cn), surprises: cnS, notes: cnN, breakdown: cnBreak } };
 }
 
-/* ---------- Crisis lottery ---------- */
-function crisisProbability(dials, dec2) {
-  let A = aggression(dials);
-  if (dec2.extend === "all") A += 4; else if (dec2.extend === "security") A += 2;
-  const chinaDepUS = Math.max(0, 1 - A / MAX_AGG);   // how much China still has to lose
-  return { p: Math.min(0.6, PARAMS.crisisBase + PARAMS.crisisSlope * (1 - chinaDepUS)), chinaDepUS };
+/* ---------- What restrains China (before Taiwan) ---------- */
+function restraint(Uin, Cin) {
+  const { U, C } = norm(Uin, Cin); const s1 = round1(U, C); const s2 = round2(U, C, s1);
+  const u = U.dials, ext = extendSetOf(U.dec2.extend), reroute = C.dec2.reroute === "yes";
+  let num = 0, den = 0;
+  for (const i of INDUSTRIES) {
+    if (!i.cn.exportW) continue;
+    const s = s1.sep[i.id]; let flowing = 1 - CUT[i.id][s];
+    if (reroute && u[i.id] >= 2 && !ext.includes(i.id)) flowing += CUT[i.id][s] * i.reroute * 0.5;
+    num += i.cn.exportW * flowing; den += i.cn.exportW;
+  }
+  let exportsAtStake = num / den; if (C.dec3.markets === "yes") exportsAtStake *= PARAMS.cnMarketsExportMult;
+  let techAtStake = 1 - CUT.semi[s1.sep.semi];
+  if (U.dec2.allies === "alone" && u.semi >= 2) techAtStake *= PARAMS.aloneTechMult;
+  if (C.dec3.chips === "allin") techAtStake *= PARAMS.allInTechMult;
+  const R = PARAMS.restraintExportW * exportsAtStake + PARAMS.restraintTechW * techAtStake;
+  const lev = { pharma: usDependence(U, C, s1, "pharma"), batt: usDependence(U, C, s1, "batt") };
+  const biteIf = t => t === "sanctions" ? R : PARAMS.ambiguousBite * R;
+  const sepAvg = IDS.reduce((s, id) => s + s1.sep[id], 0) / (4 * IDS.length);
+  return { R, exportsAtStake, techAtStake, lev, bite: biteIf(U.threat), biteIf, sepAvg };
 }
-function dependence(dials, dec2, id) {
-  const d = dials[id] || 0; const ind = INDUSTRIES.find(i => i.id === id);
-  let cut = CUT[id][d];
-  const extendSet = dec2.extend === "all" ? ["semi","batt","pharma","elec","basic"] : dec2.extend === "security" ? ["semi","batt","pharma"] : [];
-  if (d >= 2 && !extendSet.includes(id)) cut *= (1 - ind.reroute); // rerouted share still depends on China
+function usDependence(U, C, s1, id) {
+  const i = IND[id], s = s1.sep[id]; let cut = CUT[id][s];
+  if (C.dec2.reroute === "yes" && U.dials[id] >= 2 && !extendSetOf(U.dec2.extend).includes(id)) cut *= (1 - i.reroute);
   return 1 - cut;
 }
-function crisis(dials, dec2, dec3, hit) {
-  const g = zeroG(); const notes = []; const detail = {};
-  const pharmaDep = dependence(dials, dec2, "pharma");
-  const battDep = dependence(dials, dec2, "batt");
-  const mult = dec3.stockpile ? PARAMS.stockpileDamageMult : 1;
-  if (hit) {
-    g.sec -= (PARAMS.crisisPharmaSec * pharmaDep + PARAMS.crisisBattSec * battDep) * mult;
-    g.col += (PARAMS.crisisPharmaCol * pharmaDep + PARAMS.crisisBattCol * battDep) * mult;
-    const A = aggression(dials);
-    const exposure = 1 - A / MAX_AGG;
-    g.innov -= PARAMS.crisisExportInnov * exposure; g.jobsO -= PARAMS.crisisExportJobsO * exposure;
-    detail.pharmaDep = Math.round(pharmaDep * 100); detail.battDep = Math.round(battDep * 100);
-    detail.shortage = Math.round(45 * pharmaDep * mult);   // % of generic drug lines short
-    detail.stockpiled = !!dec3.stockpile;
-  }
-  return { gauges: roundG(g), detail, notes };
+/* What a move on Taiwan would cost China, given ties and the U.S. threat (for the preview panel) */
+function cnMoveCost(bite, move) {
+  const m = PARAMS.move[move]; if (!m) return { jobsP: 0, innov: 0, col: 0 };
+  const w = PARAMS.warCn[move];
+  return { jobsP: r1(-PARAMS.sanctionCnJobs * bite * m + w.jobsP), innov: r1(-PARAMS.sanctionCnInnov * bite * m + w.innov - PARAMS.tsmcCnInnov * m), col: r1(PARAMS.sanctionCnCol * bite * m + w.col), sanctionJobs: r1(-PARAMS.sanctionCnJobs * bite * m) };
 }
 
-/* ---------- Full simulation ---------- */
-function simulate(dials, dec2, dec3, hit) {
-  const s1 = round1(dials); const s2 = round2(dials, dec2, s1); const s3 = round3(dials, dec2, dec3, s1, s2);
-  const c = crisis(dials, dec2, dec3, hit);
-  const total = zeroG();
-  for (const s of [s1, s2, s3, c]) addG(total, s.gauges);
-  const prob = crisisProbability(dials, dec2);
-  const tangible = tangibles(dials, dec2, dec3, total, hit);
-  return { s1, s2, s3, c, total: roundG(total), prob, hit, tangible };
-}
-function tangibles(dials, dec2, dec3, total, hit) {
-  const extAll = dec2.extend === "all";
-  const tv = PARAMS.tvBase * (1 + 0.045 * (dials.elec || 0) + (extAll && dials.elec >= 2 ? 0.06 : 0));
-  const extSec = dec2.extend !== "no";
-  let drug = PARAMS.drugBase * (1 + 0.05 * (dials.pharma || 0) + (extSec && dials.pharma >= 2 ? 0.05 : 0));
-  if (hit) drug *= 1 + 0.35 * dependence(dials, dec2, "pharma") * (dec3.stockpile ? PARAMS.stockpileDamageMult : 1);
-  return { tv: Math.round(tv), drug: Math.round(drug), monthly: Math.round(Math.max(0, total.col) * PARAMS.dollarsPerColPoint) };
-}
-const INTEGRATED = { dials: { semi: 0, batt: 0, pharma: 0, elec: 0, basic: 0 }, dec2: { extend: "no", allies: "alone" }, dec3: { subsidy: "none", stockpile: false } };
-
-function counterfactuals(dials, dec2, dec3, hit) {
-  return {
-    integrated: simulate(INTEGRATED.dials, INTEGRATED.dec2, INTEGRATED.dec3, hit),
-    otherRoll: simulate(dials, dec2, dec3, !hit),
-  };
+/* ---------- Year 12: Taiwan ---------- */
+function crisis(U, C, s1, rs, roll) {
+  const us = zeroG(), cn = zeroG(); const move = C.taiwan; const m = PARAMS.move[move] || 0;
+  const detail = { move, m, roll, R: rs.R, bite: rs.bite, threat: U.threat };
+  if (!m) { detail.success = null; return { us: { gauges: roundG(us) }, cn: { gauges: roundG(cn) }, detail }; }
+  const success = roll < PARAMS.success[move]; detail.success = success; detail.p = PARAMS.success[move];
+  const bite = rs.bite, mult = U.dec3.stockpile ? PARAMS.stockpileDamageMult : 1;
+  // China cuts off what the U.S. still depends on
+  const pd = rs.lev.pharma, bd = rs.lev.batt;
+  us.sec -= (PARAMS.cutoffPharmaSec * pd + PARAMS.cutoffBattSec * bd) * mult * m;
+  us.col += (PARAMS.cutoffPharmaCol * pd + PARAMS.cutoffBattCol * bd) * mult * m;
+  // Taiwan's chip fabs go offline
+  const semiCap = Math.min(1, 0.2 * U.dials.semi + (U.dec3.subsidy !== "none" ? 0.3 : 0));
+  us.innov -= PARAMS.tsmcInnov * (1 - semiCap) * m; us.col += PARAMS.tsmcCol * (1 - semiCap) * m;
+  // U.S. sanctions hurt the U.S. too
+  us.col += PARAMS.sanctionUsCol * bite * m; us.jobsO -= PARAMS.sanctionUsJobsO * bite * m;
+  us.sec += success ? PARAMS.usLose[move] : PARAMS.usWin;
+  // China
+  const cost = cnMoveCost(bite, move);
+  cn.jobsP += cost.jobsP; cn.innov += cost.innov; cn.col += cost.col;
+  cn.sec += success ? PARAMS.cnWin[move] : PARAMS.cnLose[move];
+  Object.assign(detail, { pd: Math.round(pd * 100), bd: Math.round(bd * 100), shortage: Math.round(45 * pd * mult * m), stockpiled: !!U.dec3.stockpile, semiCap: Math.round(semiCap * 100), cnCost: cost });
+  return { us: { gauges: roundG(us) }, cn: { gauges: roundG(cn) }, detail };
 }
 
-/* ---------- RNG (mulberry32) ---------- */
+/* ---------- Full simulation of a pair ---------- */
+function simulate(Uin, Cin, roll) {
+  const { U, C } = norm(Uin, Cin);
+  const s1 = round1(U, C), s2 = round2(U, C, s1), s3 = round3(U, C, s1, s2);
+  const rs = restraint(U, C);
+  const c = crisis(U, C, s1, rs, roll == null ? 0.5 : roll);
+  const tot = { us: zeroG(), cn: zeroG() };
+  for (const s of [s1, s2, s3, c]) { addG(tot.us, s.us.gauges); addG(tot.cn, s.cn.gauges); }
+  const total = { us: roundG(tot.us), cn: roundG(tot.cn) };
+  const power = r1((total.us.sec + total.us.innov) - (total.cn.sec + total.cn.innov));
+  return { s1, s2, s3, c, rs, total, power, tangible: tangibles(U, C, s1, rs, c, total) };
+}
+function tangibles(U, C, s1, rs, c, total) {
+  const s = s1.sep;
+  const tv = PARAMS.tvBase * (1 + 0.045 * s.elec + (U.dec2.extend === "all" && U.dials.elec >= 2 ? 0.06 : 0));
+  let drug = PARAMS.drugBase * (1 + 0.05 * s.pharma);
+  if (c.detail.m) drug *= 1 + 0.35 * rs.lev.pharma * (U.dec3.stockpile ? PARAMS.stockpileDamageMult : 1) * c.detail.m;
+  return { tv: Math.round(tv), drug: Math.round(drug), monthly: Math.round(Math.max(0, total.us.col) * PARAMS.dollarsPerColPoint) };
+}
+const INTEGRATED_US = { dials: zeros(), dec2: DEF.us2, dec3: DEF.us3 };
+const INTEGRATED_CN = { dials: zeros(), dec2: DEF.cn2, dec3: DEF.cn3 };
+function counterfactuals(U, C, roll) {
+  const out = { integrated: simulate(Object.assign({}, INTEGRATED_US, { threat: U.threat }), Object.assign({}, INTEGRATED_CN, { taiwan: C.taiwan }), roll) };
+  if (PARAMS.move[C.taiwan]) out.otherRoll = simulate(U, C, roll < PARAMS.success[C.taiwan] ? 0.99 : 0.01);
+  return out;
+}
+
+/* ---------- RNG + bots ---------- */
 function rng(seed) { let a = seed >>> 0; return () => { a = (a + 0x6D2B79F5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+function botUS(R) {
+  const persona = R() < 0.3 ? "dove" : R() < 0.6 ? "hawk" : "mixed"; const pick = (lo, hi) => lo + Math.floor(R() * (hi - lo + 1));
+  const dials = {}; for (const i of INDUSTRIES) dials[i.id] = persona === "dove" ? pick(0, 1) : persona === "hawk" ? pick(2, 4) : pick(0, 4);
+  return { persona, dials, dec2: { extend: ["no", "security", "all"][pick(0, 2)], allies: R() < 0.5 ? "alone" : "coordinate" }, dec3: { subsidy: ["none", "targeted", "broad"][pick(0, 2)], stockpile: R() < 0.5 } };
+}
+function botUSThreat(R, rs) { return rs.R > 0.35 || R() < 0.5 ? "sanctions" : "ambiguous"; }
+function botCN(R, usDials) {
+  const persona = R() < 0.35 ? "dove" : R() < 0.7 ? "hawk" : "mixed"; const pick = (lo, hi) => lo + Math.floor(R() * (hi - lo + 1));
+  const dials = {};
+  for (const i of INDUSTRIES) dials[i.id] = persona === "dove" ? pick(0, 1) : persona === "hawk" ? (i.id === "elec" || i.id === "basic" ? pick(0, 1) : pick(2, 4)) : pick(0, 3);
+  return { persona, dials };
+}
+function botCN2(R, usDials) { return { reroute: R() < 0.7 ? "yes" : "no", retaliate: aggression(usDials || {}) >= 8 || R() < 0.3 ? "yes" : "no" }; }
+function botCN3(R, usDials) { return { chips: (usDials && usDials.semi >= 2 ? R() < 0.7 : R() < 0.2) ? "allin" : "modest", markets: R() < 0.5 ? "yes" : "no" }; }
+function botCNTaiwan(R, rs, threat) {
+  const bite = rs.biteIf(threat), x = R();
+  if (bite < 0.25) return x < 0.45 ? "invade" : x < 0.75 ? "blockade" : "hold";
+  if (bite < 0.5) return x < 0.15 ? "invade" : x < 0.45 ? "blockade" : "hold";
+  return x < 0.1 ? "blockade" : "hold";
+}
 
-return { LEVELS, INDUSTRIES, PARAMS, MAX_AGG, aggression, direct, botPolicy, round1, round2, round3, crisis, crisisProbability, simulate, counterfactuals, INTEGRATED, rng, dependence };
+return { LEVELS, CN_LEVELS, INDUSTRIES, IND, IDS, PARAMS, CUT, MAX_AGG, aggression, directUS, directCN, norm, round1, round2, round3, restraint, cnMoveCost, crisis, simulate, counterfactuals, rng, botUS, botUSThreat, botCN, botCN2, botCN3, botCNTaiwan, DEF };
 })();
 if (typeof module !== "undefined") module.exports = Engine;
 /* =====================================================================
-   DECOUPLE? — app (UI, session flow, Firebase / in-memory store)
+   DECOUPLE? (pairs edition) — app: UI, pairing, bots, Firebase / memory
    ===================================================================== */
 const App = (() => {
   const $ = (id) => document.getElementById(id);
   const esc = (s) => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const fmt = (x, plus = true) => { const v = Math.round(x * 10) / 10; return (plus && v > 0 ? "+" : "") + v; };
-  const LS = "decouple.session";
+  const pct = x => Math.round(Math.max(0, Math.min(1, x)) * 100) + "%";
+  const LS = "decouple2.session";
+  const SHORT = { semi: "chips", batt: "batteries & minerals", pharma: "medicines", elec: "electronics", basic: "clothing & toys" };
+  const SIDES = { us: "United States", cn: "China" };
+  const OTHER = { us: "cn", cn: "us" };
+  const ORDER = { lobby: 0, r1: 1, r2: 2, r3: 3, r4: 4, wrap: 5 };
+  const KEY = { 1: "dials", 2: "dec2", 3: "dec3" };
+  const MOVE_LABEL = { hold: "Hold", blockade: "Blockade", invade: "Invade" };
 
   /* ---------- stores ---------- */
   function memStore() {
     const data = {}; const subs = {};
     const get = (p) => p.split("/").reduce((o, k) => (o && o[k] !== undefined ? o[k] : null), data);
     const setDeep = (p, v) => { const ks = p.split("/"); let o = data; for (let i = 0; i < ks.length - 1; i++) { if (typeof o[ks[i]] !== "object" || o[ks[i]] === null) o[ks[i]] = {}; o = o[ks[i]]; } if (v === null) delete o[ks[ks.length - 1]]; else o[ks[ks.length - 1]] = JSON.parse(JSON.stringify(v)); };
-    const fire = () => { for (const p in subs) for (const cb of subs[p]) cb(get(p)); };
+    let pend = false; const fire = () => { if (pend) return; pend = true; setTimeout(() => { pend = false; for (const p in subs) for (const cb of subs[p]) cb(JSON.parse(JSON.stringify(get(p)))); }, 0); };
     return {
       kind: "memory",
       async set(p, v) { setDeep(p, v); fire(); },
       async update(p, obj) { for (const k in obj) setDeep(p + "/" + k, obj[k]); fire(); },
-      async get(p) { return get(p); },
-      on(p, cb) { (subs[p] = subs[p] || []).push(cb); setTimeout(() => cb(get(p)), 0); return () => { subs[p] = subs[p].filter(f => f !== cb); }; }
+      async get(p) { return JSON.parse(JSON.stringify(get(p))); },
+      on(p, cb) { (subs[p] = subs[p] || []).push(cb); setTimeout(() => cb(JSON.parse(JSON.stringify(get(p)))), 0); return () => { subs[p] = subs[p].filter(f => f !== cb); }; }
     };
   }
   function fbStore(db) {
@@ -592,365 +698,554 @@ const App = (() => {
   window.addEventListener("error", e => diag("Script error: " + esc(e.message) + " (line " + e.lineno + "). If you just pasted a config, check for a stray character."));
 
   /* ---------- state ---------- */
-  let store = null, code = null, uid = null, name = null, role = null, meta = null, players = {}, choices = {}, unsubs = [];
-  let phase = "lobby", myChoice = { dials: null, dec2: null, dec3: null, hit: null };
-  let pending = { dials: {}, dec2: {}, dec3: {} };
-  let sims = null; let timerH = null, botsH = null, botPlan = {}, twinSel = null;
+  let store = null, fbS = null, code = null, uid = null, name = null, role = null;
+  let meta = null, players = {}, pairs = {}, moves = {}, unsubs = [];
+  let pid = null, side = null, mv = { us: {}, cn: {} }, sim = null, cf = null;
+  let phase = "lobby", view = null, seen = {}, pending = freshPending();
+  let timerH = null, botsH = null, botsBusy = false, pairH = null, twinSel = null;
+  function freshPending() { return { dials: {}, dec2: {}, dec3: {}, threat: null, taiwan: null }; }
   const pathOf = (...ks) => "games/dec-" + code + "/" + ks.join("/");
-  const ORDER = { lobby: 0, r1: 1, r2: 2, r3: 3, wrap: 4 };
+  const isBot = (u) => !!u && u.startsWith("bot_");
+  function hash(s) { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+  const rollFor = (p) => Engine.rng(hash(code + "|" + p + "|roll"))();
+  const R = (p, s, tag) => Engine.rng(hash(code + "|" + p + "|" + s + "|" + tag));
+  const nameOf = (u) => u && players[u] ? players[u].name : "Computer";
 
   /* ---------- boot ---------- */
   function boot() {
+    document.addEventListener("click", onClick);
     const cfg = (typeof FIREBASE_CONFIG !== "undefined" && FIREBASE_CONFIG) || (typeof firebaseConfig !== "undefined" && firebaseConfig) || null;
-    const ok = cfg && cfg.apiKey && cfg.databaseURL && /^https:\/\/.+firebaseio\.com|firebasedatabase\.app/.test(cfg.databaseURL || "");
+    const ok = cfg && cfg.apiKey && cfg.databaseURL && /^https:\/\/.+(firebaseio\.com|firebasedatabase\.app)/.test(cfg.databaseURL || "");
     if (!ok || typeof firebase === "undefined") {
       if (cfg && !cfg.databaseURL) diag("Your Firebase config is missing <code>databaseURL</code>. Add it (Realtime Database → copy the URL) and reload.");
       show("viewSetup"); return;
     }
-    try { firebase.initializeApp(cfg); store = fbStore(firebase.database()); }
+    try { firebase.initializeApp(cfg); fbS = store = fbStore(firebase.database()); }
     catch (e) { diag("Firebase failed to start: " + esc(e.message)); show("viewSetup"); return; }
     let connected = false;
     firebase.database().ref(".info/connected").on("value", s => { connected = !!s.val(); if (connected) $("diag").innerHTML = ""; });
     setTimeout(() => { if (!connected) diag("Still trying to reach the database after 7 seconds. Check <code>databaseURL</code> and your network."); }, 7000);
-    const saved = JSON.parse(localStorage.getItem(LS) || "null");
-    if (saved && saved.code) { code = saved.code; uid = saved.uid; name = saved.name; role = saved.role; if (role === "host") enterHost(); else enterPlayer(); return; }
+    let saved = null; try { saved = JSON.parse(localStorage.getItem(LS) || "null"); } catch (e) { }
+    if (saved && saved.code) { code = saved.code; uid = saved.uid; name = saved.name; role = saved.role; seen = saved.seen || {}; if (role === "host") enterHost(); else enterPlayer(); return; }
     show("viewLanding");
   }
+  function persist() { if (role === "solo") return; try { localStorage.setItem(LS, JSON.stringify({ code, uid, name, role, seen })); } catch (e) { } }
   function show(id) { for (const v of ["viewSetup", "viewLanding", "viewHostSetup", "viewHost", "viewPlayer"]) $(v).classList.toggle("hidden", v !== id); window.scrollTo(0, 0); }
-  function leave() { unsubs.forEach(f => f()); unsubs = []; clearInterval(timerH); clearTimeout(botsH); localStorage.removeItem(LS); meta = null; players = {}; choices = {}; myChoice = { dials: null, dec2: null, dec3: null, hit: null }; pending = { dials: {}, dec2: {}, dec3: {} }; sims = null; phase = "lobby"; $("gauges").classList.add("hidden"); $("topRight").innerHTML = ""; }
+  function leave() {
+    unsubs.forEach(f => f()); unsubs = []; clearInterval(timerH); clearTimeout(botsH); clearTimeout(pairH);
+    try { localStorage.removeItem(LS); } catch (e) { }
+    meta = null; players = {}; pairs = {}; moves = {}; pid = null; side = null; mv = { us: {}, cn: {} }; sim = null; cf = null;
+    phase = "lobby"; view = null; seen = {}; pending = freshPending(); $("gauges").classList.add("hidden"); $("topRight").innerHTML = "";
+  }
   function abandon() { if (role === "host" && !confirm("Leave this session? Students will lose the projector view.")) return; leave(); show("viewLanding"); }
   function genCode() { const A = "ABCDEFGHJKLMNPQRSTUVWXYZ"; let c = ""; for (let i = 0; i < 4; i++) c += A[Math.floor(Math.random() * A.length)]; return c; }
   function mkUid() { return "u" + Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4); }
-  function hash(s) { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+
+  /* ---------- delegated clicks ---------- */
+  function onClick(e) {
+    const el = e.target.closest("[data-act]"); if (!el) return;
+    const a = el.dataset.act, d = el.dataset;
+    const acts = {
+      soloPick: () => { leave(); show("viewPlayer"); $("gauges").classList.add("hidden"); $("playerMain").innerHTML = '<div class="panel gold"><h2>Play solo</h2><p>You play one country; the computer plays the other.</p></div><div class="choice"><button data-act="solo" data-side="us"><b>Play the United States</b><span class="hint">Decide where to cut ties with China, then whether to threaten sanctions over Taiwan.</span></button><button data-act="solo" data-side="cn"><b>Play China</b><span class="hint">Decide how far to go self-reliant and whether to retaliate — then whether to move on Taiwan.</span></button></div><p><button class="secondary" data-act="home">Back</button></p>'; },
+      home: () => { leave(); show("viewLanding"); },
+      solo: () => solo(d.side),
+      dial: () => dial(d.id, +d.k),
+      pick: () => { pending[d.dec][d.field] = d.v === "true" ? true : d.v === "false" ? false : d.v; renderPlayer(); },
+      pick4: () => { pending[d.field] = d.v; renderPlayer(); },
+      submit: () => submit(+d.k),
+      seen: () => { seen[d.k] = true; view = null; persist(); advance(); },
+      peek: () => { view = d.p; renderPlayer(); },
+      unpeek: () => { view = null; renderPlayer(); },
+      roll: () => doRoll(),
+      tab: () => { for (const b of el.parentNode.children) b.classList.toggle("on", b === el); for (const t of document.querySelectorAll(".wtab")) t.classList.toggle("hidden", t.id !== d.t); },
+    };
+    if (acts[a]) acts[a]();
+  }
 
   /* ---------- solo ---------- */
-  function solo() {
-    leave(); store = memStore(); code = "SOLO"; uid = "solo"; name = "You"; role = "solo";
-    store.set(pathOf("meta"), { status: "r3", createdAt: Date.now(), solo: true });
-    store.set(pathOf("players", uid), { name, joinedAt: Date.now() });
+  async function solo(s) {
+    leave(); store = memStore();
+    code = "SOLO"; uid = "solo"; name = "You"; role = "solo";
+    await store.set(pathOf("meta"), { status: "r4", createdAt: Date.now(), solo: true });
+    await store.set(pathOf("players"), { solo: { name: "You", joinedAt: Date.now() }, bot_solo: { name: "Computer", joinedAt: Date.now() } });
+    await store.set(pathOf("pairs", "p1"), s === "us" ? { us: "solo", cn: "bot_solo" } : { us: "bot_solo", cn: "solo" });
     enterPlayer();
+  }
+
+  /* ---------- pairing (host) ---------- */
+  function shuffle(a, rnd) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+  async function pairUnpaired() {
+    const paired = new Set(); for (const p of Object.values(pairs)) { paired.add(p.us); paired.add(p.cn); }
+    const free = Object.keys(players).filter(u => !paired.has(u) && !u.startsWith("bot_p"));
+    if (!free.length) return;
+    const rnd = Engine.rng(hash(code + "|" + Date.now()));
+    shuffle(free, rnd);
+    let n = Object.keys(pairs).length;
+    const writes = {};
+    while (free.length) {
+      const a = free.shift(); let b = free.shift();
+      if (!b) { b = "bot_p" + (n + 1); writes["players/" + b] = { name: "Computer", joinedAt: Date.now() }; }
+      const flip = rnd() < 0.5;
+      writes["pairs/p" + (++n)] = flip ? { us: a, cn: b } : { us: b, cn: a };
+    }
+    await store.update("games/dec-" + code, writes);
   }
 
   /* ---------- host ---------- */
   function hostSetup() { show("viewHostSetup"); }
   async function createSession() {
-    leave(); if (!store || store.kind !== "firebase") { store = memStore(); }
+    leave(); store = fbS || memStore();
     code = genCode(); uid = "host"; name = "Instructor"; role = "host";
     await store.set(pathOf("meta"), { status: "lobby", createdAt: Date.now(), timer: $("optTimer").checked });
-    localStorage.setItem(LS, JSON.stringify({ code, uid, name, role }));
-    enterHost();
+    persist(); enterHost();
   }
   function enterHost() {
     show("viewHost");
     $("hostCode").textContent = code; $("hostUrl").textContent = location.host + location.pathname.replace(/index\.html$/, "");
     $("topRight").innerHTML = '<span class="pill">Instructor · code <b>' + code + "</b></span>";
-    unsubs.push(store.on(pathOf("meta"), m => { if (!m) { toast("Session not found"); leave(); show("viewLanding"); return; } meta = m; renderHost(); }));
-    unsubs.push(store.on(pathOf("players"), p => { players = p || {}; renderHost(); }));
-    unsubs.push(store.on(pathOf("choices"), c => { choices = c || {}; renderHost(); }));
+    unsubs.push(store.on(pathOf("meta"), m => { if (!m) { toast("Session not found"); leave(); show("viewLanding"); return; } meta = m; renderHost(); kickBots(); }));
+    unsubs.push(store.on(pathOf("players"), p => { players = p || {}; renderHost(); if (meta && meta.status !== "lobby") { clearTimeout(pairH); pairH = setTimeout(pairUnpaired, 2500); } }));
+    unsubs.push(store.on(pathOf("pairs"), p => { pairs = p || {}; renderHost(); kickBots(); }));
+    unsubs.push(store.on(pathOf("moves"), m => { moves = m || {}; renderHost(); kickBots(); }));
   }
   async function setStatus(st) {
+    if (st === "r1" && meta.status === "lobby") {
+      if (!Object.keys(players).length) return toast("Nobody has joined yet");
+      await pairUnpaired();
+    }
     await store.update(pathOf("meta"), { status: st, openedAt: Date.now() });
-    scheduleBots(st);
+  }
+  async function addBots(n) {
+    if (role !== "host") return;
+    const names = ["Ada", "Bao", "Chen", "Dev", "Eli", "Fay", "Gus", "Hana", "Ivy", "Jun", "Kai", "Lin", "Mia", "Noa", "Oli", "Pia"];
+    const start = Object.keys(players).filter(k => k.startsWith("bot_c")).length; const w = {};
+    for (let i = 0; i < n; i++) { const j = start + i, lap = Math.floor(j / names.length); w["players/bot_c" + j] = { name: names[j % names.length] + (lap ? " " + (lap + 1) : "") + " (computer)", joinedAt: Date.now() + i }; }
+    await store.update("games/dec-" + code, w);
+  }
+
+  /* ---------- bots (run by the host, or by the client in solo) ---------- */
+  function kickBots() { clearTimeout(botsH); botsH = setTimeout(runBots, role === "solo" ? 450 : 900); }
+  async function runBots() {
+    if (botsBusy || !meta) return; botsBusy = true;
+    try {
+      const st = ORDER[meta.status] || 0; let wrote = false;
+      for (const [p, pr] of Object.entries(pairs)) {
+        if (role === "solo" && p !== pid) continue;
+        for (const s of ["us", "cn"]) {
+          const u = pr[s]; if (!isBot(u)) continue;
+          const o = OTHER[s], oBot = isBot(pr[o]);
+          const M = (moves[p] && moves[p][s]) || {}, O = (moves[p] && moves[p][o]) || {};
+          const w = {};
+          if (st >= 1 && !M.dials) w.dials = s === "us" ? Engine.botUS(R(p, s, "plan")).dials : Engine.botCN(R(p, s, "plan")).dials;
+          else if (st >= 2 && M.dials && !M.dec2 && (oBot || O.dials)) w.dec2 = s === "us" ? Engine.botUS(R(p, s, "plan")).dec2 : Engine.botCN2(R(p, s, "r2"), O.dials);
+          else if (st >= 3 && M.dec2 && !M.dec3 && (oBot || O.dec2)) w.dec3 = s === "us" ? Engine.botUS(R(p, s, "plan")).dec3 : Engine.botCN3(R(p, s, "r3"), O.dials);
+          else if (st >= 4 && s === "us" && M.dec3 && !M.threat && (oBot || O.dec3)) w.threat = Engine.botUSThreat(R(p, s, "r4"), Engine.restraint(M, O));
+          else if (st >= 4 && s === "cn" && M.dec3 && !M.taiwan && O.threat) w.taiwan = Engine.botCNTaiwan(R(p, s, "r4"), Engine.restraint(O, M), O.threat);
+          if (Object.keys(w).length) { await store.update(pathOf("moves", p, s), w); wrote = true; }
+        }
+      }
+      botsBusy = false; if (wrote) kickBots();
+    } catch (e) { botsBusy = false; console.error(e); }
+  }
+
+  /* ---------- host rendering ---------- */
+  function pairRows() {
+    return Object.entries(pairs).map(([p, pr]) => {
+      const m = moves[p] || {}; const U = m.us || {}, C = m.cn || {};
+      const done = !!(U.dec3 && C.dec3 && U.threat && C.taiwan);
+      const s = U.dials && C.dials ? Engine.simulate(U, C, rollFor(p)) : null;
+      return { p, pr, U, C, done, s, label: nameOf(pr.us) + " & " + nameOf(pr.cn) };
+    });
   }
   function renderHost() {
     if (!meta) return;
-    const ids = Object.keys(players);
-    const st = meta.status;
+    const st = meta.status, ids = Object.keys(players).filter(u => !u.startsWith("bot_p"));
     $("hostCount").textContent = ids.length;
-    $("hostStatusLine").textContent = { lobby: "Lobby open — waiting for students", r1: "Round 1 open: Today. Set the five dials.", r2: "Round 2 open: Five years later.", r3: "Round 3 open: Fifteen years later.", wrap: "Wrap-up" }[st];
+    $("hostStatusLine").textContent = { lobby: "Lobby open — waiting for students", r1: "Round 1 open: Today. Both sides set five dials.", r2: "Round 2 open: Five years later.", r3: "Round 3 open: Fifteen years later.", r4: "Year 12: Taiwan. U.S. announces, then China decides.", wrap: "Wrap-up" }[st];
+    const sideOf = {}; for (const [p, pr] of Object.entries(pairs)) { sideOf[pr.us] = ["us", p]; sideOf[pr.cn] = ["cn", p]; }
     const doneKey = { r1: "dials", r2: "dec2", r3: "dec3" }[st];
-    const done = doneKey ? ids.filter(i => choices[i] && choices[i][doneKey]) : [];
-    $("hostSubmitted").textContent = doneKey ? done.length + " of " + ids.length + " submitted" : "";
-    $("hostPlayers").innerHTML = ids.map(i => '<span class="' + (choices[i] && doneKey && choices[i][doneKey] ? "done" : "") + '">' + esc(players[i].name) + "</span>").join("");
-    const next = { lobby: ["r1", "Open Round 1 — Today"], r1: ["r2", "Open Round 2 — Five years later"], r2: ["r3", "Open Round 3 — Fifteen years later"], r3: ["wrap", "Show the wrap-up"], wrap: [null, null] }[st];
+    const isDone = (u) => { const so = sideOf[u]; if (!so) return false; const M = (moves[so[1]] || {})[so[0]] || {}; if (doneKey) return !!M[doneKey]; if (st === "r4") return so[0] === "us" ? !!M.threat : !!M.taiwan; return false; };
+    const nPairs = Object.keys(pairs).length;
+    const cnt = (s) => Object.entries(pairs).filter(([p, pr]) => { const M = (moves[p] || {})[s] || {}; return doneKey ? M[doneKey] : st === "r4" ? (s === "us" ? M.threat : M.taiwan) : false; }).length;
+    $("hostSubmitted").textContent = (doneKey || st === "r4") && nPairs ? "U.S. " + cnt("us") + "/" + nPairs + " · China " + cnt("cn") + "/" + nPairs : (st === "lobby" ? "" : nPairs + " pairs");
+    $("hostPlayers").innerHTML = ids.map(u => { const so = sideOf[u]; return '<span class="' + (isDone(u) ? "done" : "") + '">' + esc(players[u].name) + (so ? ' <b style="color:' + (so[0] === "us" ? "#8fb4ff" : "#ff9a8f") + '">' + (so[0] === "us" ? "U.S." : "China") + "</b>" : "") + "</span>"; }).join("");
+    const next = { lobby: ["r1", "Pair up & open Round 1"], r1: ["r2", "Open Round 2 — Five years later"], r2: ["r3", "Open Round 3 — Fifteen years later"], r3: ["r4", "Open Year 12 — Taiwan"], r4: ["wrap", "Show the wrap-up"], wrap: [null] }[st];
     $("hostControls").innerHTML = (next[0] ? '<button onclick="App.setStatus(\'' + next[0] + '\')">' + next[1] + "</button>" : "") +
       (st !== "lobby" && st !== "wrap" ? ' <button class="secondary" onclick="App.hostTimer()">Start ' + (st === "r1" ? "3" : "2") + "-minute timer</button>" : "") +
-      (st === "wrap" ? ' <button class="secondary" onclick="App.setStatus(\'r3\')">Back to round 3</button>' : "");
+      (st === "wrap" ? ' <button class="secondary" onclick="App.setStatus(\'r4\')">Back to Year 12</button>' : "");
     $("viewHost").classList.toggle("wrapmode", st === "wrap");
-    const main = $("hostMain");
-    if (st === "lobby") main.innerHTML = '<div class="panel"><h3>How this works</h3><p>Students set five dials (0 = stay integrated … 4 = full separation), then live through 15 years of consequences: China responds, supply chains reroute, and the long run arrives — including a crisis that some of them will draw and some won\'t.</p><p>Open each round when you\'re ready. Students see their own results the moment they submit; you see the class here.</p><p class="muted small">This is a model, not a forecast.</p></div>';
-    else if (st === "r1") main.innerHTML = '<div class="panel"><h3>Where the class set the dials</h3>' + distDials(ids) + '</div>' + surpriseTally(ids, "s1");
-    else if (st === "r2") main.innerHTML = '<div class="panel"><h3>Round 2 decisions</h3>' + distOpt(ids, "dec2", "extend", ["no", "security", "all"], ["Don't extend", "Security industries only", "All industries"], "Extend restrictions to goods with Chinese content?") + distOpt(ids, "dec2", "allies", ["alone", "coordinate"], ["Go alone", "Coordinate with allies"], "Allies?") + "</div>" + surpriseTally(ids, "s2");
-    else if (st === "r3") main.innerHTML = '<div class="panel"><h3>Round 3 decisions</h3>' + distOpt(ids, "dec3", "subsidy", ["none", "targeted", "broad"], ["No subsidies", "Targeted (chips & batteries)", "Broad"], "Industrial subsidies?") + distOpt(ids, "dec3", "stockpile", [false, true], ["No stockpile", "Build a stockpile"], "Strategic stockpile?") + "</div>" + crisisTally(ids, false);
-    else main.innerHTML = wrapHost(ids);
+    const main = $("hostMain"); const rows = pairRows();
+    if (st === "lobby") main.innerHTML = '<div class="panel"><h3>How this works</h3><p>When you open Round 1, students are paired at random: one runs the <b>United States</b>, one runs <b>China</b>. Partners sit together and may talk — threats, promises, bluffs — but every move is sealed.</p><p>Three rounds of economic moves (Today, Year 5, Year 15), then <b>Year 12: Taiwan</b> — the U.S. announces whether it will sanction a move, and China decides whether to hold, blockade or invade, looking at how much it still has to lose.</p><p class="muted small">Odd student out gets a computer partner. Late arrivals are paired automatically. This is a model, not a forecast.</p></div>';
+    else if (st === "r1") main.innerHTML = '<div class="grid2"><div class="panel"><h3>U.S. dials</h3>' + distDials(rows, "us") + '</div><div class="panel"><h3>China dials</h3>' + distDials(rows, "cn") + "</div></div>" + surpriseTally(rows, ["s1"]);
+    else if (st === "r2") main.innerHTML = '<div class="grid2"><div class="panel"><h3>United States</h3>' + distOpt(rows, "us", "dec2", "extend", ["no", "security", "all"], ["Don't chase rerouting", "Security industries", "All industries"], "Extend to Chinese-content goods?") + distOpt(rows, "us", "dec2", "allies", ["alone", "coordinate"], ["Go alone", "Coordinate"], "Allies?") + '</div><div class="panel"><h3>China</h3>' + distOpt(rows, "cn", "dec2", "reroute", ["yes", "no"], ["Reroute via Vietnam/Mexico", "Stay home"], "Route around U.S. restrictions?") + distOpt(rows, "cn", "dec2", "retaliate", ["yes", "no"], ["Hit farms & Boeing", "Hold fire"], "Retaliate?") + "</div></div>" + surpriseTally(rows, ["s2"]);
+    else if (st === "r3") main.innerHTML = '<div class="grid2"><div class="panel"><h3>United States</h3>' + distOpt(rows, "us", "dec3", "subsidy", ["none", "targeted", "broad"], ["No subsidies", "Targeted", "Broad"], "Industrial subsidies?") + distOpt(rows, "us", "dec3", "stockpile", [false, true], ["No stockpile", "Stockpile"], "Strategic stockpile?") + '</div><div class="panel"><h3>China</h3>' + distOpt(rows, "cn", "dec3", "chips", ["modest", "allin"], ["Normal pace", "All-in on chips"], "Chip self-sufficiency?") + distOpt(rows, "cn", "dec3", "markets", ["yes", "no"], ["Court new customers", "Stay focused"], "New markets?") + "</div></div>" + surpriseTally(rows, ["s3"]);
+    else if (st === "r4") main.innerHTML = '<div class="panel red"><h3>Year 12: Taiwan</h3>' + distOpt(rows, "us", null, "threat", ["ambiguous", "sanctions"], ["Stayed ambiguous", "Threatened sanctions"], "What the U.S. announced") + '<p style="margin-top:.8rem"><span class="bignum">' + rows.filter(r => r.C.taiwan).length + '</span> <span class="muted">of ' + rows.length + " Chinas have decided. Their choices stay sealed until the wrap-up.</span></p></div>";
+    else main.innerHTML = wrapHost(rows);
   }
-  function distDials(ids) {
-    return Engine.INDUSTRIES.map(ind => { const n = [0, 0, 0, 0, 0]; let t = 0; for (const i of ids) { const c = choices[i]; if (c && c.dials) { n[c.dials[ind.id] || 0]++; t++; } } const mx = Math.max(1, ...n);
-      return '<div class="dist"><div>' + esc(ind.name) + '</div><div class="bars">' + n.map(v => '<i data-n="' + (t ? v : "") + '" style="height:' + Math.max(2, 100 * v / mx) + '%"></i>').join("") + "</div></div>"; }).join("") +
-      '<div class="dist muted small"><div></div><div class="bars" style="height:auto">' + ["0 integrated", "1", "2", "3", "4 separate"].map(l => "<span style='text-align:center'>" + l + "</span>").join("") + "</div></div>";
+  function distDials(rows, s) {
+    return Engine.INDUSTRIES.map(ind => {
+      const n = [0, 0, 0, 0, 0]; let t = 0; for (const r of rows) { const M = r[s === "us" ? "U" : "C"]; if (M.dials) { n[M.dials[ind.id] || 0]++; t++; } } const mx = Math.max(1, ...n);
+      return '<div class="dist"><div class="small">' + esc(ind.name) + '</div><div class="bars">' + n.map(v => '<i data-n="' + (t ? v : "") + '" style="height:' + Math.max(2, 100 * v / mx) + '%"></i>').join("") + "</div></div>";
+    }).join("") + '<div class="dist muted small"><div></div><div class="bars" style="height:auto">' + ["0", "1", "2", "3", "4"].map(l => "<span style='text-align:center'>" + l + "</span>").join("") + "</div></div>";
   }
-  function distOpt(ids, key, field, vals, labels, title) {
-    const n = vals.map(v => ids.filter(i => choices[i] && choices[i][key] && choices[i][key][field] === v).length); const mx = Math.max(1, ...n);
-    return '<div style="margin:.6rem 0"><div class="muted small">' + title + "</div>" + vals.map((v, k) => '<div class="dist"><div>' + labels[k] + '</div><div style="height:18px;background:rgba(255,255,255,.06);border-radius:4px"><div style="width:' + (100 * n[k] / mx) + '%;height:100%;background:var(--gold);border-radius:4px;min-width:2px"></div></div><span class="muted small" style="grid-column:2">' + n[k] + "</span></div>").join("") + "</div>";
+  function distOpt(rows, s, key, field, vals, labels, title) {
+    const get = r => { const M = r[s === "us" ? "U" : "C"]; return key ? (M[key] ? M[key][field] : undefined) : M[field]; };
+    const n = vals.map(v => rows.filter(r => get(r) === v).length); const mx = Math.max(1, ...n);
+    return '<div style="margin:.6rem 0"><div class="muted small">' + title + "</div>" + vals.map((v, k) => '<div class="dist"><div class="small">' + labels[k] + '</div><div style="height:18px;background:rgba(255,255,255,.06);border-radius:4px"><div style="width:' + (100 * n[k] / mx) + '%;height:100%;background:var(--gold);border-radius:4px;min-width:2px"></div></div><span class="muted small" style="grid-column:2">' + n[k] + "</span></div>").join("") + "</div>";
   }
-  function simFor(i) { const c = choices[i]; if (!c || !c.dials) return null; return Engine.simulate(c.dials, c.dec2 || { extend: "no", allies: "alone" }, c.dec3 || { subsidy: "none", stockpile: false }, !!c.hit); }
-  function surpriseTally(ids, round) {
+  function surpriseTally(rows, rounds, titleOverride) {
     const t = {}; let n = 0;
-    for (const i of ids) { const s = simFor(i); if (!s) continue; n++; for (const x of s[round].surprises) t[x.title] = (t[x.title] || 0) + 1; }
+    for (const r of rows) { if (!r.s) continue; n++; for (const rd of rounds) for (const s of ["us", "cn"]) for (const x of (r.s[rd][s].surprises || [])) { const k = (s === "us" ? "U.S. · " : "China · ") + x.title; t[k] = (t[k] || 0) + 1; } }
     if (!n) return "";
-    const rows = Object.entries(t).sort((a, b) => b[1] - a[1]);
-    return '<div class="panel"><h3>Unintended consequences the class ran into</h3>' + (rows.length ? rows.map(([k, v]) => '<div class="row" style="justify-content:space-between"><span>' + esc(k) + '</span><b class="gold">' + v + "</b></div>").join("") : '<p class="muted">None yet.</p>') + "</div>";
+    const list = Object.entries(t).sort((a, b) => b[1] - a[1]);
+    return '<div class="panel"><h3>' + (titleOverride || "Unintended consequences pairs ran into") + "</h3>" + (list.length ? list.map(([k, v]) => '<div class="row" style="justify-content:space-between"><span>' + esc(k) + '</span><b class="gold">' + v + "</b></div>").join("") : '<p class="muted">None yet.</p>') + "</div>";
   }
-  function crisisTally(ids, big) {
-    const done = ids.filter(i => choices[i] && choices[i].dec3); const hit = done.filter(i => choices[i].hit).length;
-    return '<div class="panel red"><h3>The crisis lottery</h3><div class="row"><span class="bignum red">' + hit + '</span><span>of <b>' + done.length + '</b> students drew a U.S.–China crisis in year 12.</span></div><p class="muted small">Each student\'s odds depended on their policy (30–50%). Same choices can produce different worlds.</p></div>';
-  }
-  function wrapHost(ids) {
-    const rows = ids.map(i => ({ i, name: players[i].name, c: choices[i], s: simFor(i) })).filter(r => r.s && r.c.dec3);
-    if (!rows.length) return '<div class="panel"><p class="muted">No completed games yet.</p></div>';
-    const hit = rows.filter(r => r.c.hit), ok = rows.filter(r => !r.c.hit);
-    const avg = (arr, f) => arr.length ? (arr.reduce((s, r) => s + f(r), 0) / arr.length) : 0;
-    // scatter
-    const W = 900, H = 480, L = 56, B = 40, T = 16, R = 90;
-    const xs = rows.map(r => r.s.total.sec), ys = rows.map(r => r.s.total.col);
-    const xmin = Math.min(-5, ...xs) - 2, xmax = Math.max(10, ...xs) + 2, ymin = -2, ymax = Math.max(15, ...ys) + 3;
-    const X = v => L + (v - xmin) / (xmax - xmin) * (W - L - R), Y = v => T + (1 - (v - ymin) / (ymax - ymin)) * (H - T - B);
-    let svg = '<svg class="scatter" viewBox="0 0 ' + W + " " + H + '">';
-    for (let v = Math.ceil(xmin / 5) * 5; v <= xmax; v += 5) svg += '<line class="grid" x1="' + X(v) + '" x2="' + X(v) + '" y1="' + T + '" y2="' + (H - B) + '"/><text x="' + X(v) + '" y="' + (H - B + 16) + '" text-anchor="middle">' + v + "</text>";
-    for (let v = 0; v <= ymax; v += 5) svg += '<line class="grid" x1="' + L + '" x2="' + (W - R) + '" y1="' + Y(v) + '" y2="' + Y(v) + '"/><text x="' + (L - 8) + '" y="' + (Y(v) + 4) + '" text-anchor="end">' + v + "</text>";
-    svg += '<line class="axis" x1="' + X(0) + '" x2="' + X(0) + '" y1="' + T + '" y2="' + (H - B) + '"/><line class="axis" x1="' + L + '" x2="' + (W - R) + '" y1="' + Y(0) + '" y2="' + Y(0) + '"/>';
-    svg += '<text x="' + (W / 2) + '" y="' + (H - 6) + '" text-anchor="middle">National security & resilience →</text><text transform="translate(14,' + (H / 2) + ') rotate(-90)" text-anchor="middle">Cost of living (higher = worse) →</text>';
-    for (const r of rows) svg += '<circle class="dot ' + (r.c.hit ? "hit" : "ok") + '" cx="' + X(r.s.total.sec) + '" cy="' + Y(r.s.total.col) + '" r="7"><title>' + esc(r.name) + ": security " + fmt(r.s.total.sec) + ", cost of living " + fmt(r.s.total.col) + (r.c.hit ? " (crisis)" : "") + '</title></circle><text class="name" x="' + (X(r.s.total.sec) + 9) + '" y="' + (Y(r.s.total.col) + 4) + '">' + esc(r.name) + "</text>";
+  function wrapHost(rows) {
+    const done = rows.filter(r => r.done && r.s);
+    if (!done.length) return '<div class="panel"><p class="muted">No pair has finished yet.</p></div>';
+    // ---- strip plot: ties vs Taiwan ----
+    const W = 900, H = 330, L = 110, Rm = 20, T = 20, B = 46, lanes = ["hold", "blockade", "invade"], lh = (H - T - B) / 3;
+    const X = v => L + v * (W - L - Rm);
+    let svg = '<svg class="strip" viewBox="0 0 ' + W + " " + H + '">';
+    lanes.forEach((ln, i) => { svg += '<rect class="lane' + (i % 2 ? " alt" : "") + '" x="' + L + '" y="' + (T + i * lh) + '" width="' + (W - L - Rm) + '" height="' + lh + '"/><text class="lbl" x="' + (L - 12) + '" y="' + (T + i * lh + lh / 2 + 5) + '" text-anchor="end">' + MOVE_LABEL[ln] + "</text>"; });
+    for (let v = 0; v <= 1.001; v += 0.25) svg += '<text x="' + X(v) + '" y="' + (H - B + 18) + '" text-anchor="middle">' + Math.round(v * 100) + "%</text>";
+    svg += '<text x="' + (L + (W - L - Rm) / 2) + '" y="' + (H - 8) + '" text-anchor="middle">How far the pair decoupled (average across the five industries) →</text>';
+    const laneCount = { hold: 0, blockade: 0, invade: 0 };
+    for (const r of done) {
+      const mvv = r.C.taiwan, i = lanes.indexOf(mvv), j = laneCount[mvv]++;
+      const cx = X(r.s.rs.sepAvg), cy = T + i * lh + lh / 2 + ((j % 3) - 1) * 14;
+      const cls = mvv === "hold" ? "hold" : r.s.c.detail.success ? "win" : "lose";
+      svg += '<circle class="dot ' + cls + '" cx="' + cx + '" cy="' + cy + '" r="8"><title>' + esc(r.label) + " — ties cut " + pct(r.s.rs.sepAvg) + ", what restrained China " + pct(r.s.rs.R) + (mvv !== "hold" ? (r.s.c.detail.success ? " — succeeded" : " — failed") : "") + "</title></circle>";
+    }
     svg += "</svg>";
-    // twins: exact same-policy comparison for a chosen student, plus a real near-identical pair if one exists
-    const dist = (a, b) => Engine.INDUSTRIES.reduce((s, ind) => s + Math.abs((a.dials[ind.id] || 0) - (b.dials[ind.id] || 0)), 0) + (a.dec2.extend !== b.dec2.extend ? 2 : 0) + (a.dec2.allies !== b.dec2.allies ? 1 : 0) + (a.dec3.subsidy !== b.dec3.subsidy ? 1 : 0) + (!!a.dec3.stockpile !== !!b.dec3.stockpile ? 1 : 0);
-    let best = null;
-    for (const a of hit) for (const b of ok) { const d = dist(a.c, b.c); if (!best || d < best.d) best = { a, b, d }; }
-    const gap = r => { const o = Engine.simulate(r.c.dials, r.c.dec2, r.c.dec3, !r.c.hit).total; return Math.abs(o.sec - r.s.total.sec) + Math.abs(o.col - r.s.total.col); };
-    const sel = twinSel && rows.find(r => r.i === twinSel) ? rows.find(r => r.i === twinSel) : rows.slice().sort((x, y) => gap(y) - gap(x))[0];
-    const other = Engine.simulate(sel.c.dials, sel.c.dec2, sel.c.dec3, !sel.c.hit);
-    const card = (title, cls, s, isHit) => '<div class="world ' + cls + '" style="border-color:' + (isHit ? "var(--red)" : "var(--teal)") + '"><h4 class="' + (isHit ? "red" : "teal") + '">' + title + "</h4>" + gaugeList(s.total) + '<div class="small muted">TV $' + s.tangible.tv + " · generic drug $" + s.tangible.drug + " · +$" + s.tangible.monthly + "/month</div></div>";
-    const twinHtml = '<div class="row" style="margin-bottom:.5rem"><label class="muted small">Student:</label><select onchange="App.twin(this.value)" style="font:inherit;padding:.4em;border-radius:8px;background:var(--navy3);color:var(--ink);border:1px solid var(--line)">' + rows.map(r => '<option value="' + r.i + '"' + (r.i === sel.i ? " selected" : "") + ">" + esc(r.name) + "</option>").join("") + '</select><span class="small muted">Dials ' + Engine.INDUSTRIES.map(i => sel.c.dials[i.id] || 0).join("·") + " · " + sel.c.dec2.extend + " · " + sel.c.dec2.allies + " · " + sel.c.dec3.subsidy + (sel.c.dec3.stockpile ? " · stockpile" : "") + "</span></div>" +
-      '<div class="twin">' + card(esc(sel.name) + " — the world " + (sel.c.hit ? "they got (crisis)" : "they got (no crisis)"), "obs", sel.s, sel.c.hit) + card("Same choices — the world they didn't get (" + (sel.c.hit ? "no crisis" : "crisis") + ")", "cf", other, !sel.c.hit) + "</div>" +
-      '<p class="gold"><b>Identical policy. Different world.</b> Nothing ' + esc(sel.name) + ' decided explains the gap between these two columns — only the draw.</p>' +
-      (best && best.d <= 2 ? '<h3 style="margin-top:1rem">It happened in this room</h3><div class="twin">' + card(esc(best.a.name) + " — drew the crisis", "obs", best.a.s, true) + card(esc(best.b.name) + " — no crisis", "obs", best.b.s, false) + "</div><p class=\"muted small\">" + (best.d === 0 ? "Exactly the same policy." : "Nearly the same policy (distance " + best.d + " on the dials).") + " Two students, two histories.</p>" : "");
-    return '<div class="tabs"><button class="on" onclick="App.tab(this,\'wScatter\')">Where everyone landed</button><button onclick="App.tab(this,\'wChance\')">Chance</button><button onclick="App.tab(this,\'wTwins\')">Same policy, different world</button><button onclick="App.tab(this,\'wSurp\')">Unintended consequences</button></div>' +
-      '<div id="wScatter" class="wtab"><div class="panel"><h3>Security vs. cost of living — one dot per student</h3>' + svg + '<div class="legend" style="margin-top:.4rem"><span><i style="background:var(--teal)"></i>No crisis</span><span><i style="background:var(--red)"></i>Drew the crisis</span></div><p class="muted small">Hover a dot for the name. Why is there no obvious winner?</p></div></div>' +
-      '<div id="wChance" class="wtab hidden">' + crisisTally(ids, true) + '<div class="panel"><h3>Averages</h3><table class="two"><tr><th></th><th>No crisis (' + ok.length + ')</th><th>Crisis (' + hit.length + ')</th></tr>' + [["Security", "sec"], ["Cost of living", "col"], ["Jobs in protected industries", "jobsP"], ["Jobs elsewhere", "jobsO"], ["Innovation", "innov"]].map(([l, k]) => "<tr><td>" + l + "</td><td>" + fmt(avg(ok, r => r.s.total[k])) + "</td><td>" + fmt(avg(hit, r => r.s.total[k])) + "</td></tr>").join("") + '</table><p class="gold" style="margin-top:.6rem"><b>Chance was inside the model. It is also inside the world.</b> A policy that looks brilliant after a crisis and reckless without one was the same policy either way — you have to judge it before the die is rolled.</p></div></div>' +
-      '<div id="wTwins" class="wtab hidden"><div class="panel"><h3>Same policy, different world</h3>' + twinHtml + "</div></div>" +
-      '<div id="wSurp" class="wtab hidden">' + surpriseTally(ids, "s1").replace("Unintended consequences the class ran into", "Round 1 — China responds") + surpriseTally(ids, "s2").replace("Unintended consequences the class ran into", "Round 2 — supply chains adapt") + surpriseTally(ids, "s3").replace("Unintended consequences the class ran into", "Round 3 — the long run") + "</div>";
+    const avgR = (ln) => { const a = done.filter(r => r.C.taiwan === ln); return a.length ? pct(a.reduce((s, r) => s + r.s.rs.R, 0) / a.length) : "—"; };
+    const avgSep = (ln) => { const a = done.filter(r => r.C.taiwan === ln); return a.length ? pct(a.reduce((s, r) => s + r.s.rs.sepAvg, 0) / a.length) : "—"; };
+    const tab1 = '<div class="panel"><h3>How decoupled each pair was — and what China did</h3>' + svg + '<div class="legend" style="margin-top:.4rem"><span><i style="background:#9FB0BE"></i>Held</span><span><i style="background:var(--red)"></i>Moved and succeeded</span><span><i style="background:var(--teal)"></i>Moved and failed</span></div>' +
+      '<table class="vs" style="margin-top:.8rem"><tr><th></th><th>Pairs</th><th>Average ties cut</th><th>What restrained China (avg)</th></tr>' + lanes.map(ln => "<tr><td>" + MOVE_LABEL[ln] + "</td><td>" + done.filter(r => r.C.taiwan === ln).length + "</td><td>" + avgSep(ln) + "</td><td>" + avgR(ln) + "</td></tr>").join("") + '</table><p class="gold" style="margin-top:.6rem"><b>Once two economies separate, there is little left to threaten.</b> Interdependence is costly — and it is also what makes retaliation credible.</p></div>';
+    // ---- two scoreboards ----
+    const pb = (v) => { const x = 50 + Math.max(-45, Math.min(45, v * 1.2)); return '<div class="powerbar" style="min-width:110px"><i style="left:' + x + '%"></i></div>'; };
+    const tab2 = '<div class="panel"><h3>Two scoreboards — no winner</h3><div style="overflow-x:auto"><table class="vs"><tr><th>Pair</th><th>U.S. security</th><th>U.S. cost of living</th><th>U.S. jobs (net)</th><th>China security</th><th>China jobs (net)</th><th>China cost of living</th><th>Relative power<br><span class="small">China ← → U.S.</span></th></tr>' +
+      done.map(r => { const u = r.s.total.us, c = r.s.total.cn; return "<tr><td style='white-space:nowrap'>" + esc(r.label) + "</td><td>" + fmt(u.sec) + "</td><td>" + fmt(u.col) + "</td><td>" + fmt(u.jobsP + u.jobsO) + "</td><td>" + fmt(c.sec) + "</td><td>" + fmt(c.jobsP + c.jobsO) + "</td><td>" + fmt(c.col) + "</td><td>" + pb(r.s.power) + "</td></tr>"; }).join("") +
+      '</table></div><p class="muted small">Absolute welfare (each country\'s own gauges) and relative position (the power bar) are different scoreboards. Which one was each of you playing for?</p></div>';
+    // ---- chance ----
+    const movers = done.filter(r => r.C.taiwan !== "hold"); const wins = movers.filter(r => r.s.c.detail.success).length;
+    const sel = movers.find(r => r.p === twinSel) || movers[0];
+    let twin = '<p class="muted">No China moved on Taiwan, so nobody rolled the dice.</p>';
+    if (sel) {
+      const other = Engine.simulate(sel.U, sel.C, sel.s.c.detail.success ? 0.99 : 0.01);
+      const card = (title, s, hit) => '<div class="world" style="border-color:' + (hit ? "var(--red)" : "var(--teal)") + '"><h4 class="' + (hit ? "red" : "teal") + '">' + title + '</h4><div class="small"><b>U.S.</b> security ' + fmt(s.total.us.sec) + " · cost of living " + fmt(s.total.us.col) + '<br><b>China</b> security ' + fmt(s.total.cn.sec) + " · jobs " + fmt(s.total.cn.jobsP + s.total.cn.jobsO) + "</div>" + pb(s.power) + "</div>";
+      twin = '<div class="row" style="margin-bottom:.5rem"><label class="muted small">Pair:</label><select onchange="App.twin(this.value)" style="font:inherit;padding:.4em;border-radius:8px;background:var(--navy3);color:var(--ink);border:1px solid var(--line)">' + movers.map(r => '<option value="' + r.p + '"' + (r.p === sel.p ? " selected" : "") + ">" + esc(r.label) + " (" + MOVE_LABEL[r.C.taiwan] + ")</option>").join("") + "</select></div>" +
+        '<div class="twin">' + card("What happened — " + (sel.s.c.detail.success ? "it worked" : "it failed"), sel.s, sel.s.c.detail.success) + card("Same choices, other roll — " + (sel.s.c.detail.success ? "it fails" : "it works"), other, !sel.s.c.detail.success) + '</div><p class="gold"><b>Identical decisions. Different worlds.</b> Nothing either partner chose explains the gap between these two columns — only the draw.</p>';
+    }
+    const tab3 = '<div class="panel red"><h3>Chance</h3><div class="row"><span class="bignum red">' + movers.length + '</span><span>of <b>' + done.length + "</b> Chinas moved on Taiwan. <b>" + wins + "</b> succeeded, <b>" + (movers.length - wins) + '</b> failed.</span></div><p class="small">A blockade worked 55% of the time in this model, an invasion 45%. A decision that looks brilliant after a good roll and reckless after a bad one was the same decision either way.</p></div><div class="panel"><h3>Same choices, different world</h3>' + twin + "</div>";
+    const tab4 = surpriseTally(done, ["s1"], "Round 1 — today") + surpriseTally(done, ["s2"], "Round 2 — supply chains adapt") + surpriseTally(done, ["s3"], "Round 3 — the long run");
+    return '<div class="tabs"><button class="on" data-act="tab" data-t="w1">Ties vs. Taiwan</button><button data-act="tab" data-t="w2">Two scoreboards</button><button data-act="tab" data-t="w3">Chance</button><button data-act="tab" data-t="w4">Unintended consequences</button></div>' +
+      '<div id="w1" class="wtab">' + tab1 + '</div><div id="w2" class="wtab hidden">' + tab2 + '</div><div id="w3" class="wtab hidden">' + tab3 + '</div><div id="w4" class="wtab hidden">' + tab4 + "</div>";
   }
-  function twin(i) { twinSel = i; renderHost(); const b = document.querySelector('.tabs button:nth-child(3)'); if (b) tab(b, 'wTwins'); }
-  function tab(btn, id) { for (const b of btn.parentNode.children) b.classList.toggle("on", b === btn); for (const el of document.querySelectorAll(".wtab")) el.classList.toggle("hidden", el.id !== id); }
+  function twin(p) { twinSel = p; renderHost(); const b = document.querySelector('.tabs button[data-t="w3"]'); if (b) b.click(); }
   function hostTimer() {
     const secs = meta.status === "r1" ? 180 : 120; let left = secs; const el = $("hostTimer"); el.classList.remove("hidden"); clearInterval(timerH);
     const tick = () => { el.textContent = Math.floor(left / 60) + ":" + String(left % 60).padStart(2, "0"); if (left <= 0) { clearInterval(timerH); el.textContent = "Time!"; } left--; };
     tick(); timerH = setInterval(tick, 1000);
   }
-  async function addBots(n) {
-    if (role !== "host") return;
-    const names = ["Ada", "Bao", "Chen", "Dev", "Eli", "Fay", "Gus", "Hana", "Ivy", "Jun", "Kai", "Lin", "Mia", "Noa", "Oli", "Pia"];
-    const start = Object.keys(players).filter(k => k.startsWith("bot_")).length;
-    for (let i = 0; i < n; i++) { const b = "bot_" + (start + i); botPlan[b] = Engine.botPolicy(Engine.rng(hash(code + b))); await store.set(pathOf("players", b), { name: names[(start + i) % names.length] + " (computer)", joinedAt: Date.now() + i }); }
-    scheduleBots(meta.status);
-  }
-  function scheduleBots(st) {
-    clearTimeout(botsH); if (!["r1", "r2", "r3"].includes(st)) return;
-    botsH = setTimeout(async () => {
-      for (const b of Object.keys(players).filter(k => k.startsWith("bot_"))) {
-        const plan = botPlan[b] || (botPlan[b] = Engine.botPolicy(Engine.rng(hash(code + b))));
-        const cur = choices[b] || {};
-        if (st === "r1" && !cur.dials) await store.update(pathOf("choices", b), { dials: plan.dials });
-        if (st === "r2" && cur.dials && !cur.dec2) await store.update(pathOf("choices", b), { dec2: plan.dec2 });
-        if (st === "r3" && cur.dec2 && !cur.dec3) { const p = Engine.crisisProbability(cur.dials, cur.dec2).p; await store.update(pathOf("choices", b), { dec3: plan.dec3, hit: Engine.rng(hash(code + b + "hit"))() < p }); }
-      }
-    }, 1500);
-  }
 
-  /* ---------- player ---------- */
+  /* ---------- player: joining & state ---------- */
   async function join() {
     const c = $("joinCode").value.trim().toUpperCase(), n = $("joinName").value.trim();
     if (c.length !== 4) return toast("Enter the 4-letter code");
     if (!n) return toast("Enter your name");
-    if (!store || store.kind !== "firebase") return toast("No database connected — use Play solo");
+    if (!fbS) return toast("No database connected — use Play solo");
+    store = fbS;
     const m = await store.get("games/dec-" + c + "/meta");
     if (!m) return toast("No session with code " + c);
     leave(); code = c; name = n; role = "player"; uid = mkUid();
     await store.set(pathOf("players", uid), { name, joinedAt: Date.now() });
-    localStorage.setItem(LS, JSON.stringify({ code, uid, name, role }));
-    enterPlayer();
+    persist(); enterPlayer();
   }
   function enterPlayer() {
     show("viewPlayer");
-    $("topRight").innerHTML = '<span class="pill">' + esc(name) + " · <b>" + code + '</b></span> <button class="secondary small" style="padding:.3em .6em" onclick="App.abandon()">Leave</button>';
-    unsubs.push(store.on(pathOf("choices", uid), c => { myChoice = Object.assign({ dials: null, dec2: null, dec3: null, hit: null }, c || {}); recompute(); if (!phase.startsWith("init")) advance(); }));
-    unsubs.push(store.on(pathOf("meta"), m => { if (!m) { toast("Session ended"); leave(); show("viewLanding"); return; } meta = m; advance(); }));
+    unsubs.push(store.on(pathOf("meta"), m => { if (!m) { toast("Session ended"); leave(); show("viewLanding"); return; } meta = m; advance(); if (role === "solo") kickBots(); }));
+    unsubs.push(store.on(pathOf("players"), p => { players = p || {}; topBar(); }));
+    unsubs.push(store.on(pathOf("pairs"), p => {
+      pairs = p || {};
+      for (const [k, pr] of Object.entries(pairs)) if (pr.us === uid || pr.cn === uid) { if (pid !== k) { pid = k; side = pr.us === uid ? "us" : "cn"; listenMoves(); } }
+      topBar(); advance();
+    }));
+  }
+  function listenMoves() {
+    unsubs.push(store.on(pathOf("moves", pid), m => {
+      const x = m || {}; mv = { us: x.us || {}, cn: x.cn || {} };
+      if (role === "solo") { moves = {}; moves[pid] = mv; kickBots(); }
+      recompute(); advance();
+    }));
+  }
+  function topBar() {
+    const pr = pid && pairs[pid];
+    $("topRight").innerHTML = '<span class="pill">' + esc(name) + (side ? ' · <b style="color:' + (side === "us" ? "#8fb4ff" : "#ff9a8f") + '">' + SIDES[side] + "</b>" : "") + (role !== "solo" ? " · <b>" + code + "</b>" : "") + '</span> <button class="secondary small" style="padding:.3em .6em" onclick="App.abandon()">Leave</button>';
   }
   function recompute() {
-    if (!myChoice.dials) { sims = null; return; }
-    const d2 = myChoice.dec2 || { extend: "no", allies: "alone" }, d3 = myChoice.dec3 || { subsidy: "none", stockpile: false };
-    sims = Engine.simulate(myChoice.dials, d2, d3, !!myChoice.hit);
-    sims.cf = myChoice.dec3 ? Engine.counterfactuals(myChoice.dials, d2, d3, !!myChoice.hit) : null;
+    if (!mv.us.dials || !mv.cn.dials) { sim = null; cf = null; return; }
+    const roll = rollFor(pid);
+    sim = Engine.simulate(mv.us, mv.cn, roll);
+    cf = mv.cn.taiwan && mv.us.threat ? Engine.counterfactuals(Engine.norm(mv.us, mv.cn).U, Engine.norm(mv.us, mv.cn).C, roll) : null;
   }
-  // Decide what the player should be looking at, given what they've submitted and what the host has opened.
   function advance() {
     if (!meta) return;
     const st = ORDER[meta.status] || 0;
-    const staying = ["r1res", "r2res", "r3res", "cf", "done"];
-    if (staying.includes(phase)) { renderPlayer(); return; }
-    if (!myChoice.dials) phase = st >= 1 ? "r1" : "lobby";
-    else if (!myChoice.dec2) phase = st >= 2 ? "r2" : "wait2";
-    else if (!myChoice.dec3) phase = st >= 3 ? "r3" : "wait3";
-    else phase = "done";
+    if (!pid) { phase = st === 0 ? "lobby" : "pairing"; return renderPlayer(); }
+    const o = OTHER[side], M = mv[side], O = mv[o];
+    phase = (() => {
+      for (const k of [1, 2, 3]) {
+        const key = KEY[k];
+        if (!M[key]) return st >= k ? "r" + k : "wait" + k;
+        if (!O[key]) return "partner" + k;
+        if (!seen[k]) return "r" + k + "res";
+      }
+      if (st < 4) return "wait4";
+      if (side === "us") { if (!M.threat) return "r4"; if (!O.taiwan) return "partner4"; }
+      else { if (!O.threat) return "r4early"; if (!M.taiwan) return "r4"; }
+      if (!seen.roll) return "roll";
+      if (!seen.crisis) return "crisis";
+      if (!seen.cf) return "cf";
+      return "done";
+    })();
     renderPlayer();
   }
-  function go(p) { phase = p; renderPlayer(); }
 
-  /* ---------- gauges ---------- */
-  const G = [["jobsP", "Jobs in protected industries", false], ["sec", "National security & resilience", false], ["col", "Cost of living", true], ["innov", "Innovation & productivity", false]];
-  function gaugeHtml(vals, proj, showJobsO) {
-    const list = showJobsO ? G.concat([["jobsO", "Jobs everywhere else", false]]) : G;
-    return list.map(([k, l, bad]) => { const v = vals[k] || 0; const pct = Math.max(-35, Math.min(35, v)) / 70 * 100; const isBad = bad ? v > 0 : v < 0;
-      return '<div class="gauge"><div class="lbl" title="' + l + '">' + l + '</div><div class="val ' + (v === 0 ? "" : isBad ? "red" : "green") + '">' + fmt(v) + '</div><div class="bar"><i class="' + (isBad ? "bad" : "") + '" style="left:' + (pct < 0 ? 50 + pct : 50) + "%;width:" + Math.abs(pct) + '%"></i></div>' + (proj ? '<div class="proj">' + proj + "</div>" : "") + "</div>"; }).join("");
+  /* ---------- labels & gauges ---------- */
+  const GL = {
+    us: { jobsP: "Jobs in protected industries", sec: "National security & resilience", col: "Cost of living", innov: "Innovation & productivity", jobsO: "Jobs everywhere else" },
+    cn: { jobsP: "Factory jobs & exports", sec: "Security & self-reliance", col: "Cost of living", innov: "Technology & innovation", jobsO: "Jobs everywhere else" },
+  };
+  const BAD = { col: true };
+  function gaugeHtml(vals, proj, showJobsO, s) {
+    const keys = ["jobsP", "sec", "col", "innov"].concat(showJobsO ? ["jobsO"] : []);
+    return keys.map(k => { const v = vals[k] || 0; const p = Math.max(-35, Math.min(35, v)) / 70 * 100; const isBad = BAD[k] ? v > 0 : v < 0; const l = GL[s][k];
+      return '<div class="gauge"><div class="lbl" title="' + l + '">' + l + '</div><div class="val ' + (Math.abs(v) < 0.05 ? "" : isBad ? "red" : "green") + '">' + fmt(v) + '</div><div class="bar"><i class="' + (isBad ? "bad" : "") + '" style="left:' + (p < 0 ? 50 + p : 50) + "%;width:" + Math.abs(p) + '%"></i></div>' + (proj ? '<div class="proj">' + proj + "</div>" : "") + "</div>"; }).join("");
   }
-  function setGauges(vals, proj, showJobsO) { const g = $("gauges"); g.classList.remove("hidden"); g.innerHTML = gaugeHtml(vals, proj, showJobsO); }
-  function gaugeList(t, showJobsO = true) {
-    const list = showJobsO ? G.concat([["jobsO", "Jobs everywhere else", false]]) : G;
-    return '<ul>' + list.map(([k, l, bad]) => { const v = t[k] || 0; const isBad = bad ? v > 0 : v < 0; return "<li>" + l + ': <b class="' + (v === 0 ? "" : isBad ? "red" : "green") + '">' + fmt(v) + "</b></li>"; }).join("") + "</ul>";
+  function setGauges(vals, proj, showJobsO) { const g = $("gauges"); g.classList.remove("hidden"); g.classList.toggle("pin", phase === "r1" && !view); g.innerHTML = gaugeHtml(vals, proj, showJobsO, side); }
+  function gaugeList(t, s, showJobsO = true) {
+    const keys = ["jobsP", "sec", "col", "innov"].concat(showJobsO ? ["jobsO"] : []);
+    return "<ul>" + keys.map(k => { const v = t[k] || 0; const isBad = BAD[k] ? v > 0 : v < 0; return "<li>" + GL[s][k] + ': <b class="' + (Math.abs(v) < 0.05 ? "" : isBad ? "red" : "green") + '">' + fmt(v) + "</b></li>"; }).join("") + "</ul>";
   }
-  function deltaTable(rows) { // rows: [label, a, b, bad]
-    return '<div class="delta"><div class="h"></div><div class="h">Projected</div><div class="h">Actual</div>' + rows.map(([l, a, b, bad]) => { const worse = bad ? b > a + 0.05 : b < a - 0.05; return "<div>" + l + '</div><div class="num muted">' + fmt(a) + '</div><div class="num ' + (worse ? "red" : Math.abs(b - a) < 0.05 ? "" : "green") + '">' + fmt(b) + "</div>"; }).join("") + "</div>";
+  const sumG = (...parts) => { const o = { jobsP: 0, sec: 0, col: 0, innov: 0, jobsO: 0 }; for (const p of parts) for (const k in o) o[k] += (p[k] || 0); return o; };
+  function bothTable(gu, gc, title) {
+    const rows = [["Jobs in protected (U.S.) / export (China) industries", "jobsP"], ["Security", "sec"], ["Cost of living", "col"], ["Innovation & technology", "innov"]];
+    const cell = (k, v) => { const isBad = BAD[k] ? v > 0.05 : v < -0.05; const good = BAD[k] ? v < -0.05 : v > 0.05; return '<td class="' + (isBad ? "red" : good ? "green" : "") + '"><b>' + fmt(v) + "</b></td>"; };
+    return '<div class="panel"><h3>' + (title || "Both countries, this round") + '</h3><table class="two"><tr><th></th><th>United States</th><th>China</th></tr>' + rows.map(([l, k]) => "<tr><td>" + l + "</td>" + cell(k, gu[k] || 0) + cell(k, gc[k] || 0) + "</tr>").join("") + "</table></div>";
   }
-  function sumG(...parts) { const o = { jobsP: 0, sec: 0, col: 0, innov: 0, jobsO: 0 }; for (const p of parts) for (const k in o) o[k] += (p[k] || 0); return o; }
+  function powerBar(v) { const x = 50 + Math.max(-45, Math.min(45, v * 1.2)); return '<div class="powerlbl"><span>China stronger</span><span>Relative power</span><span>U.S. stronger</span></div><div class="powerbar"><i style="left:' + x + '%"></i></div>'; }
+  function surprisesHtml(list) { return list.length ? '<div class="step reveal"><h3>Unintended consequences</h3>' + list.map(x => '<div class="surprise"><h4>' + esc(x.title) + "</h4><p>" + esc(x.text) + "</p></div>").join("") + "</div>" : ""; }
+  function notesHtml(list) { return (list || []).map(n => '<div class="note">' + esc(n) + "</div>").join(""); }
+  function partnerLine() { const o = OTHER[side]; const pr = pairs[pid] || {}; return '<span class="rolebadge ' + side + '">You: ' + SIDES[side] + '</span> <span class="muted small">vs.</span> <span class="rolebadge ' + o + '">' + esc(nameOf(pr[o])) + ": " + SIDES[o] + "</span>"; }
+  function choiceList(dec, field, opts, cur) {
+    return '<div class="choice">' + opts.map(([v, l, h]) => '<button class="' + (String(cur) === String(v) ? "on" : "") + '" data-act="' + (dec ? "pick" : "pick4") + '" data-dec="' + (dec || "") + '" data-field="' + field + '" data-v="' + v + '"><b>' + l + '</b><span class="hint">' + h + "</span></button>").join("") + "</div>";
+  }
 
   /* ---------- round-1 effect triangles ---------- */
-  // Every triangle is the same size effect on a gauge, so rows and industries are comparable.
   const TRI_UNIT = 2.5;
-  const FX = [["sec", "Security & resilience", true, 1], ["jobs", "Visible jobs", true, 1], ["col", "Prices", false, 1], ["innov", "Innovation lost", false, -1]];
-  function triSvg(f, good) {
-    return '<svg class="tri" viewBox="0 0 17 15" aria-hidden="true"><g clip-path="url(#triClip)"><rect class="tf ' + (good ? "good" : "bad") + '" x="0" y="0" width="17" height="15" style="transform:scaleX(' + f.toFixed(3) + ')"/></g><polygon class="to" points="8.5,1 16,14 1,14"/></svg>';
+  function fxRows(s, ind) {
+    if (s === "us") return [
+      { key: "sec", label: "Security & resilience", good: true, val: d => ind.sec[d] },
+      { key: "jobs", label: "Visible jobs", good: true, val: d => ind.jobs[d] },
+      { key: "col", label: "Prices", good: false, val: d => ind.col[d] },
+      { key: "innov", label: "Innovation lost", good: false, val: d => -ind.innov[d] }];
+    const k = ind.cn, jobsGood = k.jobs[4] > 0;
+    return [
+      { key: "sec", label: "Self-reliance", good: true, val: d => k.secOwn[d] },
+      { key: "jobs", label: jobsGood ? "Chip jobs" : "Export jobs lost", good: jobsGood, val: d => Math.abs(k.jobs[d]) },
+      { key: "col", label: "Prices", good: false, val: d => k.col[d] + Engine.PARAMS.cnSelfRelianceCol * d },
+      { key: "innov", label: "Technology lost", good: false, val: d => -k.innov[d] }];
   }
-  function fxVal(ind, key, sign, d) { return sign * ind[key][d]; }
+  function triSvg(f, good) { return '<svg class="tri" viewBox="0 0 17 15" aria-hidden="true"><g clip-path="url(#triClip)"><rect class="tf ' + (good ? "good" : "bad") + '" x="0" y="0" width="17" height="15" style="transform:scaleX(' + f.toFixed(3) + ')"/></g><polygon class="to" points="8.5,1 16,14 1,14"/></svg>'; }
+  const numTxt = (r, v) => v > 0.001 ? (r.good ? "+" : r.key === "innov" ? "−" : (r.key === "jobs" ? "−" : "+")) + fmt(v, false) : "0";
   function fxHtml(ind, d) {
-    return '<div class="fx" id="fx-' + ind.id + '">' + FX.map(([key, label, good, sign]) => {
-      const max = fxVal(ind, key, sign, 4); const v = fxVal(ind, key, sign, d);
-      if (max <= 0) return '<span class="lab">' + label + '</span><span class="tris none">no effect</span><span class="num"></span>';
-      const n = Math.ceil(max / TRI_UNIT - 1e-9);
-      let tris = ""; for (let i = 0; i < n; i++) tris += triSvg(Math.max(0, Math.min(1, v / TRI_UNIT - i)), good);
-      return '<span class="lab">' + label + '</span><span class="tris" data-k="' + key + '">' + tris + '</span><span class="num ' + (v > 0 ? (good ? "good" : "bad") : "") + '" data-n="' + key + '">' + (v > 0 ? (good ? "+" : (key === "innov" ? "−" : "+")) + fmt(v, false) : "0") + "</span>";
+    return '<div class="fx" id="fx-' + ind.id + '">' + fxRows(side, ind).map(r => {
+      const max = r.val(4), v = r.val(d);
+      if (max <= 0.001) return '<span class="lab">' + r.label + '</span><span class="tris none">no effect</span><span class="num"></span>';
+      let t = ""; const n = Math.ceil(max / TRI_UNIT - 1e-9); for (let i = 0; i < n; i++) t += triSvg(Math.max(0, Math.min(1, v / TRI_UNIT - i)), r.good);
+      return '<span class="lab">' + r.label + '</span><span class="tris" data-k="' + r.key + '">' + t + '</span><span class="num ' + (v > 0.001 ? (r.good ? "good" : "bad") : "") + '" data-n="' + r.key + '">' + numTxt(r, v) + "</span>";
     }).join("") + "</div>";
   }
   function fxUpdate(ind, d) {
     const box = $("fx-" + ind.id); if (!box) return;
-    for (const [key, , good, sign] of FX) {
-      const t = box.querySelector('[data-k="' + key + '"]'); if (!t) continue;
-      const v = fxVal(ind, key, sign, d);
-      t.querySelectorAll(".tf").forEach((r, i) => { r.style.transform = "scaleX(" + Math.max(0, Math.min(1, v / TRI_UNIT - i)).toFixed(3) + ")"; });
-      const nEl = box.querySelector('[data-n="' + key + '"]');
-      nEl.textContent = v > 0 ? (good ? "+" : (key === "innov" ? "−" : "+")) + fmt(v, false) : "0";
-      nEl.className = "num " + (v > 0 ? (good ? "good" : "bad") : "");
+    for (const r of fxRows(side, ind)) {
+      const t = box.querySelector('[data-k="' + r.key + '"]'); if (!t) continue; const v = r.val(d);
+      t.querySelectorAll(".tf").forEach((el, i) => { el.style.transform = "scaleX(" + Math.max(0, Math.min(1, v / TRI_UNIT - i)).toFixed(3) + ")"; });
+      const nEl = box.querySelector('[data-n="' + r.key + '"]'); nEl.textContent = numTxt(r, v); nEl.className = "num " + (v > 0.001 ? (r.good ? "good" : "bad") : "");
     }
   }
-  const HOWTO = '<details class="panel howto" open><summary>How to read the triangles</summary>' +
-    '<p>Under each industry, the <b>outlined triangles</b> show the most that industry can move each gauge if you choose full separation. As you move the dial, they <b>fill in</b> to show your advisers\' projection at that level — including part of a triangle.</p>' +
-    '<div class="ex"><span>' + triSvg(0, true) + ' no effect yet</span><span>' + triSvg(0.5, true) + ' half</span><span>' + triSvg(1, true) + ' full</span><span>' + triSvg(1, false) + ' a cost</span></div>' +
-    '<p><b class="green">Green</b> moves a gauge in your favor (more security, more jobs in that industry). <b class="red">Red</b> is a cost (higher prices, less innovation). Every triangle is the same size — about ' + TRI_UNIT + ' points on a gauge — so you can compare rows and industries directly: chips can buy a lot of security; clothing can buy almost none.</p>' +
-    '<p class="muted small">These are direct effects assuming China does nothing. It won\'t.</p></details>';
+  function howto() {
+    const other = side === "us" ? "China" : "America";
+    return '<details class="panel howto" open><summary>How to read the triangles</summary><p>Under each industry, the <b>outlined triangles</b> show the most that move can change each of your gauges at full separation. As you move the dial they <b>fill in</b> to show your advisers\' projection at that level — including part of a triangle.</p>' +
+      '<div class="ex"><span>' + triSvg(0, true) + ' no effect yet</span><span>' + triSvg(0.5, true) + ' half</span><span>' + triSvg(1, true) + ' full</span><span>' + triSvg(1, false) + ' a cost</span></div>' +
+      '<p><b class="green">Green</b> moves a gauge in your favor. <b class="red">Red</b> is a cost. Every triangle is the same size — about ' + TRI_UNIT + ' points on a gauge — so you can compare rows and industries directly.</p><p class="muted small">Direct effects only, assuming ' + other + ' does nothing. Your partner is choosing at the same time.</p></details>';
+  }
+  const direct = (d) => side === "us" ? Engine.directUS(d) : Engine.directCN(d);
+  const fullDials = (p) => Object.assign({ semi: 0, batt: 0, pharma: 0, elec: 0, basic: 0 }, p);
+  function dial(id, k) {
+    pending.dials[id] = k; const seg = $("seg-" + id);
+    if (!seg || phase !== "r1") { renderPlayer(); return; }
+    seg.querySelectorAll("button").forEach((b, i) => b.classList.toggle("on", i === k));
+    fxUpdate(Engine.IND[id], k);
+    setGauges(direct(fullDials(pending.dials)), "advisers' projection", false);
+    const btn = $("submit1"); if (btn) btn.disabled = Object.keys(pending.dials).length < 5;
+  }
 
   /* ---------- player screens ---------- */
   function renderPlayer() {
-    const M = $("playerMain");
-    if (phase === "lobby") { $("gauges").classList.add("hidden"); M.innerHTML = '<div class="panel gold"><h2>You\'re in, ' + esc(name) + '.</h2><p class="lede">Waiting for the instructor to open Round 1.</p></div><div class="panel"><h3>Your job</h3><p>For the next 15 simulated years you run U.S. economic policy toward China. Four gauges will sit at the top of your screen: <b>jobs in protected industries</b>, <b>national security & resilience</b>, <b>cost of living</b>, and <b>innovation</b>.</p><p>There is no combined score. Nobody will tell you whether you won. You will have to decide what a good tradeoff looks like.</p><p class="muted small">This is a model, not a forecast. The numbers illustrate mechanisms; economists disagree about their magnitudes.</p></div>'; return; }
+    const M = $("playerMain"); const p = view || phase; const o = side ? OTHER[side] : null;
+    const back = view ? '<p><button class="secondary" data-act="unpeek">Back</button></p>' : "";
+    const so = (n) => sim ? [sim.s1, sim.s2, sim.s3].slice(0, n).map(s => s[side].gauges) : [];
+    if (p === "lobby") { $("gauges").classList.add("hidden"); M.innerHTML = '<div class="panel gold"><h2>You\'re in, ' + esc(name) + '.</h2><p class="lede">When the instructor opens Round 1 you\'ll be paired with a classmate. One of you runs the <b>United States</b>, the other runs <b>China</b>.</p></div><div class="panel"><h3>How it works</h3><p>Sit with your partner. You may talk — make threats, promises, bluffs — but every move is sealed and simultaneous.</p><p>Each country has its own gauges: jobs, security, cost of living, innovation. <b>There is no combined score and no winner.</b> You decide what a good tradeoff looks like.</p><p class="muted small">This is a model, not a forecast. The numbers illustrate mechanisms; economists disagree about their magnitudes.</p></div>'; return; }
+    if (p === "pairing") { M.innerHTML = '<div class="panel gold"><h2>Finding you a partner…</h2><p>Hang on a few seconds.</p></div>'; return; }
+    const head = '<div class="step">' + partnerLine() + "</div>";
 
-    if (phase === "r1") {
-      const p = pending.dials; const proj = Engine.direct(Object.assign({ semi: 0, batt: 0, pharma: 0, elec: 0, basic: 0 }, p));
-      setGauges(proj, "advisers' projection", false);
-      M.innerHTML = '<div class="step"><span class="era">Round 1 · Today</span><h2>Where do you cut ties — and how far?</h2><p>Set a level for each of five industries. Your economic advisers project the direct effects at the top of the screen <i>assuming China does nothing</i>.</p></div>' +
-        HOWTO +
-        Engine.INDUSTRIES.map(ind => '<div class="ind"><h3>' + esc(ind.name) + '</h3><div class="why">' + esc(ind.why) + '</div><div class="seg" id="seg-' + ind.id + '">' + Engine.LEVELS.map((l, k) => '<button class="' + (p[ind.id] === k ? "on" : "") + '" onclick="App.dial(\'' + ind.id + "'," + k + ')"><span class="n">' + k + "</span>" + l + "</button>").join("") + "</div>" + fxHtml(ind, p[ind.id] || 0) + "</div>").join("") +
-        '<button class="big" id="submit1" ' + (Object.keys(p).length < 5 ? "disabled" : "") + ' onclick="App.submit1()">Enact this policy</button><p class="muted small" style="text-align:center">Pick a level for all five industries.</p>';
+    if (p === "wait1" || p === "wait2" || p === "wait3" || p === "wait4") {
+      const k = +p.slice(-1); if (sim) setGauges(sumG(...so(k - 1)), "so far", false); else $("gauges").classList.add("hidden");
+      M.innerHTML = head + '<div class="panel gold"><h2>' + (k === 1 ? "You've been paired." : "Policy enacted.") + '</h2><p class="lede">Waiting for the instructor to open ' + (k === 4 ? "Year 12" : "Round " + k) + ".</p></div>" + (k > 1 ? '<div class="panel"><p>Talk to your partner. What will you do next — and what do you want them to think you will do?</p><button class="secondary" data-act="peek" data-p="r' + (k - 1) + 'res">Review Round ' + (k - 1) + " results</button></div>" : '<div class="panel"><p>You are <b>' + SIDES[side] + '</b>. Introduce yourself to your partner.</p></div>');
       return;
     }
-    if (phase === "r1res") {
-      const s = sims.s1; const proj = Engine.direct(myChoice.dials); const act = s.gauges;
-      setGauges(act, "actual, year 1", false);
-      const cc = s.chinaCosts;
-      M.innerHTML = '<div class="step reveal"><span class="era">Round 1 · Year 1</span><h2>What actually happened</h2>' + deltaTable([["Jobs in protected industries", proj.jobsP, act.jobsP, false], ["National security & resilience", proj.sec, act.sec, false], ["Cost of living", proj.col, act.col, true], ["Innovation", proj.innov, act.innov, false]]) + '<p class="muted small">Your advisers held China fixed. China did not hold still.</p></div>' +
-        '<div class="panel red reveal"><h3>China responds</h3><p>You chose U.S. policy. You do not get to choose China\'s. Beijing\'s response hurts the United States — <b>and it hurts China.</b></p><table class="two"><tr><th></th><th>United States</th><th>China</th></tr><tr><td>Consumer prices</td><td><span class="arrowup">▲</span> ' + fmt(act.col, false) + '</td><td><span class="arrowup">▲</span> ' + fmt(cc.consumer, false) + '</td></tr><tr><td>Export markets</td><td><span class="arrowdn">▼</span></td><td><span class="arrowdn">▼</span> ' + fmt(-cc.exports) + '</td></tr><tr><td>Access to frontier technology</td><td>—</td><td><span class="arrowdn">▼</span> ' + fmt(-cc.tech) + '</td></tr><tr><td>Protected domestic industries</td><td><span class="arrowup">▲</span> ' + fmt(act.jobsP, false) + '</td><td><span class="arrowup">▲</span> ' + fmt(cc.protected, false) + '</td></tr></table><p class="muted small">Both countries pay. That is what "not zero-sum" looks like in a table.</p></div>' +
-        (s.surprises.length ? '<div class="step reveal"><h3>Unintended consequences</h3>' + s.surprises.map(x => '<div class="surprise"><h4>' + esc(x.title) + "</h4><p>" + esc(x.text) + "</p></div>").join("") + "</div>" : '<div class="note reveal">You kept most ties intact, so China had little to retaliate against. Nothing much happened — yet.</div>') +
-        (s.notes.length ? s.notes.map(n => '<div class="note">' + esc(n) + "</div>").join("") : "") +
-        '<div class="note"><b>Something moved that your dashboard does not show.</b> You will find out in fifteen years.</div>' +
-        '<button class="big" onclick="App.next(\'wait2\')">Continue</button>';
+    if (/^partner[1-4]$/.test(p)) {
+      const k = +p.slice(-1);
+      M.innerHTML = head + '<div class="panel gold"><h2>Sealed.</h2><p class="lede">Waiting for ' + esc(nameOf((pairs[pid] || {})[o])) + " (" + SIDES[o] + ") to " + (k === 4 ? "decide." : "submit.") + '</p><p class="muted small">Results appear for both of you at the same time.</p></div>';
       return;
     }
-    if (phase === "wait2" || phase === "wait3") {
-      const r = phase === "wait2" ? 2 : 3; setGauges(phase === "wait2" ? sims.s1.gauges : sumG(sims.s1.gauges, sims.s2.gauges), "so far", false);
-      M.innerHTML = '<div class="panel gold"><h2>Policy enacted.</h2><p class="lede">Waiting for the instructor to open Round ' + r + '.</p></div><div class="panel"><p>Meanwhile: look at your gauges. Would you defend this tradeoff to a voter in Ohio? To one in Iowa?</p><button class="secondary" onclick="App.go(\'r' + (r - 1) + 'res\')">Review Round ' + (r - 1) + " results</button></div>";
+
+    /* ----- Round 1 ----- */
+    if (p === "r1") {
+      const pd = pending.dials; setGauges(direct(fullDials(pd)), "advisers' projection", false);
+      const L = side === "us" ? Engine.LEVELS : Engine.CN_LEVELS;
+      M.innerHTML = head + '<div class="step"><span class="era">Round 1 · Today</span><h2>' + (side === "us" ? "Where do you cut ties with China — and how far?" : "Where does China cut ties with America — and how far?") + "</h2><p>" + (side === "us" ? "Your dials are U.S. restrictions: export controls, tariffs and bans." : "Your dials are China's moves: replacing American technology, restricting exports of what America needs, or steering sales elsewhere.") + " <b>An industry ends up as separated as whichever of you cut deeper.</b></p></div>" + howto() +
+        Engine.INDUSTRIES.map(ind => '<div class="ind"><h3>' + esc(ind.name) + '</h3><div class="why">' + esc(side === "us" ? ind.why : ind.cn.why) + '</div><div class="seg" id="seg-' + ind.id + '">' + L.map((l, k) => '<button class="' + (pd[ind.id] === k ? "on" : "") + '" data-act="dial" data-id="' + ind.id + '" data-k="' + k + '"><span class="n">' + k + "</span>" + l + "</button>").join("") + "</div>" + fxHtml(ind, pd[ind.id] || 0) + "</div>").join("") +
+        '<button class="big" id="submit1" data-act="submit" data-k="1" ' + (Object.keys(pd).length < 5 ? "disabled" : "") + '>Seal these moves</button><p class="muted small" style="text-align:center">Pick a level for all five industries.</p>';
       return;
     }
-    if (phase === "r2") {
-      setGauges(sims.s1.gauges, "after round 1", false);
-      const rer = Engine.INDUSTRIES.filter(i => (myChoice.dials[i.id] || 0) >= 2);
-      const anyRer = rer.length > 0; const p = pending.dec2;
-      const avgShare = anyRer ? Math.round(100 * rer.reduce((s, i) => s + i.reroute, 0) / rer.length) : 0;
-      M.innerHTML = '<div class="step"><span class="era">Round 2 · Five years later</span><h2>Supply chains adapt</h2>' +
-        (anyRer ? '<div class="panel teal"><h3>Good news</h3><p>Direct U.S. imports from China in the industries you restricted have fallen sharply. Headlines call it "the great decoupling."</p></div><div class="panel gold reveal"><h3>But wait…</h3>' + routeSvg() + '<p>Imports from <b>Vietnam</b> and <b>Mexico</b> jumped. Roughly <b>' + avgShare + '%</b> of what you "decoupled" is still made by Chinese-owned factories or from Chinese parts — it just changed address. Bilateral trade statistics make separation look bigger than it is.</p><ul class="small">' + rer.map(i => "<li>" + esc(i.name) + ": about " + Math.round(i.reroute * 100) + "% rerouted</li>").join("") + "</ul></div>"
-          : '<div class="panel teal"><h3>Not much to reroute</h3><p>You restricted little, so supply chains barely moved. Other countries did decouple, though — and the decisions below still matter for what you did restrict.</p></div>') +
-        '</div><div class="step"><h3>Decision A — Chase the rerouting?</h3><p class="small">Extend your restrictions to goods that <i>contain</i> Chinese inputs or come from Chinese-owned plants abroad?</p><div class="choice">' +
-        [["no", "No — restrict direct trade only", "Cheaper goods. But your dependence on China is larger than your statistics say."], ["security", "Yes — for chips, batteries and medicines only", "Genuine decoupling where security matters; leave toys and TVs alone. Customs paperwork and enforcement cost money."], ["all", "Yes — for every restricted industry", "Real separation across the board. Highest cost of living; friction with Mexico and Vietnam, whom you need for chips."]].map(([v, l, h]) => '<button class="' + (p.extend === v ? "on" : "") + '" onclick="App.pick(\'dec2\',\'extend\',\'' + v + '\')"><b>' + l + '</b><span class="hint">' + h + "</span></button>").join("") + "</div></div>" +
-        '<div class="step"><h3>Decision B — Allies</h3><p class="small">The Netherlands and Japan make the chip tools too. Do you ask them to match your controls?</p><div class="choice">' +
-        [["alone", "Go alone — act now", "Fast. But if U.S. firms can\'t sell, Dutch and Japanese firms will."], ["coordinate", "Coordinate — build a coalition", "Slower and leakier, and allies want concessions. But controls that everyone applies actually bite."]].map(([v, l, h]) => '<button class="' + (p.allies === v ? "on" : "") + '" onclick="App.pick(\'dec2\',\'allies\',\'' + v + '\')"><b>' + l + '</b><span class="hint">' + h + "</span></button>").join("") + "</div></div>" +
-        '<button class="big" ' + (p.extend && p.allies ? "" : "disabled") + ' onclick="App.submit2()">Enact</button>';
+    if (p === "r1res") {
+      const s1 = sim.s1, me = s1[side], proj = direct(mv[side].dials); setGauges(me.gauges, "after round 1", false);
+      const lv = (v, hi) => '<span class="lvl' + (hi ? " hi" : "") + '">' + v + "</span>";
+      M.innerHTML = head + '<div class="step reveal"><span class="era">Round 1 · Year 1</span><h2>Both moves revealed</h2><table class="vs"><tr><th>Industry</th><th>U.S.</th><th>China</th><th>Separation</th></tr>' + Engine.INDUSTRIES.map(i => { const a = mv.us.dials[i.id] || 0, b = mv.cn.dials[i.id] || 0; return "<tr><td>" + esc(i.name) + "</td><td>" + lv(a, a >= b && a > 0) + "</td><td>" + lv(b, b >= a && b > 0) + "</td><td><b>" + s1.sep[i.id] + "</b></td></tr>"; }).join("") + '</table><p class="muted small">Highlighted: whoever cut deeper set the separation.</p></div>' +
+        '<div class="panel"><h3>Your advisers vs. what happened</h3><div class="delta"><div class="h"></div><div class="h">Projected</div><div class="h">Actual</div>' + ["jobsP", "sec", "col", "innov"].map(k => { const a = proj[k], b = me.gauges[k]; const worse = BAD[k] ? b > a + 0.05 : b < a - 0.05; return "<div>" + GL[side][k] + '</div><div class="num muted">' + fmt(a) + '</div><div class="num ' + (worse ? "red" : Math.abs(b - a) < 0.05 ? "" : "green") + '">' + fmt(b) + "</div>"; }).join("") + '</div><p class="muted small">Your advisers assumed ' + (side === "us" ? "China" : "America") + " would do nothing.</p></div>" +
+        bothTable(s1.us.gauges, s1.cn.gauges, "Both countries pay") + surprisesHtml(me.surprises) + notesHtml(me.notes) +
+        (view ? back : '<button class="big" data-act="seen" data-k="1">Continue</button>');
       return;
     }
-    if (phase === "r2res") {
-      const s = sims.s2; setGauges(sumG(sims.s1.gauges, s.gauges), "after round 2", false);
-      M.innerHTML = '<div class="step reveal"><span class="era">Round 2 · Year 6</span><h2>Five more years of consequences</h2><div class="panel">' + gaugeList(s.gauges, false).replace("<ul>", '<div class="muted small">Change this round</div><ul>') + "</div></div>" +
-        (s.surprises.length ? '<div class="step reveal"><h3>Unintended consequences</h3>' + s.surprises.map(x => '<div class="surprise"><h4>' + esc(x.title) + "</h4><p>" + esc(x.text) + "</p></div>").join("") + "</div>" : "") +
-        s.notes.map(n => '<div class="note">' + esc(n) + "</div>").join("") +
-        '<button class="big" onclick="App.next(\'wait3\')">Continue</button>';
+
+    /* ----- Round 2 ----- */
+    if (p === "r2") {
+      setGauges(sumG(...so(1)), "after round 1", false); const pd = pending.dec2;
+      if (side === "us") {
+        const restricted = Engine.INDUSTRIES.filter(i => (mv.us.dials[i.id] || 0) >= 2);
+        M.innerHTML = head + '<div class="step"><span class="era">Round 2 · Five years later</span><h2>Supply chains adapt</h2><div class="panel gold"><h3>Watch for this</h3>' + routeSvg() + "<p>" + (restricted.length ? "You restricted " + restricted.map(i => SHORT[i.id]).join(", ") + ". China can route around you — Chinese parts and Chinese-owned plants in Vietnam and Mexico, selling to you from there. Your partner is deciding right now whether to." : "You restricted little directly. China may still route production abroad.") + "</p></div></div>" +
+          '<div class="step"><h3>Decision A — Chase the rerouting?</h3><p class="small">Extend restrictions to goods that <i>contain</i> Chinese inputs or come from Chinese-owned plants abroad?</p>' + choiceList("dec2", "extend", [["no", "No — restrict direct trade only", "Cheaper. If China reroutes, your dependence is larger than your statistics say."], ["security", "Yes — for chips, batteries and medicines", "Closes the back door where security matters. Paperwork and enforcement cost money — even if China doesn't reroute."], ["all", "Yes — for every restricted industry", "Real separation across the board. Highest cost of living; friction with Mexico and Vietnam."]], pd.extend) + "</div>" +
+          '<div class="step"><h3>Decision B — Allies</h3><p class="small">The Netherlands and Japan make chip tools too. Ask them to match your controls?</p>' + choiceList("dec2", "allies", [["alone", "Go alone — act now", "Fast. But if U.S. firms can't sell, Dutch and Japanese firms will."], ["coordinate", "Coordinate — build a coalition", "Slower and leakier, and allies want concessions. But controls that everyone applies actually bite."]], pd.allies) + "</div>" +
+          '<button class="big" data-act="submit" data-k="2" ' + (pd.extend && pd.allies ? "" : "disabled") + ">Seal these moves</button>";
+      } else {
+        const restricted = Engine.INDUSTRIES.filter(i => (mv.us.dials[i.id] || 0) >= 2);
+        M.innerHTML = head + '<div class="step"><span class="era">Round 2 · Five years later</span><h2>Supply chains adapt</h2><div class="panel gold"><h3>America\'s restrictions</h3><p>' + (restricted.length ? "The U.S. restricted <b>" + restricted.map(i => esc(i.name)).join("</b>, <b>") + "</b>." : "The U.S. restricted little directly.") + " Aggression score: <b>" + Math.round(100 * Engine.aggression(mv.us.dials) / Engine.MAX_AGG) + "%</b> of the maximum.</p></div></div>" +
+          '<div class="step"><h3>Decision A — Route around America?</h3>' + choiceList("dec2", "reroute", [["yes", "Yes — build plants in Vietnam and Mexico", "Keep selling to America through the back door. Costs investment, and the jobs go abroad with the factories. America may close the door."], ["no", "No — keep production at home", "Factories stay in China. Where America restricted, those sales are simply gone."]], pd.reroute) + "</div>" +
+          '<div class="step"><h3>Decision B — Retaliate?</h3>' + choiceList("dec2", "retaliate", [["yes", "Hit American farmers and Boeing", "Shift soybean purchases to Brazil, freeze aircraft orders. Hurts voters who never chose this — and raises your own costs."], ["no", "Hold fire", "No escalation. Your partner sees what you chose."]], pd.retaliate) + "</div>" +
+          '<button class="big" data-act="submit" data-k="2" ' + (pd.reroute && pd.retaliate ? "" : "disabled") + ">Seal these moves</button>";
+      }
       return;
     }
-    if (phase === "r3") {
-      setGauges(sumG(sims.s1.gauges, sims.s2.gauges), "after round 2", false); const p = pending.dec3;
-      M.innerHTML = '<div class="step"><span class="era">Round 3 · Fifteen years later</span><h2>The long run</h2><p>Firms have built factories. Engineers have learned. Supply chains have moved. China has been building substitutes for everything you withheld. Two last decisions before the bill arrives.</p></div>' +
-        '<div class="step"><h3>Decision A — Industrial subsidies</h3><p class="small">Pay firms to build here?</p><div class="choice">' +
-        [["none", "No subsidies", "Let markets decide where factories go. Cheapest. Slowest to build resilience."], ["targeted", "Targeted — chips and batteries only", "Big grants for a few strategic plants. Real capacity, real jobs, real money — and other countries will match you."], ["broad", "Broad — every restricted industry", "Most visible jobs. Most expensive. Attracts everyone who can qualify, including firms you were trying to keep out."]].map(([v, l, h]) => '<button class="' + (p.subsidy === v ? "on" : "") + '" onclick="App.pick(\'dec3\',\'subsidy\',\'' + v + '\')"><b>' + l + '</b><span class="hint">' + h + "</span></button>").join("") + "</div></div>" +
-        '<div class="step"><h3>Decision B — Strategic stockpile</h3><p class="small">Warehouse a year of medicines and critical minerals against a cutoff?</p><div class="choice">' +
-        [["no", "No stockpile", "Save the money. Hope you never need it."], ["yes", "Build the stockpile", "Insurance: cuts the damage from a cutoff by more than half. Drugs expire; it costs money every year whether or not a crisis ever comes."]].map(([v, l, h]) => '<button class="' + (p.stockpile === v ? "on" : "") + '" onclick="App.pick(\'dec3\',\'stockpile\',\'' + v + '\')"><b>' + l + '</b><span class="hint">' + h + "</span></button>").join("") + "</div></div>" +
-        '<button class="big" ' + (p.subsidy && p.stockpile ? "" : "disabled") + ' onclick="App.submit3()">Enact — and roll the dice</button>';
+    if (p === "r2res") {
+      const s = sim.s2, me = s[side]; setGauges(sumG(...so(2)), "after round 2", false);
+      M.innerHTML = head + '<div class="step reveal"><span class="era">Round 2 · Year 6</span><h2>Five more years of consequences</h2><p>' + (side === "us" ? "China chose to <b>" + (mv.cn.dec2.reroute === "yes" ? "route around you" : "keep production at home") + "</b> and <b>" + (mv.cn.dec2.retaliate === "yes" ? "retaliate" : "hold fire") + "</b>." : "America chose to <b>" + ({ no: "restrict direct trade only", security: "chase rerouting in security industries", all: "chase rerouting everywhere" })[mv.us.dec2.extend] + "</b> and <b>" + (mv.us.dec2.allies === "alone" ? "go alone" : "coordinate with allies") + "</b>.") + "</p></div>" +
+        (side === "us" && s.rerouted.length ? '<div class="panel gold">' + routeSvg() + "</div>" : "") +
+        bothTable(s.us.gauges, s.cn.gauges) + surprisesHtml(me.surprises) + notesHtml(me.notes) + (view ? back : '<button class="big" data-act="seen" data-k="2">Continue</button>');
       return;
     }
-    if (phase === "r3res") {
-      const s = sims.s3; const pre = sumG(sims.s1.gauges, sims.s2.gauges, s.gauges); setGauges(pre, "year 15", true);
-      const b = s.breakdown; const net = pre.jobsP + pre.jobsO;
-      M.innerHTML = '<div class="step reveal"><span class="era">Round 3 · Year 15</span><h2>The bill arrives</h2>' +
-        '<div class="panel gold"><h3>A fifth gauge just appeared</h3><p>You created <b class="green">' + fmt(pre.jobsP) + '</b> in the industries you protected. Over fifteen years, jobs <b>everywhere else</b> moved <b class="' + (pre.jobsO < 0 ? "red" : "") + '">' + fmt(pre.jobsO) + '</b>. Net: <b>' + fmt(net) + '</b>.</p><ul class="small"><li>Retaliation on farmers and exporters: <b>' + fmt(-b.retaliation) + '</b></li><li>Workers, capital and land pulled into industries where the U.S. is relatively less productive: <b>' + fmt(-b.realloc) + '</b></li><li>Households with less to spend on restaurants, software, health care: <b>' + fmt(-b.purchasing) + '</b></li></ul><p><b>Did you create jobs — or move them?</b></p></div>' +
-        (s.surprises.length ? '<h3>Unintended consequences</h3>' + s.surprises.map(x => '<div class="surprise"><h4>' + esc(x.title) + "</h4><p>" + esc(x.text) + "</p></div>").join("") : "") +
-        s.notes.map(n => '<div class="note">' + esc(n) + "</div>").join("") + "</div>" +
-        '<div class="step"><button class="big" onclick="App.go(\'roll\')">Year 12 — something happened</button></div>';
+
+    /* ----- Round 3 ----- */
+    if (p === "r3") {
+      setGauges(sumG(...so(2)), "after round 2", false); const pd = pending.dec3;
+      const intro = '<div class="step"><span class="era">Round 3 · Fifteen years later</span><h2>The long run</h2><p>Factories have been built. Engineers have learned. Supply chains have moved. Two last economic decisions before the bill arrives.</p></div>';
+      if (side === "us") {
+        M.innerHTML = head + intro + '<div class="step"><h3>Decision A — Industrial subsidies</h3>' + choiceList("dec3", "subsidy", [["none", "No subsidies", "Let markets decide where factories go. Cheapest. Slowest to build resilience."], ["targeted", "Targeted — chips and batteries only", "Real capacity and jobs — and a buffer if Taiwan's chip fabs ever go offline. Other countries will match you."], ["broad", "Broad — every restricted industry", "Most visible jobs. Most expensive. Attracts everyone who can qualify, including firms you wanted out."]], pd.subsidy) + "</div>" +
+          '<div class="step"><h3>Decision B — Strategic stockpile</h3>' + choiceList("dec3", "stockpile", [["false", "No stockpile", "Save the money. Hope you never need it."], ["true", "Build the stockpile", "A year of medicines and critical minerals. Cuts the damage of a cutoff by more than half. Costs money every year whether or not it's ever used."]], pd.stockpile) + "</div>" +
+          '<button class="big" data-act="submit" data-k="3" ' + (pd.subsidy && pd.stockpile !== undefined ? "" : "disabled") + ">Seal these moves</button>";
+      } else {
+        M.innerHTML = head + intro + '<div class="step"><h3>Decision A — Chip self-sufficiency</h3>' + choiceList("dec3", "chips", [["modest", "Keep building at a normal pace", "Cheaper. You stay partly dependent on American and allied technology."], ["allin", "Go all-in — the 'Big Fund'", "Hundreds of billions to make your own chips. The faster you catch up, the less America can threaten to take away."]], pd.chips) + "</div>" +
+          '<div class="step"><h3>Decision B — New customers</h3>' + choiceList("dec3", "markets", [["yes", "Court the Global South", "Trade deals and loans across Asia, Africa and Latin America. Replaces some American sales — and makes you less dependent on America."], ["no", "Stay focused on the markets you have", "Cheaper. America remains your biggest customer."]], pd.markets) + "</div>" +
+          '<button class="big" data-act="submit" data-k="3" ' + (pd.chips && pd.markets ? "" : "disabled") + ">Seal these moves</button>";
+      }
       return;
     }
-    if (phase === "roll") {
-      const p = sims.prob.p; const pre = sumG(sims.s1.gauges, sims.s2.gauges, sims.s3.gauges); setGauges(pre, "year 15", true);
-      M.innerHTML = '<div class="step reveal"><span class="era">Year 12</span><h2>A confrontation over Taiwan</h2><p>Warships. Sanctions threats. Beijing weighs whether to use its economic leverage against the United States.</p>' +
-        '<div class="panel"><h3>Your chance of a full crisis: ' + Math.round(p * 100) + '%</h3><div class="prob"><i style="width:' + Math.round(p * 100) + '%"></i></div><p class="small">In this model, China is more willing to coerce when it has <i>less to lose</i> from a rupture. Cutting ties lowered your exposure — and lowered China\'s restraint. (Economists argue about this; interdependence can deter, or it can be a weapon.)</p></div>' +
-        '<div class="die" id="die">?</div><button class="big" id="rollBtn" onclick="App.roll()">Roll</button></div>';
+    if (p === "r3res") {
+      const s = sim.s3, me = s[side], pre = sumG(...so(3)); setGauges(pre, "year 15", true);
+      let bill;
+      if (side === "us") { const b = me.breakdown; bill = '<div class="panel gold"><h3>A fifth gauge just appeared</h3><p>You created <b class="green">' + fmt(pre.jobsP) + "</b> in protected industries. Over fifteen years, jobs <b>everywhere else</b> moved <b class=\"" + (pre.jobsO < 0 ? "red" : "") + '">' + fmt(pre.jobsO) + "</b>. Net: <b>" + fmt(pre.jobsP + pre.jobsO) + '</b>.</p><ul class="small"><li>Retaliation and lost chip sales: <b>' + fmt(-b.retaliation) + "</b></li><li>Workers, capital and land pulled into industries where the U.S. is relatively less productive: <b>" + fmt(-b.realloc) + "</b></li><li>Households with less to spend on everything else: <b>" + fmt(-b.purchasing) + "</b></li></ul><p><b>Did you create jobs — or move them?</b></p></div>"; }
+      else { const b = me.breakdown; bill = '<div class="panel gold"><h3>A fifth gauge just appeared</h3><p>Factory jobs and exports moved <b class="' + (pre.jobsP < 0 ? "red" : "green") + '">' + fmt(pre.jobsP) + "</b>. Jobs <b>everywhere else</b> moved <b class=\"" + (pre.jobsO < 0 ? "red" : "") + '">' + fmt(pre.jobsO) + '</b>.</p><ul class="small"><li>Engineers and capital pulled into chip self-sufficiency: <b>' + fmt(-b.realloc) + "</b></li><li>Households with less to spend after higher prices: <b>" + fmt(-b.purchasing) + "</b></li></ul><p><b>Separation shrank the pie for both of you.</b></p></div>"; }
+      M.innerHTML = head + '<div class="step reveal"><span class="era">Round 3 · Year 15</span><h2>The bill arrives</h2><p>' + (side === "us" ? "China chose to <b>" + (mv.cn.dec3.chips === "allin" ? "go all-in on its own chips" : "keep building chips at a normal pace") + "</b> and <b>" + (mv.cn.dec3.markets === "yes" ? "court new customers" : "stay focused on existing markets") + "</b>." : "America chose <b>" + ({ none: "no subsidies", targeted: "targeted subsidies", broad: "broad subsidies" })[mv.us.dec3.subsidy] + "</b> and <b>" + (mv.us.dec3.stockpile ? "a strategic stockpile" : "no stockpile") + "</b>.") + "</p></div>" + bill +
+        bothTable(s.us.gauges, s.cn.gauges) + surprisesHtml(me.surprises) + notesHtml(me.notes) + (view ? back : '<button class="big" data-act="seen" data-k="3">Continue</button>');
       return;
     }
-    if (phase === "crisis") {
-      const c = sims.c; const hit = !!myChoice.hit; const tot = sims.total; setGauges(tot, "final", true); const d = c.detail;
-      M.innerHTML = (hit ? '<div class="crisis reveal"><h2 class="red">Crisis.</h2><p>Beijing halts exports of antibiotics, insulin precursors and battery minerals to the United States.</p><p>You still depended on China for <b>' + d.pharmaDep + '%</b> of medical inputs and <b>' + d.battDep + '%</b> of battery minerals. About <b>' + d.shortage + '%</b> of generic drug lines went into shortage' + (d.stockpiled ? " — your stockpile cut the damage by more than half" : "") + '. A generic that cost $100 now costs $' + sims.tangible.drug + '.</p><p>China paid too: it lost its biggest export market, and every other country accelerated its own de-risking. <b>Coercion is expensive for the coercer.</b></p>' + gaugeList(c.gauges, true).replace("<ul>", '<div class="muted small">Crisis impact</div><ul>') + "</div>"
-        : '<div class="calm reveal"><h2 class="teal">No crisis.</h2><p>Tensions eased. Beijing decided the cost of a rupture was too high. Your ' + Math.round(sims.prob.p * 100) + '% chance did not come up.</p>' + (myChoice.dec3.stockpile ? "<p>Your stockpile sat in a warehouse, unused, costing money every year. Was it a mistake? <b>Be careful: you are judging a decision by an outcome it did not control.</b></p>" : (myChoice.dials.pharma >= 2 ? "<p>The medicines you paid more for at home were never needed. Was that a mistake?</p>" : "<p>Your bet on staying integrated paid off — this time.</p>")) + "</div>") +
-        '<div class="panel reveal"><h3>Final scorecard — 15 years</h3>' + gaugeList(tot, true) + '<p class="small muted">Household cost: about $' + sims.tangible.monthly + ' more per month. A $500 TV now costs $' + sims.tangible.tv + '. A $100 generic drug costs $' + sims.tangible.drug + '.</p></div>' +
-        '<div class="panel gold"><h3>Was that a good tradeoff?</h3><p>Nobody will score it for you.</p></div>' +
-        '<button class="big" onclick="App.go(\'cf\')">Did your policy work?</button>';
+
+    /* ----- Year 12: Taiwan ----- */
+    if (p === "r4" || p === "r4early") {
+      setGauges(sumG(...so(3)), "year 15", true);
+      const rs = Engine.restraint(mv.us, mv.cn);
+      const meter = (label, v, note) => '<div class="small">' + label + ' <b class="gold">' + pct(v) + '</b></div><div class="meter' + (v < 0.35 ? " weak" : "") + '"><i style="width:' + pct(v) + '"></i></div>' + (note ? '<div class="muted small" style="margin:-.35rem 0 .5rem">' + note + "</div>" : "");
+      const ties = meter("China's exports to America still at stake:", rs.exportsAtStake, "Share of the pre-game trade a sanction could still cut off.") + meter("China's access to American & allied chips and tools:", rs.techAtStake) + meter("<b>What could restrain China, overall:</b>", rs.R);
+      const intC = Engine.cnMoveCost(1, "invade");
+      if (side === "us") {
+        const pd = pending; const empty = rs.R < 0.3;
+        M.innerHTML = head + '<div class="step"><span class="era">Year 12</span><h2>Tension over Taiwan</h2><p>Chinese warships are massing in the Taiwan Strait. Before Beijing decides, you can make an announcement. <b>Your partner will see it.</b></p></div>' +
+          '<div class="panel"><h3>What you could still take away from China</h3>' + ties + '<div class="callout ' + (rs.R < 0.6 ? "empty" : "full") + '">' + (empty ? "<b>You have already cut most ties.</b> There is little left to sanction. A threat now would be mostly words — and China knows it." : rs.R < 0.6 ? "<b>Some ties are left.</b> A threat would still bite — less than it once could. Every tie the two of you cut made it weaker." : "<b>China still has a lot to lose.</b> It still sells you much of what it used to and relies on your technology. A sanctions threat has real bite.") + "</div></div>" +
+          '<div class="step"><h3>Your announcement</h3>' + choiceList(null, "threat", [["ambiguous", "Stay ambiguous", "Don't commit in advance. Some sanctions would follow a move anyway, but China has to guess how many."], ["sanctions", "Threaten sweeping sanctions", "\"Any move on Taiwan cuts China off from the American economy.\" Only as strong as what's left to cut."]], pd.threat) + "</div>" +
+          '<button class="big" data-act="submit" data-k="4" ' + (pd.threat ? "" : "disabled") + ">Announce</button>";
+        return;
+      }
+      // China
+      const t = mv.us.threat; const bite = t ? rs.biteIf(t) : rs.biteIf("sanctions");
+      const level = rs.R < 0.3 ? "empty" : rs.R < 0.6 ? "mid" : "full";
+      const big = { empty: "<b>There is not much left to restrain you.</b> You and America have already separated. Its economic threats have almost nothing left to take away. The only thing standing between you and a move on Taiwan is the war itself.", mid: "<b>Some ties are left.</b> America could still hurt you — less than it once could. Every tie you cut in the earlier rounds made this decision cheaper.", full: "<b>You still have a great deal to lose.</b> America buys much of what your factories make, and your firms still rely on its technology. A move would put that at risk." }[level];
+      const ann = t ? '<div class="panel ' + (t === "sanctions" ? "red" : "") + '"><h3>America announced</h3><p class="lede">' + (t === "sanctions" ? "\"Any move on Taiwan cuts China off from the American economy.\"" : "Washington stayed ambiguous — no commitment either way.") + "</p>" + (t === "sanctions" ? '<p class="small">' + (rs.R < 0.3 ? "<b class=\"red\">Mostly empty.</b> There is little left for America to cut off." : rs.R < 0.6 ? "<b class=\"gold\">Partly credible.</b> America could still hurt you, but less than it once could." : "<b class=\"green\">Credible.</b> America still has a great deal it could cut off.") + "</p>" : "") + "</div>" : '<div class="panel"><h3>America is deciding what to announce…</h3><p class="muted">Study your position while you wait. The screen updates when America speaks.</p></div>';
+      const opt = (mvk, l, h) => { const c = Engine.cnMoveCost(bite, mvk); const pr = Engine.PARAMS.success[mvk]; return [mvk, l, h + (mvk === "hold" ? "" : '<div class="cost">Chance it works: <b>' + Math.round(pr * 100) + "%</b> · Economic cost at today's ties: jobs <b>" + fmt(c.jobsP) + "</b>, technology <b>" + fmt(c.innov) + "</b>, prices <b>" + fmt(c.col) + "</b></div>")]; };
+      const opts = [opt("hold", "Hold", "Keep the status quo. No economic cost, no strategic gain."), opt("blockade", "Blockade Taiwan", "Cut the island off by sea and force concessions. Success: a major strategic gain. Failure: a humiliating retreat."), opt("invade", "Invade Taiwan", "Take the island. Success: your biggest strategic prize. Failure: a strategic disaster.")];
+      const nowInv = Engine.cnMoveCost(bite, "invade");
+      M.innerHTML = head + '<div class="step"><span class="era">Year 12</span><h2>Taiwan</h2><p>Your warships are in position. Do you move?</p></div>' + ann +
+        '<div class="panel"><h3>What restrains you</h3>' + ties + '<div class="callout ' + (level === "full" ? "full" : "empty") + '">' + big + "</div>" +
+        '<table class="two"><tr><th>An invasion would cost you…</th><th>Jobs</th><th>Technology</th></tr><tr><td>At today\'s ties</td><td><b class="red">' + fmt(nowInv.jobsP) + '</b></td><td><b class="red">' + fmt(nowInv.innov) + '</b></td></tr><tr><td class="muted">Had you both stayed integrated</td><td class="muted">' + fmt(intC.jobsP) + '</td><td class="muted">' + fmt(intC.innov) + '</td></tr></table>' +
+        '<p class="small" style="margin-top:.5rem">Your weapon: America still depends on you for <b>' + pct(rs.lev.pharma) + "</b> of its medical inputs and <b>" + pct(rs.lev.batt) + "</b> of its battery minerals. A move means cutting those off.</p></div>" +
+        (p === "r4" ? '<div class="step"><h3>Your decision</h3>' + choiceList(null, "taiwan", opts, pending.taiwan) + '</div><button class="big" data-act="submit" data-k="4" ' + (pending.taiwan ? "" : "disabled") + ">Decide</button>" : '<p class="muted" style="text-align:center">Your decision unlocks once America has spoken.</p>');
       return;
     }
-    if (phase === "cf") {
-      const tot = sims.total; const cf = sims.cf; $("gauges").classList.add("hidden");
-      const world = (title, cls, s, extra) => '<div class="world ' + cls + '"><h4 class="' + (cls === "obs" ? "teal" : "gold") + '">' + title + "</h4>" + gaugeList(s.total, true) + '<div class="small muted">TV $' + s.tangible.tv + " · generic drug $" + s.tangible.drug + " · +$" + s.tangible.monthly + "/month</div>" + (extra || "") + "</div>";
-      M.innerHTML = '<div class="step reveal"><h2>But you only observed one world.</h2><p>Everything on your dashboard is the world your policy produced. To know whether it <i>worked</i>, you would need to see the world it prevented.</p></div>' +
-        '<div class="split reveal">' + world("The world you created · observed", "obs", sims) + world("Had you stayed fully integrated · never observed", "cf", cf.integrated, "<div class='small'>Same dice roll" + (myChoice.hit ? " (crisis)" : " (no crisis)") + "</div>") + "</div>" +
-        '<div class="split reveal" style="margin-top:.6rem">' + world("Your policy, other dice roll · never observed", "cf", cf.otherRoll, "<div class='small'>Same choices, " + (myChoice.hit ? "no crisis" : "crisis") + "</div>") + '<div class="world"><h4 class="muted">Which of these could you have seen?</h4><ul><li>A factory that exists — <b class="green">visible</b>.</li><li>A drug shortage that happened — <b class="green">visible</b>.</li><li>' + (cf.integrated.tangible.tv !== sims.tangible.tv ? 'A $' + cf.integrated.tangible.tv + ' TV that costs $' + sims.tangible.tv + ' under your policy' : 'The $' + Math.abs(sims.tangible.monthly - cf.integrated.tangible.monthly) + ' a month a household would have had under a policy you did not choose') + ' — <b class="red">exists nowhere</b>.</li><li>A crisis that never came because China lacked the leverage — <b class="red">exists nowhere</b>.</li></ul></div></div>' +
-        '<div class="panel gold reveal" style="margin-top:.8rem"><h3>Policy effects are counterfactual.</h3><p>The world you see is one draw from one policy. The model just showed you the others. In real life, nothing does.</p></div>' +
-        '<button class="big" onclick="App.go(\'done\')">Finish</button>';
+    if (p === "roll") {
+      setGauges(sumG(...so(3)), "year 15", true); const t = mv.cn.taiwan; const d = sim.c.detail;
+      if (t === "hold") {
+        M.innerHTML = head + '<div class="step reveal"><span class="era">Year 12</span><h2>China held.</h2><p class="lede">' + (side === "us" ? "The warships went home. " + (mv.us.threat === "sanctions" ? "<b>Did your threat work — or would China have held anyway?</b> From here, you can't tell." : "<b>Was it your ambiguity, the remaining ties, or the risk of war itself?</b> From here, you can't tell.") : "You stood down. <b>What held you back — the economic ties, America's announcement, or the war itself?</b>") + '</p></div><button class="big" data-act="seen" data-k="roll">See where 15 years left you</button>';
+        return;
+      }
+      M.innerHTML = head + '<div class="step reveal"><span class="era">Year 12</span><h2>China chose to ' + (t === "invade" ? "invade" : "blockade") + ' Taiwan.</h2><p>Nothing either of you does now changes the odds: a ' + Math.round(d.p * 100) + '% chance it works.</p><div class="die" id="die">?</div><button class="big" id="rollBtn" data-act="roll">Roll</button></div>';
       return;
     }
-    if (phase === "done") {
-      if (!sims || !myChoice.dec3) { M.innerHTML = '<div class="panel"><p>Waiting…</p></div>'; return; }
-      setGauges(sims.total, "final", true);
-      M.innerHTML = '<div class="panel gold"><h2>Done. Look up at the screen.</h2><p>Your final world: security <b>' + fmt(sims.total.sec) + '</b>, cost of living <b>' + fmt(sims.total.col) + '</b>, jobs net <b>' + fmt(sims.total.jobsP + sims.total.jobsO) + '</b>, innovation <b>' + fmt(sims.total.innov) + "</b>" + (myChoice.hit ? ' · <span class="red">you drew the crisis</span>' : ' · <span class="teal">no crisis</span>') + '.</p></div><div class="row"><button class="secondary" onclick="App.go(\'cf\')">Back to the counterfactual</button><button class="secondary" onclick="App.go(\'r1res\')">Round 1</button><button class="secondary" onclick="App.go(\'r2res\')">Round 2</button><button class="secondary" onclick="App.go(\'r3res\')">Round 3</button></div>' + (role === "solo" ? '<p><button class="secondary" onclick="App.solo()">Play again</button></p>' : "");
+    if (p === "crisis") {
+      const d = sim.c.detail, tot = sim.total[side]; setGauges(tot, "final", true); const t = d.move; let html;
+      if (t === "hold") html = '<div class="calm reveal"><h2 class="teal">No conflict.</h2><p>' + (side === "us" ? (mv.us.dec3.stockpile ? "Your stockpile sat in a warehouse, unused, costing money every year. Was it a mistake? <b>Careful: you're judging a decision by an outcome it didn't control.</b>" : "Your ties, your threat, or China's own caution — something held. You'll never know which.") : "Your factories kept running and your exports kept flowing. You'll never know what a move would have brought.") + "</p></div>";
+      else if (side === "us") html = '<div class="crisis reveal"><h2 class="red">' + (d.success ? (t === "invade" ? "Taiwan has fallen." : "The blockade forced concessions.") : (t === "invade" ? "The invasion failed." : "The blockade broke.")) + "</h2><p>China cut off what you still bought from it: you depended on it for <b>" + d.pd + "%</b> of medical inputs and <b>" + d.bd + "%</b> of battery minerals. About <b>" + d.shortage + "%</b> of generic drug lines went into shortage" + (d.stockpiled ? " — your stockpile cut the damage by more than half" : "") + ".</p><p>Taiwan's chip fabs went offline. You had built <b>" + d.semiCap + "%</b> of a domestic buffer.</p><p>" + (mv.us.threat === "sanctions" ? "You followed through on your sanctions — they cost you too." : "You imposed sanctions anyway — they cost you too.") + "</p>" + gaugeList(sim.c.us.gauges, "us").replace("<ul>", '<div class="muted small">Year-12 impact on you</div><ul>') + "</div>";
+      else html = '<div class="crisis reveal"><h2 class="red">' + (d.success ? (t === "invade" ? "You took Taiwan." : "Your blockade forced concessions.") : (t === "invade" ? "Your invasion failed." : "Your blockade broke.")) + "</h2><p>America's sanctions cost you jobs <b>" + fmt(d.cnCost.sanctionJobs) + "</b>. " + (d.R < 0.3 ? "<b>That's all they could do — there was almost nothing left to cut.</b>" : d.R < 0.6 ? "Painful, but far less than they could once have done." : "<b>Your remaining ties made this very expensive.</b>") + "</p><p>The war itself, and the loss of Taiwan's chip fabs, cost you more.</p>" + gaugeList(sim.c.cn.gauges, "cn").replace("<ul>", '<div class="muted small">Year-12 impact on you</div><ul>') + "</div>";
+      M.innerHTML = head + html + '<div class="panel reveal"><h3>Final scorecard — ' + SIDES[side] + ", 15 years</h3>" + gaugeList(tot, side) + (side === "us" ? '<p class="small muted">About $' + sim.tangible.monthly + " more per household per month. A $500 TV costs $" + sim.tangible.tv + "; a $100 generic drug costs $" + sim.tangible.drug + ".</p>" : "") + powerBar(sim.power) + '<p class="muted small">Your gauges measure how ' + (side === "us" ? "Americans" : "China's people") + ' are doing. The bar measures who is stronger. They are different scoreboards.</p></div><div class="panel gold"><h3>Was that a good tradeoff?</h3><p>Nobody will score it for you.</p></div><button class="big" data-act="seen" data-k="crisis">Did your policy work?</button>';
+      return;
+    }
+    if (p === "cf") {
+      $("gauges").classList.add("hidden"); const c = cf; const t = mv.cn.taiwan;
+      const world = (title, cls, s, extra) => '<div class="world ' + cls + '"><h4 class="' + (cls === "obs" ? "teal" : "gold") + '">' + title + "</h4>" + gaugeList(s.total[side], side) + powerBar(s.power) + (extra || "") + "</div>";
+      const intRs = c.integrated.rs; const inv = (rs) => Engine.cnMoveCost(rs.biteIf(mv.us.threat), "invade");
+      const nowC = inv(sim.rs), intCost = inv(intRs);
+      M.innerHTML = head + '<div class="step reveal"><h2>But you only observed one world.</h2><p>Everything on your scorecard is the world the two of you produced. To know whether your choices <i>worked</i>, you would need to see the worlds they prevented.</p></div>' +
+        '<div class="split reveal">' + world("The world you created · observed", "obs", sim) + world("Had you both stayed integrated · never observed", "cf", c.integrated, "<div class='small'>Same announcement, same Taiwan decision" + (t !== "hold" ? ", same roll" : "") + ".</div>") + "</div>" +
+        (c.otherRoll ? '<div class="split reveal" style="margin-top:.6rem">' + world("Same choices, other roll · never observed", "cf", c.otherRoll, "<div class='small'>" + (sim.c.detail.success ? "The move fails." : "The move succeeds.") + "</div>") + '<div class="world"><h4 class="muted">Same decisions, different world</h4><p class="small">Nothing either of you chose separates these two columns. Only the draw.</p></div></div>' : "") +
+        '<div class="panel gold reveal" style="margin-top:.8rem"><h3>What held China back?</h3><table class="two"><tr><th>An invasion would have cost China</th><th>Jobs</th><th>Technology</th></tr><tr><td>At your pair\'s ties</td><td><b>' + fmt(nowC.jobsP) + "</b></td><td><b>" + fmt(nowC.innov) + "</b></td></tr><tr><td>Fully integrated</td><td><b>" + fmt(intCost.jobsP) + "</b></td><td><b>" + fmt(intCost.innov) + '</b></td></tr></table><p class="small" style="margin-top:.5rem">Every tie you cut made America\'s threats weaker and China\'s decision cheaper. Interdependence is costly — and it is also what makes retaliation credible.</p></div>' +
+        '<div class="panel reveal"><h3>Which of these could you have seen?</h3><ul class="small"><li>A factory that exists — <b class="green">visible</b>.</li><li>A ' + (t === "hold" ? "conflict" : "crisis") + " that " + (t === "hold" ? "never came" : "happened") + " — <b class=\"green\">visible</b>.</li><li>Why China " + (t === "hold" ? "held" : "moved") + " — <b class=\"red\">never visible</b>. Was it the ties, the threat, or something else?</li><li>The cheaper TV in the integrated world — <b class=\"red\">exists nowhere</b>.</li></ul></div>" +
+        '<button class="big" data-act="seen" data-k="cf">Finish</button>';
+      return;
+    }
+    if (p === "done") {
+      const tot = sim.total[side]; setGauges(tot, "final", true); const d = sim.c.detail;
+      M.innerHTML = head + '<div class="panel gold"><h2>Done. Look up at the screen.</h2><p>Your final world: security <b>' + fmt(tot.sec) + "</b>, cost of living <b>" + fmt(tot.col) + "</b>, jobs net <b>" + fmt(tot.jobsP + tot.jobsO) + "</b>, " + (side === "us" ? "innovation" : "technology") + " <b>" + fmt(tot.innov) + "</b>. Taiwan: <b>" + (d.move === "hold" ? "China held" : d.success ? "China's " + d.move + " succeeded" : "China's " + d.move + " failed") + "</b>.</p>" + powerBar(sim.power) + '</div><div class="row"><button class="secondary" data-act="peek" data-p="cf">Counterfactual</button><button class="secondary" data-act="peek" data-p="r1res">Round 1</button><button class="secondary" data-act="peek" data-p="r2res">Round 2</button><button class="secondary" data-act="peek" data-p="r3res">Round 3</button></div>' + (role === "solo" ? '<p><button class="secondary" data-act="soloPick">Play again</button></p>' : "");
+      if (view === "cf") { /* handled above */ }
       return;
     }
   }
@@ -961,32 +1256,21 @@ const App = (() => {
   }
 
   /* ---------- actions ---------- */
-  function dial(id, k) {
-    pending.dials[id] = k;
-    const seg = $("seg-" + id);
-    if (!seg || phase !== "r1") { renderPlayer(); return; }
-    seg.querySelectorAll("button").forEach((b, i) => b.classList.toggle("on", i === k));
-    fxUpdate(Engine.INDUSTRIES.find(i => i.id === id), k);
-    setGauges(Engine.direct(Object.assign({ semi: 0, batt: 0, pharma: 0, elec: 0, basic: 0 }, pending.dials)), "advisers' projection", false);
-    const btn = $("submit1"); if (btn) btn.disabled = Object.keys(pending.dials).length < 5;
+  async function submit(k) {
+    const path = pathOf("moves", pid, side);
+    if (k === 1) { if (Object.keys(pending.dials).length < 5) return; await store.update(path, { dials: Object.assign({}, pending.dials) }); }
+    if (k === 2) await store.update(path, { dec2: Object.assign({}, pending.dec2) });
+    if (k === 3) await store.update(path, { dec3: Object.assign({}, pending.dec3) });
+    if (k === 4) { if (side === "us") await store.update(path, { threat: pending.threat }); else await store.update(path, { taiwan: pending.taiwan }); }
+    window.scrollTo(0, 0);
   }
-  function pick(dec, field, v) { pending[dec][field] = v; renderPlayer(); }
-  async function submit1() { if (Object.keys(pending.dials).length < 5) return; const dials = Object.assign({}, pending.dials); phase = "initwait"; await store.update(pathOf("choices", uid), { dials }); myChoice.dials = dials; recompute(); phase = "r1res"; renderPlayer(); }
-  async function submit2() { const dec2 = Object.assign({}, pending.dec2); phase = "initwait"; await store.update(pathOf("choices", uid), { dec2 }); myChoice.dec2 = dec2; recompute(); phase = "r2res"; renderPlayer(); }
-  async function submit3() {
-    const dec3 = { subsidy: pending.dec3.subsidy, stockpile: pending.dec3.stockpile === "yes" };
-    const p = Engine.crisisProbability(myChoice.dials, myChoice.dec2).p;
-    const hit = Engine.rng(hash(code + uid + "hit"))() < p;
-    phase = "initwait"; await store.update(pathOf("choices", uid), { dec3, hit }); myChoice.dec3 = dec3; myChoice.hit = hit; recompute(); phase = "r3res"; renderPlayer();
-  }
-  function next(p) { phase = p; advance(); }
-  function roll() {
+  function doRoll() {
     const die = $("die"); $("rollBtn").disabled = true; let n = 0; const faces = ["⚀", "⚁", "⚂", "⚃", "⚄", "⚅"];
-    const h = setInterval(() => { die.textContent = faces[Math.floor(Math.random() * 6)] + " " + faces[Math.floor(Math.random() * 6)]; if (++n > 14) { clearInterval(h); go("crisis"); } }, 90);
+    const h = setInterval(() => { die.textContent = faces[Math.floor(Math.random() * 6)] + " " + faces[Math.floor(Math.random() * 6)]; if (++n > 14) { clearInterval(h); seen.roll = true; persist(); advance(); } }, 90);
   }
 
-  return { boot, show, solo, hostSetup, createSession, setStatus, hostTimer, addBots, tab, twin, abandon, join, dial, pick, submit1, submit2, submit3, next, go, roll,
-    _test: { memStore, get phase() { return phase; }, get sims() { return sims; }, get choices() { return choices; }, get meta() { return meta; } } };
+  return { boot, show, hostSetup, createSession, setStatus, hostTimer, addBots, twin, abandon, join,
+    _test: { get phase() { return phase; }, get sim() { return sim; }, get mv() { return mv; }, get pairs() { return pairs; }, get moves() { return moves; }, get meta() { return meta; } } };
 })();
 window.App = App;
 document.addEventListener("DOMContentLoaded", App.boot);
