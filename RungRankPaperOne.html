@@ -1,0 +1,1267 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rung Rank: Paper One</title>
+<style>
+:root{
+  --navy:#1B2A4A; --navy2:#2B3D63; --gold:#C9A227; --gold-l:#FBF3DA; --teal:#1C7C7D; --teal-l:#E3F2F1;
+  --bg:#F5F6F8; --card:#fff; --ink:#1d2433; --muted:#667085; --line:#E1E4EA;
+  --ok:#1E8E5A; --ok-l:#E4F5EC; --warn:#B7791F; --warn-l:#FFF5DE; --bad:#C0392B; --bad-l:#FBE9E7;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+header.top{background:var(--navy);color:#fff;border-bottom:4px solid var(--gold);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+header.top .brand{font-weight:700;font-size:20px;letter-spacing:.3px}
+header.top .codebadge{font-size:14px;opacity:.9}
+header.top .codebadge b{font-size:18px;letter-spacing:2px;color:var(--gold)}
+main{max-width:1180px;margin:0 auto;padding:18px 16px 60px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin:0 0 16px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.narrow{max-width:560px;margin-left:auto;margin-right:auto}
+h1{font-size:26px;margin:0 0 6px;color:var(--navy)}
+h2{font-size:19px;margin:0 0 10px;color:var(--navy)}
+h3{font-size:16px;margin:0 0 6px;color:var(--navy)}
+h4{font-size:14px;margin:14px 0 6px;color:var(--navy);text-transform:uppercase;letter-spacing:.4px}
+p{margin:0 0 10px}
+.muted{color:var(--muted)} .small{font-size:13px}
+label{display:block;font-weight:600;margin:12px 0 4px;font-size:14px}
+label small{display:block;font-weight:400;color:var(--muted)}
+input[type=text],select,textarea{width:100%;font:inherit;padding:9px 11px;border:1px solid #C9CED8;border-radius:8px;background:#fff;color:var(--ink)}
+textarea{min-height:200px;resize:vertical;font-size:14px}
+textarea.short{min-height:72px}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--teal);outline-offset:0;border-color:var(--teal)}
+.btn{font:inherit;font-weight:600;border:1px solid var(--navy);background:#fff;color:var(--navy);border-radius:8px;padding:9px 16px;cursor:pointer}
+.btn:hover{background:#EEF1F6}
+.btn.primary{background:var(--teal);border-color:var(--teal);color:#fff}
+.btn.primary:hover{background:#166667}
+.btn.gold{background:var(--gold);border-color:var(--gold);color:var(--navy)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.sm{padding:5px 10px;font-size:13px}
+.link{background:none;border:0;color:var(--teal);cursor:pointer;font:inherit;font-size:13px;padding:0;text-decoration:underline}
+.link.danger{color:var(--bad)}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.msg{margin-top:10px;font-size:14px;min-height:1px}
+.msg.ok{color:var(--ok)} .msg.err{color:var(--bad)}
+.banner{background:var(--bad-l);color:var(--bad);border-bottom:1px solid #f0c4bf;padding:10px 20px;font-size:14px}
+.demo-bar{background:var(--warn-l);border-bottom:1px solid #f1d9a0;padding:8px 20px;font-size:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.chip{display:inline-block;font-size:12px;font-weight:600;border-radius:999px;padding:2px 9px;margin:2px 4px 2px 0;white-space:nowrap}
+.chip.ok{background:var(--ok-l);color:var(--ok)}
+.chip.miss{background:#F1F2F5;color:#98A2B3}
+.chip.teal{background:var(--teal-l);color:var(--teal)}
+.chip.warn{background:var(--warn-l);color:#7a5413}
+.chip.bad{background:var(--bad-l);color:var(--bad)}
+.live{font-size:11px;font-weight:700;color:var(--ok);background:var(--ok-l);border-radius:999px;padding:2px 8px;vertical-align:middle;margin-left:6px;text-transform:uppercase;letter-spacing:.5px}
+details{margin:6px 0 0;border:1px solid var(--line);border-radius:8px;background:#FAFBFC}
+details>summary{cursor:pointer;padding:7px 10px;font-size:14px;font-weight:600}
+details .out{padding:0 12px 10px;white-space:pre-wrap;font-size:14px;max-height:340px;overflow:auto}
+.hero{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;background:var(--navy);color:#fff;border:0}
+.hero h2{color:#fff}
+.hero .bigcode{font-size:44px;font-weight:800;letter-spacing:6px;color:var(--gold);line-height:1}
+.hero .url{font-size:15px;opacity:.9;word-break:break-all}
+.steps{display:flex;gap:6px;margin:0 0 14px;flex-wrap:wrap}
+.steps span{font-size:13px;font-weight:600;padding:5px 12px;border-radius:999px;background:#E8EBF1;color:var(--muted)}
+.steps span.on{background:var(--navy);color:#fff}
+.steps span.done{background:var(--teal-l);color:var(--teal)}
+.tabs{display:flex;gap:6px;margin:0 0 14px;flex-wrap:wrap}
+.tabs button{font:inherit;font-weight:600;font-size:14px;padding:7px 14px;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--muted);cursor:pointer}
+.tabs button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.tabs .n{background:var(--gold);color:var(--navy);border-radius:999px;padding:0 7px;font-size:12px;margin-left:6px}
+.howto{background:var(--teal-l);border:1px solid #C5E3E1;border-radius:10px;padding:12px 16px;font-size:14px;margin-bottom:14px}
+.howto ol{margin:6px 0 0;padding-left:20px}
+.howto li{margin:3px 0}
+.prompt{position:sticky;top:0;z-index:5;background:var(--navy);color:#fff;border-radius:10px;padding:12px 16px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;box-shadow:0 4px 10px rgba(27,42,74,.18)}
+.prompt .q{font-size:17px;font-weight:700}
+.prompt .q small{display:block;font-size:13px;font-weight:400;opacity:.85}
+.outputs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.output{border:2px solid var(--line);border-radius:10px;display:flex;flex-direction:column;background:#FCFCFD}
+.output .olabel{background:var(--navy);color:#fff;font-weight:800;font-size:18px;padding:6px 12px;border-radius:7px 7px 0 0;display:flex;justify-content:space-between;align-items:center;gap:6px}
+.output .olabel .tag{font-size:12px;font-weight:700;background:var(--gold);color:var(--navy);border-radius:999px;padding:3px 10px}
+.output .otext{padding:10px 12px;white-space:pre-wrap;font-size:14px;max-height:480px;overflow:auto;flex:1}
+.revwrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start}
+.paperpane{position:sticky;top:12px;max-height:calc(100vh - 24px)}
+.paperpane .otext{max-height:calc(100vh - 80px)}
+.dim{border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:0 0 10px;background:#fff}
+.dim .dt{font-weight:700;color:var(--navy)}
+.dim .dd{font-size:13px;color:var(--muted);margin-bottom:8px}
+.scale{display:flex;gap:6px;flex-wrap:wrap;position:relative}
+.scale input{position:absolute;opacity:0;width:1px;height:1px}
+.scale label{flex:1;min-width:54px;margin:0;font-weight:700;font-size:14px;text-align:center;border:1px solid #C9CED8;border-radius:8px;padding:5px 3px;cursor:pointer;background:#fff;color:var(--navy)}
+.scale label small{display:block;font-weight:400;font-size:11px;color:var(--muted);line-height:1.2}
+.scale input:checked+label{background:var(--teal);border-color:var(--teal);color:#fff}
+.scale input:checked+label small{color:#E3F2F1}
+.scale input:focus-visible+label{outline:2px solid var(--gold)}
+.dim input.note{margin-top:8px;font-size:13px;padding:6px 9px}
+.radios label,.checks label{display:inline-flex;align-items:center;gap:6px;font-weight:500;margin:4px 16px 4px 0;font-size:14px}
+.radios input,.checks input{width:auto;margin:0}
+.checks label.locked{color:var(--muted)}
+.sticky-submit{position:sticky;bottom:0;background:rgba(245,246,248,.97);border-top:1px solid var(--line);padding:12px 16px;margin:12px -16px 0;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;z-index:4}
+table.stat{width:100%;border-collapse:collapse;font-size:14px;margin-top:6px}
+table.stat th,table.stat td{padding:7px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+table.stat th{font-size:12px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted)}
+table.stat td details{margin:0;border:0;background:none}
+table.stat td details>summary{padding:0;color:var(--teal);text-decoration:underline;font-weight:500;font-size:13px}
+table.stat td details .out{padding:6px 0;max-height:260px}
+.bar{height:14px;background:#EEF0F4;border-radius:6px;overflow:hidden;min-width:80px}
+.bar>i{display:block;height:100%;background:var(--teal);border-radius:6px}
+.bar.gold>i{background:var(--gold)}
+.hostlinks{text-align:center;font-size:14px;color:var(--muted);margin-top:22px}
+.hostlinks .btn{margin:4px}
+.warnbox{background:var(--warn-l);color:#7a5413;border-radius:8px;padding:8px 12px;font-size:14px;margin:8px 0}
+.okbox{background:var(--ok-l);color:#16613f;border-radius:8px;padding:10px 14px;font-size:15px;margin:8px 0}
+.nudge{background:var(--gold-l);border:1px solid #EAD591;color:#5c4a0d;border-radius:8px;padding:10px 14px;font-size:14px;margin:8px 0}
+.fb-row{display:grid;grid-template-columns:minmax(0,1fr) 110px;gap:4px 12px;padding:6px 0;border-bottom:1px solid var(--line);font-size:14px;align-items:start}
+.fb-row .score{font-weight:800;color:var(--navy);white-space:nowrap}
+.fb-row .note{grid-column:1/-1;color:var(--muted);font-size:13px;font-style:italic}
+.qa{margin:0 0 10px}
+.qa .q{font-weight:600;font-size:14px;color:var(--navy)}
+.qa .a{white-space:pre-wrap;font-size:14px;padding:4px 0 0 10px;border-left:3px solid var(--teal-l)}
+.right{color:var(--ok);font-weight:700} .wrong{color:var(--bad);font-weight:700}
+.promptbox{width:100%;font:13px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;min-height:160px}
+@media (max-width:900px){
+  .outputs,.grid2,.revwrap{grid-template-columns:minmax(0,1fr)}
+  .paperpane{position:static;max-height:none}
+  .paperpane .otext{max-height:360px}
+  .hero .bigcode{font-size:34px}
+}
+@media print{
+  header.top,.demo-bar,.banner,.tabs,.noprint,#who{display:none!important}
+  body{background:#fff} main{max-width:none;padding:0}
+  .card{box-shadow:none;border-color:#ccc;break-inside:avoid}
+  details{border:0} details>summary{display:none} details .out{max-height:none}
+}
+</style>
+</head>
+<body>
+<div id="fatal" class="banner" hidden></div>
+<div id="demoBar" class="demo-bar" hidden></div>
+<header class="top">
+  <div class="brand">Rung Rank: Paper One</div>
+  <div id="codeBadge" class="codebadge" hidden></div>
+</header>
+<main id="app"><div class="card narrow"><p class="muted">Loading…</p></div></main>
+
+<!-- Firebase compat SDK (same project as the other class games) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
+/* =====================================================================
+   FIREBASE CONFIG (same project as the other class games)
+   Sessions live under games/rp1-CODE, so your existing rules apply.
+   ===================================================================== */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyDQ8gn5w_Jj4OzcXFBz2lY2SKuaKEo2wbk",
+  authDomain: "obfuscationgame.firebaseapp.com",
+  databaseURL: "https://obfuscationgame-default-rtdb.firebaseio.com",
+  projectId: "obfuscationgame",
+  storageBucket: "obfuscationgame.firebasestorage.app",
+  messagingSenderId: "443679460937",
+  appId: "1:443679460937:web:d6b2806717894b3c923998"
+};
+const PREFIX = "rp1-";
+
+/* =====================================================================
+   THE PROMPT STUDENTS COPY INTO THEIR AI MODEL  (edit freely)
+   ===================================================================== */
+const PROMPT_TEXT = `You are helping with an in-class writing exercise for a first-year seminar at Brandeis University. Write a complete paper that fulfills the assignment below, based ONLY on the attached document(s).
+
+Instructions:
+- Length: about four double-spaced pages in 12-point font (roughly 1,000–1,200 words of body text), plus a reference list at the end.
+- Follow the thesis, structure, and argument in the attached outline or draft as closely as you can. Do not change the author's position.
+- Use only sources that appear in the attached materials. Do not invent sources, quotations, statistics, or page numbers. If the attached materials do not contain enough sources to meet the citation requirement, say so in a note at the end rather than making any up.
+- Citation style: format all citations and the reference list exactly the way they appear in the American Economic Review — author-year citations in the text, e.g. (Autor 2015) or Autor (2015), and an alphabetical reference list at the end in AER format.
+- Write in the style of a non-technical academic paper, such as articles in the Journal of Economic Perspectives (for example, Lee & Wu, "Subsidizing Creativity through Network Design: Zero-Pricing and Net Neutrality," JEP 2009): clear, concise argumentation and logical structure; well-reasoned arguments supported by evidence; no complex mathematical or statistical analysis.
+- Return the full paper as plain text, with the reference list at the end.
+
+The assignment (from the course syllabus):
+
+Paper 1. AI and Your Education
+Focus: Analysis of how AI's existence should impact your studies at Brandeis University. When/where should you use AI in your studies? When/where should you not? How might you prepare yourself for a world where work often uses AI? When does using AI reduce/expand your human capital?
+Length: 5–6 pages, double-spaced, 12-point font. (For this exercise, write about four pages instead, as described above.)
+Style: Model your approach on non-technical academic papers like Lee & Wu's "Subsidizing Creativity through Network Design: Zero-Pricing and Net Neutrality" (Journal of Economic Perspectives, 2009). Citation style: as in the American Economic Review (see above).
+Citations: 10 to 15 citations are required to support the analysis (e.g., from Journal of Economic Perspectives, Economics Letters, Wall Street Journal, Financial Times, The Economist, Washington Post, 404 Media, Ars Technica, U.S. News, Economic Policy Institute, or search platforms like EconLit).
+Emphasis on clear, concise argumentation and logical structure, and on developing well-reasoned arguments supported by evidence, without using complex mathematical or statistical analysis.`;
+
+/* =====================================================================
+   THE HANDOUT, AS A FORM  (edit freely)
+   ===================================================================== */
+// [name, description, optional [label for 1, label for 5]] — dimensions without anchors use SCALE below
+const DIMS = [
+  ["Clarity of central argument", "How clear and focused is the main claim?"],
+  ["Restatable thesis", "After reading, how easily could you state the paper's central argument in one sentence?", ["Couldn't say what it argues", "Could restate it instantly"]],
+  ["Depth of analysis", "How much does the paper move beyond summary into interpretation and argument?"],
+  ["Use of evidence", "How effectively does the paper use examples, data, quotations, or other support?"],
+  ["Integration of sources", "How smoothly and meaningfully are sources incorporated?"],
+  ["Credibility of sourcing", "Do the citations look real, specific, and used correctly — or vague, generic, or possibly invented?"],
+  ["Organization and logical flow", "How well do ideas build from paragraph to paragraph?"],
+  ["Originality / insight", "How much does the paper offer fresh thinking rather than predictable points?"],
+  ["Voice and sense of authorship", "How much does it sound like a real person with a perspective and a purpose?"],
+  ["Substance behind the polish", "The prose probably reads smoothly. Is that polish backed by real quality of thought, or is it mostly smooth wording?", ["Mostly smooth wording", "Real quality throughout"]],
+  ["Fit to the assignment", "How well does it answer the Paper 1 question (when/where to use AI at Brandeis; human capital) in the required style?"],
+  ["Overall persuasiveness", "How convincing is the paper as a whole?"]
+];
+const SCALE = ["Weak", "Below average", "Adequate", "Strong", "Excellent"];
+function scaleLabel(i, v) {        // label shown under number v (1..5) for dimension i
+  const an = DIMS[i][2];
+  if (!an) return SCALE[v - 1];
+  return v === 1 ? an[0] : v === 5 ? an[1] : v === 3 ? "In between" : "";
+}
+function scoreWord(i, v) { const an = DIMS[i][2]; return an ? (v === 1 ? an[0] : v === 5 ? an[1] : v < 3 ? "Leans “" + an[0].toLowerCase() + "”" : v > 3 ? "Leans “" + an[1].toLowerCase() + "”" : "In between") : SCALE[v - 1]; }
+const REFL = [
+  "Where is this paper strongest?",
+  "Where is it weakest?",
+  "What does the paper flatten, overgeneralize, or leave out?"
+];
+const SYNTH = [
+  "Having read your reviewer's comments and both AI versions, would you rather submit one of the AI versions or your own paper? Why?",
+  "What does this comparison suggest about what AI currently does well, and what it still does poorly, in college writing?",
+  "Which AI version was closer to your own paper — the one generated from your outline (+ bibliography), or the one from your full first draft? Why?"
+];
+const SRC_NAME = { a: "outline-based", b: "full-draft-based" };
+const SRC_LONG = { a: "generated from your outline (+ bibliography)", b: "generated from your full first draft" };
+const MAX_CHARS = 80000;
+const N_FIELDS = 4 + 2 * DIMS.length + 2 * REFL.length + 2;
+/* ===================================================================== */
+
+const $ = id => document.getElementById(id);
+const app = $("app");
+function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
+function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+function words(t) { const s = String(t || "").trim(); return s ? s.split(/\s+/).length : 0; }
+function mean(a) { return a.length ? a.reduce((x, y) => x + y, 0) / a.length : null; }
+function pct(n, d) { return d ? Math.round(100 * n / d) + "%" : "–"; }
+function fmt2(x) { return x == null ? "–" : x.toFixed(2); }
+function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
+function fatal(msg) { const f = $("fatal"); f.innerHTML = msg; f.hidden = false; }
+function newId(p) { return p + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+function dateStr(ts) { return new Date(ts || Date.now()).toLocaleString(); }
+
+/* ---------------- stores ---------------- */
+function fbStore(db) {
+  return {
+    kind: "firebase",
+    set: (p, v) => db.ref(p).set(v),
+    update: (p, o) => db.ref(p).update(o),
+    get: async p => (await db.ref(p).get()).val(),
+    on(p, cb) {
+      const r = db.ref(p);
+      const h = r.on("value", s => cb(s.val()), e => fatal("Database read failed (" + esc(e.message) + "). Check that your Firebase rules allow reads and writes under <code>games</code>."));
+      return () => r.off("value", h);
+    }
+  };
+}
+function memStore() {
+  const data = {}; let subs = [];
+  const get = p => p.split("/").filter(Boolean).reduce((o, k) => (o && o[k] !== undefined ? o[k] : null), data);
+  const setDeep = (p, v) => {
+    const ks = p.split("/").filter(Boolean); let o = data;
+    for (let i = 0; i < ks.length - 1; i++) { if (typeof o[ks[i]] !== "object" || o[ks[i]] === null) o[ks[i]] = {}; o = o[ks[i]]; }
+    const last = ks[ks.length - 1];
+    if (v === null || v === undefined) delete o[last]; else o[last] = JSON.parse(JSON.stringify(v));
+  };
+  const copy = v => v == null ? null : JSON.parse(JSON.stringify(v));
+  const fire = () => { for (const s of subs) s.cb(copy(get(s.p))); };
+  return {
+    kind: "memory",
+    async set(p, v) { setDeep(p, v); fire(); },
+    async update(p, o) { for (const k in o) setDeep(p + "/" + k, o[k]); fire(); },
+    async get(p) { return copy(get(p)); },
+    on(p, cb) { const s = { p, cb }; subs.push(s); setTimeout(() => cb(copy(get(p))), 0); return () => { subs = subs.filter(x => x !== s); }; }
+  };
+}
+let fbCache = null;
+function firebaseStore() {
+  if (fbCache) return fbCache;
+  if (typeof firebase === "undefined") throw new Error("The Firebase library didn't load. Check your internet connection and reload the page.");
+  if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+  fbCache = fbStore(firebase.database());
+  return fbCache;
+}
+
+/* ---------------- state ----------------
+   games/rp1-CODE:
+     created, phase: submit | review | feedback
+     players/{pid}            {name, joined}
+     subs/{pid}/a             {text, bib, assign, model, ts}            (AI paper from the outline)
+     subs/{pid}/b             {text, outline, bib, assign, model, ts}   (AI paper from the full draft)
+     reviews/{rid}            {author, reviewer, order:[a|b, a|b] (shown as Paper 1, Paper 2),
+                               assignedAt, done, progress, guess, ratings, reflect, compare, submittedAt}
+     synth/{pid}              author's synthesis answers {0,1,2, ts}
+   -------------------------------------- */
+let store = null;
+let ctx = { role: null, code: null, pid: null, demo: false };
+let S = null, unsub = null;
+let screen = null, sig = null;
+let studentTab = null;
+const openDetails = new Set();
+const base = () => "games/" + PREFIX + ctx.code;
+function getPid() {
+  let p = lsGet("rp1.pid");
+  if (!p) { p = "p" + Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4); lsSet("rp1.pid", p); }
+  return p;
+}
+const players = () => (S && S.players) || {};
+const subs = () => (S && S.subs) || {};
+const reviews = () => (S && S.reviews) || {};
+const synth = () => (S && S.synth) || {};
+const phase = () => (S && S.phase) || "submit";
+function subOf(pid) { return subs()[pid] || {}; }
+function complete(pid) { const s = subOf(pid); return !!(s.a && s.a.text && s.b && s.b.text); }
+function pname(pid) { return (players()[pid] || {}).name || "?"; }
+function byTime(x, y) { return (x[1].assignedAt || 0) - (y[1].assignedAt || 0); }
+function reviewsOf(author) { return Object.entries(reviews()).filter(([, r]) => r.author === author).sort(byTime); }
+function tasksOf(pid) { return Object.entries(reviews()).filter(([, r]) => r.reviewer === pid).sort(byTime); }
+function inputsLine(src, s) {
+  if (!s) return "";
+  const parts = [];
+  if (src === "a") parts.push("outline"); else { parts.push("full first draft"); if (s.outline) parts.push("outline"); }
+  if (s.bib) parts.push("annotated bibliography");
+  if (s.assign) parts.push("assignment description");
+  return parts.join(" + ") + (s.model ? ` · model: ${s.model}` : "");
+}
+
+/* ---------------- rendering helpers ---------------- */
+function setScreen(name, html) {
+  if (screen === name) return false;
+  screen = name; sig = null;
+  app.innerHTML = html;
+  window.scrollTo(0, 0);
+  return true;
+}
+app.addEventListener("toggle", e => {
+  const d = e.target; if (d.tagName !== "DETAILS" || !d.dataset.k) return;
+  if (d.open) openDetails.add(d.dataset.k); else openDetails.delete(d.dataset.k);
+}, true);
+function updateBadge() {
+  const b = $("codeBadge");
+  if (ctx.code && ctx.role) { b.hidden = false; b.innerHTML = (ctx.role === "host" ? "Instructor · " : "") + "Session <b>" + esc(ctx.code) + "</b>"; }
+  else b.hidden = true;
+}
+function connect() {
+  if (unsub) unsub();
+  screen = null; sig = null;
+  updateBadge();
+  unsub = store.on(base(), val => {
+    S = val;
+    if (!S) { showLanding("That session no longer exists."); return; }
+    render();
+  });
+}
+function render() {
+  if (!S) return;
+  if (ctx.role === "host") { renderHost(); if (ctx.demo) demoBots(); }
+  else renderStudent();
+}
+
+/* =====================================================================
+   LANDING / JOIN
+   ===================================================================== */
+function showLanding(note) {
+  if (unsub) { unsub(); unsub = null; }
+  ctx = { role: null, code: null, pid: null, demo: false };
+  S = null; screen = "landing"; studentTab = null; updateBadge(); $("demoBar").hidden = true;
+  store = null;
+  const params = new URLSearchParams(location.search);
+  const preCode = (params.get("code") || "").toUpperCase().replace(/[^A-Z]/g, "").slice(0, 4);
+  const hostCode = lsGet("rp1.host");
+  app.innerHTML = `
+  <section class="card narrow">
+    <h1>Rung Rank: Paper One</h1>
+    <p class="muted">Your paper vs. the AI's — join your class session.</p>
+    ${note ? `<div class="warnbox">${esc(note)}</div>` : ""}
+    <label>Session code<input type="text" id="jCode" maxlength="4" autocapitalize="characters" autocomplete="off" value="${esc(preCode)}" placeholder="ABCD"></label>
+    <label>Your name<small>First and last name, so your instructor can tell students apart. Other students never see it.</small><input type="text" id="jName" autocomplete="off" maxlength="60"></label>
+    <div class="row" style="margin-top:14px"><button class="btn primary" id="jGo">Join</button></div>
+    <div class="msg" id="jMsg"></div>
+  </section>
+  <div class="hostlinks">
+    Instructor:
+    <button class="btn sm" id="hNew">Start a new session</button>
+    ${hostCode ? `<button class="btn sm" id="hResume">Resume session ${esc(hostCode)}</button>` : ""}
+    <button class="btn sm" id="hDemo">Preview with a simulated class</button>
+  </div>`;
+  $("jCode").addEventListener("input", () => { $("jCode").value = $("jCode").value.toUpperCase().replace(/[^A-Z]/g, ""); });
+  $("jGo").onclick = joinSession;
+  $("jName").addEventListener("keydown", e => { if (e.key === "Enter") joinSession(); });
+  $("hNew").onclick = hostNew;
+  if ($("hResume")) $("hResume").onclick = () => hostResume(hostCode);
+  $("hDemo").onclick = startDemo;
+}
+
+async function joinSession() {
+  const msg = $("jMsg");
+  const code = $("jCode").value.toUpperCase().replace(/[^A-Z]/g, "");
+  const name = $("jName").value.trim().replace(/\s+/g, " ");
+  msg.className = "msg err";
+  if (code.length !== 4) { msg.textContent = "Enter the 4-letter session code."; return; }
+  if (!name) { msg.textContent = "Enter your name."; return; }
+  $("jGo").disabled = true; msg.className = "msg"; msg.textContent = "Joining…";
+  try {
+    store = firebaseStore();
+    const created = await store.get("games/" + PREFIX + code + "/created");
+    if (!created) { msg.className = "msg err"; msg.textContent = "No session with that code. Check the board."; $("jGo").disabled = false; return; }
+    ctx = { role: "student", code, pid: getPid(), demo: false };
+    const existing = await store.get(base() + "/players/" + ctx.pid);
+    await store.update(base() + "/players/" + ctx.pid, { name, joined: existing && existing.joined || Date.now() });
+    lsSet("rp1.student", JSON.stringify({ code }));
+    connect();
+  } catch (e) {
+    msg.className = "msg err"; msg.textContent = "Couldn't join: " + e.message; $("jGo").disabled = false;
+  }
+}
+
+/* =====================================================================
+   STUDENT
+   ===================================================================== */
+function renderStudent() {
+  if (!players()[ctx.pid]) { lsDel("rp1.student"); showLanding("Please join again."); return; }
+  if (phase() === "submit") { studentTab = null; studentSubmit(false); return; }
+  const pending = tasksOf(ctx.pid).filter(([, r]) => !r.done);
+  if (!studentTab) studentTab = pending.length ? "review" : (phase() === "feedback" ? "feedback" : "review");
+  if (studentTab === "review") studentReview(pending);
+  else if (studentTab === "feedback") studentFeedback();
+  else studentSubmit(true);
+}
+function whoLine() {
+  const p = players()[ctx.pid];
+  return `<div class="row small muted" style="margin-bottom:8px">${esc(p.name)}${ctx.demo ? "" : ` · <button class="link" data-act="rejoin">change name</button>`}</div>`;
+}
+function tabsHTML(active) {
+  const pend = tasksOf(ctx.pid).filter(([, r]) => !r.done).length;
+  const fb = phase() === "feedback" ? reviewsOf(ctx.pid).filter(([, r]) => r.done).length : 0;
+  return [["review", `Review a classmate's AI papers${pend ? ` <span class="n">${pend}</span>` : ""}`],
+          ["feedback", `Feedback on your papers${fb ? ` <span class="n">${fb}</span>` : ""}`],
+          ["submission", "Your submission"]]
+    .map(([k, l]) => `<button data-tab="${k}" class="${k === active ? "on" : ""}">${l}</button>`).join("");
+}
+function shellHTML() { return `<div id="who"></div><div class="tabs noprint" id="tabs"></div>`; }
+function fillShell(tab) { $("who").innerHTML = whoLine(); if ($("tabs")) $("tabs").innerHTML = tabsHTML(tab); }
+app.addEventListener("click", e => {
+  const t = e.target.closest("[data-tab]");
+  if (t && ctx.role === "student") { studentTab = t.dataset.tab; screen = null; render(); return; }
+  const r = e.target.closest("[data-act='rejoin']");
+  if (!r) return;
+  if (!confirm("Change your name? Anything you've already submitted stays with you.")) return;
+  const c = ctx.code; lsDel("rp1.student"); showLanding();
+  $("jCode").value = c;
+});
+
+/* ---------- submission ---------- */
+function studentSubmit(withTabs) {
+  const locked = reviewsOf(ctx.pid).length > 0;
+  const key = ["sub", locked, withTabs, phase()].join("|");
+  if (screen === "s-submit" && sig === key) { refreshSubStatus(); return; }
+  screen = null;
+  const me = subOf(ctx.pid);
+  const promptId = "promptDetails";
+  const verCard = (src, title, lead, checks) => `
+    <section class="card" id="card-${src}">
+      <h2>${title} <span id="st-${src}"></span></h2>
+      <p class="muted small">${lead}</p>
+      <div class="checks" style="margin:6px 0 4px"><span class="small muted" style="margin-right:8px">What you gave the AI:</span>${checks}</div>
+      <label>AI model you used <small>Optional — e.g. ChatGPT, Claude, Gemini, Copilot.</small><input type="text" data-model="${src}" maxlength="40" value="${esc((me[src] || {}).model || "")}" ${locked ? "disabled" : ""}></label>
+      <label>Paste the AI's paper here<textarea data-text="${src}" placeholder="Paste the whole paper, including the reference list" ${locked ? "disabled" : ""}>${esc((me[src] || {}).text || "")}</textarea></label>
+      <div class="row" style="margin-top:10px">${locked ? "" : `<button class="btn primary" data-save="${src}">Save this version</button>`}<span class="small muted" data-count="${src}"></span></div>
+      <div class="msg" data-msg="${src}"></div>
+    </section>`;
+  const ck = (src, k, label, lockedOn) => `<label class="${lockedOn ? "locked" : ""}"><input type="checkbox" data-ck="${src}|${k}" ${lockedOn ? "checked disabled" : ((me[src] || {})[k] ? "checked" : "")} ${locked ? "disabled" : ""}> ${label}</label>`;
+  setScreen("s-submit", `
+    ${withTabs ? shellHTML() : `<div id="who"></div>`}
+    ${locked ? `<div class="okbox">Your two AI papers have been sent to a classmate for review, so they can't be changed now. Use the tabs above to review someone else's papers and, once your instructor releases it, read your feedback.</div>` : ""}
+    ${!locked && phase() !== "submit" ? `<div class="nudge"><b>Reviews have started, but you can still submit.</b> Once both of your AI papers are saved, your instructor can assign a reviewer to them — otherwise nobody will give you feedback on your work.</div>` : ""}
+    <div class="howto noprint">
+      <b>How this works.</b> You'll have an AI write your Paper 1 twice — once from your outline, once from your full first draft — and a classmate will review both without knowing who wrote them or which is which. You'll do the same for someone else.
+      <ol>
+        <li><b>Copy the prompt</b> below.</li>
+        <li>Open the AI model of your choice in a <b>new chat</b>. Paste the prompt and <b>attach your outline</b> (and, if you like, your annotated bibliography too). Run it.</li>
+        <li>Copy the AI's whole paper and paste it into <b>Version A</b> below. Tick what you attached. Save.</li>
+        <li>Start another <b>new chat</b>. Paste the same prompt and <b>attach your full first draft</b>. Paste the result into <b>Version B</b>. Save.</li>
+      </ol>
+    </div>
+    <section class="card noprint">
+      <div class="row" style="justify-content:space-between">
+        <h2 style="margin:0">The prompt</h2>
+        <button class="btn gold" id="copyPrompt">Copy the prompt</button>
+      </div>
+      <details data-k="${promptId}" ${openDetails.has(promptId) ? "open" : ""} style="margin-top:10px"><summary>Show the prompt text</summary>
+        <div style="padding:0 10px 10px"><textarea class="promptbox" id="promptTA" readonly>${esc(PROMPT_TEXT)}</textarea></div></details>
+    </section>
+    <div class="grid2">
+      ${verCard("a", "Version A — from your outline", "The AI paper written from your <b>outline</b> (with or without your annotated bibliography).",
+        ck("a", "outline", "Outline", true) + ck("a", "bib", "Annotated bibliography") + ck("a", "assign", "Assignment description (the prompt above)"))}
+      ${verCard("b", "Version B — from your full first draft", "The AI paper written from your <b>full first draft</b>.",
+        ck("b", "draft", "Full first draft", true) + ck("b", "outline", "Outline") + ck("b", "bib", "Annotated bibliography") + ck("b", "assign", "Assignment description (the prompt above)"))}
+    </div>
+    ${withTabs ? "" : `<p class="muted small" style="text-align:center">When everyone's in, your instructor will start the review round.</p>`}`);
+  sig = key;
+  if (withTabs) fillShell("submission"); else $("who").innerHTML = whoLine();
+  $("copyPrompt").onclick = copyPrompt;
+  app.querySelectorAll("textarea[data-text]").forEach(ta => {
+    const upd = () => { const n = words(ta.value); app.querySelector(`[data-count="${ta.dataset.text}"]`).textContent = n ? n + " words" : ""; };
+    ta.addEventListener("input", upd); upd();
+  });
+  app.querySelectorAll("button[data-save]").forEach(b => b.onclick = () => saveVersion(b.dataset.save));
+  refreshSubStatus();
+}
+function refreshSubStatus() {
+  const me = subOf(ctx.pid);
+  for (const src of ["a", "b"]) {
+    const el = $("st-" + src); if (!el) continue;
+    const s = me[src];
+    el.innerHTML = s && s.text ? `<span class="chip ok">✓ saved · ${words(s.text)} words</span>` : `<span class="chip miss">not saved yet</span>`;
+  }
+}
+async function copyPrompt() {
+  const b = $("copyPrompt");
+  try { await navigator.clipboard.writeText(PROMPT_TEXT); }
+  catch (e) {
+    const d = app.querySelector("details[data-k='promptDetails']"); if (d) d.open = true;
+    const ta = $("promptTA"); ta.focus(); ta.select();
+    try { document.execCommand("copy"); } catch (e2) {}
+  }
+  b.textContent = "Copied ✓"; setTimeout(() => { if ($("copyPrompt")) $("copyPrompt").textContent = "Copy the prompt"; }, 2500);
+}
+async function saveVersion(src) {
+  const msg = app.querySelector(`[data-msg="${src}"]`); msg.className = "msg err";
+  if (reviewsOf(ctx.pid).length) { msg.textContent = "Your papers are already being reviewed and can't be changed."; return; }
+  const text = app.querySelector(`textarea[data-text="${src}"]`).value.trim();
+  if (!text) { msg.textContent = "Paste the AI's paper into the box first."; return; }
+  if (text.length > MAX_CHARS) { msg.textContent = `That's too long (${text.length.toLocaleString()} characters). The limit is ${MAX_CHARS.toLocaleString()}.`; return; }
+  const rec = { text, ts: Date.now(), model: app.querySelector(`[data-model="${src}"]`).value.trim().slice(0, 40) };
+  app.querySelectorAll(`input[data-ck^="${src}|"]`).forEach(c => { const k = c.dataset.ck.split("|")[1]; if (!c.disabled) rec[k] = c.checked; });
+  if (src === "a") rec.outline = true; else rec.draft = true;
+  const btn = app.querySelector(`button[data-save="${src}"]`); if (btn) btn.disabled = true;
+  try {
+    await store.set(`${base()}/subs/${ctx.pid}/${src}`, rec);
+    msg.className = "msg ok"; msg.textContent = `Saved Version ${src.toUpperCase()} (${words(text)} words).`;
+  } catch (e) { msg.textContent = "Couldn't save: " + e.message; }
+  if (btn) btn.disabled = false;
+  refreshSubStatus();
+}
+
+/* ---------- reviewing ---------- */
+let rev = { rid: null, d: null };
+let progTimer = null;
+const draftLS = rid => `rp1.draft.${ctx.code}.${rid}`;
+function blankDraft() { return { step: 1, guess: {}, ratings: { p1: {}, p2: {} }, reflect: { p1: {}, p2: {} }, compare: {} }; }
+function loadDraft(rid) { try { const x = JSON.parse(lsGet(draftLS(rid)) || "null"); if (x && x.ratings) return x; } catch (e) {} return blankDraft(); }
+function saveDraft() {
+  lsSet(draftLS(rev.rid), JSON.stringify(rev.d));
+  clearTimeout(progTimer);
+  progTimer = setTimeout(() => {
+    const r = rev.rid && reviews()[rev.rid];
+    if (!r || r.done) return;
+    store.update(`${base()}/reviews/${rev.rid}`, { progress: progressOf(rev.d) }).catch(() => {});
+  }, 1500);
+}
+function progressOf(d) {
+  let n = 0; const g = d.guess || {};
+  ["draftIs", "bib", "assignP1", "assignP2"].forEach(k => { if (g[k] != null && g[k] !== "") n++; });
+  ["p1", "p2"].forEach(s => {
+    DIMS.forEach((_, i) => { const x = ((d.ratings || {})[s] || {})[i]; if (x && x.r) n++; });
+    REFL.forEach((_, i) => { if (String(((d.reflect || {})[s] || {})[i] || "").trim()) n++; });
+  });
+  const c = d.compare || {}; if (c.stronger) n++; if (String(c.useful || "").trim()) n++;
+  return Math.round(100 * n / N_FIELDS) / 100;
+}
+function stepsReview(step) {
+  const names = ["1 · Read & guess", "2 · Rate Paper 1", "3 · Rate Paper 2", "4 · Compare & submit"];
+  return `<div class="steps">${names.map((n, j) => `<span class="${j + 1 === step ? "on" : j + 1 < step ? "done" : ""}">${n}</span>`).join("")}</div>`;
+}
+function studentReview(pending) {
+  if (!pending.length) {
+    const done = tasksOf(ctx.pid).filter(([, r]) => r.done).length;
+    const key = ["norev", done, phase(), complete(ctx.pid), reviewsOf(ctx.pid).length].join("|");
+    if (screen === "s-norev" && sig === key) { fillShell("review"); return; }
+    screen = null; rev = { rid: null, d: null };
+    let body;
+    if (done) body = `<h2>Your review is in ✓</h2><p>Thanks — your classmate will see your comments (anonymously) once the instructor releases feedback.${phase() === "feedback" ? ` Feedback has been released: see the <b>Feedback on your papers</b> tab.` : ""}</p>`;
+    else body = `<h2>Waiting for an assignment</h2><p class="muted">Your instructor hasn't assigned you a classmate's papers yet. This page updates on its own.</p>`;
+    if (!complete(ctx.pid) && !reviewsOf(ctx.pid).length) body += `<div class="nudge"><b>You haven't submitted both AI papers yet.</b> Until you do, nobody can review your work. Go to <b>Your submission</b> to finish.</div>`;
+    setScreen("s-norev", shellHTML() + `<section class="card narrow">${body}</section>`); sig = key;
+    fillShell("review");
+    return;
+  }
+  const [rid, r] = pending[0];
+  if (rev.rid !== rid) rev = { rid, d: loadDraft(rid) };
+  const step = rev.d.step || 1;
+  const key = ["rev", rid, step].join("|");
+  if (screen === "s-rev" && sig === key) { fillShell("review"); return; }
+  screen = null; setScreen("s-rev", shellHTML() + `<div id="revBody"></div>`); sig = key;
+  fillShell("review");
+  drawReview(rid, r, step);
+}
+function paperCard(label, text, cls) {
+  return `<div class="output ${cls || ""}"><div class="olabel"><span>${label}</span></div><div class="otext">${esc(text)}</div></div>`;
+}
+function radios(name, data, opts, cur) {
+  return `<div class="radios">${opts.map(([v, l]) => `<label><input type="radio" name="${name}" value="${v}" data-${data}" ${String(cur) === String(v) ? "checked" : ""}> ${l}</label>`).join("")}</div>`;
+}
+function drawReview(rid, r, step) {
+  const sub = subOf(r.author);
+  const order = r.order || ["a", "b"];
+  const texts = { p1: (sub[order[0]] || {}).text || "(This paper is no longer available.)", p2: (sub[order[1]] || {}).text || "(This paper is no longer available.)" };
+  const d = rev.d; const body = $("revBody");
+  rev.warned = null;
+  let html = stepsReview(step);
+  if (step === 1) {
+    const g = d.guess || {};
+    html += `<div class="howto"><b>How this works.</b> Below are <b>two AI-written versions of a classmate's Paper 1</b>. One was generated from the author's outline (maybe with their annotated bibliography), the other from the author's full first draft. They're shown in random order and nothing tells you which is which — or whose they are. Please don't try to work out the author.
+      <ol><li>Read both papers.</li><li>Guess what each one was made from.</li><li>Rate each paper on the handout's dimensions and write short comments.</li><li>Say which is stronger and what the author should know.</li></ol>
+      Your ratings and comments go to the author anonymously, so be specific and useful.</div>
+      <div class="outputs">${paperCard("Paper 1", texts.p1)}${paperCard("Paper 2", texts.p2)}</div>
+      <section class="card" style="margin-top:14px"><h2>Your guesses</h2>
+        <label>Which paper do you think was generated from the author's <b>full first draft</b>?</label>
+        ${radios("g-draft", `guess="draftIs"`, [["p1", "Paper 1"], ["p2", "Paper 2"]], g.draftIs)}
+        <label>The other paper came from the outline. Do you think the <b>annotated bibliography</b> was attached too?</label>
+        ${radios("g-bib", `guess="bib"`, [["yes", "Yes"], ["no", "No"]], g.bib == null ? "" : g.bib ? "yes" : "no")}
+        <label>Do you think the <b>assignment description</b> was included in the prompt?</label>
+        <div class="row"><span class="small" style="min-width:64px">Paper 1:</span>${radios("g-a1", `guess="assignP1"`, [["yes", "Yes"], ["no", "No"]], g.assignP1 == null ? "" : g.assignP1 ? "yes" : "no")}</div>
+        <div class="row"><span class="small" style="min-width:64px">Paper 2:</span>${radios("g-a2", `guess="assignP2"`, [["yes", "Yes"], ["no", "No"]], g.assignP2 == null ? "" : g.assignP2 ? "yes" : "no")}</div>
+      </section>
+      <div class="sticky-submit"><span class="small muted" id="revMsg"></span><button class="btn primary" data-nav="2">Continue to rate Paper 1 →</button></div>`;
+  } else if (step === 2 || step === 3) {
+    const slot = step === 2 ? "p1" : "p2", label = step === 2 ? "Paper 1" : "Paper 2";
+    const rt = d.ratings[slot] || {}, rf = d.reflect[slot] || {};
+    html += `<div class="revwrap">
+      <div class="paperpane">${paperCard(label, texts[slot])}</div>
+      <div>
+        <section class="card"><h2>Rate ${label}</h2>
+          <p class="muted small">1 = weak · 3 = adequate for a first-year seminar paper · 5 = excellent (a couple of rows have their own end-points). Add a brief note where it would help the author.</p>
+          ${DIMS.map((dm, i) => {
+            const cur = rt[i] && rt[i].r, id = `r-${slot}-${i}`;
+            return `<div class="dim"><div class="dt">${esc(dm[0])}</div><div class="dd">${esc(dm[1])}</div>
+              <div class="scale">${[1, 2, 3, 4, 5].map(v => `<input type="radio" id="${id}-${v}" name="${id}" value="${v}" data-rate="${slot}|${i}" ${cur == v ? "checked" : ""}><label for="${id}-${v}">${v}<small>${esc(scaleLabel(i, v)) || "&nbsp;"}</small></label>`).join("")}</div>
+              <input type="text" class="note" data-note="${slot}|${i}" placeholder="Brief note (optional)" maxlength="300" value="${esc(rt[i] && rt[i].note || "")}"></div>`;
+          }).join("")}
+        </section>
+        <section class="card"><h2>Comments on ${label}</h2><p class="muted small">Optional, but this is what the author will find most useful. A sentence or two each.</p>
+          ${REFL.map((q, i) => `<label>${esc(q)}<textarea class="short" data-refl="${slot}|${i}" maxlength="2000">${esc(rf[i] || "")}</textarea></label>`).join("")}
+        </section>
+      </div></div>
+      <div class="sticky-submit"><span class="small muted" id="revMsg"></span><span class="row"><button class="btn" data-nav="${step - 1}">← Back</button><button class="btn primary" data-nav="${step + 1}">${step === 2 ? "Continue to Paper 2 →" : "Continue to compare →"}</button></span></div>`;
+  } else {
+    const c = d.compare || {};
+    const k1 = `cmp|${rid}|1`, k2 = `cmp|${rid}|2`;
+    html += `<section class="card"><h2>Compare the two papers</h2>
+      <details data-k="${k1}" ${openDetails.has(k1) ? "open" : ""}><summary>Re-read Paper 1</summary><div class="out">${esc(texts.p1)}</div></details>
+      <details data-k="${k2}" ${openDetails.has(k2) ? "open" : ""}><summary>Re-read Paper 2</summary><div class="out">${esc(texts.p2)}</div></details>
+      <label style="margin-top:16px">Which paper is stronger overall?</label>
+      ${radios("c-str", `cmp="stronger"`, [["p1", "Paper 1"], ["p2", "Paper 2"], ["same", "About the same"]], c.stronger)}
+      <label>What is the single most useful thing the author should know after reading your review?<small>Two or three sentences. This is the first thing they'll read. Optional, but please try.</small><textarea class="short" data-useful maxlength="2000">${esc(c.useful || "")}</textarea></label>
+    </section>
+    <div class="sticky-submit"><span class="small muted" id="revMsg"></span><span class="row"><button class="btn" data-nav="3">← Back</button><button class="btn primary" id="revSubmit">Submit review</button></span></div>`;
+  }
+  body.innerHTML = html;
+  body.onchange = e => {
+    const t = e.target;
+    if (t.dataset.guess) { const k = t.dataset.guess; d.guess[k] = k === "draftIs" ? t.value : t.value === "yes"; saveDraft(); }
+    else if (t.dataset.rate) { const [s, i] = t.dataset.rate.split("|"); d.ratings[s][i] = Object.assign({}, d.ratings[s][i] || {}, { r: +t.value }); saveDraft(); }
+    else if (t.dataset.cmp) { d.compare.stronger = t.value; saveDraft(); }
+  };
+  body.oninput = e => {
+    const t = e.target;
+    if (t.dataset.note) { const [s, i] = t.dataset.note.split("|"); d.ratings[s][i] = Object.assign({}, d.ratings[s][i] || {}, { note: t.value }); saveDraft(); }
+    else if (t.dataset.refl) { const [s, i] = t.dataset.refl.split("|"); d.reflect[s][i] = t.value; saveDraft(); }
+    else if (t.hasAttribute("data-useful")) { d.compare.useful = t.value; saveDraft(); }
+  };
+  body.onclick = e => {
+    const nav = e.target.closest("[data-nav]");
+    if (nav) {
+      const to = +nav.dataset.nav;
+      if (to > step && !checkStep(step, nav)) return;
+      d.step = to; saveDraft(); sig = null; render(); return;
+    }
+    if (e.target.id === "revSubmit") submitReview(rid, r);
+  };
+}
+// Guesses and the "which is stronger" pick are required. Missing ratings or
+// written comments get one warning; a second click goes ahead anyway.
+function validateStep(step) {
+  const d = rev.d;
+  if (step === 1) {
+    const g = d.guess || {};
+    if (!g.draftIs || g.bib == null || g.assignP1 == null || g.assignP2 == null) return { hard: true, msg: "Please answer all four guess questions before continuing." };
+  } else if (step === 2 || step === 3) {
+    const s = step === 2 ? "p1" : "p2";
+    const nr = DIMS.filter((_, i) => d.ratings[s][i] && d.ratings[s][i].r).length;
+    const nf = REFL.filter((_, i) => String(d.reflect[s][i] || "").trim()).length;
+    if (nr < DIMS.length) return { hard: false, msg: `You've left ${DIMS.length - nr} of ${DIMS.length} ratings blank for this paper. The ratings are the main thing the author gets — but you can go on without them.` };
+    if (nf === 0) return { hard: false, msg: "You haven't written any comments on this paper. That's allowed, but even one specific sentence helps the author a lot." };
+  } else {
+    if (!d.compare.stronger) return { hard: true, msg: "Say which paper is stronger overall." };
+    if (!String(d.compare.useful || "").trim()) return { hard: false, msg: "You haven't written the most useful thing for the author. You can submit without it." };
+  }
+  return null;
+}
+function checkStep(step, btn) {
+  const v = validateStep(step);
+  if (!v) return true;
+  if (!v.hard && rev.warned === step) return true;     // already warned once for this step
+  $("revMsg").innerHTML = `<span style="color:${v.hard ? "var(--bad)" : "var(--warn)"}">${esc(v.msg)}</span>`;
+  if (!v.hard) { rev.warned = step; btn.textContent = step === 4 ? "Submit anyway" : "Continue anyway →"; }
+  return false;
+}
+async function submitReview(rid, r) {
+  if (!checkStep(4, $("revSubmit"))) return;
+  const d = rev.d;
+  const ratings = {}, reflect = {};
+  for (const s of ["p1", "p2"]) {
+    ratings[s] = {}; reflect[s] = {};
+    DIMS.forEach((_, i) => { const x = d.ratings[s][i] || {}; ratings[s][i] = { r: x.r || null, note: x.note || "" }; });
+    REFL.forEach((_, i) => { reflect[s][i] = d.reflect[s][i] || ""; });
+  }
+  const g = d.guess;
+  const rec = { guess: { draftIs: g.draftIs, bib: !!g.bib, assignP1: !!g.assignP1, assignP2: !!g.assignP2 }, ratings, reflect,
+    compare: { stronger: d.compare.stronger, useful: d.compare.useful || "" }, done: true, progress: 1, submittedAt: Date.now() };
+  $("revSubmit").disabled = true;
+  try {
+    await store.update(`${base()}/reviews/${rid}`, rec);
+    lsDel(draftLS(rid)); rev = { rid: null, d: null }; sig = null;
+    window.scrollTo(0, 0);
+  } catch (e) { alert("Couldn't save: " + e.message); $("revSubmit").disabled = false; }
+}
+
+/* ---------- feedback (author's view) ---------- */
+function feedbackData(pid) {
+  // Everything the author gets: their inputs, each finished review translated into "your outline version" / "your draft version"
+  const sub = subOf(pid);
+  const revs = reviewsOf(pid).filter(([, r]) => r.done).map(([rid, r]) => {
+    const order = r.order || ["a", "b"];
+    const slotOf = src => order[0] === src ? "p1" : "p2";
+    const g = r.guess || {};
+    const actualDraft = slotOf("b");
+    const guesses = [
+      { q: "Which paper came from your full first draft?", a: g.draftIs ? `Guessed ${g.draftIs === "p1" ? "Paper 1" : "Paper 2"}` : "No guess", ok: g.draftIs ? g.draftIs === actualDraft : null },
+      { q: "Was the annotated bibliography attached to the outline?", a: g.bib == null ? "No guess" : g.bib ? "Guessed yes" : "Guessed no", ok: g.bib == null ? null : !!g.bib === !!(sub.a || {}).bib, actual: (sub.a || {}).bib ? "yes" : "no" },
+      { q: "Assignment description included — outline version?", a: g.assignP1 == null ? "No guess" : (slotOf("a") === "p1" ? g.assignP1 : g.assignP2) ? "Guessed yes" : "Guessed no", ok: g.assignP1 == null ? null : !!(slotOf("a") === "p1" ? g.assignP1 : g.assignP2) === !!(sub.a || {}).assign, actual: (sub.a || {}).assign ? "yes" : "no" },
+      { q: "Assignment description included — full-draft version?", a: g.assignP2 == null ? "No guess" : (slotOf("b") === "p1" ? g.assignP1 : g.assignP2) ? "Guessed yes" : "Guessed no", ok: g.assignP2 == null ? null : !!(slotOf("b") === "p1" ? g.assignP1 : g.assignP2) === !!(sub.b || {}).assign, actual: (sub.b || {}).assign ? "yes" : "no" }
+    ];
+    const papers = ["a", "b"].map(src => {
+      const slot = slotOf(src);
+      return { src, slot, label: slot === "p1" ? "Paper 1" : "Paper 2", ratings: (r.ratings || {})[slot] || {}, reflect: (r.reflect || {})[slot] || {} };
+    });
+    const c = r.compare || {};
+    const strongerSrc = c.stronger === "same" ? "same" : c.stronger ? order[c.stronger === "p1" ? 0 : 1] : null;
+    return { rid, r, guesses, papers, stronger: strongerSrc, useful: c.useful || "", submittedAt: r.submittedAt };
+  });
+  return { sub, revs, synth: synth()[pid] || {} };
+}
+function studentFeedback() {
+  const released = phase() === "feedback";
+  const mine = reviewsOf(ctx.pid);
+  const nDone = mine.filter(([, r]) => r.done).length;
+  const sy = synth()[ctx.pid] || {};
+  const key = ["fb", released, mine.length, nDone, sy.ts || 0].join("|");
+  if (screen === "s-fb" && sig === key) { fillShell("feedback"); return; }
+  screen = null; setScreen("s-fb", shellHTML() + `<div id="fbBody"></div>`); sig = key;
+  fillShell("feedback");
+  const body = $("fbBody");
+  if (!complete(ctx.pid) && !mine.length) {
+    body.innerHTML = `<section class="card narrow"><h2>No feedback to show</h2><p class="muted">You didn't submit both AI papers, so no classmate was assigned to review them.</p>${phase() !== "feedback" ? `<div class="nudge">You can still submit both versions under <b>Your submission</b>; your instructor can then assign a reviewer.</div>` : ""}</section>`;
+    return;
+  }
+  if (!released) {
+    const status = !mine.length ? "No reviewer has been assigned to your papers yet." : nDone ? "Your reviewer has finished." : mine.some(([, r]) => r.progress) ? `Your reviewer is working on it (about ${Math.round((mine[0][1].progress || 0) * 100)}% done).` : "Your reviewer hasn't started yet.";
+    body.innerHTML = `<section class="card narrow"><h2>Feedback isn't released yet</h2><p>${esc(status)}</p><p class="muted small">Your instructor will release everyone's feedback at the same time. This page updates on its own.</p></section>`;
+    return;
+  }
+  const F = feedbackData(ctx.pid);
+  let html = "";
+  if (!F.revs.length) html += `<section class="card"><h2>Your feedback</h2><p>${mine.length ? "Your reviewer hasn't finished yet — this page will update when they do." : "No reviewer was assigned to your papers."}</p></section>`;
+  F.revs.forEach((R, idx) => {
+    html += `<section class="card"><h2>${F.revs.length > 1 ? `Review ${idx + 1}` : "Your anonymous peer review"}</h2>
+      <div class="okbox"><b>The most useful thing to know:</b><br>${esc(R.useful)}</div>
+      <p><b>Which version did your reviewer find stronger?</b> ${R.stronger === "same" ? "About the same." : R.stronger ? `The one ${SRC_LONG[R.stronger]}.` : "–"}</p>
+      <h4>Their guesses about what you fed the AI</h4>
+      ${R.guesses.map(g => `<div class="qa"><div class="q">${esc(g.q)}</div><div class="a">${esc(g.a)} — ${g.ok == null ? "" : g.ok ? `<span class="right">correct</span>` : `<span class="wrong">incorrect</span>`}${g.actual ? ` <span class="muted small">(actually: ${g.actual})</span>` : ""}</div></div>`).join("")}
+      ${R.papers.map(P => `
+        <h3 style="margin-top:18px">${P.label} — this was your version ${SRC_LONG[P.src]}</h3>
+        <p class="muted small">What you gave the AI: ${esc(inputsLine(P.src, F.sub[P.src]))}</p>
+        ${DIMS.map((dm, i) => { const x = P.ratings[i] || {}; return `<div class="fb-row"><span>${esc(dm[0])}</span><span class="score">${x.r ? `${x.r}/5 · ${esc(scoreWord(i, x.r))}` : "not rated"}</span>${x.note ? `<span class="note">${esc(x.note)}</span>` : ""}</div>`; }).join("")}
+        <div style="margin-top:10px">${REFL.map((q, i) => `<div class="qa"><div class="q">${esc(q)}</div><div class="a">${esc(P.reflect[i] || "–")}</div></div>`).join("")}</div>`).join("")}
+    </section>`;
+  });
+  const sk = "fbsub";
+  html += `<section class="card"><h2>Your two AI papers</h2>
+    ${["a", "b"].map(src => { const k = sk + src; const s = F.sub[src] || {}; return `<details data-k="${k}" ${openDetails.has(k) ? "open" : ""}><summary>The version ${SRC_LONG[src]} <span class="muted small">(${esc(inputsLine(src, s))})</span></summary><div class="out">${esc(s.text || "")}</div></details>`; }).join("")}
+  </section>
+  <section class="card" id="synthCard"><h2>Your reflection</h2><p class="muted small">Now that you've read the feedback, answer these for yourself. They're saved with your feedback and included in the download.</p>
+    ${SYNTH.map((q, i) => `<label>${esc(q)}<textarea class="short" data-syn="${i}" maxlength="3000">${esc(F.synth[i] || "")}</textarea></label>`).join("")}
+    <div class="row" style="margin-top:10px"><button class="btn primary" id="synSave">Save my reflection</button><span class="msg" id="synMsg" style="margin:0">${F.synth.ts ? `Saved ${esc(dateStr(F.synth.ts))}` : ""}</span></div>
+  </section>
+  <section class="card noprint"><div class="row"><button class="btn gold" id="fbDownload">Download my feedback (.txt)</button><button class="btn" id="fbPrint">Print / save as PDF</button></div>
+    <p class="muted small" style="margin:8px 0 0">The download includes the review, your reflection, and both AI papers.</p></section>`;
+  body.innerHTML = html;
+  $("synSave").onclick = async () => {
+    const rec = { ts: Date.now() };
+    SYNTH.forEach((_, i) => rec[i] = body.querySelector(`[data-syn="${i}"]`).value.trim());
+    $("synSave").disabled = true;
+    try { await store.set(`${base()}/synth/${ctx.pid}`, rec); $("synMsg").className = "msg ok"; $("synMsg").textContent = "Saved."; }
+    catch (e) { $("synMsg").className = "msg err"; $("synMsg").textContent = "Couldn't save: " + e.message; }
+    $("synSave").disabled = false;
+  };
+  $("fbDownload").onclick = () => {
+    const unsaved = {}; SYNTH.forEach((_, i) => unsaved[i] = body.querySelector(`[data-syn="${i}"]`).value.trim());
+    downloadText(feedbackText(ctx.pid, unsaved), `Paper1-AI-comparison-feedback-${pname(ctx.pid).replace(/[^A-Za-z0-9]+/g, "_")}.txt`);
+  };
+  $("fbPrint").onclick = () => window.print();
+}
+function feedbackText(pid, synthOverride) {
+  const F = feedbackData(pid);
+  const sy = synthOverride || F.synth;
+  const L = [];
+  const rule = ch => ch.repeat(72);
+  L.push(rule("="), "PEER FEEDBACK ON AI-GENERATED VERSIONS OF YOUR PAPER 1", rule("="), `Student: ${pname(pid)}`, `Session: ${ctx.code}   Downloaded: ${dateStr()}`, "",
+    "Two AI-written versions of your Paper 1 were reviewed anonymously by a classmate,", "who did not know who wrote them or which version was which.", "");
+  if (!F.revs.length) L.push("(No finished review yet.)", "");
+  F.revs.forEach((R, idx) => {
+    L.push(rule("-"), F.revs.length > 1 ? `REVIEW ${idx + 1}` : "THE REVIEW", rule("-"), "", "THE MOST USEFUL THING TO KNOW:", R.useful, "",
+      `Which version did the reviewer find stronger? ${R.stronger === "same" ? "About the same." : R.stronger ? "The one " + SRC_LONG[R.stronger] + "." : "-"}`, "",
+      "REVIEWER'S GUESSES ABOUT WHAT YOU FED THE AI");
+    R.guesses.forEach(g => L.push(`  ${g.q}`, `    ${g.a}${g.ok == null ? "" : g.ok ? " - correct" : " - incorrect"}${g.actual ? ` (actually: ${g.actual})` : ""}`));
+    L.push("");
+    R.papers.forEach(P => {
+      L.push(`${P.label.toUpperCase()} - YOUR VERSION ${SRC_LONG[P.src].toUpperCase()}`, `What you gave the AI: ${inputsLine(P.src, F.sub[P.src])}`, "", "Ratings (1 = weak, 5 = excellent):");
+      DIMS.forEach((dm, i) => { const x = P.ratings[i] || {}; L.push(`  ${dm[0]}: ${x.r ? x.r + "/5 (" + scoreWord(i, x.r) + ")" : "not rated"}${x.note ? "  - " + x.note : ""}`); });
+      L.push("", "Comments:");
+      REFL.forEach((q, i) => L.push(`  Q: ${q}`, `  A: ${P.reflect[i] || "-"}`, ""));
+    });
+  });
+  L.push(rule("-"), "YOUR REFLECTION", rule("-"), "");
+  SYNTH.forEach((q, i) => L.push(`Q: ${q}`, `A: ${sy[i] || "-"}`, ""));
+  L.push(rule("-"), "APPENDIX: THE TWO AI PAPERS", rule("-"), "");
+  ["a", "b"].forEach(src => { const s = F.sub[src] || {}; L.push(`--- The version ${SRC_LONG[src]} (${inputsLine(src, s)}) ---`, "", s.text || "", ""); });
+  return L.join("\n");
+}
+function downloadText(text, filename, mime) {
+  const blob = new Blob([text], { type: (mime || "text/plain") + ";charset=utf-8" });
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = filename;
+  document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+
+/* =====================================================================
+   INSTRUCTOR
+   ===================================================================== */
+async function hostNew() {
+  try {
+    store = firebaseStore();
+    const A = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+    let code = null;
+    for (let i = 0; i < 20; i++) {
+      const c = Array.from({ length: 4 }, () => A[Math.floor(Math.random() * A.length)]).join("");
+      if (!(await store.get("games/" + PREFIX + c + "/created"))) { code = c; break; }
+    }
+    if (!code) throw new Error("couldn't find a free code");
+    ctx = { role: "host", code, pid: null, demo: false };
+    await store.set(base(), { created: Date.now(), phase: "submit" });
+    lsSet("rp1.host", code);
+    connect();
+  } catch (e) { fatal("Couldn't create a session: " + esc(e.message)); }
+}
+async function hostResume(code) {
+  try {
+    store = firebaseStore();
+    const created = await store.get("games/" + PREFIX + code + "/created");
+    if (!created) { lsDel("rp1.host"); showLanding("Session " + code + " no longer exists."); return; }
+    ctx = { role: "host", code, pid: null, demo: false };
+    connect();
+  } catch (e) { fatal("Couldn't resume: " + esc(e.message)); }
+}
+function joinURL() { return location.origin + location.pathname + "?code=" + ctx.code; }
+function stepsBar(ph) {
+  const order = ["submit", "review", "feedback"], names = ["1 · Submissions", "2 · Reviews", "3 · Feedback released"];
+  const i = order.indexOf(ph);
+  return `<div class="steps">${names.map((n, j) => `<span class="${j === i ? "on" : j < i ? "done" : ""}">${n}</span>`).join("")}</div>`;
+}
+function heroHTML() {
+  return `<section class="card hero"><div><h2>Join at</h2><div class="url">${esc(joinURL())}</div></div>
+    <div style="text-align:right"><div class="small" style="opacity:.8">Session code</div><div class="bigcode">${esc(ctx.code)}</div></div></section>`;
+}
+
+/* ---------- assignment algorithm ----------
+   Every student with both AI papers saved ("author") gets at least one reviewer.
+   Reviewers are spread evenly; nobody reviews their own paper. Students who
+   didn't submit still review someone (so some papers get a second reviewer).
+   Can be re-run later for late submitters / late joiners. */
+function computeAssignments() {
+  const P = Object.keys(players());
+  const R = reviews();
+  const pending = {}, total = {};
+  P.forEach(p => { pending[p] = 0; total[p] = 0; });
+  const reviewed = new Set(); const load = {};
+  const authors = P.filter(complete);
+  authors.forEach(a => load[a] = 0);
+  for (const id in R) {
+    const r = R[id]; reviewed.add(r.author);
+    if (total[r.reviewer] != null) { total[r.reviewer]++; if (!r.done) pending[r.reviewer]++; }
+    if (load[r.author] != null) load[r.author]++;
+  }
+  const out = [];
+  const sortBy = f => (x, y) => f(x) - f(y);
+  for (const a of shuffle(authors.filter(a => !reviewed.has(a)))) {
+    const cands = shuffle(P.filter(p => p !== a)).sort(sortBy(p => pending[p] * 1000 + total[p]));
+    if (!cands.length) continue;
+    const rv = cands[0]; out.push({ author: a, reviewer: rv }); pending[rv]++; total[rv]++; load[a]++;
+  }
+  for (const p of shuffle(P)) {
+    if (total[p] > 0) continue;
+    const cands = shuffle(authors.filter(a => a !== p)).sort(sortBy(a => load[a]));
+    if (!cands.length) continue;
+    out.push({ author: cands[0], reviewer: p }); total[p]++; pending[p]++; load[cands[0]]++;
+  }
+  return out;
+}
+function assignmentUpdates(list) {
+  const upd = {};
+  for (const x of list) upd["reviews/" + newId("rv")] = { author: x.author, reviewer: x.reviewer, order: shuffle(["a", "b"]), assignedAt: Date.now(), done: false, progress: 0 };
+  return upd;
+}
+
+function renderHost() {
+  const ph = phase();
+  if (ph === "submit") hostSubmit();
+  else hostReview(ph);
+}
+function rosterHTML() {
+  const P = Object.entries(players()).sort((x, y) => x[1].name.localeCompare(y[1].name));
+  if (!P.length) return `<p class="muted">No students yet. They join with the code above.</p>`;
+  const ph = phase();
+  return `<table class="stat"><thead><tr><th>Student</th><th>Version A<br><span style="text-transform:none">outline</span></th><th>Version B<br><span style="text-transform:none">full draft</span></th>${ph !== "submit" ? `<th>Reviewing</th><th>Reviewed by</th>` : ""}<th></th></tr></thead><tbody>
+    ${P.map(([pid, p]) => {
+      const s = subOf(pid);
+      const cell = (src) => s[src] && s[src].text ? `<span class="chip ok">✓ ${words(s[src].text)} w</span><div class="muted small">${esc(inputsLine(src, s[src]))}</div>` : `<span class="chip miss">–</span>`;
+      let extra = "";
+      if (ph !== "submit") {
+        const tasks = tasksOf(pid);
+        const tcell = tasks.length ? tasks.map(([, r]) => r.done ? `<span class="chip ok">✓ done</span>` : `<span class="chip ${r.progress ? "teal" : "miss"}">${r.progress ? Math.round(r.progress * 100) + "%" : "not started"}</span>`).join("") : `<span class="chip warn">nothing assigned</span>`;
+        const rv = reviewsOf(pid);
+        const rcell = !complete(pid) ? `<span class="muted small">didn't submit both</span>` : rv.length ? rv.map(([, r]) => r.done ? `<span class="chip ok">✓ ${esc(pname(r.reviewer).split(" ")[0])}</span>` : `<span class="chip teal">${esc(pname(r.reviewer).split(" ")[0])} · ${Math.round((r.progress || 0) * 100)}%</span>`).join("") : `<span class="chip warn">no reviewer yet</span>`;
+        extra = `<td>${tcell}</td><td>${rcell}</td>`;
+      }
+      const k = "read|" + pid;
+      const read = complete(pid) || s.a || s.b ? `<details data-k="${esc(k)}" ${openDetails.has(k) ? "open" : ""} style="margin:0"><summary>Read</summary>${["a", "b"].map(src => s[src] ? `<div class="out"><b>Version ${src.toUpperCase()}</b>\n${esc(s[src].text)}</div>` : "").join("")}</details>` : "";
+      return `<tr><td><b>${esc(p.name)}</b></td><td>${cell("a")}</td><td>${cell("b")}</td>${extra}<td>${read}<button class="link danger" data-remove="${pid}" style="margin-top:4px">remove</button></td></tr>`;
+    }).join("")}</tbody></table>`;
+}
+app.addEventListener("click", async e => {
+  if (ctx.role !== "host") return;
+  const rm = e.target.closest("[data-remove]");
+  if (rm) {
+    const pid = rm.dataset.remove;
+    if (!confirm(`Remove ${pname(pid)} from this session? Their submissions and any reviews they're part of are deleted. (Use this for duplicate joins.)`)) return;
+    const upd = { ["players/" + pid]: null, ["subs/" + pid]: null, ["synth/" + pid]: null };
+    for (const [rid, r] of Object.entries(reviews())) if (r.author === pid || r.reviewer === pid) upd["reviews/" + rid] = null;
+    await store.update(base(), upd);
+  }
+});
+
+/* ---------- phase 1: submissions ---------- */
+function hostSubmit() {
+  const fresh = setScreen("h-submit", `<div id="hHero"></div>${stepsBar("submit")}
+    <section class="card"><h2>Students <span class="live">live</span></h2><div id="hStats"></div>
+      <div class="row" style="margin-top:12px"><button class="btn primary" id="startReviews">Start the review round</button><span class="small muted" id="startNote"></span></div>
+      <div id="hWarn"></div></section>
+    <section class="card"><div id="hRoster"></div></section>`);
+  if (fresh) {
+    $("hHero").innerHTML = heroHTML();
+    $("startReviews").onclick = async () => {
+      const list = computeAssignments();
+      const nAuth = Object.keys(players()).filter(complete).length;
+      const nIncomplete = Object.keys(players()).length - nAuth;
+      if (!confirm(`Start reviews now? ${nAuth} student${nAuth === 1 ? "" : "s"} submitted both papers and will get a reviewer.${nIncomplete ? ` ${nIncomplete} did not submit both; they will review someone else's papers but won't receive feedback unless they finish and you assign them later.` : ""}`)) return;
+      $("startReviews").disabled = true;
+      const upd = Object.assign({ phase: "review" }, assignmentUpdates(list));
+      await store.update(base(), upd);
+    };
+  }
+  const P = Object.keys(players());
+  const nAuth = P.filter(complete).length;
+  const nPart = P.filter(p => !complete(p) && (subOf(p).a || subOf(p).b)).length;
+  $("hStats").innerHTML = `<p class="muted">${P.length} joined · <b>${nAuth}</b> with both AI papers saved${nPart ? ` · ${nPart} with only one so far` : ""}</p>`;
+  const can = nAuth >= 1 && P.length >= 2;
+  $("startReviews").disabled = !can;
+  $("startNote").textContent = can ? "Submissions stay open for students who haven't finished; you can assign them later." : "Needs at least one student with both papers saved and at least two students in the session.";
+  $("hWarn").innerHTML = P.filter(p => !complete(p)).length && nAuth ? `<div class="warnbox">Not everyone has submitted both versions: ${esc(P.filter(p => !complete(p)).map(pname).join(", "))}.</div>` : "";
+  $("hRoster").innerHTML = rosterHTML();
+}
+
+/* ---------- phases 2 & 3: reviews / feedback ---------- */
+function hostReview(ph) {
+  const fresh = setScreen("h-review", `<div id="hHero"></div><div id="hSteps"></div>
+    <section class="card"><h2 id="hTitle"></h2><div id="hStats"></div><div id="hActions" class="row" style="margin-top:12px"></div><div id="hWarn"></div></section>
+    <section class="card"><h2>Class summary <span class="live">live</span></h2><div id="hSummary"></div></section>
+    <section class="card"><h2>Students <span class="live">live</span></h2><div id="hRoster"></div></section>
+    <section class="card"><div class="row"><button class="btn" id="hCSV">Export all ratings (CSV)</button><button class="btn" id="hCancel">Cancel reviews and go back to submissions</button></div></section>`);
+  if (fresh) {
+    $("hHero").innerHTML = heroHTML();
+    $("hCSV").onclick = () => downloadText(hostCSV(), `rungrank-paper1-${ctx.code}.csv`, "text/csv");
+    $("hCancel").onclick = async () => {
+      if (!confirm("Cancel the review round? All reviews (finished or not) are deleted and students can edit their submissions again.")) return;
+      await store.update(base(), { phase: "submit", reviews: null, synth: null });
+    };
+    $("hActions").addEventListener("click", async e => {
+      const id = e.target.id;
+      if (id === "hAssign") {
+        const list = computeAssignments(); if (!list.length) return;
+        e.target.disabled = true;
+        await store.update(base(), assignmentUpdates(list));
+      } else if (id === "hRelease") {
+        const all = Object.values(reviews()); const done = all.filter(r => r.done).length;
+        if (done < all.length && !confirm(`${done} of ${all.length} reviews are finished. Release feedback now? Students whose reviewer hasn't finished will see it when the reviewer submits.`)) return;
+        await store.update(base(), { phase: "feedback" });
+      } else if (id === "hUnrelease") {
+        await store.update(base(), { phase: "review" });
+      }
+    });
+  }
+  $("hSteps").innerHTML = stepsBar(ph);
+  const all = Object.entries(reviews()); const done = all.filter(([, r]) => r.done).length;
+  const started = all.filter(([, r]) => !r.done && r.progress).length;
+  const P = Object.keys(players());
+  const unreviewed = P.filter(p => complete(p) && !reviewsOf(p).length);
+  const idle = P.filter(p => !tasksOf(p).length);
+  const newN = computeAssignments().length;
+  $("hTitle").textContent = ph === "feedback" ? "Feedback is released" : "Reviews in progress";
+  $("hStats").innerHTML = `<p class="muted"><b>${done}</b> of ${all.length} reviews finished · ${started} in progress · ${all.length - done - started} not started · ${P.filter(complete).length} of ${P.length} students submitted both papers</p>`;
+  $("hActions").innerHTML = (newN ? `<button class="btn gold" id="hAssign">Assign ${newN} new review${newN === 1 ? "" : "s"}</button>` : "") +
+    (ph === "feedback" ? `<button class="btn" id="hUnrelease">Hide feedback again</button>` : `<button class="btn primary" id="hRelease">Release feedback to students</button>`);
+  let warn = "";
+  if (unreviewed.length) warn += `<div class="warnbox"><b>${unreviewed.length} submitted paper${unreviewed.length === 1 ? " has" : "s have"} no reviewer yet</b> (${esc(unreviewed.map(pname).join(", "))}). Click “Assign new reviews”.</div>`;
+  if (idle.length) warn += `<div class="warnbox">${idle.length} student${idle.length === 1 ? " has" : "s have"} nothing to review (${esc(idle.map(pname).join(", "))}).${newN ? " “Assign new reviews” gives them a paper." : " No papers are available for them."}</div>`;
+  $("hWarn").innerHTML = warn;
+  $("hSummary").innerHTML = summaryHTML();
+  $("hRoster").innerHTML = rosterHTML();
+}
+function classStats() {
+  const R = Object.values(reviews()).filter(r => r.done);
+  const dims = DIMS.map(() => ({ a: [], b: [] }));
+  let draftRight = 0, draftN = 0, bibRight = 0, bibN = 0, asgRight = 0, asgN = 0; const pref = { a: 0, b: 0, same: 0 };
+  for (const r of R) {
+    const sub = subOf(r.author); const order = r.order || ["a", "b"];
+    ["p1", "p2"].forEach((slot, i) => { const rt = (r.ratings || {})[slot] || {}; DIMS.forEach((_, j) => { const v = rt[j] && rt[j].r; if (v) dims[j][order[i]].push(+v); }); });
+    const g = r.guess || {};
+    if (g.draftIs) { draftN++; if (g.draftIs === (order[0] === "b" ? "p1" : "p2")) draftRight++; }
+    if (g.bib != null && sub.a) { bibN++; if (!!g.bib === !!sub.a.bib) bibRight++; }
+    ["p1", "p2"].forEach((slot, i) => { const k = slot === "p1" ? "assignP1" : "assignP2"; const s = sub[order[i]]; if (g[k] != null && s) { asgN++; if (!!g[k] === !!s.assign) asgRight++; } });
+    const c = (r.compare || {}).stronger;
+    if (c === "same") pref.same++; else if (c) pref[order[c === "p1" ? 0 : 1]]++;
+  }
+  const allA = [].concat(...dims.map(d => d.a)), allB = [].concat(...dims.map(d => d.b));
+  return { n: R.length, dims: dims.map(d => ({ a: mean(d.a), b: mean(d.b) })), overall: { a: mean(allA), b: mean(allB) }, draftRight, draftN, bibRight, bibN, asgRight, asgN, pref };
+}
+function summaryHTML() {
+  const st = classStats();
+  if (!st.n) return `<p class="muted">Nothing to summarize yet — this fills in as reviews are submitted.</p>`;
+  const bar = (v, cls) => `<div class="row" style="gap:8px;flex-wrap:nowrap"><div class="bar ${cls}" style="flex:1"><i style="width:${v ? (v / 5) * 100 : 0}%"></i></div><span style="min-width:36px;text-align:right">${fmt2(v)}</span></div>`;
+  const nPref = st.pref.a + st.pref.b + st.pref.same;
+  return `<p class="muted small">Based on ${st.n} finished review${st.n === 1 ? "" : "s"}. Ratings are 1–5 (5 = excellent). <span class="chip teal">Outline-based</span> vs <span class="chip" style="background:var(--gold-l);color:#7a5413">Full-draft-based</span></p>
+    <table class="stat"><thead><tr><th>Dimension</th><th>From the outline</th><th>From the full draft</th><th>Δ</th></tr></thead><tbody>
+      ${st.dims.map((d, i) => `<tr><td>${esc(DIMS[i][0])}</td><td>${bar(d.a, "")}</td><td>${bar(d.b, "gold")}</td><td>${d.a != null && d.b != null ? (d.b - d.a >= 0 ? "+" : "") + fmt2(d.b - d.a) : "–"}</td></tr>`).join("")}
+      <tr style="font-weight:700"><td>All dimensions</td><td>${bar(st.overall.a, "")}</td><td>${bar(st.overall.b, "gold")}</td><td>${st.overall.a != null && st.overall.b != null ? (st.overall.b - st.overall.a >= 0 ? "+" : "") + fmt2(st.overall.b - st.overall.a) : "–"}</td></tr>
+    </tbody></table>
+    <div class="grid2" style="margin-top:14px">
+      <div><h4>Which version did reviewers find stronger?</h4>
+        <p>From the full draft: <b>${pct(st.pref.b, nPref)}</b> · From the outline: <b>${pct(st.pref.a, nPref)}</b> · About the same: <b>${pct(st.pref.same, nPref)}</b></p></div>
+      <div><h4>Could reviewers tell what the AI was given?</h4>
+        <p>Picked out the full-draft version: <b>${pct(st.draftRight, st.draftN)}</b> <span class="muted small">(${st.draftRight}/${st.draftN}; chance = 50%)</span><br>
+           Guessed whether the bibliography was attached: <b>${pct(st.bibRight, st.bibN)}</b> <span class="muted small">(${st.bibRight}/${st.bibN})</span><br>
+           Guessed whether the assignment description was included: <b>${pct(st.asgRight, st.asgN)}</b> <span class="muted small">(${st.asgRight}/${st.asgN})</span></p></div>
+    </div>`;
+}
+function hostCSV() {
+  const q = s => `"${String(s == null ? "" : s).replace(/"/g, '""')}"`;
+  const head = ["review_id", "author", "reviewer", "paper_slot", "source", "author_attached_bib", "author_included_assignment", "author_model", "words", ...DIMS.map(d => d[0]), ...DIMS.map(d => d[0] + " (note)"), ...REFL, "guess_draft_correct", "guess_bib_correct", "guess_assignment_correct_this_paper", "reviewer_found_stronger", "most_useful", "submitted_at"];
+  const rows = [head.map(q).join(",")];
+  for (const [rid, r] of Object.entries(reviews())) {
+    if (!r.done) continue;
+    const sub = subOf(r.author); const order = r.order || ["a", "b"]; const g = r.guess || {};
+    ["p1", "p2"].forEach((slot, i) => {
+      const src = order[i], s = sub[src] || {}; const rt = (r.ratings || {})[slot] || {}; const rf = (r.reflect || {})[slot] || {};
+      const stronger = (r.compare || {}).stronger === "same" ? "same" : (r.compare || {}).stronger ? SRC_NAME[order[(r.compare.stronger === "p1" ? 0 : 1)]] : "";
+      const gk = slot === "p1" ? "assignP1" : "assignP2";
+      rows.push([rid, pname(r.author), pname(r.reviewer), slot, SRC_NAME[src], src === "a" ? (s.bib ? 1 : 0) : (s.bib ? 1 : 0), s.assign ? 1 : 0, s.model || "", words(s.text),
+        ...DIMS.map((_, j) => rt[j] && rt[j].r || ""), ...DIMS.map((_, j) => rt[j] && rt[j].note || ""), ...REFL.map((_, j) => rf[j] || ""),
+        g.draftIs ? (g.draftIs === (order[0] === "b" ? "p1" : "p2") ? 1 : 0) : "", g.bib == null ? "" : (!!g.bib === !!(sub.a || {}).bib ? 1 : 0), g[gk] == null ? "" : (!!g[gk] === !!s.assign ? 1 : 0),
+        stronger, (r.compare || {}).useful || "", r.submittedAt ? new Date(r.submittedAt).toISOString() : ""].map(q).join(","));
+    });
+  }
+  return rows.join("\n");
+}
+
+/* =====================================================================
+   PREVIEW MODE (in-memory, simulated class)
+   ===================================================================== */
+const DEMO_A = [
+`Artificial intelligence is reshaping higher education, and students at Brandeis University must decide how to integrate these tools into their studies. This paper argues that AI should be used as a complement to learning rather than a substitute for it.
+
+First, AI can expand human capital when it supports tasks that students have already learned to do. For example, using AI to check grammar or summarize background reading saves time that can be redirected toward higher-order thinking (Brynjolfsson and McAfee 2014). Second, AI reduces human capital when it replaces the effortful practice that builds skills. Research on learning shows that retrieval and struggle are essential to durable understanding (Bjork and Bjork 2011).
+
+Third, students should prepare for a workplace in which AI is common by developing judgment and verification skills. Employers increasingly value workers who can evaluate AI output rather than merely generate it (Autor 2024).
+
+In conclusion, Brandeis students should use AI selectively, applying it to tasks that are means rather than ends. Doing so preserves the learning that a university education is meant to provide while building the fluency that future work will demand.
+
+References
+Autor, David. 2024. "Applying AI to Rebuild Middle Class Jobs." NBER Working Paper 32140.
+Bjork, Elizabeth L., and Robert A. Bjork. 2011. "Making Things Hard on Yourself, but in a Good Way." In Psychology and the Real World. New York: Worth.
+Brynjolfsson, Erik, and Andrew McAfee. 2014. The Second Machine Age. New York: W. W. Norton.
+
+Note: The attached outline listed only three sources, so this paper does not meet the 10–15 citation requirement.`,
+`The arrival of generative AI raises a central question for university students: when does using these tools strengthen an education, and when does it hollow it out? This paper argues that the answer depends on whether a task is the goal of a course or merely a step toward it.
+
+When the task is the goal — learning to construct an argument, to read a difficult text, to solve a problem — AI use should be limited. Economists describe education as an investment in human capital (Becker 1964), and the return on that investment comes from the practice itself. Outsourcing the practice forfeits the return.
+
+When the task is a step toward the goal — formatting citations, checking grammar, summarizing background material — AI frees time for the work that matters. Here AI expands human capital by lowering the cost of routine work (Agrawal, Gans, and Goldfarb 2018).
+
+Students should also prepare for workplaces in which AI is ubiquitous. The most valuable skill will be judgment: knowing when AI output is wrong (Mollick 2024). That judgment can only be built on domain knowledge acquired the slow way.
+
+In sum, Brandeis students should ask of every task: is this the point, or a means to the point? The answer tells them whether to pick up the tool.
+
+References
+Agrawal, Ajay, Joshua Gans, and Avi Goldfarb. 2018. Prediction Machines. Boston: Harvard Business Review Press.
+Becker, Gary S. 1964. Human Capital. New York: Columbia University Press.
+Mollick, Ethan. 2024. Co-Intelligence. New York: Portfolio.`,
+`Generative AI presents both an opportunity and a risk for students at Brandeis University. This paper examines when AI use enhances learning and when it undermines it, and concludes that students should adopt clear personal rules about its use.
+
+AI is most helpful in the later stages of learning. After a student has attempted a problem set or drafted an essay, AI feedback can accelerate improvement (Kasneci et al. 2023). AI is least helpful at the beginning, when the struggle to produce a first attempt is itself the learning.
+
+The labor market context matters as well. Surveys suggest that a majority of employers now expect graduates to be comfortable with AI tools (World Economic Forum 2023). Yet the same employers report that they value critical thinking above technical fluency. Students should therefore treat AI fluency as a secondary skill built on top of a primary one.
+
+Finally, there is a question of human capital. Using AI to do work one has not yet learned to do reduces human capital, because the skill is never acquired. Using AI to extend work one can already do expands it.
+
+Brandeis students should therefore use AI after, not instead of, their own effort.
+
+References
+Kasneci, Enkelejda, et al. 2023. "ChatGPT for Good? On Opportunities and Challenges of Large Language Models for Education." Learning and Individual Differences 103.
+World Economic Forum. 2023. The Future of Jobs Report 2023. Geneva: WEF.`
+];
+const DEMO_B = [
+`When I arrived at Brandeis this fall, I assumed the question about AI was whether to use it. After two months, I think the better question is what I want to be able to do without it. That question organizes this paper: AI should be used wherever it helps me build a capability I will keep, and avoided wherever it quietly does the building for me.
+
+Consider the two kinds of work a first-year student does. Some of it is instrumental: tracking down a citation, reformatting a bibliography, getting a quick summary of a reading I've already done. Economists would call these low-value tasks where a tool's time savings are nearly pure gain (Agrawal, Gans, and Goldfarb 2018). Other work is constitutive: writing a first paragraph, working through a proof, sitting with a confusing argument until it clicks. Here the task is not a cost to be minimized but the mechanism by which human capital is produced (Becker 1964). Handing it to a model is like paying someone to lift weights for you.
+
+The complication is that the line between instrumental and constitutive moves. In my economics course, the algebra is instrumental; in a math course it is the point. So no single campus rule works. What works is a habit of asking, before I open a chat window, which kind of task this is.
+
+What about preparing for a workplace saturated with AI? Mollick (2024) argues that the valuable worker will be the one who can tell when the model is wrong. That judgment is a byproduct of having done the constitutive work. The student who skips it will be fluent with the tool and unable to supervise it — the worst of both.
+
+I will therefore use AI after my own attempt, never before it, and I will keep a short list of skills I refuse to outsource. If my list gets shorter over four years, I will know something went wrong.
+
+References
+Agrawal, Ajay, Joshua Gans, and Avi Goldfarb. 2018. Prediction Machines. Boston: Harvard Business Review Press.
+Becker, Gary S. 1964. Human Capital. New York: Columbia University Press.
+Mollick, Ethan. 2024. Co-Intelligence. New York: Portfolio.
+Autor, David. 2024. "Applying AI to Rebuild Middle Class Jobs." NBER Working Paper 32140.`,
+`The debate over AI in college tends to be framed as cheating versus not cheating. That framing misses the economically interesting question, which is about substitution and complementarity. This paper argues that AI complements a Brandeis education when it is used to extend skills a student already has, and substitutes for that education — destroying rather than creating human capital — when it stands in for skills the student is still acquiring.
+
+The distinction comes from the literature on technology and labor. Autor (2015) notes that automation raises the value of tasks it complements and lowers the value of tasks it replaces. Applied to a student, a chatbot that drafts my essay replaces the task of drafting; my ability to draft loses value and, worse, never develops. A chatbot that critiques a draft I wrote complements the task; my drafting improves.
+
+Three implications follow. First, in foundational courses — writing seminars, introductory calculus — AI should be used sparingly, because nearly every task is one I am still learning. Second, in advanced courses, AI can be used liberally for the routine components, freeing time for the frontier. Third, every course should include some practice in verifying AI output, since that is the skill employers increasingly describe (Brynjolfsson, Li, and Raymond 2023).
+
+There is a fair objection: if everyone else uses AI and I do not, I fall behind on grades now in exchange for skills later. This is a real trade-off, and I do not think it should be dismissed. But grades are a signal of human capital, not the thing itself, and a signal detached from the thing eventually loses its value — for everyone.
+
+My conclusion is a personal policy rather than a university one: I will use AI for anything I could already do well and nothing I could not.
+
+References
+Autor, David H. 2015. "Why Are There Still So Many Jobs?" Journal of Economic Perspectives 29 (3): 3–30.
+Brynjolfsson, Erik, Danielle Li, and Lindsey Raymond. 2023. "Generative AI at Work." NBER Working Paper 31161.
+Becker, Gary S. 1964. Human Capital. New York: Columbia University Press.`,
+`There is a version of this paper that says AI is a tool like any other and students should learn to use it. I started out intending to write that paper. Working through the sources changed my mind, and this paper argues something narrower: AI expands human capital only when it is used to get feedback on work a student has produced, and reduces it when it produces the work itself.
+
+The mechanism is simple. Learning happens through attempt, error, and correction (Bjork and Bjork 2011). AI feedback speeds up correction, which is good. AI drafting removes the attempt, which is where most of the learning actually sits. The calculator analogy that supporters often reach for fails on exactly this point: calculators automated arithmetic after students had learned it, and only arithmetic. A language model can automate the whole assignment.
+
+This suggests where I should and should not use AI at Brandeis. I should use it to question my outlines, to find holes in my arguments, to quiz me before an exam. I should not use it to write a first draft, to do a problem set I have not tried, or to read a text for me. The test is whether the attempt was mine.
+
+On preparing for work: Autor (2024) describes a future in which AI raises the value of expertise by making expert judgment cheaper to apply. But judgment is downstream of knowledge, and knowledge is downstream of attempts. A student who outsources attempts will have the tool and nothing to point it at.
+
+I expect to break this rule sometimes. The point of writing it down is that I will know when I do.
+
+References
+Autor, David. 2024. "Applying AI to Rebuild Middle Class Jobs." NBER Working Paper 32140.
+Bjork, Elizabeth L., and Robert A. Bjork. 2011. "Making Things Hard on Yourself, but in a Good Way." In Psychology and the Real World. New York: Worth.
+Mollick, Ethan. 2024. Co-Intelligence. New York: Portfolio.`
+];
+const DEMO_NAMES = ["Maya Chen", "Jordan Ortiz", "Priya Nair", "Leo Fischer", "Sam Okafor", "Ava Rossi", "Noah Kim"];
+const BOT_NOTES = ["Good but generic.", "Reads like a summary.", "Nice transition here.", "Citations feel thin.", "Strong paragraph.", "Repeats the thesis a lot."];
+const BOT_REFL = [
+  ["Clear structure and a readable thesis.", "The distinction between means and ends is sharp.", "Strong opening; the first-person framing pulls you in."],
+  ["The evidence is thin — three sources carrying a whole paper.", "Paragraphs restate the thesis instead of building on it.", "The counterargument is raised and dropped in one sentence.", ""],
+  ["It never says what Brandeis specifically should do.", "It treats 'students' as one group with one goal.", "It skips the grades-now vs. skills-later trade-off.", ""]
+];
+const BOT_USEFUL = ["The draft-based version has a real voice; the other reads like a template. Whatever you did in your draft, keep doing it.", "Both papers lean on the same three sources. Your annotated bibliography is where the paper will get stronger.", "Your thesis survives both versions, which suggests it's clear. The examples are what vary — lean into the concrete ones."];
+function startDemo() {
+  store = memStore();
+  ctx = { role: "host", code: "DEMO", pid: null, demo: true };
+  const data = { created: Date.now(), phase: "submit", players: {}, subs: {} };
+  DEMO_NAMES.forEach((n, i) => {
+    const pid = "bot" + (i + 1);
+    data.players[pid] = { name: n, joined: Date.now() };
+    if (i === DEMO_NAMES.length - 1) return;                 // one student hasn't submitted
+    data.subs[pid] = { a: { text: DEMO_A[i % 3], bib: i % 2 === 0, assign: i % 3 !== 1, model: ["ChatGPT", "Claude", "Gemini"][i % 3], ts: Date.now(), outline: true },
+                       b: { text: DEMO_B[i % 3], assign: i % 3 !== 1, model: ["ChatGPT", "Claude", "Gemini"][i % 3], ts: Date.now(), draft: true } };
+    if (i === DEMO_NAMES.length - 2) delete data.subs[pid].b;  // one student has only Version A
+  });
+  data.players["demo-you"] = { name: "You (preview)", joined: Date.now() };
+  data.subs["demo-you"] = { a: { text: DEMO_A[1], bib: true, assign: true, model: "Claude", ts: Date.now(), outline: true }, b: { text: DEMO_B[1], assign: true, model: "Claude", ts: Date.now(), draft: true } };
+  store.set(base(), data).then(() => { drawDemoBar(); connect(); });
+}
+function drawDemoBar() {
+  const b = $("demoBar"); b.hidden = false;
+  b.innerHTML = `<b>Preview mode</b> — simulated class, nothing is saved. Simulated students finish their reviews a few seconds after you assign them.
+    View as: <button class="btn sm ${ctx.role === "host" ? "primary" : ""}" data-view="host">Instructor</button>
+    <button class="btn sm ${ctx.role === "student" ? "primary" : ""}" data-view="student">A student</button>
+    <button class="btn sm" data-view="exit">Exit preview</button>`;
+}
+$("demoBar").addEventListener("click", e => {
+  const v = e.target.dataset.view; if (!v) return;
+  if (v === "exit") { showLanding(); return; }
+  ctx.role = v; ctx.pid = v === "student" ? "demo-you" : null;
+  screen = null; sig = null; studentTab = null; updateBadge(); drawDemoBar(); render();
+});
+const demoScheduled = new Set();
+function demoBots() {
+  for (const [rid, r] of Object.entries(reviews())) {
+    if (!String(r.reviewer).startsWith("bot") || r.done || demoScheduled.has(rid)) continue;
+    demoScheduled.add(rid);
+    const t = 3000 + Math.random() * 9000;
+    setTimeout(() => { const cur = reviews()[rid]; if (cur && !cur.done) store.update(`${base()}/reviews/${rid}`, { progress: Math.round(Math.random() * 60 + 20) / 100 }); }, t / 2);
+    setTimeout(() => { const cur = reviews()[rid]; if (cur && !cur.done) store.update(`${base()}/reviews/${rid}`, botReview(cur)); }, t);
+  }
+}
+function botReview(r) {
+  const order = r.order || ["a", "b"];
+  const draftSlot = order[0] === "b" ? "p1" : "p2";
+  const guess = { draftIs: Math.random() < .7 ? draftSlot : (draftSlot === "p1" ? "p2" : "p1"), bib: Math.random() < .5, assignP1: Math.random() < .6, assignP2: Math.random() < .6 };
+  const ratings = { p1: {}, p2: {} }, reflect = { p1: {}, p2: {} }; const sums = { p1: 0, p2: 0 };
+  ["p1", "p2"].forEach((slot, i) => {
+    const src = order[i];
+    DIMS.forEach((_, j) => { let b = src === "b" ? 3.7 : 2.9; if ((j === 8 || j === 9) && src === "a") b -= .5; const v = Math.max(1, Math.min(5, Math.round(b + (Math.random() * 2 - 1)))); sums[slot] += v; ratings[slot][j] = { r: Math.random() < .08 ? null : v, note: Math.random() < .3 ? pick(BOT_NOTES) : "" }; });
+    REFL.forEach((_, j) => reflect[slot][j] = pick(BOT_REFL[j]));
+  });
+  const stronger = sums.p1 > sums.p2 ? "p1" : sums.p2 > sums.p1 ? "p2" : "same";
+  return { guess, ratings, reflect, compare: { stronger, useful: pick(BOT_USEFUL) }, done: true, progress: 1, submittedAt: Date.now() };
+}
+
+/* =====================================================================
+   BOOT
+   ===================================================================== */
+(async function boot() {
+  const params = new URLSearchParams(location.search);
+  const urlCode = (params.get("code") || "").toUpperCase();
+  let saved = null; try { saved = JSON.parse(lsGet("rp1.student") || "null"); } catch (e) {}
+  if (saved && saved.code && (!urlCode || urlCode === saved.code)) {
+    try {
+      store = firebaseStore();
+      const pid = getPid();
+      const p = await store.get("games/" + PREFIX + saved.code + "/players/" + pid);
+      if (p) { ctx = { role: "student", code: saved.code, pid, demo: false }; connect(); return; }
+    } catch (e) { fatal(esc(e.message)); }
+  }
+  showLanding();
+})();
+</script>
+</body>
+</html>
